@@ -1,0 +1,325 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "lato", sans-serif;
+}
+header {
+  width: 1280px;
+  height: 50px;
+  position: fixed;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: black;
+  color: #fff;
+  box-shadow: 1px -16px 5px 16px rgb(170 170 170);
+}
+
+ul {
+  display: flex;
+  list-style: none;
+  font-family: "lato";
+  font-weight: 500;
+  font-size: 17px;
+}
+ul li {
+  margin-left: 28px;
+  padding: 15px 8px;
+}
+.search:hover {
+  background-color: #f44336;
+}
+.search {
+  padding: 10px 33px 10px 20px;
+}
+.dropdown-content a {
+  display: block;
+}
+.navbar a:hover,
+.dropdown:hover .dropbtn {
+  background-color: #000;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+ul li:hover {
+  background-color: #cccccc;
+  color: #000;
+}
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+/* BACKGROUND IMG */
+
+.bg {
+  background: url(/images-svg/yannis-papanastasopoulos-yWF2LLan-_o-unsplash.jpg)
+    no-repeat;
+  background-size: cover;
+  background-position: center;
+  height: 600px;
+}
+h3 {
+  color: #fff;
+  position: absolute;
+  top: 456px;
+  left: 570px;
+  font-size: 32px;
+}
+.caption p {
+  color: #fff;
+  position: absolute;
+  top: 520px;
+  left: 490px;
+  font-family: arial;
+}
+
+/* DESCRIPTION SECTION */
+
+.the-band {
+  height: 720px;
+  display: flex;
+  justify-content: center;
+}
+.band-heading {
+  height: 45px;
+  width: 760px;
+  text-align: center;
+  font-size: 50px;
+  margin-top: 100px;
+  font-family: arial;
+}
+#music {
+  font-size: 14px;
+  font-family: "lato", sans-serif;
+  font-style: italic;
+  color: rgb(95, 95, 95);
+  font-weight: 100;
+  margin-top: 20px;
+}
+#music-desc {
+  font-size: 15px;
+  width: 770px;
+  margin-top: 30px;
+  line-height: 22.5px;
+  font-weight: normal;
+  font-family: "lato", sans-serif;
+  text-align-last: center;
+  text-align: justify;
+}
+.np1 p {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+.name-photo {
+  display: flex;
+  justify-content: center;
+  margin-top: 70px;
+  gap: 100px;
+}
+.np1 img {
+  border-radius: 5px;
+}
+
+/* TOUR DATES SECTION */
+
+.tour-dates {
+  height: 900px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding-top: 130px;
+  font-size: 30px;
+  font-weight: normal;
+}
+#book-ticket {
+  font-style: italic;
+  font-size: 15px;
+  margin-top: 20px;
+  color: #afafaf;
+  margin-bottom: 50px;
+}
+.sold p {
+  border-bottom: 1px solid #afafaf;
+  width: 769px;
+  color: #929292;
+  text-align: start;
+  font-size: 15px;
+  padding: 9px;
+}
+.sold {
+  width: 770px;
+  height: 111px;
+
+  background-color: white;
+  justify-content: center;
+  margin: auto;
+  /* width: 60%; */
+}
+.sold p::after {
+  content: "SOLD";
+  color: rgb(255, 255, 255);
+  background-color: #f44336;
+  padding: 4px 20px 4px 20px;
+  margin-right: 15px;
+}
+.buy-main {
+  margin-top: 35px;
+}
+.photo-ticket {
+  height: 388px;
+  width: 261px;
+  display: inline-block;
+  background-color: #fff;
+  color: #000;
+  margin-left: 15px;
+  text-align: start;
+}
+.photo-ticket p {
+  font-size: 15px;
+  line-height: 22.5px;
+}
+.photo-ticket h4 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+.text-area {
+  padding: 10px 10px 0 10px;
+}
+#date {
+  margin-bottom: 10px;
+  color: #666666;
+}
+.buy-btn {
+  padding: 12px 16px 12px 16px;
+  border-radius: none;
+  border: none;
+  outline: none;
+  background-color: #000;
+  cursor: pointer;
+  color: #fff;
+  margin-top: 25px;
+  font-size: 15px;
+}
+.buy-btn:hover {
+  background-color: #cccccc;
+  color: #000;
+}
+.contact {
+  height: 459px;
+}
+.contact p {
+  text-align: center;
+  padding-top: 80px;
+  font-size: 30px;
+  font-weight: normal;
+}
+#note {
+  padding: 0;
+  margin-top: 10px;
+  font-style: italic;
+  font-size: 15px;
+  margin-top: 20px;
+  color: #afafaf;
+  margin-bottom: 50px;
+}
+.name-email {
+  height: 223px;
+  width: 768px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+.location-phone p {
+  font-size: 18px;
+  text-align: start;
+  padding: 4px;
+}
+.form input {
+  width: 183px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
+#message {
+  width: 376px;
+  margin-top: 10px;
+}
+.name-e {
+  display: flex;
+  gap: 10px;
+}
+input {
+  padding: 2px 0 0 7px;
+}
+.send {
+  float: right;
+  padding: 8px 15px 8px 15px;
+  background-color: #000;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  margin-top: 15px;
+  font-size: 20px;
+}
+.send:hover {
+  background-color: #cccccc;
+  color: #000;
+}
+.location-img {
+  height: 710px;
+  width: 1263px;
+  background: url(/images-svg/nick-fewings-br9D5K3UTRQ-unsplash.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+footer {
+  height: 216px;
+  text-align: center;
+  margin-top: 90px;
+}
+footer p {
+  margin-top: 20px;
+  color: #cccccc;
+}
+p a {
+  color: #cccccc;
+}
+
+.svgs {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+@media (max-width: 960) {
+  header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
