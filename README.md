@@ -1,395 +1,227 @@
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import "./Chat.css";
-
-export function Chat({ onQuestionClick, onSchoolClick }) {
-    const [data, setData] = useState(null);
-    const [showQuestions, setShowQuestions] = useState(false);
-    const [selectedQuestion, setSelectedQuestion] = useState(null);
-    const [expandedQuestions, setExpandedQuestions] = useState({});
-    const [expandedDescriptions, setExpandedDescriptions] = useState({});
-    const [history, setHistory] = useState([]); // New state for history
-
-    useEffect(() => {
-        fetch('/data.json')
-            .then(response => response.json())
-            .then(data => setData(data))
-            .catch(error => console.error('Error fetching data:', error));
-    }, []);
-
-    if (!data) {
-        return <div>Loading...</div>;
-    }
-
-    const handleQuestionClick = (question) => {
-        setShowQuestions(false);
-        setSelectedQuestion(question);
-        onQuestionClick(question);
-        updateHistory(question); // Update history when a question is clicked
-    };
-
-    const handleSchoolClick = (school) => {
-        onSchoolClick(school);
-    };
-
-    const toggleQuestions = () => {
-        setShowQuestions(!showQuestions);
-    };
-
-    const toggleExpand = (question) => {
-        setExpandedQuestions((prevExpanded) => ({
-            ...prevExpanded,
-            [question]: !prevExpanded[question],
-        }));
-    };
-
-    const toggleExpandDescription = (question, index) => {
-        setExpandedDescriptions((prevExpandedDescriptions) => ({
-            ...prevExpandedDescriptions,
-            [`${question}-${index}`]: !prevExpandedDescriptions[`${question}-${index}`]
-        }));
-    };
-
-    const updateHistory = (question) => {
-        setHistory((prevHistory) => [
-            ...prevHistory,
-            {
-                question,
-                description: data.questionDescriptions[question]
-            }
-        ]);
-    };
-
-    return (
-        <div className="chat-container">
-            <h1>Frequently Inquired Topics</h1>
-            <div className="hamburger-menu" onClick={toggleQuestions}>
-                <FontAwesomeIcon icon={showQuestions ? faTimes : faBars} />
-            </div>
-            <div className={`most-asked-questions ${showQuestions ? 'show' : ''}`}>
-                <h4>Frequently Inquired Topics</h4>
-                <ul>
-                    {data.mostAskedQuestions.map((question, index) => (
-                        <li key={index} onClick={() => handleQuestionClick(question)}>
-                            {question}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="selected-questions">
-                {selectedQuestion && (
-                    <div
-                        key={selectedQuestion}
-                        className={`selected-question ${expandedQuestions[selectedQuestion] ? 'expanded' : ''}`}
-                        aria-expanded={expandedQuestions[selectedQuestion]}
-                    >
-                        <div className="question-header">
-                            <h4>{selectedQuestion}</h4>
-                            <FontAwesomeIcon
-                                icon={expandedQuestions[selectedQuestion] ? faChevronUp : faChevronDown}
-                                className="toggle-icon"
-                                onClick={() => toggleExpand(selectedQuestion)}
-                            />
-                        </div>
-                        {expandedQuestions[selectedQuestion] && (
-                            <div className="descriptions active">
-                                {data.questionDescriptions[selectedQuestion].map((desc, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`description ${expandedDescriptions[`${selectedQuestion}-${idx}`] ? 'expanded' : ''}`}
-                                        onClick={() => toggleExpandDescription(selectedQuestion, idx)}
-                                    >
-                                        <p>{desc}</p>
-                                        {expandedDescriptions[`${selectedQuestion}-${idx}`] && (
-                                            <ul>
-                                                {data.schoolNames.map((school, schoolIdx) => (
-                                                    <li key={schoolIdx} onClick={() => handleSchoolClick(school)}>
-                                                        {school}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-            <div className="history">
-                <h2>History</h2>
-                <ul>
-                    {history.map((item, index) => (
-                        <li key={index}>
-                            <h4>{item.question}</h4>
-                            <ul>
-                                {item.description.map((desc, descIdx) => (
-                                    <li key={descIdx}>{desc}</li>
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
-}
-
-
-
-
-
-
-
-
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faTimes, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import "./Chat.css";
-
-export function Chat({ onQuestionClick, onSchoolClick }) {
-    const [data, setData] = useState(null);
-    const [showQuestions, setShowQuestions] = useState(false);
-    const [selectedQuestion, setSelectedQuestion] = useState(null);
-    const [expandedQuestions, setExpandedQuestions] = useState({});
-    const [expandedDescriptions, setExpandedDescriptions] = useState({});
-    const [history, setHistory] = useState([]); // New state for history
-
-    useEffect(() => {
-        fetch('/data.json')
-            .then(response => response.json())
-            .then(data => setData(data))
-            .catch(error => console.error('Error fetching data:', error));
-    }, []);
-
-    if (!data) {
-        return <div>Loading...</div>;
-    }
-
-    const handleQuestionClick = (question) => {
-        setShowQuestions(false);
-        setSelectedQuestion(question);
-        onQuestionClick(question);
-        updateHistory(question); // Update history when a question is clicked
-    };
-
-    const handleSchoolClick = (school) => {
-        onSchoolClick(school);
-    };
-
-    const toggleQuestions = () => {
-        setShowQuestions(!showQuestions);
-    };
-
-    const toggleExpand = (question) => {
-        setExpandedQuestions((prevExpanded) => ({
-            ...prevExpanded,
-            [question]: !prevExpanded[question],
-        }));
-    };
-
-    const toggleExpandDescription = (question, index) => {
-        setExpandedDescriptions((prevExpandedDescriptions) => ({
-            ...prevExpandedDescriptions,
-            [`${question}-${index}`]: !prevExpandedDescriptions[`${question}-${index}`]
-        }));
-    };
-
-    const updateHistory = (question) => {
-        setHistory((prevHistory) => [
-            ...prevHistory,
-            {
-                question,
-                description: data.questionDescriptions[question]
-            }
-        ]);
-    };
-
-    return (
-        <div className="chat-container">
-            <h1>Frequently Inquired Topics</h1>
-            <div className="hamburger-menu" onClick={toggleQuestions}>
-                <FontAwesomeIcon icon={showQuestions ? faTimes : faBars} />
-            </div>
-            <div className={`most-asked-questions ${showQuestions ? 'show' : ''}`}>
-                <h4>Frequently Inquired Topics</h4>
-                <ul>
-                    {data.mostAskedQuestions.map((question, index) => (
-                        <li key={index} onClick={() => handleQuestionClick(question)}>
-                            {question}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-            <div className="selected-questions">
-                {selectedQuestion && (
-                    <div
-                        key={selectedQuestion}
-                        className={`selected-question ${expandedQuestions[selectedQuestion] ? 'expanded' : ''}`}
-                        aria-expanded={expandedQuestions[selectedQuestion]}
-                    >
-                        <div className="question-header">
-                            <h4>{selectedQuestion}</h4>
-                            <FontAwesomeIcon
-                                icon={expandedQuestions[selectedQuestion] ? faChevronUp : faChevronDown}
-                                className="toggle-icon"
-                                onClick={() => toggleExpand(selectedQuestion)}
-                            />
-                        </div>
-                        {expandedQuestions[selectedQuestion] && (
-                            <div className="descriptions active">
-                                {data.questionDescriptions[selectedQuestion].map((desc, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`description ${expandedDescriptions[`${selectedQuestion}-${idx}`] ? 'expanded' : ''}`}
-                                        onClick={() => toggleExpandDescription(selectedQuestion, idx)}
-                                    >
-                                        <p>{desc}</p>
-                                        {expandedDescriptions[`${selectedQuestion}-${idx}`] && (
-                                            <ul>
-                                                {data.schoolNames.map((school, schoolIdx) => (
-                                                    <li key={schoolIdx} onClick={() => handleSchoolClick(school)}>
-                                                        {school}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-            </div>
-            <div className="history">
-                <h2>History</h2>
-                <ul>
-                    {history.map((item, index) => (
-                        <li key={index}>
-                            <h4>{item.question}</h4>
-                            <ul>
-                                {item.description.map((desc, descIdx) => (
-                                    <li key={descIdx}>{desc}</li>
-                                ))}
-                            </ul>
-                        </li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    );
-}
-
-
-
-
-
-
-
 .chat-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 80px 0 0 10px;
+    border-radius: 10px;
+    width: 450px;
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
 }
-
+.chat-container h1 {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 600;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(-19.51%, #7abef7),
+    color-stop(36.51%, #4080f5),
+    to(#572ac2)
+  );
+  background: -webkit-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: -o-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: linear-gradient(
+    90deg,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-transform: inherit !important;
+}
 .hamburger-menu {
-    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
     font-size: 24px;
-    margin-bottom: 10px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 10;
 }
 
 .most-asked-questions {
-    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+    display: flex;
+    border-radius: 10px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    color: white;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-in-out;
 }
 
 .most-asked-questions.show {
-    display: block;
+    transform: translateY(0);
 }
 
 .most-asked-questions h4 {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.2s forwards;
 }
 
 .most-asked-questions ul {
     list-style: none;
     padding: 0;
+    opacity: 0;
+    animation: fadeIn 0.5s 0.4s forwards;
 }
 
 .most-asked-questions li {
-    cursor: pointer;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
     margin: 5px 0;
-    padding: 10px;
-    background: #f5f5f5;
-    border-radius: 5px;
-    transition: background 0.3s ease;
+    background-color: #fff;
+    color: #000;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .most-asked-questions li:hover {
-    background: #e0e0e0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    transform: scale(1.05);
 }
 
 .selected-questions {
-    margin-top: 20px;
+    margin-top: 30px;
+    overflow-y: auto;
+    padding: 10px;
+    flex-grow: 1;
+}
+
+.selected-questions::-webkit-scrollbar {
+    width: 8px;
+}
+
+.selected-questions::-webkit-scrollbar-thumb {
+    background-color: rgba(111, 54, 205, 0.8);
+    border-radius: 10px;
+}
+
+.selected-questions::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(111, 54, 205, 1);
+}
+
+.selected-questions::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
 }
 
 .selected-question {
-    margin-bottom: 20px;
+    /*background-color: #fff;*/
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
-.question-header {
+.selected-question h4 {
+    margin: 0;
+}
+
+.selected-question .question-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-    background: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background 0.3s ease;
 }
 
-.question-header:hover {
-    background: #e0e0e0;
+.selected-question .toggle-icon {
+    font-size: 18px;
 }
 
-.descriptions {
-    padding: 10px;
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-top: 10px;
+.selected-question p {
+    margin: 10px 0 0;
+    display: none;
+    animation: fadeIn 0.3s ease-in-out forwards;
 }
 
+.selected-question.expanded p {
+    font-size: 14px;
+    display: block;
+    transition: 0.1s ease-in;
+}
+.selected-question.expanded p:hover{
+    color: #000;
+}
 .description {
+    /*background-color: #f5f5f5;*/
+    display: none;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 8px 0;
     cursor: pointer;
-    padding: 5px;
-    margin: 5px 0;
-    background: #f9f9f9;
-    border-radius: 5px;
-    transition: background 0.3s ease;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .description:hover {
-    background: #f0f0f0;
+    /*background-color: #ddd;*/
+}
+
+.description{
+    display: none;
+}
+
+.selected-question.expanded .description{
+    display: block;
+}
+
+.description.expanded ul {
+    display: block;
 }
 
 .description ul {
     list-style: none;
     padding: 0;
-    margin-top: 10px;
+    margin: 10px 0 0;
+    display: none;
+    animation: fadeIn 0.3s ease-in-out forwards;
 }
 
-.description li {
+.description ul li {
+    background-color: #e0e0e0;
+    text-align: center;
     padding: 5px;
-    background: #eee;
+    color: #000;
+    border-radius: 4px;
     margin: 5px 0;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: .5s ease;
 }
 
-.description li:hover {
-    background: #ddd;
+.description ul li:hover{
+    background: #e0e0ef;
 }
 
 .history {
@@ -427,4 +259,14 @@ export function Chat({ onQuestionClick, onSchoolClick }) {
 
 .history li ul li {
     margin-bottom: 5px;
+}
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
