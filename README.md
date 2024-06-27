@@ -1188,3 +1188,149 @@ export function Chat({ onQuestionClick, onSchoolClick }) {
         opacity: 1;
     }
 }
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars, faTimes, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import "./Chat.css";
+
+export function Chat({ onQuestionClick, onSchoolClick }) {
+    const [data, setData] = useState(null);
+    const [showQuestions, setShowQuestions] = useState(false);
+    const [selectedQuestion, setSelectedQuestion] = useState(null);
+    const [expandedQuestions, setExpandedQuestions] = useState({});
+    const [expandedDescriptions, setExpandedDescriptions] = useState({});
+    const [recent, setRecent] = useState([]); // New state for history
+
+    useEffect(() => {
+        fetch('/data.json')
+            .then(response => response.json())
+            .then(data => setData(data))
+            .catch(error => console.error('Error fetching data:', error));
+    }, []);
+
+    if (!data) {
+        return <div>Loading...</div>;
+    }
+
+    const handleQuestionClick = (question) => {
+        setShowQuestions(false);
+        setSelectedQuestion(question);
+        onQuestionClick(question);
+        updateHistory(question); // Update history when a question is clicked
+    };
+
+    const handleSchoolClick = (school) => {
+        onSchoolClick(school);
+    };
+
+    const toggleQuestions = () => {
+        setShowQuestions(!showQuestions);
+    };
+
+    const toggleExpand = (question) => {
+        setExpandedQuestions((prevExpanded) => ({
+            ...prevExpanded,
+            [question]: !prevExpanded[question],
+        }));
+    };
+
+    const toggleExpandDescription = (question, index) => {
+        setExpandedDescriptions((prevExpandedDescriptions) => ({
+            ...prevExpandedDescriptions,
+            [`${question}-${index}`]: !prevExpandedDescriptions[`${question}-${index}`]
+        }));
+    };
+
+    const updateHistory = (question) => {
+        setRecent((prevHistory) => [
+            ...prevHistory,
+            {
+                question,
+                description: data.questionDescriptions[question]
+            }
+        ]);
+    };
+
+    return (
+        <div className="chat-container">
+            <h1>Frequently Inquired Topics</h1>
+            <div className="hamburger-menu" onClick={toggleQuestions}>
+                <FontAwesomeIcon icon={showQuestions ? faTimes : faBars} />
+            </div>
+            <div className={`most-asked-questions ${showQuestions ? 'show' : ''}`}>
+                <h4>Frequently Inquired Topics</h4>
+                <ul>
+                    {data.mostAskedQuestions.map((question, index) => (
+                        <li key={index} onClick={() => handleQuestionClick(question)}>
+                            {question}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+            <div className="selected-questions">
+                {selectedQuestion && (
+                    <div
+                        key={selectedQuestion}
+                        className={`selected-question ${expandedQuestions[selectedQuestion] ? 'expanded' : ''}`}
+                        aria-expanded={expandedQuestions[selectedQuestion]}
+                    >
+                        <div className="question-header">
+                            <h4>{selectedQuestion}</h4>
+                            <FontAwesomeIcon
+                                icon={expandedQuestions[selectedQuestion] ? faChevronUp : faChevronDown}
+                                className="toggle-icon"
+                                onClick={() => toggleExpand(selectedQuestion)}
+                            />
+                        </div>
+                        {expandedQuestions[selectedQuestion] && (
+                            <div className="descriptions active">
+                                {data.questionDescriptions[selectedQuestion].map((desc, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`description ${expandedDescriptions[`${selectedQuestion}-${idx}`] ? 'expanded' : ''}`}
+                                        onClick={() => toggleExpandDescription(selectedQuestion, idx)}
+                                    >
+                                        <p>{desc}</p>
+                                        {expandedDescriptions[`${selectedQuestion}-${idx}`] && (
+                                            <ul>
+                                                {data.schoolNames.map((school, schoolIdx) => (
+                                                    <li key={schoolIdx} onClick={() => handleSchoolClick(school)}>
+                                                        {school}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+            <div className="recent">
+                <h2>Recently</h2>
+                <ul>
+                    {recent.map((item, index) => (
+                        <li key={index}>
+                            <h4>{item.question}</h4>
+                            <ul>
+                                {item.description.map((desc, descIdx) => (
+                                    <li key={descIdx}>{desc}</li>
+                                ))}
+                            </ul>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+}
