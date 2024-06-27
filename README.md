@@ -410,3 +410,95 @@ export function Chat({ onQuestionClick, onSchoolClick }) {
         opacity: 1;
     }
 }
+
+
+
+
+
+
+
+followed by Admission Trends - Easy of Admission - Last 5 year data:-
+Year
+	
+# of Applications Received
+	
+# of Applications Accepted
+
+
+2020-2021
+	
+800
+	
+250
+
+
+2021-2022
+	
+1000
+	
+300
+
+
+2022-2023
+	
+1200
+	
+300
+
+
+2023-2024
+	
+1500
+	
+350
+
+
+2204-2025
+	
+2000 (Forecasted)
+	
+380 (Forecasted)
+the amount of application accepted / # of applications applied
+Success of Appeal Process-
+ 
+Year
+	
+# of Appeals Received
+	
+# of Applications Accepted
+
+
+2020-2021
+	
+20
+	
+4
+
+
+2021-2022
+	
+30
+	
+6
+
+
+2022-2023
+	
+35
+	
+8
+
+
+2023-2024
+	
+40
+	
+10
+
+
+2204-2025
+	
+43 (Forecasted)
+	
+12 (Forecasted)
+ 
