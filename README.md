@@ -328,3 +328,97 @@ export function ChatWindow() {
 }
 
 export default ChatWindow;
+
+
+
+
+
+
+// src/components/Job/Uploading.js
+import React, { useRef, useState } from "react";
+import "./Uploading.css";
+
+function Uploading() {
+  const [file, setFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const handleUpload = () => {
+    if (file) {
+      // Simulate file upload
+      console.log("Uploading file:", file);
+      // Reset file input
+      setFile(null);
+      fileInputRef.current.value = "";
+      alert("File uploaded successfully!");
+    }
+  };
+
+  return (
+    <div className="uploading">
+      <button onClick={handleFileClick} className="upload-button">
+        Select File
+      </button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+      {file && (
+        <div className="file-info">
+          <p>{file.name}</p>
+          <button onClick={handleUpload} className="upload-button">
+            Upload
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Uploading;
+
+
+
+
+
+/* src/components/Job/Uploading.css */
+
+.uploading {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.upload-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.upload-button:active {
+  transform: scale(0.95);
+}
+
+.file-info {
+  margin-top: 10px;
+}
