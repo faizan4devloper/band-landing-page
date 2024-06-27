@@ -218,3 +218,39 @@ export function ChatScreen() {
 }
 
 export default ChatScreen;
+
+
+
+
+
+
+
+
+
+Access to XMLHttpRequest at 'https://2amqzrdnuj.execute-api.us-east-1.amazonaws.com/dev' from origin 'https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+
+bundle.js:543 Error during API call: 
+AxiosError
+code
+: 
+"ERR_NETWORK"
+config
+: 
+{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
+message
+: 
+"Network Error"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+stack
+: 
+"AxiosError: Network Error\n    at XMLHttpRequest.handleError (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:100718:14)\n    at Axios.request (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:101156:41)\n    at async handleSend (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:533:26)"
+[[Prototype]]
+: 
+Error
+handleSend	@	bundle.js:543
