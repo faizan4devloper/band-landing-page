@@ -88,3 +88,119 @@ const AppealChart = () => {
 };
 
 export default AppealChart;
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import "./Insights.css";
+import AdmissionChart from "./AdmissionChart";
+import AppealChart from "./AppealChart";
+
+const Insights = ({ selectedSchool }) => {
+  const [popupContent, setPopupContent] = useState(null);
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  const handleExpand = (section) => {
+    setExpandedSection((prevSection) => (prevSection === section ? null : section));
+  };
+
+  const handlePopup = () => {
+    setPopupContent("parentReviews");
+  };
+
+  const closePopup = () => {
+    setPopupContent(null);
+  };
+
+  return (
+    <div className="insights-container">
+      <h3>Insights : {selectedSchool}</h3>
+      {selectedSchool && (
+        <div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("parentReviews")}>
+              <span className="expand-icon">
+                {expandedSection === "parentReviews" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Parent Reviews
+            </h4>
+            {expandedSection === "parentReviews" && (
+              <div className="section-content">
+                <p>Overall Rating - one liner</p>
+                <p onClick={handlePopup}>Review Summary</p>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("admissionTrend")}>
+              <span className="expand-icon">
+                {expandedSection === "admissionTrend" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Admission Trend
+            </h4>
+            {expandedSection === "admissionTrend" && (
+              <div className="section-content">
+                <AdmissionChart />
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("appealTrend")}>
+              <span className="expand-icon">
+                {expandedSection === "appealTrend" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Appeal Trend
+            </h4>
+            {expandedSection === "appealTrend" && (
+              <div className="section-content">
+                <AppealChart />
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("termPlan")}>
+              <span className="expand-icon">
+                {expandedSection === "termPlan" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Term Plan
+            </h4>
+            {expandedSection === "termPlan" && (
+              <div className="section-content">
+                <p onClick={() => setPopupContent("PDF link")}>
+                  PDF link (pop up view)
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {popupContent === "parentReviews" && (
+        <div className="popup">
+          <h4>Parent Review Popup</h4>
+          {/* Add content for parent reviews popup */}
+          <button onClick={closePopup}>Close</button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Insights;
