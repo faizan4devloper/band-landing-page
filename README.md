@@ -617,3 +617,187 @@ export function Insights({ selectedSchool }){
   );
 }
 
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import "./Insights.css";
+import ParentReview from "./ParentReview";
+
+export function Insights({ selectedSchool }) {
+  const [popupContent, setPopupContent] = useState(null);
+  const [expandedSection, setExpandedSection] = useState(null);
+
+  const handleExpand = (section) => {
+    if (expandedSection === section) {
+      setExpandedSection(null);
+    } else {
+      setExpandedSection(section);
+    }
+  };
+
+  const handlePopup = () => {
+    setPopupContent("parentReviews");
+  };
+
+  const closePopup = () => {
+    setPopupContent(null);
+  };
+
+  const admissionsData = [
+    { year: '2020-2021', applicationsReceived: 800, applicationsAccepted: 250 },
+    { year: '2021-2022', applicationsReceived: 1000, applicationsAccepted: 300 },
+    { year: '2022-2023', applicationsReceived: 1200, applicationsAccepted: 300 },
+    { year: '2023-2024', applicationsReceived: 1500, applicationsAccepted: 350 },
+    { year: '2024-2025', applicationsReceived: 2000, applicationsAccepted: 380 },
+  ];
+
+  const appealsData = [
+    { year: '2020-2021', appealsReceived: 20, appealsAccepted: 4 },
+    { year: '2021-2022', appealsReceived: 30, appealsAccepted: 6 },
+    { year: '2022-2023', appealsReceived: 35, appealsAccepted: 8 },
+    { year: '2023-2024', appealsReceived: 40, appealsAccepted: 10 },
+    { year: '2024-2025', appealsReceived: 43, appealsAccepted: 12 },
+  ];
+
+  return (
+    <div className="insights-container">
+      <h3>Insights : {selectedSchool}</h3>
+      {selectedSchool && (
+        <div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("parentReviews")}>
+              <span className="expand-icon">
+                {expandedSection === "parentReviews" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Parent Reviews
+            </h4>
+            {expandedSection === "parentReviews" && (
+              <div className="section-content">
+                <p>Overall Rating - one liner</p>
+                <p onClick={handlePopup}>Review Summary</p>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("ofstedRating")}>
+              <span className="expand-icon">
+                {expandedSection === "ofstedRating" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Ofsted Rating
+            </h4>
+            {expandedSection === "ofstedRating" && (
+              <div className="section-content">
+                <textarea
+                  placeholder="Enter Ofsted Rating here..."
+                  rows={5}
+                ></textarea>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("admissionTrend")}>
+              <span className="expand-icon">
+                {expandedSection === "admissionTrend" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Admission Trend
+            </h4>
+            {expandedSection === "admissionTrend" && (
+              <div className="section-content">
+                <p>Admissions: Enter admissions details here...</p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={admissionsData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="year" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="applicationsReceived" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="applicationsAccepted" stroke="#82ca9d" />
+                  </LineChart>
+                </ResponsiveContainer>
+                <p>Appeals: Enter appeals details here...</p>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={appealsData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="year" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="appealsReceived" stroke="#8884d8" />
+                    <Line type="monotone" dataKey="appealsAccepted" stroke="#82ca9d" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("termPlan")}>
+              <span className="expand-icon">
+                {expandedSection === "termPlan" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Term Plan
+            </h4>
+            {expandedSection === "termPlan" && (
+              <div className="section-content">
+                <p onClick={() => handlePopup("PDF link")}>
+                  PDF link (pop up view)
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {popupContent === "parentReviews" && (
+        <ParentReview closePopup={closePopup} />
+      )}
+    </div>
+  );
+}
+
+
+
+.insights-container {
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section h4 {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.expand-icon {
+  margin-right: 10px;
+}
+
+.section-content {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.line-chart-container {
+  margin-top: 20px;
+}
