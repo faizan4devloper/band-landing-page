@@ -801,3 +801,124 @@ export function Insights({ selectedSchool }) {
 .line-chart-container {
   margin-top: 20px;
 }
+
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import "./Insights.css";
+import ParentReview from "./ParentReview";
+import AdmissionChart from "./AdmissionChart";
+import AppealChart from "./AppealChart";
+
+export function Insights({ selectedSchool }) {
+  const [popupContent, setPopupContent] = useState(null);
+  const [expandedSection, setExpandedSection] = useState(null);
+  const [admissionsChartVisible, setAdmissionsChartVisible] = useState(false);
+  const [appealsChartVisible, setAppealsChartVisible] = useState(false);
+
+  const handleExpand = (section) => {
+    if (section === "admissionTrend") {
+      setAdmissionsChartVisible(true);
+      setAppealsChartVisible(false);
+    } else if (section === "appealTrend") {
+      setAppealsChartVisible(true);
+      setAdmissionsChartVisible(false);
+    }
+    setExpandedSection(section);
+  };
+
+  const handlePopup = () => {
+    setPopupContent("parentReviews");
+  };
+
+  const closePopup = () => {
+    setPopupContent(null);
+  };
+
+  return (
+    <div className="insights-container">
+      <h3>Insights : {selectedSchool}</h3>
+      {selectedSchool && (
+        <div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("parentReviews")}>
+              <span className="expand-icon">
+                {expandedSection === "parentReviews" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Parent Reviews
+            </h4>
+            {expandedSection === "parentReviews" && (
+              <div className="section-content">
+                <p>Overall Rating - one liner</p>
+                <p onClick={handlePopup}>Review Summary</p>
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("admissionTrend")}>
+              <span className="expand-icon">
+                {expandedSection === "admissionTrend" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Admission Trend
+            </h4>
+            {expandedSection === "admissionTrend" && (
+              <div className="section-content">
+                <AdmissionChart />
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("appealTrend")}>
+              <span className="expand-icon">
+                {expandedSection === "appealTrend" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Appeal Trend
+            </h4>
+            {expandedSection === "appealTrend" && (
+              <div className="section-content">
+                <AppealChart />
+              </div>
+            )}
+          </div>
+          <div className="section">
+            <h4 onClick={() => handleExpand("termPlan")}>
+              <span className="expand-icon">
+                {expandedSection === "termPlan" ? (
+                  <FontAwesomeIcon icon={faAngleRight} />
+                ) : (
+                  <FontAwesomeIcon icon={faAngleDown} />
+                )}
+              </span>
+              Term Plan
+            </h4>
+            {expandedSection === "termPlan" && (
+              <div className="section-content">
+                <p onClick={() => handlePopup("PDF link")}>
+                  PDF link (pop up view)
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {popupContent === "parentReviews" && (
+        <ParentReview closePopup={closePopup} />
+      )}
+    </div>
+  );
+}
