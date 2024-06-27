@@ -254,3 +254,40 @@ stack
 : 
 Error
 handleSend	@	bundle.js:543
+
+
+
+
+
+
+const handleSend = async () => {
+    if (userInput.trim()) {
+        const newMessage = { sender: "user", text: userInput };
+        setMessages([...messages, newMessage]);
+        setUserInput("");
+
+        if (!conversationStarted) {
+            setConversationStarted(true);
+        }
+
+        try {
+            const response = await axios.post("https://2amqzrdnuj.execute-api.us-east-1.amazonaws.com/dev/chat", {
+                sender: "user",
+                text: userInput,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const botMessage = { sender: "bot", text: response.data.reply };
+            setMessages((prevMessages) => [...prevMessages, botMessage]);
+        } catch (error) {
+            console.error("Error during API call:", error);
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { sender: "bot", text: "Error: Unable to send message" },
+            ]);
+        }
+    }
+};
