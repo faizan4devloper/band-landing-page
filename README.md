@@ -204,3 +204,127 @@ export default ChatWindow;
   cursor: not-allowed;
 }
 
+
+
+
+
+// src/components/Job/Uploading.js
+import React, { useRef } from "react";
+import "./Uploading.css";
+
+function Uploading() {
+  const fileInputRef = useRef(null);
+
+  const handleFileClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Add your file upload logic here
+      console.log("File selected:", file);
+      // Perform upload logic here
+    }
+  };
+
+  return (
+    <div className="uploading">
+      <button onClick={handleFileClick}>
+        Upload
+      </button>
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+    </div>
+  );
+}
+
+export default Uploading;
+
+
+
+/* src/components/Job/Uploading.css */
+
+.uploading {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.uploading button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.uploading button:hover {
+  background-color: #0056b3;
+}
+
+
+
+// src/components/Job/ChatWindow.js
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import Uploading from "./Uploading";
+import "./ChatWindow.css";
+
+export function ChatWindow() {
+  const [messages, setMessages] = useState([]);
+  const [conversationStarted, setConversationStarted] = useState(false);
+  const [userInput, setUserInput] = useState("");
+
+  const handleSend = () => {
+    if (userInput.trim()) {
+      const newMessage = { sender: "user", text: userInput };
+      setMessages([...messages, newMessage]);
+      setUserInput("");
+      if (!conversationStarted) {
+        setConversationStarted(true);
+      }
+      // Simulate bot response
+      setTimeout(() => {
+        const botMessage = { sender: "bot", text: "This is a bot response." };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+      }, 1000);
+    }
+  };
+
+  return (
+    <div className="chat-window">
+      <div className="chat-content">
+        <h3>Live Conversation</h3>
+        <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
+          {messages.map((message, index) => (
+            <div key={index} className={`chat-message ${message.sender}`}>
+              {message.text}
+            </div>
+          ))}
+        </div>
+        <div className="chat-input">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type a message..."
+          />
+          <button onClick={handleSend}>
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </button>
+        </div>
+      </div>
+      <Uploading />
+    </div>
+  );
+}
+
+export default ChatWindow;
