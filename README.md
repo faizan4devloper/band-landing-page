@@ -1,345 +1,3 @@
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import "./ChatScreen.css";
-
-export function ChatScreen() {
-  const [messages, setMessages] = useState([]);
-  const [conversationStarted, setConversationStarted] = useState(false);
-  const [userInput, setUserInput] = useState("");
-
-  const handleSend = async () => {
-    if (userInput.trim()) {
-      const newMessage = { sender: "user", text: userInput };
-      setMessages([...messages, newMessage]);
-      setUserInput("");
-
-      if (!conversationStarted) {
-        setConversationStarted(true);
-      }
-
-      // Send the user message to the API
-      try {
-        const response = await fetch("https://api.example.com/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message: userInput }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          const botMessage = { sender: "bot", text: data.reply };
-          setMessages((prevMessages) => [...prevMessages, botMessage]);
-        } else {
-          const errorMessage = { sender: "bot", text: "Failed to fetch response from the server." };
-          setMessages((prevMessages) => [...prevMessages, errorMessage]);
-        }
-      } catch (error) {
-        const errorMessage = { sender: "bot", text: "An error occurred while fetching the response." };
-        setMessages((prevMessages) => [...prevMessages, errorMessage]);
-      }
-    }
-  };
-
-  return (
-    <div className="upload-container">
-      <div className="chat-content">
-        <h3>Live Conversation</h3>
-        <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
-          {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.sender}`}>
-              {message.text}
-            </div>
-          ))}
-        </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type a message..."
-          />
-          <button onClick={handleSend}>
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-
-
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
-import "./ChatScreen.css";
-
-export function ChatScreen() {
-  const [messages, setMessages] = useState([]);
-  const [conversationStarted, setConversationStarted] = useState(false);
-  const [userInput, setUserInput] = useState("");
-
-  const handleSend = async () => {
-    if (userInput.trim()) {
-      const newMessage = { sender: "user", text: userInput };
-      setMessages([...messages, newMessage]);
-      setUserInput("");
-
-      if (!conversationStarted) {
-        setConversationStarted(true);
-      }
-
-      // Send the user message to the API
-      try {
-        const response = await axios.post("https://your-api-endpoint.com/chat", {
-          message: userInput,
-        });
-
-        const botMessage = { sender: "bot", text: response.data.reply };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      } catch (error) {
-        console.error("Error during API call:", error);
-        const errorMessage = { sender: "bot", text: `Error: ${error.message}` };
-        setMessages((prevMessages) => [...prevMessages, errorMessage]);
-      }
-    }
-  };
-
-  return (
-    <div className="upload-container">
-      <div className="chat-content">
-        <h3>Live Conversation</h3>
-        <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
-          {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.sender}`}>
-              {message.text}
-            </div>
-          ))}
-        </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type a message..."
-          />
-          <button onClick={handleSend}>
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default ChatScreen;
-
-
-
-
-
-
-
-
-
-
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
-import "./ChatScreen.css";
-
-export function ChatScreen() {
-  const [messages, setMessages] = useState([]);
-  const [conversationStarted, setConversationStarted] = useState(false);
-  const [userInput, setUserInput] = useState("");
-
-  const handleSend = async () => {
-    if (userInput.trim()) {
-      const newMessage = { sender: "user", text: userInput };
-      setMessages([...messages, newMessage]);
-      setUserInput("");
-
-      if (!conversationStarted) {
-        setConversationStarted(true);
-      }
-
-      try {
-        const response = await axios.post("https://your-api-endpoint.com/chat", {
-          sender: "user",
-          text: userInput,
-        });
-
-        const botMessage = { sender: "bot", text: response.data.reply };
-        setMessages((prevMessages) => [...prevMessages, botMessage]);
-      } catch (error) {
-        console.error("Error during API call:", error);
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { sender: "bot", text: "Error: Unable to send message" },
-        ]);
-      }
-    }
-  };
-
-  return (
-    <div className="upload-container">
-      <div className="chat-content">
-        <h3>Live Conversation</h3>
-        <div className={`chat-messages ${conversationStarted ? "show" : ""}`}>
-          {messages.map((message, index) => (
-            <div key={index} className={`chat-message ${message.sender}`}>
-              {message.text}
-            </div>
-          ))}
-        </div>
-        <div className="chat-input">
-          <input
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Type a message..."
-          />
-          <button onClick={handleSend}>
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default ChatScreen;
-
-
-
-
-
-
-
-
-
-Access to XMLHttpRequest at 'https://2amqzrdnuj.execute-api.us-east-1.amazonaws.com/dev' from origin 'https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-
-
-bundle.js:543 Error during API call: 
-AxiosError
-code
-: 
-"ERR_NETWORK"
-config
-: 
-{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
-message
-: 
-"Network Error"
-name
-: 
-"AxiosError"
-request
-: 
-XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
-stack
-: 
-"AxiosError: Network Error\n    at XMLHttpRequest.handleError (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:100718:14)\n    at Axios.request (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:101156:41)\n    at async handleSend (https://dba5e942a9954438ac0fc085398a7f3f.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:533:26)"
-[[Prototype]]
-: 
-Error
-handleSend	@	bundle.js:543
-
-
-
-
-
-
-const handleSend = async () => {
-    if (userInput.trim()) {
-        const newMessage = { sender: "user", text: userInput };
-        setMessages([...messages, newMessage]);
-        setUserInput("");
-
-        if (!conversationStarted) {
-            setConversationStarted(true);
-        }
-
-        try {
-            const response = await axios.post("https://2amqzrdnuj.execute-api.us-east-1.amazonaws.com/dev/chat", {
-                sender: "user",
-                text: userInput,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const botMessage = { sender: "bot", text: response.data.reply };
-            setMessages((prevMessages) => [...prevMessages, botMessage]);
-        } catch (error) {
-            console.error("Error during API call:", error);
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { sender: "bot", text: "Error: Unable to send message" },
-            ]);
-        }
-    }
-};
-
-
-
-import React, { useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import "./ChatScreen.css";
-
-export function ChatScreen() {
-    const [messages, setMessages] = useState([]);
-    const [conversationStarted, setConversationStarted] = useState(false);
-    const [userInput, setUserInput] = useState("");
-
-    const handleSend = async () => {
-        if (userInput.trim()) {
-            const newMessage = { sender: "user", text: userInput };
-            setMessages([...messages, newMessage]);
-            setUserInput("");
-
-            if (!conversationStarted) {
-                setConversationStarted(true);
-            }
-
-            try {
-                const response = await axios.post("https://2amqzrdnuj.execute-api.us-east-1.amazonaws.com/dev", {
-                    sender: "user",
-                    text: userInput,
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                // Simulate a bot response using the response from the mock API
-                const botMessage = { sender: "bot", text: "This is a bot response to: " + response.data.text };
-                setMessages((prevMessages) => [...prevMessages, botMessage]);
-            } catch (error) {
-                console.error("Error during API call:", error);
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Error: Unable to send message" },
-                ]);
-            }
-        }
-    };
-
-    return (
-        <div className="upload-container">
             <div className="chat-content">
                 <h3>Live Conversation</h3>
                 <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
@@ -362,93 +20,138 @@ export function ChatScreen() {
                     </button>
                 </div>
             </div>
-        </div>
-    );
+
+
+
+.upload-container{
+  background-color: rgba(0, 0, 0, 0.5);
+  margin:80px 0 0 10px;
+  border-radius: 10px;
+  width:300px;
 }
 
-export default ChatScreen;
+.upload-container h3{
+    text-align: center;
+font-size: 1.5rem;
+  line-height: 1.2;
+  font-weight: 600;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(-19.51%, #7abef7),
+    color-stop(36.51%, #4080f5),
+    to(#572ac2)
+  );
+  background: -webkit-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: -o-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: linear-gradient(
+    90deg,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-transform: inherit !important;}
 
-
-
-
-
-
-
-import React, { useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
-import "./ChatScreen.css";
-
-export function ChatScreen() {
-    const [messages, setMessages] = useState([]);
-    const [conversationStarted, setConversationStarted] = useState(false);
-    const [userInput, setUserInput] = useState("");
-
-    const handleSend = async () => {
-        if (userInput.trim()) {
-            const newMessage = { sender: "user", text: userInput };
-            setMessages([...messages, newMessage]);
-            setUserInput("");
-
-            if (!conversationStarted) {
-                setConversationStarted(true);
-            }
-
-            try {
-                const response = await axios.post(
-                    "https://jsonplaceholder.typicode.com/posts",
-                    {
-                        sender: "user",
-                        text: userInput,
-                    },
-                    {
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    }
-                );
-
-                // Extract the appropriate data from the response
-                const botMessageText = response.data.text || "This is a bot response.";
-                const botMessage = { sender: "bot", text: botMessageText };
-                setMessages((prevMessages) => [...prevMessages, botMessage]);
-            } catch (error) {
-                console.error("Error during API call:", error);
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { sender: "bot", text: "Error: Unable to send message" },
-                ]);
-            }
-        }
-    };
-
-    return (
-        <div className="upload-container">
-            <div className="chat-content">
-                <h3>Live Conversation</h3>
-                <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
-                    {messages.map((message, index) => (
-                        <div key={index} className={`chat-message ${message.sender}`}>
-                            {message.text}
-                        </div>
-                    ))}
-                </div>
-                <div className="chat-input">
-                    <input
-                        type="text"
-                        value={userInput}
-                        onChange={(e) => setUserInput(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                        placeholder="Type a message..."
-                    />
-                    <button onClick={handleSend}>
-                        <FontAwesomeIcon icon={faPaperPlane} />
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
+h3 {
+    text-align: center;
+    margin: 12px 0;
+    color: #fff;
 }
 
-export default ChatScreen;
+.chat-content{
+  /*display: column;*/
+  /*margin-top: 30px;*/
+}
+
+.chat-messages {
+    flex: 1;
+    /*height: 250px;*/
+    max-height: 250px;
+    opacity: 0;
+    padding: 10px;
+    margin: 60px 20px;
+    border-radius: 5px;
+    overflow-y: auto;
+    background-color: #f9f9f9;
+    transition: opactiy 0.5s ease;
+}
+
+
+
+.chat-messages.show{
+    opacity: 1;
+}
+
+.chat-message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.chat-message.user {
+    background: linear-gradient(90deg, #1f77f6 0%, #6f36cd 100%);
+    font-size: 12px;
+    color: #fff;
+    text-align: right;
+}
+
+.chat-message.bot {
+    background-color: #808184;
+        font-size: 12px;
+    text-align: left;
+    color: #fff;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    margin: 20px;
+    border-radius: 5px;
+    border-top: 1px solid #ccc;
+    background-color: #fff;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.chat-input button {
+    margin-left: 10px;
+    padding: 10px 10px;
+    border: none;
+    border-radius: 24px;
+    background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.chat-input button:hover {
+    background-color: #0056b3;
+}
