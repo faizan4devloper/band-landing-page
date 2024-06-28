@@ -116,3 +116,73 @@ export default Uploading;
 .content ul li {
   margin-bottom: 8px;
 }
+
+
+
+
+
+
+
+{
+  "mostAskedQuestions": [
+    "School Transfers",
+    "School Placements",
+    "Teaching Methodology",
+    "SEN/Disability",
+    "Enrichment & Extra Curr.",
+    "Transportation"
+  ],
+  "questionDescriptions": {
+    "School Transfers": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ],
+    "School Placements": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ],
+    "Teaching Methodology": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ],
+    "SEN/Disability": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ],
+    "Enrichment & Extra Curr.": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ],
+    "Transportation": [
+      "Can you help me with Local Authority school in this region along with Parent rating?",
+      "What are the admission criteria for the schools in this area? How do they prioritize applications?",
+      "What are the average class sizes and student-teacher ratios in the local schools?",
+      "What is the academic performance of the schools in this area, as measured by exam results, Ofsted ratings, and other relevant metrics?",
+      "What extracurricular activities and clubs are available at the local schools? Are there any specialized programs or facilities?"
+    ]
+  },
+  "schoolNames": ["Cayley", "Mayflower", "Virginia"]
+}
+
+
+
+
+{"text":["Based on the comparison between the current job/industry requirements for a Data Scientist and your current skillset, I suggest you focus on developing the following key skills to bridge the gap and increase your chances of getting the desired job in the current job market:"],
+"MachLearning and Artificial Intelligence":["Expand your knowledge and expertise in advanced machine learning techniques such as deep learning, reinforcement learning, and natural language processing. This will be crucial for developing intelligent systems and models."],
+"Big Data Technologies":["Enhance your proficiency in big data frameworks and tools like Hadoop, Spark, and Kafka. This will enable you to handle and process large-scale, complex data efficiently."]
+}
