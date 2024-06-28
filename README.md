@@ -186,3 +186,60 @@ export default Uploading;
 "MachLearning and Artificial Intelligence":["Expand your knowledge and expertise in advanced machine learning techniques such as deep learning, reinforcement learning, and natural language processing. This will be crucial for developing intelligent systems and models."],
 "Big Data Technologies":["Enhance your proficiency in big data frameworks and tools like Hadoop, Spark, and Kafka. This will enable you to handle and process large-scale, complex data efficiently."]
 }
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import "./Uploading.css";
+
+function Uploading() {
+  const [expanded, setExpanded] = useState(false);
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    axios.get('/path/to/your/data.json')
+      .then(response => setData(response.data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <div className="uploading-section">
+      <h3>Skill Improvement and Suggestions</h3>
+      <div className="toggle-button" onClick={toggleExpand}>
+        <span>{expanded ? "Hide Details" : "Show Details"}</span>
+        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
+      </div>
+      {expanded && (
+        <div className="content">
+          {data.text.map((item, index) => (
+            <p key={index}>{item}</p>
+          ))}
+          {Object.keys(data).filter(key => key !== 'text').map((key, index) => (
+            <div key={index}>
+              <h4>{key}</h4>
+              {data[key].map((desc, idx) => (
+                <p key={idx}>{desc}</p>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Uploading;
