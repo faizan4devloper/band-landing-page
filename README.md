@@ -243,3 +243,50 @@ function Uploading() {
 }
 
 export default Uploading;
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import data from "./data.json";  // Import your JSON data
+import "./Uploading.css";
+
+function Uploading() {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <div className="uploading-section">
+      <h3>Skill Improvement and Suggestions</h3>
+      <div className="toggle-button" onClick={toggleExpand}>
+        <span>{expanded ? "Hide Details" : "Show Details"}</span>
+        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
+      </div>
+      {expanded && (
+        <div className="content">
+          {data.text.map((item, index) => (
+            <p key={index}>{item}</p>
+          ))}
+          {Object.keys(data).filter(key => key !== 'text').map((key, index) => (
+            <div key={index}>
+              <h4>{key}</h4>
+              {data[key].map((desc, idx) => (
+                <p key={idx}>{desc}</p>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Uploading;
