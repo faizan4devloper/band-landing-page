@@ -174,3 +174,80 @@ function JobMatching({ jobMatches }) {
 
 export default JobMatching;
 
+
+
+
+
+
+
+
+
+
+import React from "react";
+import "./JobMatching.css";
+
+function JobMatching({ jobMatches }) {
+  const jobMatchesArray = typeof jobMatches === 'string' ? jobMatches.split("\n") : [];
+
+  return (
+    <div className="preview">
+      <h3>Job Recommendations</h3>
+      {jobMatchesArray.length > 0 ? (
+        <ul>
+          {jobMatchesArray.map((jobMatch, index) => (
+            <li key={index}>{jobMatch}</li>
+          ))}
+        </ul>
+      ) : (
+        <p>No job matches available.</p>
+      )}
+    </div>
+  );
+}
+
+export default JobMatching;
+
+
+
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import "./Skills.css";
+
+function Skills({ suggestions }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  const suggestionsArray = typeof suggestions === 'string' ? suggestions.split("\n") : [];
+
+  return (
+    <div className="uploading-section">
+      <h3>Skill Improvement and Suggestions</h3>
+      <div className="toggle-button" onClick={toggleExpand}>
+        <span>{expanded ? "Hide Details" : "Show Details"}</span>
+        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
+      </div>
+      {expanded && (
+        <div className="content">
+          <ul>
+            {suggestionsArray.length > 0 ? (
+              suggestionsArray.map((suggestion, index) => (
+                <li key={index}>{suggestion}</li>
+              ))
+            ) : (
+              <p>No suggestions available.</p>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Skills;
