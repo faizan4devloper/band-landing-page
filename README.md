@@ -22,6 +22,9 @@ export default JobAdvisor;
 
 
 
+TypeError: jobMatches.split is not a function
+
+
 
 
 import React, { useState } from "react";
