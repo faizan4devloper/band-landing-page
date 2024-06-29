@@ -84,3 +84,54 @@ export function ChatWindow() {
 }
 
 export default ChatWindow;
+
+
+
+
+
+import React from "react";
+import "./JobMatching.css";
+
+function JobMatching({ jobMatches }) {
+  return (
+    <div className="preview">
+      <h3>Job Recommendations</h3>
+      {jobMatches && <p>{jobMatches}</p>}
+    </div>
+  );
+}
+
+export default JobMatching;
+
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import "./Skills.css";
+
+function Skills({ suggestions }) {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = ({skillSuggestions}) => {
+    setExpanded(!expanded);
+  };
+
+  return (
+    <div className="uploading-section">
+      <h3>Skill Improvement and Suggestions</h3>
+      <div className="toggle-button" onClick={toggleExpand}>
+        <span>{expanded ? "Hide Details" : "Show Details"}</span>
+        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
+      </div>
+      {expanded && suggestions && (
+        <div className="content">
+          <p>{suggestions}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Skills;
