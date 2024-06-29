@@ -1,43 +1,18 @@
 import React, { useState } from "react";
-import Skills from "./Skills";
-import ChatWindow from "./ChatWindow";
-import JobMatching from "./JobMatching";
-// import "./JobAdvisor.css";
-
-function JobAdvisor() {
-  const [skillSuggestions, setSkillSuggestions] = useState("");
-  const [jobMatches, setJobMatches] = useState("");
-
-  return (
-    <div className="job-advisor">
-      <ChatWindow setSkillSuggestions={setSkillSuggestions} setJobMatches={setJobMatches} />
-      <Skills suggestions={skillSuggestions} />
-      <JobMatching jobMatches={jobMatches} />
-    </div>
-  );
-}
-
-export default JobAdvisor;
-
-
-
-
-TypeError: jobMatches.split is not a function
-
-
-
-
-import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperPlane, faUser, faRobot } from "@fortawesome/free-solid-svg-icons";
 import UploadDoc from "./UploadDoc";
+import Skills from "./Skills";
+import JobMatching from "./JobMatching";
 import axios from "axios";
 import "./ChatWindow.css";
 
-export function ChatWindow({ setSkillSuggestions, setJobMatches }) {
+export function ChatWindow() {
   const [messages, setMessages] = useState([]);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [userInput, setUserInput] = useState("");
+  const [skillSuggestions, setSkillSuggestions] = useState("");
+  const [jobMatches, setJobMatches] = useState("");
 
   const handleSend = async () => {
     if (userInput.trim()) {
@@ -101,153 +76,11 @@ export function ChatWindow({ setSkillSuggestions, setJobMatches }) {
           </button>
         </div>
       </div>
+      <Skills suggestions={skillSuggestions} />
+      <JobMatching jobMatches={jobMatches} />
       <UploadDoc />
     </div>
   );
 }
 
 export default ChatWindow;
-
-
-
-
-
-
-
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import "./Skills.css";
-
-function Skills({ suggestions }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpand = () => {
-    setExpanded(!expanded);
-  };
-
-  return (
-    <div className="uploading-section">
-      <h3>Skill Improvement and Suggestions</h3>
-      <div className="toggle-button" onClick={toggleExpand}>
-        <span>{expanded ? "Hide Details" : "Show Details"}</span>
-        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
-      </div>
-      {expanded && (
-        <div className="content">
-          <ul>
-            {suggestions.split("\n").map((suggestion, index) => (
-              <li key={index}>{suggestion}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default Skills;
-
-
-
-
-
-
-
-import React from "react";
-import "./JobMatching.css";
-
-function JobMatching({ jobMatches }) {
-  return (
-    <div className="preview">
-      <h3>Job Recommendations</h3>
-      {jobMatches && (
-        <ul>
-          {jobMatches.split("\n").map((jobMatch, index) => (
-            <li key={index}>{jobMatch}</li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
-
-export default JobMatching;
-
-
-
-
-
-
-
-
-
-
-import React from "react";
-import "./JobMatching.css";
-
-function JobMatching({ jobMatches }) {
-  const jobMatchesArray = typeof jobMatches === 'string' ? jobMatches.split("\n") : [];
-
-  return (
-    <div className="preview">
-      <h3>Job Recommendations</h3>
-      {jobMatchesArray.length > 0 ? (
-        <ul>
-          {jobMatchesArray.map((jobMatch, index) => (
-            <li key={index}>{jobMatch}</li>
-          ))}
-        </ul>
-      ) : (
-        <p>No job matches available.</p>
-      )}
-    </div>
-  );
-}
-
-export default JobMatching;
-
-
-
-
-
-
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import "./Skills.css";
-
-function Skills({ suggestions }) {
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpand = () => {
-    setExpanded(!expanded);
-  };
-
-  const suggestionsArray = typeof suggestions === 'string' ? suggestions.split("\n") : [];
-
-  return (
-    <div className="uploading-section">
-      <h3>Skill Improvement and Suggestions</h3>
-      <div className="toggle-button" onClick={toggleExpand}>
-        <span>{expanded ? "Hide Details" : "Show Details"}</span>
-        <FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} />
-      </div>
-      {expanded && (
-        <div className="content">
-          <ul>
-            {suggestionsArray.length > 0 ? (
-              suggestionsArray.map((suggestion, index) => (
-                <li key={index}>{suggestion}</li>
-              ))
-            ) : (
-              <p>No suggestions available.</p>
-            )}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default Skills;
