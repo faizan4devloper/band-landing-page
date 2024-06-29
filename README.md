@@ -1,60 +1,106 @@
-import React from "react";
-import "./JobMatching.css";
+import React, { useState } from "react";
+import HealthChat from "./HealthChat";
+import GraphicalInsight from "./GraphicalInsight";
+import Details from "./Details"
 
-function JobMatching({ jobMatches }) {
+function HealthAdvisor() {
+  
+    const [graphData, setGraphData] = useState("");
+  const [gpDetails, setGpDetails] = useState("");
+
+  const onHealthChatResponse = (response) => {
+    setGraphData(response.graph_data);
+    setGpDetails(response.gp_details);
+  };
+  
+
   return (
-    <div className="preview">
-      <h3>Job Recommendations</h3>
-      {jobMatches && (
-        <div className="job-list">
-          {jobMatches.map((job, index) => (
-            <p key={index}>
-              <a href={job.link} className="job-link" target="_blank" rel="noopener noreferrer">
-                {job.title}
-              </a>
-            </p>
-          ))}
-        </div>
-      )}
+    <div className="health-advisor">
+        <HealthChat onHealthChatResponse={onHealthChatResponse}/>
+        <GraphicalInsight graph={graphData}/>
+        <Details details={gpDetails}/>
     </div>
   );
 }
 
-export default JobMatching;
+export default HealthAdvisor;
 
 
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faUser, faRobot } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import "./HealthChat.css";
 
+export function HealthChat({ onHealthChatResponse }) {
+  const [messages, setMessages] = useState([]);
+  const [conversationStarted, setConversationStarted] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
+  const handleSend = async () => {
+    if (userInput.trim()) {
+      const newMessage = { sender: "user", text: userInput };
+      setMessages([...messages, newMessage]);
+      setUserInput("");
 
+      if (!conversationStarted) {
+        setConversationStarted(true);
+      }
 
-.preview {
-  background-color: rgba(0, 0, 0, 0.5);
-  margin: 80px 0 0 10px;
-  border-radius: 10px;
-  width: 300px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease-in-out;
+      try {
+        const response = await axios.post("https://vl6hme4evj.execute-api.us-east-1.amazonaws.com/dev/", {
+          // type: "both",
+          query: newMessage.text
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log(response);
+        const botMessage = { sender: "bot", text: "This is a bot response to: " + response.data.query_response };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+        // Pass the response data to the parent component
+        onHealthChatResponse(response.data);
+
+      } catch (error) {
+        console.error("Error during API call:", error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "bot", text: "Error: Unable to send message" },
+        ]);
+      }
+    }
+  };
+
+  return (
+    <div className="chat-window">
+      <div className="chat-content">
+        <h3>Live Conversation</h3>
+        <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
+          {messages.map((message, index) => (
+            <div key={index} className={`chat-message ${message.sender}`}>
+              <FontAwesomeIcon icon={message.sender === 'user' ? faUser : faRobot} />
+              {message.text}
+            </div>
+          ))}
+        </div>
+        <div className="chat-input">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type a message..."
+          />
+          <button onClick={handleSend}>
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-.preview h3 {
-  color: #1f77f6;
-}
-
-.preview .job-list {
-  margin-top: 10px;
-}
-
-.preview .job-list p {
-  padding: 8px 0;
-}
-
-.preview .job-list .job-link {
-  color: #fff;
-  text-decoration: none;
-  font-size: 14px;
-}
-
-.preview .job-list .job-link:hover {
-  text-decoration: underline;
-}
+export default HealthChat;
