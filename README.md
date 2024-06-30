@@ -88,3 +88,102 @@ export function ChatScreen() {
 }
 
 export default ChatScreen;
+
+
+
+
+
+
+
+
+
+/* ChatScreen.css */
+
+.upload-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+.chat-content {
+    width: 100%;
+    max-width: 500px;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+h3 {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    margin: 0;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-message {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+}
+
+.user {
+    justify-content: flex-end;
+}
+
+.bot {
+    justify-content: flex-start;
+}
+
+.user-icon {
+    margin-right: 10px;
+}
+
+.chat-message span a {
+    color: #007bff;
+    text-decoration: none;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.chat-input {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.chat-input button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.chat-input button:hover {
+    background-color: #0056b3;
+}
