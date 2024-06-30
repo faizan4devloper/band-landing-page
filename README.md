@@ -1,29 +1,29 @@
 import React, { useState } from "react";
 import HealthChat from "./HealthChat";
 import GraphicalInsight from "./GraphicalInsight";
-import Details from "./Details"
+import Details from "./Details";
 
 function HealthAdvisor() {
-  
-    const [graphData, setGraphData] = useState("");
+  const [graphData, setGraphData] = useState("");
   const [gpDetails, setGpDetails] = useState("");
 
   const onHealthChatResponse = (response) => {
+    console.log("HealthChat Response:", response);
     setGraphData(response.graph_data);
     setGpDetails(response.gp_details);
   };
-  
 
   return (
     <div className="health-advisor">
-        <HealthChat onHealthChatResponse={onHealthChatResponse}/>
-        <GraphicalInsight graph={graphData}/>
-        <Details details={gpDetails}/>
+      <HealthChat onHealthChatResponse={onHealthChatResponse} />
+      <GraphicalInsight graph={graphData} />
+      <Details details={gpDetails} />
     </div>
   );
 }
 
 export default HealthAdvisor;
+
 
 
 import React, { useState } from "react";
@@ -32,7 +32,7 @@ import { faPaperPlane, faUser, faRobot } from "@fortawesome/free-solid-svg-icons
 import axios from "axios";
 import "./HealthChat.css";
 
-export function HealthChat({ onHealthChatResponse }) {
+function HealthChat({ onHealthChatResponse }) {
   const [messages, setMessages] = useState([]);
   const [conversationStarted, setConversationStarted] = useState(false);
   const [userInput, setUserInput] = useState("");
@@ -49,7 +49,6 @@ export function HealthChat({ onHealthChatResponse }) {
 
       try {
         const response = await axios.post("https://vl6hme4evj.execute-api.us-east-1.amazonaws.com/dev/", {
-          // type: "both",
           query: newMessage.text
         }, {
           headers: {
@@ -57,11 +56,10 @@ export function HealthChat({ onHealthChatResponse }) {
           }
         });
 
-        console.log(response);
+        console.log("API Response:", response.data);
         const botMessage = { sender: "bot", text: "This is a bot response to: " + response.data.query_response };
         setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-        // Pass the response data to the parent component
         onHealthChatResponse(response.data);
 
       } catch (error) {
@@ -104,3 +102,39 @@ export function HealthChat({ onHealthChatResponse }) {
 }
 
 export default HealthChat;
+
+
+
+
+import React from "react";
+
+function GraphicalInsight({ graph }) {
+  console.log("GraphicalInsight Props:", graph);
+  return (
+    <div className="graphical-insight">
+      <h3>Graphical Insight</h3>
+      {graph ? <div>{/* Render your graph here using the graph data */}</div> : <p>No data available</p>}
+    </div>
+  );
+}
+
+export default GraphicalInsight;
+
+
+
+
+
+
+import React from "react";
+
+function Details({ details }) {
+  console.log("Details Props:", details);
+  return (
+    <div className="details">
+      <h3>Details</h3>
+      {details ? <div>{/* Render your details here using the details data */}</div> : <p>No data available</p>}
+    </div>
+  );
+}
+
+export default Details;
