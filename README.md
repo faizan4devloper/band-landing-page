@@ -373,3 +373,40 @@ const Home = ({ cardsData }) => {
 };
 
 export default Home;
+
+
+
+
+
+
+
+
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Home from "./Home";
+import SideBarPage from "./components/SideBarPage/SideBarPage";
+import { cardsData } from "./data";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import styles from "./App.module.css";
+
+const App = () => {
+  return (
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            <Home cardsData={cardsData} />
+          </Route>
+          <Route path="/dashboard">
+            <SideBarPage />
+          </Route>
+        </Switch>
+        <Footer />
+      </div>
+    </Router>
+  );
+};
+
+export default App;
