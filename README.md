@@ -431,3 +431,32 @@ export default App;
     at createRoutesFromChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42710:47)
     at https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42741:24
     at https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44987:21
+
+
+
+
+    import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import SideBarPage from "./components/SideBarPage/SideBarPage";
+import { cardsData } from "./data";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import styles from "./App.module.css";
+
+const App = () => {
+  return (
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route path="/" element={<Home cardsData={cardsData} />} />
+          <Route path="/dashboard" element={<SideBarPage />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
+  );
+};
+
+export default App;
