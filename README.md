@@ -242,3 +242,52 @@ const Home = ({
 };
 
 export default App;
+
+
+
+
+
+import React from "react";
+import styles from "./MainContent.module.css";
+import Video from "./Video";
+
+const MainContent = ({ activeTab, content }) => {
+  const contentMap = {
+    description: (
+      <div>
+        <h2>Description</h2>
+        <p>{content.description}</p>
+      </div>
+    ),
+    solutionFlow: (
+      <div>
+        <h2>Solution Flow</h2>
+        <img src={content.solutionFlow} alt="Solution Flow" />
+        <p>{content.solutionFlow}</p>
+      </div>
+    ),
+    demo: (
+      <div>
+        <h2>Demo</h2>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div>
+        <h2>Technical Architecture</h2>
+        <img src={content.techArchitecture} alt="Technical Architecture" />
+        <p>{content.techArchitecture}</p>
+      </div>
+    ),
+    benefits: (
+      <div>
+        <h2>Benefits</h2>
+        <p>{content.benefits}</p>
+      </div>
+    ),
+  };
+
+  return <div className={styles.mainContent}>{contentMap[activeTab]}</div>;
+};
+
+export default MainContent;
