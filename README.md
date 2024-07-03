@@ -243,3 +243,133 @@ const MainContent = ({ activeTab, cardContent }) => {
 };
 
 export default MainContent;
+
+
+
+
+
+
+
+// components/Cards/Card.js
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import styles from "./Card.module.css";
+
+const Card = ({ imageUrl, title, description, content, isBig, toggleSize }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div className={styles.cardsContainer}>
+      <div
+        className={`${styles.card} ${isBig ? styles.big : ""}`}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        onClick={toggleSize}
+      >
+        {!isBig && <div className={styles.cardTitle}>{title}</div>}
+        {isBig && (
+          <div className={styles.cardContent}>
+            <h2>{title}</h2>
+            <p>{description}</p>
+            <Link
+              to={{
+                pathname: "/dashboard",
+                search: `?title=${encodeURIComponent(title)}&content=${encodeURIComponent(JSON.stringify(content))}`,
+              }}
+              className={styles.readMoreLink}
+            >
+              <span
+                className={`${styles.arrow} ${styles.rightArrow} ${
+                  isHovered ? styles.hovered : ""
+                }`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <span
+                  style={{
+                    fontSize: isHovered ? "0.8em" : "1em",
+                  }}
+                >
+                  {isHovered && "Read More "}
+                </span>
+                <span
+                  style={{
+                    marginLeft: isHovered ? "5px" : "0",
+                    fontSize: isHovered ? "1.3em" : "1em",
+                  }}
+                >
+                  &#129106;
+                </span>
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Card;
+
+
+
+
+
+
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Home from "./Home";
+import SideBarPage from "./components/SideBarPage/SideBarPage";
+import { cardsData } from "./data";
+import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
+import styles from "./App.module.css";
+
+const App = () => {
+  return (
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            <Home cardsData={cardsData} />
+          </Route>
+          <Route path="/dashboard">
+            <SideBarPage />
+          </Route>
+        </Switch>
+        <Footer />
+      </div>
+    </Router>
+  );
+};
+
+export default App;
+
+
+
+
+
+
+
+// Home.js
+import React from "react";
+import Card from "./components/Cards/Card";
+import styles from "./Home.module.css";
+
+const Home = ({ cardsData }) => {
+  return (
+    <div className={styles.cardsContainer}>
+      {cardsData.map((card, index) => (
+        <Card
+          key={index}
+          imageUrl={card.imageUrl}
+          title={card.title}
+          description={card.description}
+          content={card.content} // Pass the content for each card
+        />
+      ))}
+    </div>
+  );
+};
+
+export default Home;
