@@ -130,3 +130,92 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
+
+
+
+
+
+
+
+.mainContent {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  padding-top: 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mainContent h2 {
+  font-size: 20px;
+  margin-top: 0px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.mainContent p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.mainContent ol {
+  list-style-type: decimal;
+  margin-left: 20px;
+}
+.mainContent img {
+  max-width: 100%; /* Ensure the image does not exceed the width of its container */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Prevent inline alignment issues */
+  margin: 0 auto; /* Center the image horizontally */
+}
+
+.sideBarPage {
+  display: flex;
+  margin-top: 70px;
+  margin-right: 40px;
+  /* margin-top: 25px; */
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overscroll-behavior: contain; /* Prevent overscrolling */
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+}
+
+.header2 {
+  display: flex;
+  align-items: center;
+}
+.cardTitle {
+  font-size: 18px;
+  color: rgba(23, 23, 25, 1);
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+}
+.contentWrapper {
+  display: flex;
+  margin-top: 15px;
+  flex: 1;
+}
+.backButtonContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 8px;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 40px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
