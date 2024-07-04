@@ -86,3 +86,83 @@ export const cardsData = [
   },
 ];
 
+
+import React from "react";
+import styles from "./MainContent.module.css";
+import Video from "./Video";
+
+const MainContent = ({ activeTab, content }) => {
+  const contentMap = {
+    description: (
+      <div>
+        <h2>Description</h2>
+        <p>{content.description}</p>
+      </div>
+    ),
+    solutionFlow: (
+      <div>
+        <h2>Solution Flow</h2>
+        <img src={content.solutionFlow} alt="Solution Flow" />
+      </div>
+    ),
+    demo: (
+      <div>
+        <h2>Demo</h2>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div>
+        <h2>Technical Architecture</h2>
+        <img src={content.techArchitecture} alt="Technical Architecture" />
+      </div>
+    ),
+    benefits: (
+      <div>
+        <h2>Benefits</h2>
+        <p>{content.benefits}</p>
+      </div>
+    ),
+  };
+
+  return <div className={styles.mainContent}>{contentMap[activeTab]}</div>;
+};
+
+export default MainContent;
+
+
+
+
+
+
+.mainContent {
+  display: flex;
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  padding-top: 0px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mainContent h2 {
+  font-size: 20px;
+  margin-top: 0px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.mainContent p {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mainContent ol {
+  list-style-type: decimal;
+  margin-left: 20px;
+}
+.mainContent img {
+  max-width: 100%; /* Ensure the image does not exceed the width of its container */
+  height: auto; /* Maintain aspect ratio */
+  display: block; /* Prevent inline alignment issues */
+  margin: 0 auto; /* Center the image horizontally */
+}
