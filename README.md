@@ -216,3 +216,66 @@ export default MainContent;
   color: #5f1ec1;
   margin-bottom: 10px;
 }
+
+
+
+
+
+import React from "react";
+import styles from "./MainContent.module.css";
+import Video from "./Video";
+
+const MainContent = ({ activeTab, content }) => {
+  // Ensure content object is defined
+  if (!content) {
+    return <div className={styles.mainContent}>Content not available</div>;
+  }
+
+  // Splitting the description by periods followed by spaces
+  const descriptionPoints = content.description.split(". ").map((point, index) => (
+    <li key={index}>{point.trim()}</li>
+  ));
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        <h2>Description</h2>
+        <ul>
+          {descriptionPoints}
+        </ul>
+      </div>
+    ),
+    solutionFlow: (
+      <div>
+        <h2>Solution Flow</h2>
+        <img src={content.solutionFlow} alt="Solution Flow" />
+      </div>
+    ),
+    demo: (
+      <div>
+        <h2>Demo</h2>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div>
+        <h2>Technical Architecture</h2>
+        <img src={content.techArchitecture} alt="Technical Architecture" />
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        <h2>Benefits</h2>
+        <p>{content.benefits}</p>
+      </div>
+    ),
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+    </div>
+  );
+};
+
+export default MainContent;
