@@ -155,3 +155,97 @@ input:focus {
 .closeButton:hover {
   color: #555;
 }
+
+
+
+
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.formContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
+  text-align: center; /* Center content horizontally */
+}
+
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  text-align: left; /* Align labels and inputs to the left */
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
+}
+
+input {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
+
+input:focus {
+  border-color: #5f1ec1;
+  outline: none;
+}
+
+.submitButton {
+  background-color: #5f1ec1;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 20px;
+  transition: background-color 0.3s;
+  width: 100%; /* Make the button take the full width */
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #aaa;
+}
+
+.closeButton:hover {
+  color: #555;
+}
