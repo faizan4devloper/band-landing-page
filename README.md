@@ -153,3 +153,63 @@ input:focus {
   font-size: 16px;
   color: #333;
 }
+
+
+
+
+
+import React, { useState } from "react";
+import styles from "./RequestDemoForm.module.css";
+
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setIsSubmitted(true);
+    setTimeout(() => {
+      closeModal();
+    }, 3000); // Close modal after 3 seconds
+  };
+
+  return (
+    <div className={styles.formContainer}>
+      <h2 className={styles.demoHead}>Request for Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>User Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Email Address</label>
+            <input type="email" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Solution Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <input placeholder="More Details" type="text" required />
+          </div>
+          <button type="submit" className={styles.submitButton}>Submit</button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted successfully.
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default RequestDemoForm;
