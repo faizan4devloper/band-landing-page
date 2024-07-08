@@ -1,97 +1,125 @@
+import React from "react";
+import styles from "./RequestDemoForm.module.css";
 
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+const RequestDemoForm = ({ closeModal }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    closeModal();
+  };
 
-/* Hide the scrollbar */
-::-webkit-scrollbar {
-  width: 0; /* Remove scrollbar width */
-  height: 0; /* Remove scrollbar height */
+  return (
+    <div className={styles.formContainer}>
+      <h2 className={styles.demoHead}>Request for Live Demo</h2>
+      <form onSubmit={handleSubmit}>
+        <div className={styles.formGroup}>
+          <label>User Name</label>
+          <input type="text" required />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Email Address</label>
+          <input type="email" required />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Solution Name</label>
+          <input type="text" required />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Domain</label>
+          <input type="text" required />
+        </div>
+        <div className={styles.formGroup}>
+          <label>Customer Name</label>
+          <input type="text" required />
+        </div>
+        <div className={styles.formGroup}>
+          <input placeholder="Moew Details" type="text" required />
+        </div>
+        <button type="submit" className={styles.submitButton}>Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default RequestDemoForm;
+
+
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-html,
-body {
-  overflow-y: scroll; /* Always show vertical scrollbar */
-  font-family: "Poppins", sans-serif;
-}
-
-.app {
-  width: 1100px;
-  height: 600px;
+.formContainer {
+   padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 500px;
   margin: 0 auto;
+  /*box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);*/
+  animation: slideIn 0.5s ease-out;
+}
+
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 20px;
+}
+
+.formGroup {
+  margin-bottom: 15px;
   position: relative;
 }
 
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  overflow: hidden; /* Ensure no horizontal scroll */
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
 }
 
-.card {
-  flex: 1 0 200px; /* Flex item with fixed width */
-  margin: 10px; /* Margin to create space between cards */
+input {
+  width: 80%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: border-color 0.3s;
 }
 
-.arrow {
-  cursor: pointer;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 17px;
-  height: 22px;
-  padding: 3px 8px 5px 6px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1); /* Adjust color as needed */
-  transition: transform 0.5s ease, background 0.5s ease; /* Add transition */
+input:focus {
+  border-color: #5f1ec1;
+  outline: none;
 }
 
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1); /* Change background color on hover */
-  color: white; /* Change text color on hover */
-}
-
-.leftArrow {
-  left: 10px; /* Adjust position to be within container */
-}
-
-.rightArrow {
-  right: 10px; /* Adjust position to be within container */
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-/* Tooltip styling */
-.arrow img::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
+.submitButton {
+  background-color: #5f1ec1;
   color: #fff;
-  padding: 4px;
-  border-radius: 5px;
-  font-size: 8px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.1s, visibility 0.1s;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+  transition: background-color 0.3s;
 }
 
-.arrow img:hover::after {
-  opacity: 1;
-  visibility: visible;
+.submitButton:hover {
+  background-color: #4a159c;
+}
+
+.formGroup input:focus + label {
+  color: #4a159c;
 }
