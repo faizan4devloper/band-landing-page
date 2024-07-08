@@ -258,3 +258,39 @@ body {
   opacity: 1;
   visibility: visible;
 }
+
+
+
+
+
+.viewAllContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.viewAllButton {
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.viewAllButton:hover {
+  background-color: rgba(13, 85, 198, 1);
+  transform: translateY(-2px);
+}
+
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
