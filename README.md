@@ -1,193 +1,90 @@
+import React from "react";
+import styles from "./MainContent.module.css";
+import Video from "./Video";
 
-import React, { useState } from "react";
-import Modal from "react-modal";
-import { useNavigate } from 'react-router-dom';
-import styles from "./Header.module.css";
-import logoImage from "./HCL Tech.svg";
-import RequestDemoForm from "./RequestDemoForm";
+const MainContent = ({ activeTab, content }) => {
+  if (!content || !content.description) {
+    return <div className={styles.mainContent}>Description not available</div>;
+  }
 
-const Header = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const keywords = ["extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"];
 
-  const handleImageClick = () => {
-    navigate('/');
+  const highlightKeywords = (text) => {
+    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
+    return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
   };
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
+  const descriptionPoints = content.description.split(". ").map((point, index) => (
+    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  ));
 
-  const closeModal = () => {
-    setModalIsOpen(false);
+  const benefitsPoints = content.benefits.split(". ").map((point, index) => (
+    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  ));
+
+  const adoptionRows = content.adoption.map((row, index) => (
+    <tr key={index}>
+      <td>{row.industry}</td>
+      <td>{row.adoption}</td>
+    </tr>
+  ));
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        <h2>Description</h2>
+        <ul>
+          {descriptionPoints}
+        </ul>
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        <h2>Solution Flow</h2>
+        <img src={content.solutionFlow} alt="Solution Flow" />
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <h2>Demo</h2>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        <h2>Technical Architecture</h2>
+        <img src={content.techArchitecture} alt="Technical Architecture" />
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        <h2>Benefits</h2>
+        <ul>
+          {benefitsPoints}
+        </ul>
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        <h2>Solution Adoption</h2>
+        <table className={styles.adoptionTable}>
+          <thead>
+            <tr>
+              <th>Industry</th>
+              <th>Solution Adoption</th>
+            </tr>
+          </thead>
+          <tbody>{adoptionRows}</tbody>
+        </table>
+      </div>
+    ),
   };
 
   return (
-    <div className={styles.navbarWrapper}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img src={logoImage} alt="" onClick={handleImageClick} style={{cursor:'pointer'}} title="Navigate to Home"/>
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>Request for live demo</button>
-        </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
     </div>
   );
 };
 
-export default Header;
-
-
-
-/* Header.module.css */
-.navbarWrapper {
-  /* existing styles */
-}
-
-.header {
-  /* existing styles */
-}
-
-.logo {
-  /* existing styles */
-}
-
-.right {
-  /* existing styles */
-}
-
-.button {
-  /* existing styles */
-}
-
-.border {
-  /* existing styles */
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-out;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.75);
-  animation: fadeIn 0.3s ease-out;
-}
-
-
-
-
-
-/* RequestDemoForm.module.css */
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.formContainer {
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  max-width: 500px;
-  margin: 0 auto;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: slideIn 0.5s ease-out;
-}
-
-h2 {
-  color: #5f1ec1;
-  margin-bottom: 20px;
-  text-align: center;
-  font-size: 24px;
-}
-
-.formGroup {
-  margin-bottom: 15px;
-  position: relative;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #5f1ec1;
-  font-size: 14px;
-  transition: color 0.3s;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: border-color 0.3s;
-}
-
-input:focus {
-  border-color: #5f1ec1;
-  outline: none;
-}
-
-.submitButton {
-  background-color: #5f1ec1;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 20px;
-  transition: background-color 0.3s;
-}
-
-.submitButton:hover {
-  background-color: #4a159c;
-}
-
-.formGroup input:focus + label {
-  color: #4a159c;
-}
+export default MainContent;
