@@ -1,90 +1,91 @@
-import React from "react";
-import styles from "./MainContent.module.css";
-import Video from "./Video";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
-const MainContent = ({ activeTab, content }) => {
-  if (!content || !content.description) {
-    return <div className={styles.mainContent}>Description not available</div>;
+/* Hide the scrollbar */
+::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar width */
+  height: 0; /* Remove scrollbar height */
+}
+
+html,
+body {
+  overflow-y: scroll; /* Always show vertical scrollbar */
+  font-family: "Poppins", sans-serif;
+}
+
+.app {
+  width: 1100px;
+  height: 600px;
+  margin: 0 auto;
+}
+
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.arrow {
+  cursor: pointer;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  width: 17px;
+    height: 22px;
+    padding: 3px 8px 5px 6px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1); /* Adjust color as needed */
+  transition: transform 0.5s ease, background 0.5s ease; /* Add transition */
+}
+
+.arrow:hover {
+  background-color: rgba(15, 95, 220, 1); /* Change background color on hover */
+  color: white; /* Change text color on hover */
+}
+
+.leftArrow {
+  left: -25px;
+  top: 90px;
+}
+
+.rightArrow {
+  right: -25px;
+  top: 90px;
+}
+
+@media screen and (max-width: 1100px) {
+  .app {
+    padding: 0 10px;
   }
+}
 
-  const keywords = ["extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"];
+@media screen and (max-width: 768px) {
+  .app {
+    max-width: 100%;
+  }
+}
 
-  const highlightKeywords = (text) => {
-    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
-    return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
-  };
 
-  const descriptionPoints = content.description.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
+.arrow img::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 4px;
+  border-radius: 5px;
+  font-size: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  /*transition: opacity 0.1s, visibility 0.1s;*/
+}
 
-  const benefitsPoints = content.benefits.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
-
-  const adoptionRows = content.adoption.map((row, index) => (
-    <tr key={index}>
-      <td>{row.industry}</td>
-      <td>{row.adoption}</td>
-    </tr>
-  ));
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        <h2>Description</h2>
-        <ul>
-          {descriptionPoints}
-        </ul>
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        <h2>Solution Flow</h2>
-        <img src={content.solutionFlow} alt="Solution Flow" />
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <h2>Demo</h2>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        <h2>Technical Architecture</h2>
-        <img src={content.techArchitecture} alt="Technical Architecture" />
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        <h2>Benefits</h2>
-        <ul>
-          {benefitsPoints}
-        </ul>
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        <h2>Solution Adoption</h2>
-        <table className={styles.adoptionTable}>
-          <thead>
-            <tr>
-              <th>Industry</th>
-              <th>Solution Adoption</th>
-            </tr>
-          </thead>
-          <tbody>{adoptionRows}</tbody>
-        </table>
-      </div>
-    ),
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-    </div>
-  );
-};
-
-export default MainContent;
+.logo img:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
