@@ -1,10 +1,19 @@
 import React, { useState } from "react";
+import Select from "react-select";
 import styles from "./RequestDemoForm.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons"; // Example icon from Font Awesome
 
+const genAISolutions = [
+  { value: "solution1", label: "Solution 1" },
+  { value: "solution2", label: "Solution 2" },
+  { value: "solution3", label: "Solution 3" },
+  // Add more solutions here
+];
+
 const RequestDemoForm = ({ closeModal }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,7 +44,15 @@ const RequestDemoForm = ({ closeModal }) => {
           </div>
           <div className={styles.formGroup}>
             <label>GenAI Solution Name</label>
-            <input type="text" required />
+            <Select
+              options={genAISolutions}
+              value={selectedSolution}
+              onChange={setSelectedSolution}
+              className={styles.select}
+              classNamePrefix="select"
+              placeholder="Select a solution"
+              isClearable
+            />
           </div>
           <div className={styles.formGroup}>
             <label>Domain</label>
@@ -46,8 +63,7 @@ const RequestDemoForm = ({ closeModal }) => {
             <input type="text" required />
           </div>
           <div className={styles.formGroup}>
-                        <label>More Details</label>
-
+            <label>More Details</label>
             <input placeholder="Enter your business details and scope of this demo in your usecase" type="text" required />
           </div>
           <button type="submit" className={styles.submitButton}>Submit</button>
@@ -62,24 +78,6 @@ const RequestDemoForm = ({ closeModal }) => {
 };
 
 export default RequestDemoForm;
-
-
-
-
-
-
-
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
 .formContainer {
   padding: 10px;
@@ -113,10 +111,12 @@ label {
   font-size: 12px;
   transition: color 0.3s;
 }
+
 input::placeholder {
   color: #999999; /* Light gray */
   opacity: 1;
 }
+
 input {
   width: 90%;
   padding: 4px;
@@ -159,4 +159,41 @@ input:focus {
 
 .closeButton:hover {
   color: #555;
+}
+
+.successMessage {
+  text-align: center;
+  color: #5f1ec1;
+  font-size: 16px;
+}
+
+/* Custom styles for react-select */
+.select__control {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  color: #333;
+}
+
+.select__control--is-focused {
+  border-color: #5f1ec1;
+  box-shadow: 0 0 0 1px #5f1ec1;
+}
+
+.select__menu {
+  font-size: 12px;
+}
+
+.select__option {
+  padding: 8px 12px;
+}
+
+.select__option--is-focused {
+  background-color: rgba(95, 30, 193, 0.1);
+}
+
+.select__option--is-selected {
+  background-color: rgba(95, 30, 193, 0.8);
+  color: #fff;
 }
