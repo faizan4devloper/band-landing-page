@@ -1,42 +1,50 @@
-.scrollDownButton {
+.scrollButton {
   position: fixed;
-  left: 20px; /* Adjust as per your layout */
-  bottom: 20px; /* Adjust as per your layout */
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
+  bottom: 20px;
+  right: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  background-color: #5f1ec1; /* Purple background */
+  color: #fff; /* White text */
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-size: 24px;
+  box-shadow: 0 4px 6px rgba(95, 30, 193, 0.2); /* Soft shadow */
+  z-index: 1000; /* Ensure it's above other content */
 }
 
-.scrollDownButton:hover {
-  background-color: rgba(13, 85, 198, 1); /* Darker shade on hover */
+.scrollButton.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.scrollButton:hover {
+  background-color: #1f77f6; /* Dark blue on hover */
+  transform: scale(1.1); /* Slightly bigger on hover */
 }
 
 
-
-import React, { useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icon
 import Header from "./components/Header/Header";
 import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
-import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
 import { cardsData } from "./data"; // Import card data from a separate file
 
 const App = () => {
   const [bigIndex, setBigIndex] = React.useState(null);
-  const cardsContainerRef = useRef(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
@@ -58,80 +66,69 @@ const App = () => {
     }
   };
 
-  const handleScrollDown = () => {
-    cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleScroll = () => {
+    const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    setShowScrollButton(currentScrollTop > lastScrollTop && currentScrollTop > 100);
+    setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   };
 
   return (
     <Router>
       <div className={styles.app}>
         <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-              />
-            }
-          />
-          <Route path="/dashboard" element={<SideBarPage />} />
-          <Route path="/all-cards" element={<AllCardsPage cardsData={cardsData} />} /> {/* Pass cardsData to AllCardsPage */}
-        </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown}>
-          <FontAwesomeIcon icon={faChevronRight} />
+        <MyCarousel />
+        <div className={styles.cardsContainer}>
+          <div className={styles.viewAllContainer}>
+            <Link to="/all-cards" className={styles.viewAllButton}>
+              View All Solutions
+            </Link>
+          </div>
+          <span
+            className={`${styles.arrow} ${styles.leftArrow}`}
+            onClick={handleClickLeft}
+          >
+            <FontAwesomeIcon icon={faArrowCircleLeft} title="Previous"/>
+          </span>
+          {cardsData.slice(0, 5).map((card, index) => (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={index === bigIndex}
+              toggleSize={() => toggleSize(index)}
+            />
+          ))}
+          <span
+            className={`${styles.arrow} ${styles.rightArrow}`}
+            onClick={handleClickRight}
+          >
+            <FontAwesomeIcon icon={faArrowCircleRight} title="Next"/>
+          </span>
         </div>
+        <Routes>
+          {/* Define your routes */}
+        </Routes>
+        <button
+          className={`${styles.scrollButton} ${showScrollButton ? styles.show : ""}`}
+          onClick={scrollToTop}
+        >
+          <FontAwesomeIcon icon={faArrowCircleUp} />
+        </button>
       </div>
     </Router>
-  );
-};
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-}) => {
-  return (
-    <>
-      <MyCarousel />
-      <div className={styles.cardsContainer} ref={cardsContainerRef}>
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions
-          </Link>
-        </div>
-        <span
-          className={`${styles.arrow} ${styles.leftArrow}`}
-          onClick={handleClickLeft}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous"/>
-        </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={index === bigIndex}
-            toggleSize={() => toggleSize(index)}
-          />
-        ))}
-        <span
-          className={`${styles.arrow} ${styles.rightArrow}`}
-          onClick={handleClickRight}
-        >
-          <FontAwesomeIcon icon={faArrowRight} title="Next"/>
-        </span>
-      </div>
-    </>
   );
 };
 
