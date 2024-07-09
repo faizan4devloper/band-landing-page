@@ -27,7 +27,7 @@ const RequestDemoForm = ({ closeModal }) => {
   };
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modal}>
       <div className={styles.formContainer}>
         <button className={styles.closeButton} onClick={handleCloseModal}>
           <FontAwesomeIcon icon={faTimes} />
@@ -66,8 +66,7 @@ const RequestDemoForm = ({ closeModal }) => {
             <div className={styles.formGroup}>
               <label>More Details</label>
               <textarea
-                placeholder="Enter your business details and scope of this demo in your usecase.
-More details here."
+                placeholder="Enter your business details and scope of this demo in your use case. More details here."
                 rows="4"
                 required
               ></textarea>
@@ -78,7 +77,8 @@ More details here."
           </form>
         ) : (
           <p className={styles.successMessage}>
-            Thank you! Your request for a live demo has been submitted successfully.
+            Thank you! Your request for a live demo has been submitted
+            successfully.
           </p>
         )}
       </div>
@@ -89,38 +89,38 @@ More details here."
 export default RequestDemoForm;
 
 
-
-
-.modalOverlay {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  overflow-y: auto; /* Allow vertical scrolling */
 }
 
 .formContainer {
+  padding: 20px;
   background-color: #f9f9f9;
   border-left: 4px solid rgba(95, 30, 193, 0.8);
-  padding: 20px;
+  margin: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  max-width: 450px;
+  max-width: 500px;
   width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideIn 0.5s ease-out;
+  max-height: 90vh; /* Set max height to 90% of viewport height */
+  overflow-y: auto; /* Allow scrolling if content exceeds container height */
   position: relative;
+  animation: slideIn 0.5s ease-out;
 }
 
 .demoHead {
   color: #5f1ec1;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
   font-size: 18px;
 }
@@ -131,7 +131,7 @@ export default RequestDemoForm;
 }
 
 .formGroup {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
   position: relative;
 }
 
@@ -144,37 +144,40 @@ label {
   transition: color 0.3s;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: #999999;
   opacity: 1;
 }
 
-input, textarea {
+input,
+textarea {
   width: 100%;
-  padding: 4px;
+  padding: 8px;
   border: none;
   border-bottom: 1px solid #ccc;
   border-radius: 0;
-  font-size: 12px;
+  font-size: 14px;
   transition: border-color 0.3s;
   font-family: "Poppins", sans-serif;
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   border-color: #5f1ec1;
   outline: none;
 }
 
+/* Styling for Select */
 .select {
   width: 100%;
-  font-size: 12px;
 }
 
 .select__control {
   border: 1px solid #5f1ec1 !important;
   border-radius: 4px !important;
   font-family: "Poppins", sans-serif !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   color: #333 !important;
 }
 
@@ -184,12 +187,12 @@ input:focus, textarea:focus {
 }
 
 .select__menu {
-  font-size: 12px !important;
+  font-size: 14px !important;
 }
 
 .select__option {
   padding: 8px 8px !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
 }
 
 .select__option--is-focused {
@@ -210,7 +213,6 @@ input:focus, textarea:focus {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
-  margin-top: 10px;
   transition: background-color 0.3s;
   width: 100%;
 }
@@ -234,15 +236,4 @@ input:focus, textarea:focus {
   text-align: center;
   color: #5f1ec1;
   font-size: 16px;
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(-20%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }
