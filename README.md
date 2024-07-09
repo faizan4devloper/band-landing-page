@@ -1,137 +1,26 @@
-import React, { useState } from "react";
-import Select from "react-select";
-import styles from "./RequestDemoForm.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
-const genAISolutions = [
-  { value: "solution1", label: "Email EAR" },
-  { value: "solution2", label: "Code GReat" },
-  { value: "solution3", label: "Case Intelligence" },
-  // Add more solutions here
-];
-
-const RequestDemoForm = ({ closeModal }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedSolution, setSelectedSolution] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    setIsSubmitted(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsSubmitted(false); // Reset submission state
-    closeModal();
-  };
-
-  return (
-    <div className={styles.modal}>
-      <div className={styles.formContainer}>
-        <button className={styles.closeButton} onClick={handleCloseModal}>
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
-        <h2 className={styles.demoHead}>Request for a Live Demo</h2>
-        {!isSubmitted ? (
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.formGroup}>
-              <label>*User Name</label>
-              <input type="text" required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>*Email Address</label>
-              <input type="email" required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>GenAI Solution Name</label>
-              <Select
-                options={genAISolutions}
-                value={selectedSolution}
-                onChange={setSelectedSolution}
-                className={styles.select}
-                classNamePrefix="select"
-                placeholder="Select a solution"
-                isClearable
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Domain</label>
-              <input type="text" required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>Customer Name</label>
-              <input type="text" required />
-            </div>
-            <div className={styles.formGroup}>
-              <label>More Details</label>
-              <textarea
-                placeholder="Enter your business details and scope of this demo in your use case. More details here."
-                rows="4"
-                required
-              ></textarea>
-            </div>
-            <button type="submit" className={styles.submitButton}>
-              Submit
-            </button>
-          </form>
-        ) : (
-          <p className={styles.successMessage}>
-            Thank you! Your request for a live demo has been submitted
-            successfully.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default RequestDemoForm;
-
-
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  overflow-y: auto; /* Allow vertical scrolling */
-}
-
 .formContainer {
-  padding: 20px;
+  padding: 10px;
   background-color: #f9f9f9;
   border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin: 20px;
+  margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  max-width: 500px;
-  width: 100%;
-  max-height: 90vh; /* Set max height to 90% of viewport height */
-  overflow-y: auto; /* Allow scrolling if content exceeds container height */
-  position: relative;
+  max-width: 450px;
+  margin: 0 auto;
   animation: slideIn 0.5s ease-out;
+  max-height: 80vh; /* Set a max-height for the form container */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .demoHead {
   color: #5f1ec1;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
   font-size: 18px;
 }
 
-.form {
-  display: flex;
-  flex-direction: column;
-}
-
 .formGroup {
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   position: relative;
 }
 
@@ -144,40 +33,38 @@ label {
   transition: color 0.3s;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #999999;
+input::placeholder, textarea::placeholder {
+  color: #999999; /* Light gray */
   opacity: 1;
 }
 
-input,
-textarea {
-  width: 100%;
-  padding: 8px;
+input, textarea {
+  width: 90%;
+  padding: 4px;
   border: none;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
   border-radius: 0;
-  font-size: 14px;
+  font-size: 12px;
   transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
 }
 
-input:focus,
-textarea:focus {
+input:focus, textarea:focus {
   border-color: #5f1ec1;
   outline: none;
 }
 
 /* Styling for Select */
 .select {
-  width: 100%;
+  width: 92%;
+  font-size: 12px; /* Decrease font size for the Select */
 }
 
 .select__control {
-  border: 1px solid #5f1ec1 !important;
+  border: 1px solid #5f1ec1 !important; /* Ensure control border is applied */
   border-radius: 4px !important;
   font-family: "Poppins", sans-serif !important;
-  font-size: 14px !important;
+  font-size: 12px !important; /* Ensure control text is 12px */
   color: #333 !important;
 }
 
@@ -187,22 +74,22 @@ textarea:focus {
 }
 
 .select__menu {
-  font-size: 14px !important;
+  font-size: 12px !important; /* Ensure menu text is 12px */
 }
 
 .select__option {
   padding: 8px 8px !important;
-  font-size: 14px !important;
+  font-size: 12px !important; /* Ensure option text is 12px */
 }
 
 .select__option--is-focused {
-  background-color: #5f1ec1 !important;
-  color: white !important;
+  background-color: #5f1ec1 !important; /* Change background color on focus */
+  color: white !important; /* Change text color on focus */
 }
 
 .select__option--is-selected {
-  background-color: #5f1ec1 !important;
-  color: white !important;
+  background-color: #5f1ec1 !important; /* Change background color on selection */
+  color: white !important; /* Change text color on selection */
 }
 
 .submitButton {
@@ -213,14 +100,16 @@ textarea:focus {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  margin-top: 10px;
   transition: background-color 0.3s;
-  width: 100%;
+  margin-left: 30px;
+  width: 78%; /* Make the button take the full width */
 }
 
 .closeButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 50px;
+  right: 25px;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -236,4 +125,23 @@ textarea:focus {
   text-align: center;
   color: #5f1ec1;
   font-size: 16px;
+}
+
+/* Custom scrollbar styling */
+.formContainer::-webkit-scrollbar {
+  width: 10px;
+}
+
+.formContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+.formContainer::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 8px;
+}
+
+.formContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
