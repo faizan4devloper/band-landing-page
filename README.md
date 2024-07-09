@@ -1,199 +1,165 @@
-import React, { useState } from "react";
-import Select from "react-select";
-import styles from "./RequestDemoForm.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons"; // Example icon from Font Awesome
+/* eslint-disable jsx-a11y/alt-text */
+import React from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MyCarousel.module.css"; // Import CSS module
 
-const genAISolutions = [
-  { value: "solution1", label: "Solution 1" },
-  { value: "solution2", label: "Solution 2" },
-  { value: "solution3", label: "Solution 3" },
-  // Add more solutions here
-];
+import imgCarousel from "./carousel1.jpg";
+import imgCarousel3 from "./carousel3.jpg";
+import imgCarousel4 from "./carousel4.jpg";
+import imgCarousel5 from "./carousel5.jpg";
+import imgCarousel6 from "./banner-1.png";
+import imgCarousel7 from "./banner-2.png";
 
-const RequestDemoForm = ({ closeModal }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedSolution, setSelectedSolution] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    setIsSubmitted(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsSubmitted(false); // Reset submission state
-    closeModal();
-  };
-
+const MyCarousel = () => {
   return (
-    <div className={styles.formContainer}>
-      <button className={styles.closeButton} onClick={handleCloseModal}>
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
-      <h2 className={styles.demoHead}>Request for Live Demo</h2>
-      {!isSubmitted ? (
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label>*User Name</label>
-            <input type="text" required />
+    <div className="carausel-container">
+      <Carousel
+        showArrows={false}
+        showThumbs={false}
+        showIndicators={false}
+        infiniteLoop={true}
+        autoPlay={true}
+        interval={4000}
+        stopOnHover={false}
+        className={styles.main} // Apply CSS module
+      >
+        <div
+          className={styles.carouselItem}
+          style={{
+            background:
+              "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)",
+          }}
+        >
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS<span>Gen AI Pilots</span>
+            </h2>
           </div>
-          <div className={styles.formGroup}>
-            <label>*Email Address</label>
-            <input type="email" required />
+        </div>
+
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
           </div>
-          <div className={styles.formGroup}>
-            <label>GenAI Solution Name</label>
-            <Select
-              options={genAISolutions}
-              value={selectedSolution}
-              onChange={setSelectedSolution}
-              className={styles.select}
-              classNamePrefix="select"
-              placeholder="Select a solution"
-              isClearable
-            />
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel6} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
           </div>
-          <div className={styles.formGroup}>
-            <label>Domain</label>
-            <input type="text" required />
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel7} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
           </div>
-          <div className={styles.formGroup}>
-            <label>Customer Name</label>
-            <input type="text" required />
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel3} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
           </div>
-          <div className={styles.formGroup}>
-            <label>More Details</label>
-            <input placeholder="Enter your business details and scope of this demo in your usecase" type="text" required />
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel4} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
           </div>
-          <button type="submit" className={styles.submitButton}>Submit</button>
-        </form>
-      ) : (
-        <p className={styles.successMessage}>
-          Thank you! Your request for a live demo has been submitted successfully.
-        </p>
-      )}
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel5} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS EBU<span>Gen AI Pilots</span>
+            </h2>
+          </div>
+        </div>
+      </Carousel>
     </div>
   );
 };
 
-export default RequestDemoForm;
+export default MyCarousel;
 
-.formContainer {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
-}
 
-.demoHead {
-  color: #5f1ec1;
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: 18px;
-}
-
-.formGroup {
-  margin-bottom: 10px;
+.carouselItem {
   position: relative;
+  left:82px;
+  height: 260px;
+  margin: 70px 0px;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px; /* Add border radius */
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #000;
-  font-size: 12px;
-  transition: color 0.3s;
+.carouselImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire area */
 }
 
-input::placeholder {
-  color: #999999; /* Light gray */
-  opacity: 1;
-}
-
-input {
-  width: 90%;
-  padding: 4px;
-  border: none;
-  border-bottom: 1px solid #ccc; /* Only bottom border */
-  border-radius: 0;
-  font-size: 12px;
-  transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
-}
-
-input:focus {
-  border-color: #5f1ec1;
-  outline: none;
-}
-
-.submitButton {
-  background-color: #5f1ec1;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-  transition: background-color 0.3s;
-  width: 78%; /* Make the button take the full width */
-}
-
-.closeButton {
+.carouselOverlay {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 20px;
-  color: #aaa;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
 }
 
-.closeButton:hover {
-  color: #555;
+.carouselCaption {
+  position: absolute;
+  top: 50%; /* Position the caption vertically in the middle */
+  left: 20%; /* Position the caption horizontally in the middle */
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Center the caption both vertically and horizontally */
+  text-align: center; /* Center the text within the caption */
+  color: white;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  z-index: 1;
 }
 
-.successMessage {
-  text-align: center;
-  color: #5f1ec1;
+.carouselCaption h2 {
+  display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
+}
+
+.carouselCaption span {
+  align-items: center;
   font-size: 16px;
-}
-
-/* Custom styles for react-select */
-.select__control {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px;
-  color: #333;
-}
-
-.select__control--is-focused {
-  border-color: #5f1ec1;
-  box-shadow: 0 0 0 1px #5f1ec1;
-}
-
-.select__menu {
-  font-size: 12px;
-}
-
-.select__option {
-  padding: 8px 12px;
-}
-
-.select__option--is-focused {
-  background-color: rgba(95, 30, 193, 0.1);
-}
-
-.select__option--is-selected {
-  background-color: rgba(95, 30, 193, 0.8);
-  color: #fff;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
 }
