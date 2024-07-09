@@ -1,39 +1,7 @@
-.scrollButton {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
-  background-color: #5f1ec1; /* Purple background */
-  color: #fff; /* White text */
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  box-shadow: 0 4px 6px rgba(95, 30, 193, 0.2); /* Soft shadow */
-  z-index: 1000; /* Ensure it's above other content */
-}
-
-.scrollButton.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.scrollButton:hover {
-  background-color: #1f77f6; /* Dark blue on hover */
-  transform: scale(1.1); /* Slightly bigger on hover */
-}
-
-
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowCircleUp } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icon
+import { faArrowCircleUp, faArrowCircleLeft, faArrowCircleRight } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icons
 import Header from "./components/Header/Header";
 import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
@@ -119,7 +87,11 @@ const App = () => {
           </span>
         </div>
         <Routes>
-          {/* Define your routes */}
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} />}
+          />
+          {/* Add more routes as needed */}
         </Routes>
         <button
           className={`${styles.scrollButton} ${showScrollButton ? styles.show : ""}`}
