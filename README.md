@@ -70,6 +70,7 @@ textarea:focus {
   font-family: "Poppins", sans-serif !important;
   font-size: 12px !important; /* Ensure control text is 12px */
   color: #333 !important;
+  background-color: white !important; /* Override background color */
 }
 
 .select__control--is-focused {
@@ -79,10 +80,11 @@ textarea:focus {
 
 .select__menu {
   font-size: 12px !important; /* Ensure menu text is 12px */
+  background-color: white !important; /* Override dropdown background color */
 }
 
 .select__option {
-  padding: 8px 8px !important;
+  padding: 8px 12px !important;
   font-size: 12px !important; /* Ensure option text is 12px */
 }
 
