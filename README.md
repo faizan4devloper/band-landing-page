@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
@@ -8,7 +8,7 @@ import Cards from "./components/Cards/Cards";
 // import Footer from "./components/Footer/Footer";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/AllCardsPage"; // Import the new component
+import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
 import { cardsData } from "./data"; // Import card data from a separate file
 
 const App = () => {
@@ -70,6 +70,13 @@ const Home = ({
     <>
       <MyCarousel />
       <div className={styles.cardsContainer}>
+
+        <div className={styles.viewAllContainer}>
+              <h3 className={styles.solutionHead}>Solution Listing</h3>
+        <Link to="/all-cards" className={styles.viewAllButton}>
+          View All
+        </Link>
+      </div>
         <span
           className={`${styles.arrow} ${styles.leftArrow}`}
           onClick={handleClickLeft}
@@ -94,24 +101,86 @@ const Home = ({
           <FontAwesomeIcon icon={faArrowRight} title="Next"/>
         </span>
       </div>
-      <div className={styles.viewAllContainer}>
-        <Link to="/all-cards" className={styles.viewAllButton}>
-          View All
-        </Link>
-      </div>
+      
     </>
   );
 };
 
 export default App;
 
+// components/Cards/Cards.js
+import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Import Link component
+import styles from "./Cards.module.css"; // Import CSS module for card styles
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+
+const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  return (
+    <div className={styles.cardsContainer}>
+      <div
+        className={`${styles.card} ${isBig ? styles.big : ""}`}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        onClick={toggleSize}
+      >
+        {!isBig && <div className={styles.cardTitle}>{title}</div>}
+        {isBig && (
+          <div className={styles.cardContent}>
+            <h2>{title}</h2>
+            <p>{description}</p>
+            {/* Add Link component to navigate to dashboard with title query parameter */}
+            <Link
+              to={{
+                pathname: "/dashboard",
+                search: `?title=${encodeURIComponent(title)}`,
+              }}
+              className={styles.readMoreLink}
+            >
+              {/* Content of the "Read More" link */}
+              <span
+                className={`${styles.arrow} ${styles.rightArrow} ${
+                  isHovered ? styles.hovered : ""
+                }`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <span
+                  style={{
+                    fontSize: isHovered ? "0.8em" : "1em", // Decrease font size on hover
+                  }}
+                >
+                  {isHovered && "Read More "}
+                </span>
+                <span
+                  style={{
+                    marginLeft: isHovered ? "5px" : "0", // Add space on hover
+                    fontSize: isHovered ? "1.3em" : "1em", // Increase size on hover
+                  }}
+                >
+<FontAwesomeIcon icon={faArrowRight} />                </span>
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Card;
 
 
-// components/AllCardsPage.js
+
+
+
+
+
 import React from "react";
 import styles from "./AllCardsPage.module.css"; // Create a new CSS module for styling
-import Cards from "./Cards/Cards";
-import { cardsData } from "../data";
+import Cards from "./Cards";
+import { cardsData } from "../../data"; // Import cardsData from the data file
 
 const AllCardsPage = () => {
   return (
@@ -131,11 +200,11 @@ const AllCardsPage = () => {
 
 export default AllCardsPage;
 
-
-/* components/AllCardsPage.module.css */
 .allCardsContainer {
   display: flex;
+  margin-top: 50px;
   flex-wrap: wrap;
+  gap:10px;
   justify-content: center;
   padding: 20px;
 }
@@ -158,14 +227,6 @@ export default AllCardsPage;
 .viewAllButton:hover {
   background-color: #4b17a2;
 }
-
-
-
-
-
-
-
-
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -259,32 +320,39 @@ body {
   visibility: visible;
 }
 
-
-
-
-
 .viewAllContainer {
   width: 100%;
   display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  /*margin-bottom: 20px;*/
+  margin-right: 123px;
 }
 
+.solutionHead{
+    font-weight: 600;
+    font-size: 14px;
+    color: #808080;
+      margin-left: 123px;
+
+}
+
+
 .viewAllButton {
-  background-color: rgba(15, 95, 220, 1);
   color: white;
   font-size: 16px;
   font-weight: 500;
-  padding: 10px 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  color: #000;
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .viewAllButton:hover {
-  background-color: rgba(13, 85, 198, 1);
+  /*background-color: rgba(13, 85, 198, 1);*/
   transform: translateY(-2px);
+  color:#808080;
 }
 
 .cardsContainer {
