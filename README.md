@@ -1,153 +1,211 @@
-import React, { useState } from "react";
-import Select from "react-select";
-import styles from "./CustomSelect.module.css"; // Import your CSS module
-
-const customStyles = {
-  control: (provided) => ({
-    ...provided,
-    border: "1px solid #5f1ec1",
-    borderRadius: "4px",
-    fontSize: "12px",
-    minHeight: "32px",
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected ? "#5f1ec1" : "white",
-    color: state.isSelected ? "white" : "#333",
-    fontSize: "12px",
-    cursor: "pointer",
-  }),
-  menu: (provided) => ({
-    ...provided,
-    fontSize: "12px",
-  }),
-};
-
-const genAISolutions = [
-  { value: "solution1", label: "Email EAR" },
-  { value: "solution2", label: "Code GReat" },
-  { value: "solution3", label: "Case Intelligence" },
-  // Add more solutions here
-];
-
-const CustomSelect = ({ selectedOption, onChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
-
-  return (
-    <Select
-      styles={customStyles}
-      className={styles.customSelect}
-      classNamePrefix="custom-select"
-      value={selectedOption}
-      onChange={onChange}
-      options={genAISolutions}
-      isClearable
-      isSearchable
-      menuIsOpen={isOpen}
-      onMenuOpen={toggleMenu}
-      onMenuClose={toggleMenu}
-    />
-  );
-};
-
-export default CustomSelect;
-
-
-/* CustomSelect.module.css */
-
-.custom-select__control {
-  border: 1px solid #5f1ec1 !important;
-  border-radius: 4px !important;
-  font-family: "Poppins", sans-serif !important;
-  font-size: 12px !important;
-  min-height: 32px !important;
-}
-
-.custom-select__option {
-  font-size: 12px !important;
-}
-
-.custom-select__menu {
-  font-size: 12px !important;
-}
-
-import React, { useState } from "react";
-import Select from "react-select";
-import styles from "./RequestDemoForm.module.css";
+import React, { useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import CustomSelect from "./CustomSelect"; // Import your custom select component
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const RequestDemoForm = ({ closeModal }) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedSolution, setSelectedSolution] = useState(null);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    setIsSubmitted(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsSubmitted(false); // Reset submission state
-    closeModal();
+const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
+  const handleBackButtonClick = () => {
+    window.history.back();
   };
 
   return (
-    <div className={styles.formContainer}>
-      <button className={styles.closeButton} onClick={handleCloseModal}>
-        <FontAwesomeIcon icon={faTimes} />
+    <div className={styles.allCardsPage}>
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
       </button>
-      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
-      {!isSubmitted ? (
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label>*User Name</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>*Email Address</label>
-            <input type="email" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>GenAI Solution Name</label>
-            <CustomSelect
-              selectedOption={selectedSolution}
-              onChange={setSelectedSolution}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Domain</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Customer Name</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>More Details</label>
-            <textarea
-              placeholder="Enter your business details and scope of this demo in your usecase."
-              rows="4"
-              required
-            ></textarea>
-          </div>
-          <button type="submit" className={styles.submitButton}>
-            Submit
-          </button>
-        </form>
-      ) : (
-        <p className={styles.successMessage}>
-          Thank you! Your request for a live demo has been submitted
-          successfully.
-        </p>
-      )}
+      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+        {cardsData.map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={false}
+          />
+        ))}
+      </div>
     </div>
   );
 };
 
-export default RequestDemoForm;
+export default AllCardsPage;
+
+import React, { useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
+import { cardsData } from "./data"; // Import card data from a separate file
+
+const App = () => {
+  const [bigIndex, setBigIndex] = React.useState(null);
+  const cardsContainerRef = useRef(null);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    if (bigIndex === null || bigIndex === 0) {
+      setBigIndex(cardsData.length - 1);
+    } else {
+      setBigIndex(bigIndex - 1);
+    }
+  };
+
+  const handleClickRight = () => {
+    if (bigIndex === null || bigIndex === cardsData.length - 1) {
+      setBigIndex(0);
+    } else {
+      setBigIndex(bigIndex + 1);
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />} // Pass cardsContainerRef
+          />
+        </Routes>
+        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Go Down">
+          <FontAwesomeIcon icon={faChevronDown} />
+        </div>
+      </div>
+    </Router>
+  );
+};
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+}) => {
+  return (
+    <>
+      <MyCarousel />
+      <div className={styles.cardsContainer} ref={cardsContainerRef}>
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(0, 5).map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+export default App;
+
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import styles from "./Cards.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+
+const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  return (
+    <div className={styles.cardsContainer}>
+      <div
+        className={`${styles.card} ${isBig ? styles.big : ""}`}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        onClick={toggleSize}
+      >
+        {!isBig && <div className={styles.cardTitle}>{title}</div>}
+        {isBig && (
+          <div className={styles.cardContent}>
+            <h2>{title}</h2>
+            <p>{description}</p>
+            <Link
+              to={{
+                pathname: "/dashboard",
+                search: `?title=${encodeURIComponent(title)}`,
+              }}
+              className={styles.readMoreLink}
+            >
+              <span
+                className={`${styles.arrow} ${styles.rightArrow} ${
+                  isHovered ? styles.hovered : ""
+                }`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <span
+                  style={{
+                    fontSize: isHovered ? "0.8em" : "1em",
+                  }}
+                >
+                  {isHovered && "Read More "}
+                </span>
+                <span
+                  style={{
+                    marginLeft: isHovered ? "5px" : "0",
+                    fontSize: isHovered ? "1.3em" : "1em",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </span>
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Card;
