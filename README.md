@@ -1,3 +1,92 @@
+import React, { useState } from "react";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+const genAISolutions = [
+  { value: "solution1", label: "Email EAR" },
+  { value: "solution2", label: "Code GReat" },
+  { value: "solution3", label: "Case Intelligence" },
+  // Add more solutions here
+];
+
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setIsSubmitted(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
+    closeModal();
+  };
+
+  return (
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={handleCloseModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>*User Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>*Email Address</label>
+            <input type="email" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>GenAI Solution Name</label>
+            <Select
+              options={genAISolutions}
+              value={selectedSolution}
+              onChange={setSelectedSolution}
+              className={styles.select}
+              classNamePrefix="select"
+              placeholder="Select a solution"
+              isClearable
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>More Details</label>
+            <input
+              placeholder="Enter your business details and scope of this demo in your usecase"
+              type="text"
+              required
+            />
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Submit
+          </button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted
+          successfully.
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default RequestDemoForm;
+
+
 /* RequestDemoForm.module.css */
 
 .formContainer {
@@ -61,37 +150,35 @@ input:focus {
 }
 
 .select__control {
-  border: 1px solid #5f1ec1;
-  border-radius: 4px;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px; /* Ensure control text is 12px */
-  color: #333;
+  border: 1px solid #5f1ec1 !important; /* Ensure control border is applied */
+  border-radius: 4px !important;
+  font-family: "Poppins", sans-serif !important;
+  font-size: 12px !important; /* Ensure control text is 12px */
+  color: #333 !important;
 }
 
 .select__control--is-focused {
-  border-color: #5f1ec1;
-  box-shadow: 0 0 0 1px #5f1ec1;
+  border-color: #5f1ec1 !important;
+  box-shadow: 0 0 0 1px #5f1ec1 !important;
 }
 
 .select__menu {
-  font-size: 12px; /* Ensure menu text is 12px */
+  font-size: 12px !important; /* Ensure menu text is 12px */
 }
 
 .select__option {
-  padding: 8px 8px;
-  font-size: 12px; /* Ensure option text is 12px */
-  background-color: white;
-  color: #333;
+  padding: 8px 8px !important;
+  font-size: 12px !important; /* Ensure option text is 12px */
 }
 
 .select__option--is-focused {
-  background-color: #5f1ec1; /* Change background color on focus */
-  color: white; /* Change text color on focus */
+  background-color: #5f1ec1 !important; /* Change background color on focus */
+  color: white !important; /* Change text color on focus */
 }
 
 .select__option--is-selected {
-  background-color: #5f1ec1; /* Change background color on selection */
-  color: white; /* Change text color on selection */
+  background-color: #5f1ec1 !important; /* Change background color on selection */
+  color: white !important; /* Change text color on selection */
 }
 
 .submitButton {
