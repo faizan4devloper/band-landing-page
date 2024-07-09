@@ -1,12 +1,18 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import styles from "./AllCardsPage.module.css";
 import Cards from "./Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+
   const handleBackButtonClick = () => {
     window.history.back();
+  };
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
   return (
@@ -21,7 +27,8 @@ const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
             imageUrl={card.imageUrl}
             title={card.title}
             description={card.description}
-            isBig={false}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
           />
         ))}
       </div>
@@ -30,6 +37,9 @@ const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
 };
 
 export default AllCardsPage;
+
+
+
 
 import React, { useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
@@ -94,7 +104,7 @@ const App = () => {
           <Route path="/dashboard" element={<SideBarPage />} />
           <Route
             path="/all-cards"
-            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />} // Pass cardsContainerRef
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
           />
         </Routes>
         <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Go Down">
@@ -144,6 +154,8 @@ const Home = ({
 };
 
 export default App;
+
+
 
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
