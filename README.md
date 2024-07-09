@@ -1,195 +1,217 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import styles from "./Cards.module.css";
+import React, { useState } from "react";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const genAISolutions = [
+  { value: "solution1", label: "Email EAR" },
+  { value: "solution2", label: "Code GReat" },
+  { value: "solution3", label: "Case Intelligence" },
+  // Add more solutions here
+];
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setIsSubmitted(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
+    closeModal();
+  };
 
   return (
-    <div className={styles.cardsContainer}>
-      <div
-        className={`${styles.card} ${isBig ? styles.big : ""}`}
-        style={{ backgroundImage: `url(${imageUrl})` }}
-        onClick={toggleSize}
-      >
-        {!isBig && <div className={styles.cardTitle}>{title}</div>}
-        {isBig && (
-          <div className={styles.cardContent}>
-            <h2>{title}</h2>
-            <p>{description}</p>
-            <Link
-              to={{
-                pathname: "/dashboard",
-                search: `?title=${encodeURIComponent(title)}`,
-              }}
-              className={styles.readMoreLink}
-            >
-              <span
-                className={`${styles.arrow} ${styles.rightArrow} ${
-                  isHovered ? styles.hovered : ""
-                }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <span
-                  style={{
-                    fontSize: isHovered ? "0.8em" : "1em",
-                  }}
-                >
-                  {isHovered && "Read More "}
-                </span>
-                <span
-                  style={{
-                    marginLeft: isHovered ? "5px" : "0",
-                    fontSize: isHovered ? "1.3em" : "1em",
-                  }}
-                >
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </span>
-            </Link>
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={handleCloseModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>*User Name</label>
+            <input type="text" required />
           </div>
-        )}
-      </div>
+          <div className={styles.formGroup}>
+            <label>*Email Address</label>
+            <input type="email" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>GenAI Solution Name</label>
+            <Select
+              options={genAISolutions}
+              value={selectedSolution}
+              onChange={setSelectedSolution}
+              className={styles.select}
+              classNamePrefix="select"
+              placeholder="Select a solution"
+              isClearable
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>More Details</label>
+            <textarea
+              placeholder="Enter your business details and scope of this demo in your usecase.
+More details here."
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Submit
+          </button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted
+          successfully.
+        </p>
+      )}
     </div>
   );
 };
 
-export default Card;
+export default RequestDemoForm;
 
 
 
-.cardsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 20px;
+.formContainer {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
 }
 
-.card {
-  width: 160px;
-  overflow: hidden;
-  height: 160px;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  position: relative;
-  margin-bottom: 60px;
-  transition: transform 0.6s ease;
-}
-.card:hover {
-  transform: translate(0, -8px);
-}
-
-.big {
-  width: 190px;
-  height: 190px;
-  z-index: 0;
-  transform: scale(1.1);
-}
-
-.cardTitle {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 75px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  backdrop-filter: blur(10px);
-  border-radius: 12px;
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transition: opacity 0.3s ease;
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 10px;
   text-align: center;
+  font-size: 18px;
 }
 
-.cardContent {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 8px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 140px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transform: translateY(100%);
-  transition: transform 0.3s ease, background 0.3s ease;
+.formGroup {
+  margin-bottom: 10px;
+  position: relative;
 }
 
-.cardContent.slide-up {
-  transform: translateY(0);
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
 }
 
-.cardContent::before {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, #6f36cd, #1f77f6);
-  transition: top 0.3s ease;
-  border-radius: 12px;
-  z-index: -1;
+input::placeholder, textarea::placeholder {
+  color: #999999; /* Light gray */
+  opacity: 1;
 }
-.arrow {
+
+input, textarea {
+  width: 90%;
+  padding: 4px;
+  border: none;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
+
+input:focus, textarea:focus {
+  border-color: #5f1ec1;
+  outline: none;
+}
+
+/* Styling for Select */
+.select {
+  width: 92%;
+  font-size: 12px; /* Decrease font size for the Select */
+}
+
+.select__control {
+  border: 1px solid #5f1ec1 !important; /* Ensure control border is applied */
+  border-radius: 4px !important;
+  font-family: "Poppins", sans-serif !important;
+  font-size: 12px !important; /* Ensure control text is 12px */
+  color: #333 !important;
+}
+
+.select__control--is-focused {
+  border-color: #5f1ec1 !important;
+  box-shadow: 0 0 0 1px #5f1ec1 !important;
+}
+
+.select__menu {
+  font-size: 12px !important; /* Ensure menu text is 12px */
+}
+
+.select__option {
+  padding: 8px 8px !important;
+  font-size: 12px !important; /* Ensure option text is 12px */
+}
+
+.select__option--is-focused {
+  background-color: #5f1ec1 !important; /* Change background color on focus */
+  color: white !important; /* Change text color on focus */
+}
+
+.select__option--is-selected {
+  background-color: #5f1ec1 !important; /* Change background color on selection */
+  color: white !important; /* Change text color on selection */
+}
+
+.submitButton {
+  background-color: #5f1ec1;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  position: absolute;
-  display: flex;
-  bottom: 10px;
-  right: 10px;
   font-size: 14px;
-  width: 7px;
-  height: 23px;
-  padding: 2px 12px 0px 6px;
-  border-radius: 50px;
-  border: 2px solid rgba(255, 255, 255, 1);
-  color: rgba(255, 255, 255, 1);
-  overflow: hidden;
-  transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+  margin-left: 30px;
+  width: 78%; /* Make the button take the full width */
 }
 
-.arrow:hover {
-  width: 80px;
-  align-items: center;
-  font-size: 10px;
-  background-color: rgba(255, 255, 255, 1);
-  color: rgba(15, 95, 220, 1);
+.closeButton {
+  position: absolute;
+  top: 50px;
+  right: 25px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #aaa;
 }
 
-.arrow.hovered {
-  width: 65px;
+.closeButton:hover {
+  color: #555;
 }
 
-.card:hover .cardContent::before {
-  top: 0;
-}
-
-.readMore {
-  left: 10px;
-}
-
-.card:hover .cardContent::before {
-  background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
-}
-
-.big .cardContent {
-  transform: translateY(0);
+.successMessage {
+  text-align: center;
+  color: #5f1ec1;
+  font-size: 16px;
 }
