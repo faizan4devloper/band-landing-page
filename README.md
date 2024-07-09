@@ -64,11 +64,12 @@ const RequestDemoForm = ({ closeModal }) => {
           </div>
           <div className={styles.formGroup}>
             <label>More Details</label>
-            <input
-              placeholder="Enter your business details and scope of this demo in your usecase"
-              type="text"
+            <textarea
+              placeholder="Enter your business details and scope of this demo in your usecase.
+More details here."
+              rows="4"
               required
-            />
+            ></textarea>
           </div>
           <button type="submit" className={styles.submitButton}>
             Submit
@@ -85,6 +86,7 @@ const RequestDemoForm = ({ closeModal }) => {
 };
 
 export default RequestDemoForm;
+
 
 
 /* RequestDemoForm.module.css */
@@ -122,12 +124,12 @@ label {
   transition: color 0.3s;
 }
 
-input::placeholder {
+input::placeholder, textarea::placeholder {
   color: #999999; /* Light gray */
   opacity: 1;
 }
 
-input {
+input, textarea {
   width: 90%;
   padding: 4px;
   border: none;
@@ -138,7 +140,7 @@ input {
   font-family: "Poppins", sans-serif; /* Apply Google Font */
 }
 
-input:focus {
+input:focus, textarea:focus {
   border-color: #5f1ec1;
   outline: none;
 }
