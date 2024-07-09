@@ -1,79 +1,61 @@
-import React from "react";
-import styles from "./AllCardsPage.module.css"; // Create a new CSS module for styling
-import Cards from "./Cards";
-import { cardsData } from "../../data"; // Import cardsData from the data file
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
-const AllCardsPage = ({ cardsData }) => {
-  return (
-    <div className={styles.allCardsPage}>
-      <div className={styles.backButton}>
-        <FontAwesomeIcon icon={faArrowLeft} className={styles.backIcon} />
-        <span>Back</span>
-      </div>
-      <div className={styles.allCardsContainer}>
-        {cardsData.map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={false} // Ensure all cards are in the default small size
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default AllCardsPage;
+ <div className={styles.carouselItem}>
+          <img src={imgCarousel6} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay6}></div> {/* Add overlay */}
+        </div>
 
 
-
-
-.allCardsPage {
-  padding: 20px;
+        .carouselItem {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 260px;
+  margin: 70px 0;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
 }
 
-.backButton {
+.carouselImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+}
+
+.carouselOverlay {
+  position: absolute;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
+}
+
+.carouselCaption {
+  position: absolute;
+  top: 50%; /* Position the caption vertically in the middle */
+  left: 50%; /* Position the caption horizontally in the middle */
+  transform: translate(-50%, -50%); /* Center the caption both vertically and horizontally */
+  text-align: center; /* Center the text within the caption */
+  color: white;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  z-index: 1;
+}
+
+.carouselCaption h2 {
   display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
+}
+
+.carouselCaption span {
   align-items: center;
-  margin-bottom: 20px;
-}
-
-.backIcon {
-  font-size: 20px;
-  margin-right: 10px;
-}
-
-.allCardsContainer {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); /* Five cards per row */
-  gap: 20px;
-  padding-top: 20px;
-}
-
-@media (max-width: 1200px) {
-  .allCardsContainer {
-    grid-template-columns: repeat(4, 1fr); /* Four cards per row on smaller screens */
-  }
-}
-
-@media (max-width: 900px) {
-  .allCardsContainer {
-    grid-template-columns: repeat(3, 1fr); /* Three cards per row on even smaller screens */
-  }
-}
-
-@media (max-width: 600px) {
-  .allCardsContainer {
-    grid-template-columns: repeat(2, 1fr); /* Two cards per row on mobile devices */
-  }
-}
-
-@media (max-width: 400px) {
-  .allCardsContainer {
-    grid-template-columns: 1fr; /* One card per row on very small screens */
-  }
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
 }
