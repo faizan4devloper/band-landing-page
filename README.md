@@ -1,28 +1,27 @@
-import React from "react";
-import styles from "./AllCardsPage.module.css"; // Create a new CSS module for styling
+import React, { useRef } from "react";
+import styles from "./AllCardsPage.module.css";
 import Cards from "./Cards";
-import { cardsData } from "../../data"; // Import cardsData from the data file
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const AllCardsPage = ({ cardsData }) => {
-  
+const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
   const handleBackButtonClick = () => {
-    window.history.back(); // Go back to the previous page
+    window.history.back();
   };
+
   return (
     <div className={styles.allCardsPage}>
-<button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-      <div className={styles.allCardsContainer}>
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
         {cardsData.map((card, index) => (
           <Cards
             key={index}
             imageUrl={card.imageUrl}
             title={card.title}
             description={card.description}
-            isBig={false} // Ensure all cards are in the default small size
+            isBig={false}
           />
         ))}
       </div>
@@ -70,7 +69,9 @@ const App = () => {
   };
 
   const handleScrollDown = () => {
-    cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -92,7 +93,10 @@ const App = () => {
             }
           />
           <Route path="/dashboard" element={<SideBarPage />} />
-          <Route path="/all-cards" element={<AllCardsPage cardsData={cardsData} />} /> {/* Pass cardsData to AllCardsPage */}
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />} // Pass cardsContainerRef
+          />
         </Routes>
         <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Go Down">
           <FontAwesomeIcon icon={faChevronDown} />
@@ -119,11 +123,8 @@ const Home = ({
             View All Solutions
           </Link>
         </div>
-        <span
-          className={`${styles.arrow} ${styles.leftArrow}`}
-          onClick={handleClickLeft}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous"/>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
         {cardsData.slice(0, 5).map((card, index) => (
           <Cards
@@ -135,11 +136,8 @@ const Home = ({
             toggleSize={() => toggleSize(index)}
           />
         ))}
-        <span
-          className={`${styles.arrow} ${styles.rightArrow}`}
-          onClick={handleClickRight}
-        >
-          <FontAwesomeIcon icon={faArrowRight} title="Next"/>
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
       </div>
     </>
