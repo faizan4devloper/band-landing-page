@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
@@ -35,7 +35,9 @@ const App = () => {
   };
 
   const handleScrollDown = () => {
-    cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -59,13 +61,17 @@ const App = () => {
           <Route path="/dashboard" element={<SideBarPage />} />
           <Route path="/all-cards" element={<AllCardsPage cardsData={cardsData} />} /> {/* Pass cardsData to AllCardsPage */}
         </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Go Down">
-          <FontAwesomeIcon icon={faChevronDown} />
-        </div>
+        <ScrollDownButton onClick={handleScrollDown} />
       </div>
     </Router>
   );
 };
+
+const ScrollDownButton = ({ onClick }) => (
+  <div className={styles.scrollDownButton} onClick={onClick} title="Go Down">
+    <FontAwesomeIcon icon={faChevronDown} />
+  </div>
+);
 
 const Home = ({
   cardsData,
@@ -84,11 +90,8 @@ const Home = ({
             View All Solutions
           </Link>
         </div>
-        <span
-          className={`${styles.arrow} ${styles.leftArrow}`}
-          onClick={handleClickLeft}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous"/>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
         {cardsData.slice(0, 5).map((card, index) => (
           <Cards
@@ -100,11 +103,8 @@ const Home = ({
             toggleSize={() => toggleSize(index)}
           />
         ))}
-        <span
-          className={`${styles.arrow} ${styles.rightArrow}`}
-          onClick={handleClickRight}
-        >
-          <FontAwesomeIcon icon={faArrowRight} title="Next"/>
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
       </div>
     </>
@@ -112,8 +112,6 @@ const Home = ({
 };
 
 export default App;
-
-
 
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
 
@@ -133,6 +131,7 @@ body {
   width: 1100px;
   height: 600px;
   margin: 0 auto;
+  scroll-behavior: smooth; /* Apply smooth scrolling behavior */
 }
 
 .cardsContainer {
@@ -149,8 +148,8 @@ body {
   transform: translateY(-50%);
   font-size: 18px;
   width: 17px;
-    height: 22px;
-    padding: 3px 8px 5px 6px;
+  height: 22px;
+  padding: 3px 8px 5px 6px;
   border-radius: 50px;
   border: 2px solid rgba(15, 95, 220, 1);
   color: rgba(15, 95, 220, 1); /* Adjust color as needed */
@@ -182,71 +181,6 @@ body {
   .app {
     max-width: 100%;
   }
-}
-
-
-.arrow img::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 4px;
-  border-radius: 5px;
-  font-size: 8px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  /*transition: opacity 0.1s, visibility 0.1s;*/
-}
-
-.logo img:hover::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  /*margin-bottom: 20px;*/
-  margin-right: 123px;
-}
-
-.solutionHead{
-    font-weight: 600;
-    font-size: 14px;
-    color: #808080;
-      margin-left: 123px;
-
-}
-
-
-.viewAllButton {
-   font-weight: 600;
-    font-size: 14px;
-    color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  /*text-decoration: none;*/
-}
-
-
-.viewAllButton:hover {
-  /*background-color: rgba(13, 85, 198, 1);*/
-  transform: translateY(-2px);
-  color:#000;
-}
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
 }
 
 .scrollDownButton {
