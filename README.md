@@ -101,6 +101,11 @@ const MainContent = ({ activeTab, content }) => {
   return (
     <div className={styles.mainContent}>
       {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+        </div>
+      )}
     </div>
   );
 };
@@ -173,14 +178,29 @@ export default MainContent;
 }
 
 .maximized {
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}
+
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1000;
   background-color: rgba(0, 0, 0, 0.9);
-  object-fit: contain;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .benefits, .description, .demo, .architecture, .adoption, .solution {
