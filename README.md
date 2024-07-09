@@ -27,60 +27,61 @@ const RequestDemoForm = ({ closeModal }) => {
   };
 
   return (
-    <div className={styles.formContainer}>
-      <button className={styles.closeButton} onClick={handleCloseModal}>
-        <FontAwesomeIcon icon={faTimes} />
-      </button>
-      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
-      {!isSubmitted ? (
-        <form onSubmit={handleSubmit}>
-          <div className={styles.formGroup}>
-            <label>*User Name</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>*Email Address</label>
-            <input type="email" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>GenAI Solution Name</label>
-            <Select
-              options={genAISolutions}
-              value={selectedSolution}
-              onChange={setSelectedSolution}
-              className={styles.select}
-              classNamePrefix="select"
-              placeholder="Select a solution"
-              isClearable
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Domain</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Customer Name</label>
-            <input type="text" required />
-          </div>
-          <div className={styles.formGroup}>
-            <label>More Details</label>
-            <textarea
-              placeholder="Enter your business details and scope of this demo in your usecase.
+    <div className={styles.modalOverlay}>
+      <div className={styles.formContainer}>
+        <button className={styles.closeButton} onClick={handleCloseModal}>
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+        <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+        {!isSubmitted ? (
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.formGroup}>
+              <label>*User Name</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>*Email Address</label>
+              <input type="email" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>GenAI Solution Name</label>
+              <Select
+                options={genAISolutions}
+                value={selectedSolution}
+                onChange={setSelectedSolution}
+                className={styles.select}
+                classNamePrefix="select"
+                placeholder="Select a solution"
+                isClearable
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Domain</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Customer Name</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>More Details</label>
+              <textarea
+                placeholder="Enter your business details and scope of this demo in your usecase.
 More details here."
-              rows="4"
-              required
-            ></textarea>
-          </div>
-          <button type="submit" className={styles.submitButton}>
-            Submit
-          </button>
-        </form>
-      ) : (
-        <p className={styles.successMessage}>
-          Thank you! Your request for a live demo has been submitted
-          successfully.
-        </p>
-      )}
+                rows="4"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" className={styles.submitButton}>
+              Submit
+            </button>
+          </form>
+        ) : (
+          <p className={styles.successMessage}>
+            Thank you! Your request for a live demo has been submitted successfully.
+          </p>
+        )}
+      </div>
     </div>
   );
 };
@@ -89,16 +90,32 @@ export default RequestDemoForm;
 
 
 
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
 .formContainer {
-  padding: 10px;
   background-color: #f9f9f9;
   border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin-bottom: 20px;
+  padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   max-width: 450px;
-  margin: 0 auto;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   animation: slideIn 0.5s ease-out;
+  position: relative;
 }
 
 .demoHead {
@@ -106,6 +123,11 @@ export default RequestDemoForm;
   margin-bottom: 10px;
   text-align: center;
   font-size: 18px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
 }
 
 .formGroup {
@@ -123,19 +145,19 @@ label {
 }
 
 input::placeholder, textarea::placeholder {
-  color: #999999; /* Light gray */
+  color: #999999;
   opacity: 1;
 }
 
 input, textarea {
-  width: 90%;
+  width: 100%;
   padding: 4px;
   border: none;
-  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-bottom: 1px solid #ccc;
   border-radius: 0;
   font-size: 12px;
   transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
+  font-family: "Poppins", sans-serif;
 }
 
 input:focus, textarea:focus {
@@ -143,17 +165,16 @@ input:focus, textarea:focus {
   outline: none;
 }
 
-/* Styling for Select */
 .select {
-  width: 92%;
-  font-size: 12px; /* Decrease font size for the Select */
+  width: 100%;
+  font-size: 12px;
 }
 
 .select__control {
-  border: 1px solid #5f1ec1 !important; /* Ensure control border is applied */
+  border: 1px solid #5f1ec1 !important;
   border-radius: 4px !important;
   font-family: "Poppins", sans-serif !important;
-  font-size: 12px !important; /* Ensure control text is 12px */
+  font-size: 12px !important;
   color: #333 !important;
 }
 
@@ -163,22 +184,22 @@ input:focus, textarea:focus {
 }
 
 .select__menu {
-  font-size: 12px !important; /* Ensure menu text is 12px */
+  font-size: 12px !important;
 }
 
 .select__option {
   padding: 8px 8px !important;
-  font-size: 12px !important; /* Ensure option text is 12px */
+  font-size: 12px !important;
 }
 
 .select__option--is-focused {
-  background-color: #5f1ec1 !important; /* Change background color on focus */
-  color: white !important; /* Change text color on focus */
+  background-color: #5f1ec1 !important;
+  color: white !important;
 }
 
 .select__option--is-selected {
-  background-color: #5f1ec1 !important; /* Change background color on selection */
-  color: white !important; /* Change text color on selection */
+  background-color: #5f1ec1 !important;
+  color: white !important;
 }
 
 .submitButton {
@@ -191,14 +212,13 @@ input:focus, textarea:focus {
   font-size: 14px;
   margin-top: 10px;
   transition: background-color 0.3s;
-  margin-left: 30px;
-  width: 78%; /* Make the button take the full width */
+  width: 100%;
 }
 
 .closeButton {
   position: absolute;
-  top: 50px;
-  right: 25px;
+  top: 10px;
+  right: 10px;
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -214,4 +234,15 @@ input:focus, textarea:focus {
   text-align: center;
   color: #5f1ec1;
   font-size: 16px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
