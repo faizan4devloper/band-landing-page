@@ -1,12 +1,15 @@
-// components/Cards/Cards.js
-import React, { useState } from "react";
-import { Link } from "react-router-dom"; // Import Link component
-import styles from "./Cards.module.css"; // Import CSS module for card styles
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import styles from "./Cards.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <div className={styles.cardsContainer}>
@@ -20,7 +23,6 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
           <div className={styles.cardContent}>
             <h2>{title}</h2>
             <p>{description}</p>
-            {/* Add Link component to navigate to dashboard with title query parameter */}
             <Link
               to={{
                 pathname: "/dashboard",
@@ -28,7 +30,6 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
               }}
               className={styles.readMoreLink}
             >
-              {/* Content of the "Read More" link */}
               <span
                 className={`${styles.arrow} ${styles.rightArrow} ${
                   isHovered ? styles.hovered : ""
@@ -38,18 +39,19 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
               >
                 <span
                   style={{
-                    fontSize: isHovered ? "0.8em" : "1em", // Decrease font size on hover
+                    fontSize: isHovered ? "0.8em" : "1em",
                   }}
                 >
                   {isHovered && "Read More "}
                 </span>
                 <span
                   style={{
-                    marginLeft: isHovered ? "5px" : "0", // Add space on hover
-                    fontSize: isHovered ? "1.3em" : "1em", // Increase size on hover
+                    marginLeft: isHovered ? "5px" : "0",
+                    fontSize: isHovered ? "1.3em" : "1em",
                   }}
                 >
-<FontAwesomeIcon icon={faArrowRight} />                </span>
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </span>
               </span>
             </Link>
           </div>
@@ -63,7 +65,12 @@ export default Card;
 
 
 
-
+.cardsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 20px;
+}
 
 .card {
   width: 160px;
@@ -77,8 +84,8 @@ export default Card;
   margin-bottom: 60px;
   transition: transform 0.6s ease;
 }
-.card:hover{
-    transform: translate(0, -8px);
+.card:hover {
+  transform: translate(0, -8px);
 }
 
 .big {
@@ -95,10 +102,10 @@ export default Card;
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 75px; /* Set a fixed height */
+  height: 75px;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
     linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   color: white;
   padding: 18px;
@@ -118,13 +125,12 @@ export default Card;
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
     linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
   border-radius: 12px;
-    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-
+  backdrop-filter: blur(10px);
   color: white;
   padding: 18px;
   box-sizing: border-box;
   transform: translateY(100%);
-  transition: transform 0.3s ease, background 0.3s ease; /* Adjusted transition timing */
+  transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .cardContent.slide-up {
@@ -144,44 +150,42 @@ export default Card;
   z-index: -1;
 }
 .arrow {
- cursor: pointer;
-    position: absolute;
-    display: flex;
-    bottom: 10px;
-    right: 10px;
-    font-size: 14px;
-    width: 7px;
-    height: 23px;
-    padding: 2px 12px 0px 6px;
-    border-radius: 50px;
-    border: 2px solid rgba(255, 255, 255, 1);
-    color: rgba(255, 255, 255, 1);
-    overflow: hidden;
-    transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
+  cursor: pointer;
+  position: absolute;
+  display: flex;
+  bottom: 10px;
+  right: 10px;
+  font-size: 14px;
+  width: 7px;
+  height: 23px;
+  padding: 2px 12px 0px 6px;
+  border-radius: 50px;
+  border: 2px solid rgba(255, 255, 255, 1);
+  color: rgba(255, 255, 255, 1);
+  overflow: hidden;
+  transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
 }
 
 .arrow:hover {
-  width: 80px; /* Increase width on hover */
+  width: 80px;
   align-items: center;
   font-size: 10px;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    1
-  ); /* Change background color on hover */
-  color: rgba(15, 95, 220, 1); /* Change text color on hover */
+  background-color: rgba(255, 255, 255, 1);
+  color: rgba(15, 95, 220, 1);
 }
 
 .arrow.hovered {
   width: 65px;
 }
+
 .card:hover .cardContent::before {
   top: 0;
 }
+
 .readMore {
   left: 10px;
 }
+
 .card:hover .cardContent::before {
   background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
 }
@@ -189,4 +193,3 @@ export default Card;
 .big .cardContent {
   transform: translateY(0);
 }
-
