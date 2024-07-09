@@ -1,119 +1,186 @@
-/* RequestDemoForm.module.css */
+// components/Cards/Cards.js
+import React, { useState } from "react";
+import { Link } from "react-router-dom"; // Import Link component
+import styles from "./Cards.module.css"; // Import CSS module for card styles
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-.formContainer {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
-}
+const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-.demoHead {
-  color: #5f1ec1;
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: 18px;
-}
+  return (
+    <div className={styles.cardsContainer}>
+      <div
+        className={`${styles.card} ${isBig ? styles.big : ""}`}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        onClick={toggleSize}
+      >
+        {!isBig && <div className={styles.cardTitle}>{title}</div>}
+        {isBig && (
+          <div className={styles.cardContent}>
+            <h2>{title}</h2>
+            <p>{description}</p>
+            {/* Add Link component to navigate to dashboard with title query parameter */}
+            <Link
+              to={{
+                pathname: "/dashboard",
+                search: `?title=${encodeURIComponent(title)}`,
+              }}
+              className={styles.readMoreLink}
+            >
+              {/* Content of the "Read More" link */}
+              <span
+                className={`${styles.arrow} ${styles.rightArrow} ${
+                  isHovered ? styles.hovered : ""
+                }`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              >
+                <span
+                  style={{
+                    fontSize: isHovered ? "0.8em" : "1em", // Decrease font size on hover
+                  }}
+                >
+                  {isHovered && "Read More "}
+                </span>
+                <span
+                  style={{
+                    marginLeft: isHovered ? "5px" : "0", // Add space on hover
+                    fontSize: isHovered ? "1.3em" : "1em", // Increase size on hover
+                  }}
+                >
+<FontAwesomeIcon icon={faArrowRight} />                </span>
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-.formGroup {
-  margin-bottom: 10px;
+export default Card;
+
+
+.card {
+  width: 160px;
+  overflow: hidden;
+  height: 160px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
   position: relative;
+  margin-bottom: 60px;
+  transition: transform 0.3s ease;
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #000;
-  font-size: 12px;
-  transition: color 0.3s;
+.big {
+  width: 190px;
+  height: 190px;
+  z-index: 0;
+  transform: scale(1.1);
 }
 
-input::placeholder {
-  color: #999999; /* Light gray */
-  opacity: 1;
-}
-
-input {
-  width: 90%;
-  padding: 4px;
-  border: none;
-  border-bottom: 1px solid #ccc; /* Only bottom border */
-  border-radius: 0;
-  font-size: 12px;
-  transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
-}
-
-input:focus {
-  border-color: #5f1ec1;
-  outline: none;
-}
-
-/* Styling for Select */
-.select {
-  width: 90%;
-  font-size: 12px; /* Decrease font size for the Select */
-  margin-left: 10px; /* Adjust margin as needed */
-}
-
-.select__control {
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px; /* Ensure control text is 12px */
-  color: #333;
-}
-
-.select__control--is-focused {
-  border-color: #5f1ec1;
-  box-shadow: 0 0 0 1px #5f1ec1;
-}
-
-.select__menu {
-  font-size: 12px; /* Ensure menu text is 12px */
-}
-
-.select__option {
-  padding: 8px 8px;
-  font-size: 12px; /* Ensure option text is 12px */
-}
-
-.submitButton {
-  background-color: #5f1ec1;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-  transition: background-color 0.3s;
-  margin-left: 30px;
-  width: 78%; /* Make the button take the full width */
-}
-
-.closeButton {
+.cardTitle {
   position: absolute;
-  top: 20px;
-  right: 10px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: #aaa;
-}
-
-.closeButton:hover {
-  color: #555;
-}
-
-.successMessage {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 75px; /* Set a fixed height */
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
+    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
+  backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+  border-radius: 12px;
+  color: white;
+  padding: 18px;
+  box-sizing: border-box;
+  transition: opacity 0.3s ease;
   text-align: center;
-  color: #5f1ec1;
-  font-size: 16px;
 }
+
+.cardContent {
+  position: absolute;
+  font-family: "Poppins", sans-serif;
+  font-size: 8px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
+    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
+  border-radius: 12px;
+    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+
+  color: white;
+  padding: 18px;
+  box-sizing: border-box;
+  transform: translateY(100%);
+  transition: transform 0.3s ease, background 0.3s ease; /* Adjusted transition timing */
+}
+
+.cardContent.slide-up {
+  transform: translateY(0);
+}
+
+.cardContent::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, #6f36cd, #1f77f6);
+  transition: top 0.3s ease;
+  border-radius: 12px;
+  z-index: -1;
+}
+.arrow {
+ cursor: pointer;
+    position: absolute;
+    display: flex;
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+    width: 7px;
+    height: 23px;
+    padding: 2px 12px 0px 6px;
+    border-radius: 50px;
+    border: 2px solid rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1);
+    overflow: hidden;
+    transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
+}
+
+.arrow:hover {
+  width: 80px; /* Increase width on hover */
+  align-items: center;
+  font-size: 10px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    1
+  ); /* Change background color on hover */
+  color: rgba(15, 95, 220, 1); /* Change text color on hover */
+}
+
+.arrow.hovered {
+  width: 65px;
+}
+.card:hover .cardContent::before {
+  top: 0;
+}
+.readMore {
+  left: 10px;
+}
+.card:hover .cardContent::before {
+  background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
+}
+
+.big .cardContent {
+  transform: translateY(0);
+}
+
