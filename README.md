@@ -1,23 +1,12 @@
 import React, { useState } from "react";
-import Modal from "react-modal";
 import styles from "./MainContent.module.css";
 import Video from "./Video";
 
-// Required for react-modal to work properly
-Modal.setAppElement("#root");
-
 const MainContent = ({ activeTab, content }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [modalImage, setModalImage] = useState("");
+  const [maximizedImage, setMaximizedImage] = useState(null);
 
-  const openModal = (imageSrc) => {
-    setModalImage(imageSrc);
-    setIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsOpen(false);
-    setModalImage("");
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
   };
 
   if (!content || !content.description) {
@@ -60,7 +49,12 @@ const MainContent = ({ activeTab, content }) => {
     solutionFlow: (
       <div className={styles.solution}>
         <h2>Solution Flow</h2>
-        <img src={content.solutionFlow} alt="Solution Flow" onClick={() => openModal(content.solutionFlow)} />
+        <img
+          src={content.solutionFlow}
+          alt="Solution Flow"
+          className={maximizedImage === content.solutionFlow ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content.solutionFlow)}
+        />
       </div>
     ),
     demo: (
@@ -72,7 +66,12 @@ const MainContent = ({ activeTab, content }) => {
     techArchitecture: (
       <div className={styles.architecture}>
         <h2>Technical Architecture</h2>
-        <img src={content.techArchitecture} alt="Technical Architecture" onClick={() => openModal(content.techArchitecture)} />
+        <img
+          src={content.techArchitecture}
+          alt="Technical Architecture"
+          className={maximizedImage === content.techArchitecture ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content.techArchitecture)}
+        />
       </div>
     ),
     benefits: (
@@ -102,49 +101,24 @@ const MainContent = ({ activeTab, content }) => {
   return (
     <div className={styles.mainContent}>
       {contentMap[activeTab] || <div>Content not available</div>}
-      <Modal isOpen={isOpen} onRequestClose={closeModal} className={styles.modal} overlayClassName={styles.overlay}>
-        <img src={modalImage} alt="Modal Content" className={styles.modalImage} />
-        <button onClick={closeModal} className={styles.closeButton}>Close</button>
-      </Modal>
     </div>
   );
 };
 
 export default MainContent;
 
-
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  margin-right: -50%;
-  transform: translate(-50%, -50%);
-  max-width: 90%;
-  max-height: 90%;
-  padding: 0;
-  border: none;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  background-color: white;
-}
-
-.overlay {
-  background-color: rgba(0, 0, 0, 0.75);
-}
-
-.modalImage {
-  width: 100%;
-  height: auto;
-}
-
-.closeButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 20px;
+.mainContent img {
   cursor: pointer;
-  color: white;
+  transition: transform 0.3s ease;
+}
+
+.maximized {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.9);
+  object-fit: contain;
 }
