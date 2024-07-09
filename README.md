@@ -178,16 +178,10 @@ export default MainContent;
 }
 
 .maximized {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 90%;
+  max-height: 90%;
   margin: auto;
   display: block;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 1001;
 }
 
 .overlay {
@@ -201,6 +195,7 @@ export default MainContent;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  cursor: pointer;
 }
 
 .benefits, .description, .demo, .architecture, .adoption, .solution {
