@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
-const Cards = ({ imageUrl, title, description, isBig, toggleSize, viewAll }) => {
+const Cards = ({ imageUrl, title, description, isBig, toggleSize, showReadMoreLink }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
@@ -17,26 +17,21 @@ const Cards = ({ imageUrl, title, description, isBig, toggleSize, viewAll }) => 
   };
 
   return (
-    <div className={styles.card} style={{ backgroundImage: `url(${imageUrl})` }} onClick={toggleSize}>
+    <div className={`${styles.card} ${isBig ? styles.big : ""}`} style={{ backgroundImage: `url(${imageUrl})` }}>
       {!isBig && <div className={styles.cardTitle}>{title}</div>}
       {isBig && (
         <div className={styles.cardContent}>
           <h2>{title}</h2>
           <p>{description}</p>
-          {!viewAll && (
-            <Link
-              to="/dashboard"
-              className={styles.readMoreLink}
-            >
+          {showReadMoreLink && (
+            <Link to="/dashboard" className={styles.readMoreLink}>
               <span
                 className={`${styles.arrow} ${styles.rightArrow} ${isHovered ? styles.hovered : ""}`}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
                 <span style={{ fontSize: isHovered ? "0.8em" : "1em" }}>{isHovered && "Read More "}</span>
-                <span style={{ marginLeft: isHovered ? "5px" : "0", fontSize: isHovered ? "1.3em" : "1em" }}>
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
+                <FontAwesomeIcon icon={faArrowRight} style={{ marginLeft: isHovered ? "5px" : "0" }} />
               </span>
             </Link>
           )}
@@ -47,6 +42,7 @@ const Cards = ({ imageUrl, title, description, isBig, toggleSize, viewAll }) => 
 };
 
 export default Cards;
+
 
 // src/components/Cards/AllCardsPage.js
 import React from "react";
@@ -73,7 +69,7 @@ const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
             title={card.title}
             description={card.description}
             isBig={false}
-            viewAll={true} // Pass viewAll prop as true
+            showReadMoreLink={false} // Pass showReadMoreLink prop as false
           />
         ))}
       </div>
