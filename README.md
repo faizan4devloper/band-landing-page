@@ -15,10 +15,7 @@ const MyCarousel = ({ isModalOpen }) => {
     const style = document.createElement("style");
     style.innerHTML = `
       .carousel .control-dots {
-        z-index: 2 !important;
-      }
-      .carousel .control-dots .dot {
-        cursor: pointer;
+        z-index: 10 !important;
       }
       .${styles.carouselOverlay}, .${styles.carouselOverlay6} {
         z-index: 1 !important;
@@ -109,20 +106,13 @@ const MyCarousel = ({ isModalOpen }) => {
 
 export default MyCarousel;
 
+
 .carousel .slide {
     min-width: 100%;
     margin: 0;
     height: 352px !important;
     position: relative;
     text-align: center;
-}
-
-.carousel .control-dots {
-  z-index: 2 !important;
-}
-
-.carousel .control-dots .dot {
-  cursor: pointer;
 }
 
 .carouselItem {
@@ -207,5 +197,9 @@ export default MyCarousel;
   padding: 0 !important;
   text-align: center !important;
   width: 100% !important;
-  z-index: 2 !important;
+  z-index: 10 !important;
+}
+
+.carousel .control-dots .dot {
+  cursor: pointer;
 }
