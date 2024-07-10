@@ -28,8 +28,8 @@ const RequestDemoForm = ({ closeModal }) => {
   const customStyles = {
     control: (provided, state) => ({
       ...provided,
-      borderRadius: 0,
-      width: "80%",
+      borderRadius: "4px",
+      width: "94%",
       border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc", // Border color changes on focus
       cursor: "pointer",
       backgroundColor: "#fff", // Background color
@@ -39,6 +39,8 @@ const RequestDemoForm = ({ closeModal }) => {
       ...provided,
       backgroundColor: state.isSelected ? "#5f1ec1" : "#fff", // Background color of selected option
       color: state.isSelected ? "#fff" : "#555", // Font color of selected option
+      fontSize:"12px",
+      width:"94%",
       cursor: "pointer",
     }),
   };
