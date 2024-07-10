@@ -15,7 +15,13 @@ const MyCarousel = ({ isModalOpen }) => {
     const style = document.createElement("style");
     style.innerHTML = `
       .carousel .control-dots {
-        z-index: 0 !important;
+        z-index: 2 !important;
+      }
+      .carousel .control-dots .dot {
+        cursor: pointer;
+      }
+      .${styles.carouselOverlay}, .${styles.carouselOverlay6} {
+        z-index: 1 !important;
       }
     `;
     document.head.appendChild(style);
@@ -102,3 +108,104 @@ const MyCarousel = ({ isModalOpen }) => {
 };
 
 export default MyCarousel;
+
+.carousel .slide {
+    min-width: 100%;
+    margin: 0;
+    height: 352px !important;
+    position: relative;
+    text-align: center;
+}
+
+.carousel .control-dots {
+  z-index: 2 !important;
+}
+
+.carousel .control-dots .dot {
+  cursor: pointer;
+}
+
+.carouselItem {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 280px;
+  margin: 70px 0;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
+}
+
+.carouselImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+}
+
+.carouselImage6 {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+}
+
+.carouselOverlay {
+  position: absolute;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
+  z-index: 1;
+}
+
+.carouselOverlay6 {
+  position: absolute;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 0%);
+  z-index: 1;
+}
+
+.carouselCaption {
+  position: absolute;
+  top: 50%; /* Position the caption vertically in the middle */
+  left: 50%; /* Position the caption horizontally in the middle */
+  transform: translate(-50%, -50%); /* Center the caption both vertically and horizontally */
+  text-align: center; /* Center the text within the caption */
+  color: white;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  z-index: 2;
+}
+
+.carouselCaption h2 {
+  display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
+}
+
+.carouselCaption span {
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
+}
+
+.carousel .control-dots {
+  position: absolute !important;
+  bottom: 0 !important;
+  margin: 10px 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+  z-index: 2 !important;
+}
