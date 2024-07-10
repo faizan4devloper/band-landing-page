@@ -13,6 +13,7 @@ import { cardsData } from "./data"; // Import card data from a separate file
 const App = () => {
   const [bigIndex, setBigIndex] = React.useState(null);
   const cardsContainerRef = useRef(null);
+  const location = useLocation();
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
@@ -64,9 +65,11 @@ const App = () => {
             element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
           />
         </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-          <FontAwesomeIcon icon={faChevronDown} />
-        </div>
+        {location.pathname === "/" && (
+          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+            <FontAwesomeIcon icon={faChevronDown} />
+          </div>
+        )}
       </div>
     </Router>
   );
