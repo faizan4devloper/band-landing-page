@@ -1,235 +1,186 @@
-import React, { useRef } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import Header from "./components/Header/Header";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
-import { cardsData } from "./data"; // Import card data from a separate file
+import React from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MyCarousel.module.css"; // Import CSS module
 
-const App = () => {
-  const [bigIndex, setBigIndex] = React.useState(null);
-  const cardsContainerRef = useRef(null);
+import imgCarousel from "./carousel1.jpg";
+import imgCarousel3 from "./carousel3.jpg";
+import imgCarousel4 from "./carousel4.jpg";
+import imgCarousel5 from "./carousel5.jpg";
+import imgCarousel6 from "./banner-1.png";
 
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleClickLeft = () => {
-    if (bigIndex === null || bigIndex === 0) {
-      setBigIndex(cardsData.length - 1);
-    } else {
-      setBigIndex(bigIndex - 1);
-    }
-  };
-
-  const handleClickRight = () => {
-    if (bigIndex === null || bigIndex === cardsData.length - 1) {
-      setBigIndex(0);
-    } else {
-      setBigIndex(bigIndex + 1);
-    }
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
+const MyCarousel = ({ isModalOpen }) => {
   return (
-    <Router> {/* Ensure Router is wrapping your entire application */}
-      <div className={styles.app}>
-        <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-              />
-            }
-          />
-          <Route path="/dashboard" element={<SideBarPage />} />
-          <Route
-            path="/all-cards"
-            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-          />
-        </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-          <FontAwesomeIcon icon={faChevronDown} />
+    <div className={styles.carouselContainer}>
+      <Carousel
+        showArrows={false}
+        showThumbs={false}
+        showIndicators={true}
+        infiniteLoop={true}
+        autoPlay={true}
+        interval={2000}
+        stopOnHover={true}
+        className={styles.customIndicator} // Apply the customIndicator class
+      >
+        <div
+          className={styles.carouselItem}
+          style={{
+            background:
+              "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)",
+          }}
+        >
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS<span>Gen AI Pilots</span>
+            </h2>
+          </div>
         </div>
-      </div>
-    </Router>
-  );
-};
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-}) => {
-  return (
-    <>
-      <MyCarousel />
-      <div className={styles.cardsContainer} ref={cardsContainerRef}>
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel6} className={styles.carouselImage6} />
+          <div className={styles.carouselOverlay6}></div> {/* Add overlay */}
         </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={index === bigIndex}
-            toggleSize={() => toggleSize(index)}
-          />
-        ))}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
-};
 
-export default App;
-
-
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import Header from "../Header/Header";
-// import Footer from "../Footer/Footer";
-import SideBar from "./SideBar";
-import MainContent from "./MainContent";
-import styles from "./SideBarPage.module.css"; // Import the module.css file for styling
-import { cardsData } from "../../data"; // Import cardsData from the data file
-
-const SideBarPage = () => {
-  const [activeTab, setActiveTab] = useState("description");
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState("");
-  const location = useLocation();
-
-  useEffect(() => {
-    // Extract card title from query parameter
-    const params = new URLSearchParams(location.search);
-    const title = params.get("title");
-    if (title) {
-      setCardTitle(title);
-      const card = cardsData.find((c) => c.title === title);
-      if (card) {
-        setCardContent(card.content);
-      }
-    }
-  }, [location.search]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-  };
-
-  // Function to handle clicking on the back button
-  const handleBackButtonClick = () => {
-    window.history.back(); // Go back to the previous page
-  };
-
-  return (
-    <div className={styles.sideBarPage}>
-      <Header />
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel3} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel4} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel5} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS EBU<span>Gen AI Pilots</span>
+            </h2>
+          </div>
+        </div>
+      </Carousel>
     </div>
   );
 };
 
-export default SideBarPage;
+export default MyCarousel;
+
+.carousel .slide {
+    min-width: 100%;
+    margin: 0;
+    height: 352px !important;
+    position: relative;
+    text-align: center;
+}
+
+.carousel .control-dots{
+  z-index: 0 !important;
+}
+
+.carouselItem {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 280px;
+  margin: 70px 0;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
+}
+
+.carouselImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+}
+
+.carouselImage6 {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
+}
+
+.carouselOverlay {
+  position: absolute;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
+}
+
+/*.carouselOverlay6 {*/
+/*  position: absolute;*/
+/*  border-radius: 6px;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 0%);*/
+/*}*/
+
+.carouselCaption {
+  position: absolute;
+  top: 50%; /* Position the caption vertically in the middle */
+  left: 50%; /* Position the caption horizontally in the middle */
+  transform: translate(-50%, -50%); /* Center the caption both vertically and horizontally */
+  text-align: center; /* Center the text within the caption */
+  color: white;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  z-index: 1;
+}
+
+.carouselCaption h2 {
+  display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
+}
+
+.carouselCaption span {
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
+}
 
 
-
-
-
-
-
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import Header from "../Header/Header";
-import SideBar from "./SideBar";
-import MainContent from "./MainContent";
-import styles from "./SideBarPage.module.css"; // Import the module.css file for styling
-import { cardsData } from "../../data"; // Import cardsData from the data file
-
-const SideBarPage = () => {
-  const [activeTab, setActiveTab] = useState("description");
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState("");
-  const location = useLocation();
-
-  useEffect(() => {
-    // Extract card title from query parameter
-    const params = new URLSearchParams(location.search);
-    const title = params.get("title");
-    if (title) {
-      setCardTitle(title);
-      const card = cardsData.find((c) => c.title === title);
-      if (card) {
-        setCardContent(card.content);
-      }
-    }
-  }, [location.search]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-  };
-
-  // Function to handle clicking on the back button
-  const handleBackButtonClick = () => {
-    window.history.back(); // Go back to the previous page
-  };
-
-  return (
-    <div className={styles.sideBarPage}>
-      <Header />
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
-    </div>
-  );
-};
-
-export default SideBarPage;
+.carousel .control-dots {
+    position: absolute !important;
+    bottom: 0 !important;
+    margin: 10px 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    width: 100% !important;
+    z-index: 0 !important;
+}
