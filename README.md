@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MyCarousel.module.css"; // Import CSS module
-import styled from "styled-components";
 
 import imgCarousel from "./carousel1.jpg";
 import imgCarousel3 from "./carousel3.jpg";
@@ -10,16 +9,24 @@ import imgCarousel4 from "./carousel4.jpg";
 import imgCarousel5 from "./carousel5.jpg";
 import imgCarousel6 from "./banner-1.png";
 
-const StyledCarousel = styled(Carousel)`
-  .control-dots {
-    z-index: 0 !important;
-  }
-`;
-
 const MyCarousel = ({ isModalOpen }) => {
+  useEffect(() => {
+    // Create a style tag and append it to the head
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .carousel .control-dots {
+        z-index: 0 !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className={styles.carouselContainer}>
-      <StyledCarousel
+      <Carousel
         showArrows={false}
         showThumbs={false}
         showIndicators={true}
@@ -89,7 +96,7 @@ const MyCarousel = ({ isModalOpen }) => {
             </h2>
           </div>
         </div>
-      </StyledCarousel>
+      </Carousel>
     </div>
   );
 };
