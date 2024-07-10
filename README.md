@@ -1,3 +1,5 @@
+useLocation() may be used only in the context of a <Router> component.
+
 import React, { useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
