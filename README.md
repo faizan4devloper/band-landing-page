@@ -190,4 +190,4 @@ export default MyCarousel;
   margin-left: 15px;
 }
 
-
+.carousel .slider-wrapper.axis-horizontal .slider .slide
