@@ -176,3 +176,53 @@ const MyCarousel = ({ isModalOpen }) => {
 };
 
 export default MyCarousel;
+
+import React, { useState } from "react";
+import Modal from "react-modal";
+import { useNavigate } from 'react-router-dom';
+import styles from "./Header.module.css";
+import logoImage from "./HCL Tech.svg";
+import RequestDemoForm from "./RequestDemoForm";
+
+const Header = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate('/');
+  };
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  return (
+    <div className={styles.navbarWrapper}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img src={logoImage} alt="" onClick={handleImageClick} style={{cursor:'pointer'}} title="Navigate to Home"/>
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>Request For live Demo</button>
+        </div>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+    </div>
+  );
+};
+
+export default Header;
