@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MyCarousel.module.css"; // Import CSS module
@@ -10,6 +10,19 @@ import imgCarousel5 from "./carousel5.jpg";
 import imgCarousel6 from "./banner-1.png";
 
 const MyCarousel = ({ isModalOpen }) => {
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.innerHTML = `
+      .carousel .control-dots {
+        z-index: 0 !important;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <div className={styles.carouselContainer}>
       <Carousel
@@ -20,7 +33,7 @@ const MyCarousel = ({ isModalOpen }) => {
         autoPlay={true}
         interval={2000}
         stopOnHover={true}
-        className={`${styles.customCarousel} ${styles.customIndicator}`} // Apply the customIndicator class
+        className={styles.customIndicator} // Apply the customIndicator class
       >
         <div
           className={styles.carouselItem}
