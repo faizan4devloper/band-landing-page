@@ -14,7 +14,11 @@ const MyCarousel = ({ isModalOpen }) => {
     const style = document.createElement("style");
     style.innerHTML = `
       .carousel .control-dots {
-        z-index: 0 !important;
+        position: absolute;
+        bottom: -30px; /* Adjust this value to position the dots outside the carousel */
+        z-index: 10 !important;
+        width: 100%;
+        text-align: center;
       }
       .carousel .slider-wrapper.axis-horizontal .slider .slide {
         width: 300px !important;
@@ -107,6 +111,7 @@ const MyCarousel = ({ isModalOpen }) => {
 export default MyCarousel;
 
 
+
 .carousel .slide {
     min-width: 100%;
     margin: 0;
@@ -116,12 +121,16 @@ export default MyCarousel;
 }
 
 .customCarousel .carousel .control-dots {
-  z-index: 0 !important;
+  z-index: 10 !important;
+  position: absolute;
+  bottom: -30px; /* Adjust this value to position the dots outside the carousel */
+  width: 100%;
+  text-align: center;
 }
 
 .carousel .slider-wrapper.axis-horizontal .slider .slide {
   width: 300px !important;
-  height: 300px !important;
+  height: 430px !important;
 }
 
 .carouselItem {
