@@ -1,140 +1,113 @@
-import React, { useState } from "react";
-import MyCarousel from "./MyCarousel";
-import RequestDemoForm from "./RequestDemoForm";
-import styles from "./ParentComponent.module.css"; // Assuming you have a CSS module for the parent component
+import React, { useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
+import { cardsData } from "./data"; // Import card data from a separate file
 
-const ParentComponent = () => {
-  const [isFormVisible, setIsFormVisible] = useState(false);
+const App = () => {
+  const [bigIndex, setBigIndex] = React.useState(null);
+  const cardsContainerRef = useRef(null);
 
-  const openForm = () => {
-    setIsFormVisible(true);
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const closeForm = () => {
-    setIsFormVisible(false);
+  const handleClickLeft = () => {
+    if (bigIndex === null || bigIndex === 0) {
+      setBigIndex(cardsData.length - 1);
+    } else {
+      setBigIndex(bigIndex - 1);
+    }
+  };
+
+  const handleClickRight = () => {
+    if (bigIndex === null || bigIndex === cardsData.length - 1) {
+      setBigIndex(0);
+    } else {
+      setBigIndex(bigIndex + 1);
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
-    <div>
-      <button onClick={openForm}>Request a Demo</button>
-      <div className={isFormVisible ? styles.hideDots : ""}>
-        <MyCarousel />
+    <Router> {/* Ensure Router is wrapping your entire application */}
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+          />
+        </Routes>
+        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+          <FontAwesomeIcon icon={faChevronDown} />
+        </div>
       </div>
-      {isFormVisible && <RequestDemoForm closeModal={closeForm} />}
-    </div>
+    </Router>
   );
 };
 
-export default ParentComponent;
-
-import React, { useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import styles from "./MyCarousel.module.css";
-
-import imgCarousel from "./carousel1.jpg";
-import imgCarousel3 from "./carousel3.jpg";
-import imgCarousel4 from "./carousel4.jpg";
-import imgCarousel5 from "./carousel5.jpg";
-import imgCarousel6 from "./banner-1.png";
-
-const MyCarousel = () => {
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.innerHTML = `
-      .carousel .control-dots {
-        z-index: 10 !important;
-      }
-      .${styles.carouselOverlay}, .${styles.carouselOverlay6} {
-        z-index: 1 !important;
-      }
-    `;
-    document.head.appendChild(style);
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
-
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+}) => {
   return (
-    <div className={styles.carouselContainer}>
-      <Carousel
-        showArrows={false}
-        showThumbs={false}
-        showIndicators={true}
-        infiniteLoop={true}
-        autoPlay={true}
-        interval={2000}
-        stopOnHover={true}
-      >
-        <div
-          className={styles.carouselItem}
-          style={{
-            background:
-              "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)",
-          }}
-        >
-          <img src={imgCarousel} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2>
-              AWS<span>Gen AI Pilots</span>
-            </h2>
-          </div>
+    <>
+      <MyCarousel />
+      <div className={styles.cardsContainer} ref={cardsContainerRef}>
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
         </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel6} className={styles.carouselImage6} />
-          <div className={styles.carouselOverlay6}></div>
-        </div>
-
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel3} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel4} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel5} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2>
-              AWS EBU<span>Gen AI Pilots</span>
-            </h2>
-          </div>
-        </div>
-      </Carousel>
-    </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(0, 5).map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
   );
 };
 
-export default MyCarousel;
-
-
-
-.hideDots .carousel .control-dots {
-  display: none !important;
-}
+export default App;
