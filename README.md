@@ -16,6 +16,10 @@ const MyCarousel = ({ isModalOpen }) => {
       .carousel .control-dots {
         z-index: 0 !important;
       }
+      .carousel .slider-wrapper.axis-horizontal .slider .slide {
+        width: 300px !important;
+        height: 300px !important;
+      }
     `;
     document.head.appendChild(style);
     return () => {
@@ -103,8 +107,6 @@ const MyCarousel = ({ isModalOpen }) => {
 export default MyCarousel;
 
 
-
-
 .carousel .slide {
     min-width: 100%;
     margin: 0;
@@ -113,8 +115,13 @@ export default MyCarousel;
     text-align: center;
 }
 
-.customCarousel .carousel .control-dots{
+.customCarousel .carousel .control-dots {
   z-index: 0 !important;
+}
+
+.carousel .slider-wrapper.axis-horizontal .slider .slide {
+  width: 300px !important;
+  height: 300px !important;
 }
 
 .carouselItem {
@@ -152,16 +159,6 @@ export default MyCarousel;
   background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
 }
 
-/*.carouselOverlay6 {*/
-/*  position: absolute;*/
-/*  border-radius: 6px;*/
-/*  top: 0;*/
-/*  left: 0;*/
-/*  width: 100%;*/
-/*  height: 100%;*/
-/*  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 0%);*/
-/*}*/
-
 .carouselCaption {
   position: absolute;
   top: 50%; /* Position the caption vertically in the middle */
@@ -189,5 +186,3 @@ export default MyCarousel;
   padding: 18px 10px;
   margin-left: 15px;
 }
-
-.carousel .slider-wrapper.axis-horizontal .slider .slide
