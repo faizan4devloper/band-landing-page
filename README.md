@@ -184,3 +184,197 @@ export default MyCarousel;
     width: 100% !important;
     z-index: 0 !important;
 }
+
+
+
+import React from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MyCarousel.module.css"; // Import CSS module
+
+import imgCarousel from "./carousel1.jpg";
+import imgCarousel3 from "./carousel3.jpg";
+import imgCarousel4 from "./carousel4.jpg";
+import imgCarousel5 from "./carousel5.jpg";
+import imgCarousel6 from "./banner-1.png";
+
+const MyCarousel = ({ isModalOpen }) => {
+  return (
+    <div className={styles.carouselContainer}>
+      <Carousel
+        showArrows={false}
+        showThumbs={false}
+        showIndicators={true}
+        infiniteLoop={true}
+        autoPlay={true}
+        interval={2000}
+        stopOnHover={true}
+        className={styles.customIndicator} // Apply the customIndicator class
+      >
+        <div
+          className={styles.carouselItem}
+          style={{
+            background:
+              "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)",
+          }}
+        >
+          <img src={imgCarousel} className={styles.carouselImage} alt="Carousel 1" />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS<span>Gen AI Pilots</span>
+            </h2>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel6} className={styles.carouselImage6} alt="Carousel 6" />
+          <div className={styles.carouselOverlay6}></div> {/* Add overlay */}
+        </div>
+
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel} className={styles.carouselImage} alt="Carousel 1" />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel3} className={styles.carouselImage} alt="Carousel 3" />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel4} className={styles.carouselImage} alt="Carousel 4" />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel5} className={styles.carouselImage} alt="Carousel 5" />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS EBU<span>Gen AI Pilots</span>
+            </h2>
+          </div>
+        </div>
+      </Carousel>
+    </div>
+  );
+};
+
+export default MyCarousel;
+
+
+
+
+
+/* MyCarousel.module.css */
+
+.carousel .slide {
+    min-width: 100%;
+    margin: 0;
+    height: 352px !important;
+    position: relative;
+    text-align: center;
+}
+
+.carousel .control-dots {
+    z-index: 0 !important; /* Ensure this has higher specificity */
+}
+
+.carouselItem {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 280px;
+    margin: 70px 0;
+    overflow: hidden;
+    width: 85%;
+    border-radius: 10px;
+}
+
+.carouselImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire area */
+    object-position: center; /* Center the image */
+}
+
+.carouselImage6 {
+    width: 100%;
+    height: 100%;
+    object-fit: fill; /* Ensure the image covers the entire area */
+    object-position: center; /* Center the image */
+}
+
+.carouselOverlay {
+    position: absolute;
+    border-radius: 6px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
+}
+
+/* .carouselOverlay6 {
+    position: absolute;
+    border-radius: 6px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 0%);
+} */
+
+.carouselCaption {
+    position: absolute;
+    top: 50%; /* Position the caption vertically in the middle */
+    left: 50%; /* Position the caption horizontally in the middle */
+    transform: translate(-50%, -50%); /* Center the caption both vertically and horizontally */
+    text-align: center; /* Center the text within the caption */
+    color: white;
+    font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+    z-index: 1;
+}
+
+.carouselCaption h2 {
+    display: flex;
+    font-weight: 600;
+    font-size: 38px;
+    margin: 0;
+    padding: 15px;
+}
+
+.carouselCaption span {
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    border-left: 3px solid rgba(255, 255, 255, 1);
+    padding: 18px 10px;
+    margin-left: 15px;
+}
+
+.carousel .control-dots {
+    position: absolute !important;
+    bottom: 0 !important;
+    margin: 10px 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    width: 100% !important;
+    z-index: 0 !important;
+}
