@@ -1,251 +1,180 @@
-import React, { useRef, useCallback, useState, memo, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import styles from "./App.module.css";
-import { cardsData } from "./data";
+import React from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MyCarousel.module.css"; // Import CSS module
 
-const Header = React.lazy(() => import("./components/Header/Header"));
-const MyCarousel = React.lazy(() => import("./components/Carousel/MyCarousel"));
-const Cards = React.lazy(() => import("./components/Cards/Cards"));
-const SideBarPage = React.lazy(() => import("./components/Sidebar/SideBarPage"));
-const AllCardsPage = React.lazy(() => import("./components/Cards/AllCardsPage"));
+import imgCarousel from "./carousel1.jpg";
+import imgCarousel3 from "./carousel3.jpg";
+import imgCarousel4 from "./carousel4.jpg";
+import imgCarousel5 from "./carousel5.jpg";
+import imgCarousel6 from "./banner-1.png";
 
-const App = () => {
-  const [bigIndex, setBigIndex] = useState(null);
-  const cardsContainerRef = useRef(null);
-
-  const toggleSize = useCallback(
-    (index) => {
-      setBigIndex(index === bigIndex ? null : index);
-    },
-    [bigIndex]
-  );
-
-  const handleClickLeft = useCallback(() => {
-    setBigIndex((prevIndex) => (prevIndex === null || prevIndex === 0 ? cardsData.length - 1 : prevIndex - 1));
-  }, []);
-
-  const handleClickRight = useCallback(() => {
-    setBigIndex((prevIndex) => (prevIndex === null || prevIndex === cardsData.length - 1 ? 0 : prevIndex + 1));
-  }, []);
-
-  const handleScrollDown = useCallback(() => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
-
+const MyCarousel = ({ isModalOpen }) => {
   return (
-    <Router>
-      <div className={styles.app}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-        </Suspense>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-              />
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <Suspense fallback={<div>Loading...</div>}>
-                <SideBarPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/all-cards"
-            element={
-              <Suspense fallback={<div>Loading...</div>}>
-                <AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />
-              </Suspense>
-            }
-          />
-        </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-          <FontAwesomeIcon icon={faChevronDown} />
+    <div className={styles.carouselContainer}>
+      <Carousel
+        showArrows={false}
+        showThumbs={false}
+        showIndicators={true}
+        infiniteLoop={true}
+        autoPlay={true}
+        interval={2000}
+        stopOnHover={true}
+        className={styles.customIndicator} // Apply the customIndicator class
+      >
+        <div
+          className={styles.carouselItem}
+          style={{
+            background:
+              "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)",
+          }}
+        >
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS<span>Gen AI Pilots</span>
+            </h2>
+          </div>
         </div>
-      </div>
-    </Router>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel6} className={styles.carouselImage6} />
+          <div className={styles.carouselOverlay6}></div> {/* Add overlay */}
+        </div>
+
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel3} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel4} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
+            <p>Gen AI Pilots</p>
+          </div>
+        </div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel5} className={styles.carouselImage} />
+          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
+          <div className={styles.carouselCaption}>
+            <h2>
+              AWS EBU<span>Gen AI Pilots</span>
+            </h2>
+          </div>
+        </div>
+      </Carousel>
+    </div>
   );
 };
 
-const Home = memo(({ cardsData, handleClickLeft, handleClickRight, bigIndex, toggleSize, cardsContainerRef }) => {
-  return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <MyCarousel />
-      </Suspense>
-      <div className={styles.cardsContainer} ref={cardsContainerRef}>
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Suspense key={index} fallback={<div>Loading...</div>}>
-            <Cards
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={index === bigIndex}
-              toggleSize={() => toggleSize(index)}
-            />
-          </Suspense>
-        ))}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
-});
+export default MyCarousel;
 
-export default App;
-
-
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
-
-/* Hide the scrollbar */
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
+.carousel .control-dots{
+  background-color: rgba(95, 30, 193, 1) !important; /* Custom color for inactive indicators */
+  z-index:0 !important;
 }
 
-html,
-body {
-  overflow-y: scroll;
-  font-family: "Poppins", sans-serif;
-  scroll-behavior: smooth; /* Smooth scrolling */
+.carouselContainer .carousel .control-dots .dot.selected {
+  background-color: #6F36CD !important; /* Custom color for active indicator */
 }
-
-.app {
-  width: 1100px;
-  height: 600px;
-  margin: 0 auto;
+.carousel .slide {
+    min-width: 100%;
+    margin: 0;
+    height: 352px !important;
+    position: relative;
+    text-align: center;
 }
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  will-change: transform; /* Optimize for scrolling */
-}
-
-.arrow {
-  cursor: pointer;
+.carouselItem {
   position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 17px;
-  height: 22px;
-  padding: 3px 8px 5px 6px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 280px;
+  margin: 70px 0;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
 }
 
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
-
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
-
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-.viewAllContainer {
+.carouselImage {
   width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  margin-right: 112px;
+  height: 100%;
+  object-fit: cover; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
 }
 
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+.carouselImage6 {
+  width: 100%;
+  height: 100%;
+  object-fit: fill; /* Ensure the image covers the entire area */
+  object-position: center; /* Center the image */
 }
 
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+.carouselOverlay {
+  position: absolute;
+  border-radius: 6px;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
 }
 
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
+/*.carouselOverlay6 {*/
+/*  position: absolute;*/
+/*  border-radius: 6px;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 0%);*/
+/*}*/
 
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+.carouselCaption {
+  position: absolute;
+  top: 50%; /* Position the caption vertically in the middle */
+  left: 50%; /* Position the caption horizontally in the middle */
+  transform: translate(-50%, -50%); /* Center the caption both vertically and horizontally */
+  text-align: center; /* Center the text within the caption */
   color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-family: "Poppins", sans-serif; /* Apply Poppins font family */
+  z-index: 1;
 }
 
-.scrollDownButton:hover {
-  background-color: rgba(13, 85, 198, 1);
+.carouselCaption h2 {
+  display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
 }
+
+.carouselCaption span {
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
+}
+
+
