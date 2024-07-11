@@ -112,3 +112,27 @@ const Home = ({
 };
 
 export default App;
+
+
+
+.scrollDownButton {
+  position: absolute; /* Change position to absolute */
+  left: 20px; /* Adjust as per your layout */
+  bottom: 20px; /* Adjust as per your layout */
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  width: 21px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.scrollDownButton:hover {
+  background-color: rgba(13, 85, 198, 1); /* Darker shade on hover */
+}
