@@ -284,3 +284,52 @@ body {
 .scrollDownButton:hover {
   background-color: rgba(13, 85, 198, 1); /* Darker shade on hover */
 }
+
+
+
+// AllCardsPage.js
+import React, { useState } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  return (
+    <div className={styles.allCardsPage}>
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+        {cardsData.map((card, index) => (
+          <div key={index} className={styles.cardWrapper}>
+            <Cards
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={index === bigIndex}
+              toggleSize={() => toggleSize(index)}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default AllCardsPage;
+
+
+
+
+
