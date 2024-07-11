@@ -333,3 +333,75 @@ export default AllCardsPage;
 
 
 
+/* AllCardsPage.module.css */
+.allCardsPage {
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 40px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-right: 30px;
+  position: fixed;
+  left: 40px;
+}
+
+.backIcon {
+  font-size: 12px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
+
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Five cards per row */
+  gap: 20px; /* Adjust as needed for spacing between cards */
+  padding-top: 50px;
+  
+}
+
+@media (max-width: 1200px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(4, 1fr); /* Four cards per row on smaller screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(3, 1fr); /* Three cards per row on even smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row on mobile devices */
+  }
+}
+
+@media (max-width: 400px) {
+  .allCardsContainer {
+    grid-template-columns: 1fr; /* One card per row on very small screens */
+  }
+}
+
+/* Styles specifically for cards within AllCardsPage */
+.cardWrapper {
+  border: 1px solid rgba(0, 0, 0, 0.1); /* Example border style */
+  padding: 10px;
+  margin:auto 10px;
+  text-align: center;
+  border-radius: 4px;
+}
+
+.cardWrapper:hover {
+  border-color: rgba(95, 30, 193, 1); /* Change border color on hover */
+}
