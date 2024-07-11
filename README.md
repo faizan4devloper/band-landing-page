@@ -97,8 +97,6 @@ const MyCarousel = ({ isModalOpen }) => {
 export default MyCarousel;
 
 
-
-
 .carouselContainer .carousel .control-dots .dot.selected {
   background-color: #6F36CD !important; /* Custom color for active indicator */
 }
@@ -109,6 +107,7 @@ export default MyCarousel;
   height: 388px !important;
   position: relative;
   text-align: center;
+  height: 350px !important;
 }
 
 .carouselItem {
