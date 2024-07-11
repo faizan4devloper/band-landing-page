@@ -1,91 +1,117 @@
-import React, { useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import styles from "./MyCarousel.module.css"; // Import CSS module
+import React, { useState } from "react";
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
 
-import imgCarousel1 from "./carousel1.jpg";
-import imgCarousel3 from "./carousel3.jpg";
-import imgCarousel4 from "./carousel4.jpg";
-import imgCarousel5 from "./carousel5.jpg";
-import imgCarousel6 from "./banner-1.png";
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
 
-const MyCarousel = ({ isModalOpen }) => {
-  useEffect(() => {
-    // Example of using useEffect to manipulate DOM elements
-    const controlDots = document.querySelector(".carousel .control-dots");
-    if (controlDots) {
-      controlDots.style.zIndex = "0"; // Adjust z-index for control dots if needed
-    }
-  }, []);
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
+
+  if (!content || !content.description) {
+    return <div className={styles.mainContent}>Description not available</div>;
+  }
+
+  const keywords = [
+    "extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"
+  ];
+
+  const highlightKeywords = (text) => {
+    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
+    return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
+  };
+
+  const descriptionPoints = content.description.split(". ").map((point, index) => (
+    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  ));
+
+  const benefitsPoints = content.benefits.split(". ").map((point, index) => (
+    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  ));
+
+  const adoptionRows = content.adoption.map((row, index) => (
+    <tr key={index}>
+      <td>{row.industry}</td>
+      <td>{row.adoption}</td>
+    </tr>
+  ));
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        <h2>Description</h2>
+        <ul>
+          {descriptionPoints}
+        </ul>
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        <h2>Solution Flow</h2>
+        <img
+          src={content.solutionFlow}
+          alt="Solution Flow"
+          className={maximizedImage === content.solutionFlow ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content.solutionFlow)}
+        />
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <h2>Demo</h2>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        <h2>Technical Architecture</h2>
+        <img
+          src={content.techArchitecture}
+          alt="Technical Architecture"
+          className={maximizedImage === content.techArchitecture ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content.techArchitecture)}
+        />
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        <h2>Benefits</h2>
+        <ul>
+          {benefitsPoints}
+        </ul>
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        <h2>Solution Adoption</h2>
+        <table className={styles.adoptionTable}>
+          <thead>
+            <tr>
+              <th>Industry</th>
+              <th>Solution Adoption</th>
+            </tr>
+          </thead>
+          <tbody>{adoptionRows}</tbody>
+        </table>
+      </div>
+    ),
+  };
 
   return (
-    <div className={styles.carouselContainer}>
-      <Carousel
-        showArrows={false}
-        showThumbs={false}
-        showIndicators={true}
-        infiniteLoop={true}
-        autoPlay={true}
-        interval={2000}
-        stopOnHover={true}
-        className={`${styles.customCarousel} ${styles.customIndicator}`} // Apply the customIndicator class
-      >
-        {/* Example carousel items */}
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel1} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-          <div className={styles.carouselCaption}>
-            <h2>
-              AWS<span>Gen AI Pilots</span>
-            </h2>
-          </div>
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={()=> setMaximizedImage(null)}/>
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+          
         </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel6} className={styles.carouselImage6} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel1} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel3} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel4} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
-              AWS EBU
-            </h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel5} className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div> {/* Add overlay */}
-          <div className={styles.carouselCaption}>
-            <h2>
-              AWS EBU<span>Gen AI Pilots</span>
-            </h2>
-          </div>
-        </div>
-      </Carousel>
+      )}
     </div>
   );
 };
 
-export default MyCarousel;
+export default MainContent;
