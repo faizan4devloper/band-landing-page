@@ -2,70 +2,115 @@ import React from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MyCarousel.module.css";
+
 import imgCarousel from "./carousel1.jpg";
 import imgCarousel3 from "./carousel3.jpg";
 import imgCarousel4 from "./carousel4.jpg";
 import imgCarousel5 from "./carousel5.jpg";
 import imgCarousel6 from "./banner-1.png";
 
-const MyCarousel = ({ isModalOpen }) => {
+const MyCarousel = () => {
+  const carouselRef = React.useRef(null);
+
+  const handleMouseEnter = () => {
+    if (carouselRef.current) {
+      carouselRef.current.stop();
+    }
+  };
+
+  const handleMouseLeave = () => {
+    if (carouselRef.current) {
+      carouselRef.current.start();
+    }
+  };
+
   return (
     <div className={styles.carouselContainer}>
       <Carousel
+        ref={carouselRef}
         showArrows={false}
         showThumbs={false}
         showIndicators={true}
         infiniteLoop={true}
         autoPlay={true}
         interval={2000}
-        stopOnHover={true}
+        stopOnHover={false} // Disable built-in stop on hover
         className={styles.customIndicator}
       >
-        <div className={styles.carouselItem} style={{ background: "linear-gradient(90deg, #6F36CD 0%, rgba(31, 119, 246, 0.27) 100%)" }}>
-          <img src={imgCarousel} alt="Carousel Image" className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
+        <div className={styles.carouselItem}>
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div
+            className={styles.carouselOverlay}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
           <div className={styles.carouselCaption}>
-            <h2>AWS<span>Gen AI Pilots</span></h2>
+            <h2>
+              AWS<span>Gen AI Pilots</span>
+            </h2>
           </div>
         </div>
-
         <div className={styles.carouselItem}>
-          <img src={imgCarousel6} alt="Carousel Image" className={styles.carouselImage6} />
-          <div className={styles.carouselOverlay6}></div>
+          <img src={imgCarousel6} className={styles.carouselImage6} />
+          <div
+            className={styles.carouselOverlay6}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
         </div>
-
         <div className={styles.carouselItem}>
-          <img src={imgCarousel} alt="Carousel Image" className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
+          <img src={imgCarousel} className={styles.carouselImage} />
+          <div
+            className={styles.carouselOverlay}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
           <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
             <p>Gen AI Pilots</p>
           </div>
         </div>
-
         <div className={styles.carouselItem}>
-          <img src={imgCarousel3} alt="Carousel Image" className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
+          <img src={imgCarousel3} className={styles.carouselImage} />
+          <div
+            className={styles.carouselOverlay}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
           <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
             <p>Gen AI Pilots</p>
           </div>
         </div>
-
         <div className={styles.carouselItem}>
-          <img src={imgCarousel4} alt="Carousel Image" className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
+          <img src={imgCarousel4} className={styles.carouselImage} />
+          <div
+            className={styles.carouselOverlay}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
           <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
+            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>
+              AWS EBU
+            </h2>
             <p>Gen AI Pilots</p>
           </div>
         </div>
-
         <div className={styles.carouselItem}>
-          <img src={imgCarousel5} alt="Carousel Image" className={styles.carouselImage} />
-          <div className={styles.carouselOverlay}></div>
+          <img src={imgCarousel5} className={styles.carouselImage} />
+          <div
+            className={styles.carouselOverlay}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          ></div>
           <div className={styles.carouselCaption}>
-            <h2>AWS EBU<span>Gen AI Pilots</span></h2>
+            <h2>
+              AWS EBU<span>Gen AI Pilots</span>
+            </h2>
           </div>
         </div>
       </Carousel>
@@ -86,7 +131,7 @@ export default MyCarousel;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  height: 280px; /* Adjust the height as per your design */
+  height: 280px;
   margin: 70px 0;
   overflow: hidden;
   width: 85%;
@@ -109,7 +154,6 @@ export default MyCarousel;
 
 .carouselOverlay {
   position: absolute;
-  border-radius: 6px;
   top: 0;
   left: 0;
   width: 100%;
@@ -119,6 +163,8 @@ export default MyCarousel;
     #6f36cd 0%,
     rgba(31, 119, 246, 0.73) 100%
   );
+  border-radius: 6px;
+  z-index: 2; /* Ensure overlay is above other content */
 }
 
 .carouselCaption {
@@ -152,10 +198,10 @@ export default MyCarousel;
 .carousel .slide {
   min-width: 100%;
   margin: 0;
-  height: 352px !important; /* Adjust the slide height as needed */
+  height: 352px !important;
   position: relative;
   text-align: center;
-  overflow: hidden; /* Ensure contents stay within the defined height */
+  overflow: hidden;
 }
 
 .carousel .control-dots {
