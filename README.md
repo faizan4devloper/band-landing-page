@@ -1,118 +1,137 @@
-import React, { useRef, useCallback, useState, memo, Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
-import styles from "./App.module.css";
-import { cardsData } from "./data";
+.formContainer {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
+  max-height: 80vh; /* Set a max-height for the form container */
+  overflow-y: auto; /* Enable vertical scrolling */
+  z-index: 1000; /* Ensure the form container has a high z-index */
+}
 
-const Header = React.lazy(() => import("./components/Header/Header"));
-const MyCarousel = React.lazy(() => import("./components/Carousel/MyCarousel"));
-const Cards = React.lazy(() => import("./components/Cards/Cards"));
-const SideBarPage = React.lazy(() => import("./components/Sidebar/SideBarPage"));
-const AllCardsPage = React.lazy(() => import("./components/Cards/AllCardsPage"));
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: -25px;
+  font-size: 18px;
+}
 
-const App = () => {
-  const [bigIndex, setBigIndex] = useState(null);
-  const cardsContainerRef = useRef(null);
+.formGroup {
+  margin-bottom: 10px;
+  position: relative;
+}
 
-  const toggleSize = useCallback(
-    (index) => {
-      setBigIndex(index === bigIndex ? null : index);
-    },
-    [bigIndex]
-  );
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
+}
 
-  const handleClickLeft = useCallback(() => {
-    setBigIndex((prevIndex) => (prevIndex === null || prevIndex === 0 ? cardsData.length - 1 : prevIndex - 1));
-  }, []);
+input::placeholder, textarea::placeholder {
+  color: #999999; /* Light gray */
+  opacity: 1;
+}
 
-  const handleClickRight = useCallback(() => {
-    setBigIndex((prevIndex) => (prevIndex === null || prevIndex === cardsData.length - 1 ? 0 : prevIndex + 1));
-  }, []);
+input, textarea {
+  width: 90%;
+  padding: 0px;
+  border: none;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
 
-  const handleScrollDown = useCallback(() => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
+input:focus, textarea:focus {
+  border-color: #5f1ec1;
+  outline: none;
+}
 
-  return (
-    <Router>
-      <div className={styles.app}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-        </Suspense>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-              />
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <Suspense fallback={<div>Loading...</div>}>
-                <SideBarPage />
-              </Suspense>
-            }
-          />
-          <Route
-            path="/all-cards"
-            element={
-              <Suspense fallback={<div>Loading...</div>}>
-                <AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />
-              </Suspense>
-            }
-          />
-        </Routes>
-        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-          <FontAwesomeIcon icon={faChevronDown} />
-        </div>
-      </div>
-    </Router>
-  );
-};
+.submitButton {
+  background-color: #5f1ec1;
+  margin-top: 0px;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+  margin-left: 30px;
+  width: 78%; /* Make the button take the full width */
+}
 
-const Home = memo(({ cardsData, handleClickLeft, handleClickRight, bigIndex, toggleSize, cardsContainerRef }) => {
-  return (
-    <>
-      <Suspense fallback={<div>Loading...</div>}>
-        <MyCarousel />
-      </Suspense>
-      <div className={styles.cardsContainer} ref={cardsContainerRef}>
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Suspense key={index} fallback={<div>Loading...</div>}>
-            <Cards
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={index === bigIndex}
-              toggleSize={() => toggleSize(index)}
-            />
-          </Suspense>
-        ))}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
-});
+.closeButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #aaa;
+  z-index: 1001; /* Slightly higher than the form container */
+}
 
-export default App;
+.closeButton:hover {
+  color: #555;
+}
+
+.successMessage {
+  text-align: center;
+  color: #5f1ec1;
+  font-size: 16px;
+}
+
+/* Custom scrollbar styling */
+.formContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.formContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+
+.formContainer::-webkit-scrollbar-thumb {
+  background: #5f1ec1;
+  border-radius: 8px;
+}
+
+.formContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Carousel styles */
+.carouselContainer .carousel .control-dots {
+  background-color: rgba(95, 30, 193, 1) !important;
+  z-index: 10 !important; /* Lower the z-index of the carousel indicators */
+}
+
+.carouselContainer .carousel .control-dots .dot.selected {
+  background-color: #6f36cd !important;
+}
+
+
+
+
+
+
+.carouselContainer .carousel .control-dots {
+  background-color: rgba(95, 30, 193, 1) !important;
+  z-index: 10 !important; /* Lower the z-index of the carousel indicators */
+}
+
+.carouselContainer .carousel .control-dots .dot.selected {
+  background-color: #6f36cd !important;
+}
