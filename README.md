@@ -1,3 +1,137 @@
+import React, { useState } from "react";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setIsSubmitted(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
+    closeModal();
+  };
+
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: "4px",
+      width: "91%", // Control width
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+      cursor: "pointer",
+      backgroundColor: "#fff",
+      color: "#555",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#5f1ec1" : "#fff",
+      color: state.isSelected ? "#fff" : "#555",
+      fontSize: "12px", // Option font size
+      width: "100%", // Option width
+      cursor: "pointer",
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      fontSize: "12px", // Placeholder font size
+    }),
+    menu: (provided) => ({
+      ...provided,
+      width: "91%",
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      fontSize: "12px",
+    }),
+  };
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.formContainer}>
+        <button className={styles.closeButton} onClick={handleCloseModal}>
+          <FontAwesomeIcon icon={faTimes} />
+        </button>
+        <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+        {!isSubmitted ? (
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formGroup}>
+              <label>*User Name</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>*Email Address</label>
+              <input type="email" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>GenAI Solution Name</label>
+              <div className={styles.customSelect}>
+                <Select
+                  styles={customStyles}
+                  value={selectedSolution}
+                  onChange={setSelectedSolution}
+                  options={[
+                    { value: "option1", label: "Email EAR" },
+                    { value: "option2", label: "Code GReat" },
+                    { value: "option3", label: "Case Intelligence" },
+                  ]}
+                />
+              </div>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Domain</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>Customer Name</label>
+              <input type="text" required />
+            </div>
+            <div className={styles.formGroup}>
+              <label>More Details</label>
+              <textarea
+                placeholder="Enter your business details and scope of this demo in your usecase."
+                rows="4"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" className={styles.submitButton}>
+              Submit
+            </button>
+          </form>
+        ) : (
+          <p className={styles.successMessage}>
+            Thank you! Your request for a live demo has been submitted
+            successfully.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default RequestDemoForm;
+
+
+/* RequestDemoForm.module.css */
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* Ensure this is higher than the carousel */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .formContainer {
   padding: 20px;
   background-color: #f9f9f9;
@@ -6,11 +140,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
   max-height: 80vh; /* Set a max-height for the form container */
   overflow-y: auto; /* Enable vertical scrolling */
-  z-index: 1000; /* Ensure the form container has a high z-index */
+  z-index: 1001; /* Ensure this is higher than the modal overlay */
 }
 
 .demoHead {
@@ -35,12 +167,14 @@ label {
   transition: color 0.3s;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: #999999; /* Light gray */
   opacity: 1;
 }
 
-input, textarea {
+input,
+textarea {
   width: 90%;
   padding: 0px;
   border: none;
@@ -51,7 +185,8 @@ input, textarea {
   font-family: "Poppins", sans-serif; /* Apply Google Font */
 }
 
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
   border-color: #5f1ec1;
   outline: none;
 }
@@ -80,7 +215,6 @@ input:focus, textarea:focus {
   cursor: pointer;
   font-size: 24px;
   color: #aaa;
-  z-index: 1001; /* Slightly higher than the form container */
 }
 
 .closeButton:hover {
@@ -112,26 +246,37 @@ input:focus, textarea:focus {
   background: #555;
 }
 
-/* Carousel styles */
-.carouselContainer .carousel .control-dots {
+
+
+
+
+
+
+/* MyCarousel.module.css */
+
+.carouselContainer {
+  width: 100%;
+  margin-top: 50px;
+  position: relative;
+  z-index: 1; /* Ensure this is lower than the modal */
+}
+
+.carouselItem {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 280px;
+  margin: 40px 0;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
+}
+
+.carousel .control-dots {
   background-color: rgba(95, 30, 193, 1) !important;
-  z-index: 10 !important; /* Lower the z-index of the carousel indicators */
+  z-index: 10 !important; /* Lower z-index for carousel indicators */
 }
 
-.carouselContainer .carousel .control-dots .dot.selected {
-  background-color: #6f36cd !important;
-}
-
-
-
-
-
-
-.carouselContainer .carousel .control-dots {
-  background-color: rgba(95, 30, 193, 1) !important;
-  z-index: 10 !important; /* Lower the z-index of the carousel indicators */
-}
-
-.carouselContainer .carousel .control-dots .dot.selected {
+.carousel .control-dots .dot.selected {
   background-color: #6f36cd !important;
 }
