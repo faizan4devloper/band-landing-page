@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import styles from "./App.module.css";
 import { cardsData } from "./data";
+import { FixedSizeList } from 'react-window'; // Import react-window for virtualization
 
 const Header = React.lazy(() => import("./components/Header/Header"));
 const MyCarousel = React.lazy(() => import("./components/Carousel/MyCarousel"));
@@ -82,6 +83,20 @@ const App = () => {
 };
 
 const Home = memo(({ cardsData, handleClickLeft, handleClickRight, bigIndex, toggleSize, cardsContainerRef }) => {
+  const renderCard = ({ index, style }) => (
+    <div style={style}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Cards
+          imageUrl={cardsData[index].imageUrl}
+          title={cardsData[index].title}
+          description={cardsData[index].description}
+          isBig={index === bigIndex}
+          toggleSize={() => toggleSize(index)}
+        />
+      </Suspense>
+    </div>
+  );
+
   return (
     <>
       <Suspense fallback={<div>Loading...</div>}>
@@ -96,17 +111,14 @@ const Home = memo(({ cardsData, handleClickLeft, handleClickRight, bigIndex, tog
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Suspense key={index} fallback={<div>Loading...</div>}>
-            <Cards
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={index === bigIndex}
-              toggleSize={() => toggleSize(index)}
-            />
-          </Suspense>
-        ))}
+        <FixedSizeList
+          height={400} // Set height of the list
+          width="100%" // Set width of the list
+          itemSize={150} // Set height of each item
+          itemCount={cardsData.length} // Number of items in the list
+        >
+          {renderCard}
+        </FixedSizeList>
         <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
@@ -116,8 +128,6 @@ const Home = memo(({ cardsData, handleClickLeft, handleClickRight, bigIndex, tog
 });
 
 export default App;
-
-
 
 
 
@@ -253,3 +263,4 @@ body {
 .scrollDownButton:hover {
   background-color: rgba(13, 85, 198, 1);
 }
+
