@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MyCarousel.module.css";
@@ -10,31 +10,26 @@ import imgCarousel5 from "./carousel5.jpg";
 import imgCarousel6 from "./banner-1.png";
 
 const MyCarousel = () => {
-  const carouselRef = React.useRef(null);
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleMouseEnter = () => {
-    if (carouselRef.current) {
-      carouselRef.current.stop();
-    }
+    setIsHovered(true);
   };
 
   const handleMouseLeave = () => {
-    if (carouselRef.current) {
-      carouselRef.current.start();
-    }
+    setIsHovered(false);
   };
 
   return (
     <div className={styles.carouselContainer}>
       <Carousel
-        ref={carouselRef}
         showArrows={false}
         showThumbs={false}
         showIndicators={true}
         infiniteLoop={true}
-        autoPlay={true}
+        autoPlay={!isHovered}
         interval={2000}
-        stopOnHover={false} // Disable built-in stop on hover
+        stopOnHover={false}
         className={styles.customIndicator}
       >
         <div className={styles.carouselItem}>
@@ -119,96 +114,3 @@ const MyCarousel = () => {
 };
 
 export default MyCarousel;
-
-
-
-.carouselContainer {
-  width: 100%;
-  margin-top: 50px;
-}
-
-.carouselItem {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 280px;
-  margin: 70px 0;
-  overflow: hidden;
-  width: 85%;
-  border-radius: 10px;
-}
-
-.carouselImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.carouselImage6 {
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  object-position: center;
-}
-
-.carouselOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    #6f36cd 0%,
-    rgba(31, 119, 246, 0.73) 100%
-  );
-  border-radius: 6px;
-  z-index: 2; /* Ensure overlay is above other content */
-}
-
-.carouselCaption {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: white;
-  font-family: "Poppins", sans-serif;
-  z-index: 1;
-}
-
-.carouselCaption h2 {
-  display: flex;
-  font-weight: 600;
-  font-size: 38px;
-  margin: 0;
-  padding: 15px;
-}
-
-.carouselCaption span {
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  border-left: 3px solid rgba(255, 255, 255, 1);
-  padding: 18px 10px;
-  margin-left: 15px;
-}
-
-.carousel .slide {
-  min-width: 100%;
-  margin: 0;
-  height: 352px !important;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-}
-
-.carousel .control-dots {
-  background-color: rgba(95, 30, 193, 1) !important;
-  z-index: 0 !important;
-}
-
-.carouselContainer .carousel .control-dots .dot.selected {
-  background-color: #6f36cd !important;
-}
