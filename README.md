@@ -7,12 +7,10 @@ import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
+import { cardsData } from "./data"; // Import card data from a separate file
 
 const App = () => {
-  const [cardsData, setCardsData] = useState(initialCardsData);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
@@ -23,15 +21,19 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+    if (bigIndex === null || bigIndex === 0) {
+      setBigIndex(cardsData.length - 1);
+    } else {
+      setBigIndex(bigIndex - 1);
+    }
   };
 
   const handleClickRight = () => {
-    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+    if (bigIndex === null || bigIndex === cardsData.length - 1) {
+      setBigIndex(0);
+    } else {
+      setBigIndex(bigIndex + 1);
+    }
   };
 
   const handleScrollDown = () => {
@@ -69,22 +71,10 @@ const App = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    setCardsData(newCardsData);
-    setBigIndex(newCardsData.length - 1); // Set the new card as active
-  };
-
   return (
     <Router>
       <div className={styles.app}>
         <Header />
-        <button onClick={addNewCard} className={styles.addButton}>Add New Card</button>
         <Routes>
           <Route
             path="/"
@@ -93,7 +83,6 @@ const App = () => {
                 cardsData={cardsData}
                 handleClickLeft={handleClickLeft}
                 handleClickRight={handleClickRight}
-                currentIndex={currentIndex}
                 bigIndex={bigIndex}
                 toggleSize={toggleSize}
                 cardsContainerRef={cardsContainerRef}
@@ -126,13 +115,11 @@ const Home = ({
   cardsData,
   handleClickLeft,
   handleClickRight,
-  currentIndex,
   bigIndex,
   toggleSize,
   cardsContainerRef,
   handleMouseEnter,
 }) => {
-  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
   return (
     <>
       <MyCarousel />
@@ -149,19 +136,16 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {visibleCards.map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
+        {cardsData.slice(0, 5).map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
         <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
