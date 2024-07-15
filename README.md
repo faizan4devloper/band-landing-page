@@ -1,141 +1,153 @@
-import React, { useState, useRef } from "react";
-import styles from "./MyCarousel.module.css";
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData } from "./data";
 
-import imgCarousel from "./carousel1.jpg";
-import imgCarousel3 from "./carousel3.jpg";
-import imgCarousel4 from "./carousel4.jpg";
-import imgCarousel5 from "./carousel5.jpg";
-import imgCarousel6 from "./banner-1.png";
+const App = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const cardsContainerRef = useRef(null);
 
-const MyCarousel = ({ isModalOpen }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const carouselRef = useRef(null);
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-  const handleSlideChange = (index) => {
-    setActiveIndex(index);
-    if (carouselRef.current) {
-      carouselRef.current.goTo(index);
+  const handleClickLeft = () => {
+    setCurrentIndex(currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1);
+  };
+
+  const handleClickRight = () => {
+    setCurrentIndex(currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
     }
   };
 
-  const slides = [
-    { image: imgCarousel, caption: "AWS Gen AI Pilots" },
-    { image: imgCarousel6, caption: "AWS EBU" },
-    { image: imgCarousel, caption: "AWS EBU Gen AI Pilots" },
-    { image: imgCarousel3, caption: "AWS EBU Gen AI Pilots" },
-    { image: imgCarousel4, caption: "AWS EBU Gen AI Pilots" },
-    { image: imgCarousel5, caption: "AWS EBU Gen AI Pilots" },
-  ];
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className={styles.carouselContainer}>
-      <div className={styles.carousel}>
-        <div className={styles.slides}>
-          {slides.map((slide, index) => (
-            <div className={`${styles.slide} ${index === activeIndex ? styles.active : ""}`} key={index}>
-              <img src={slide.image} alt={`Slide ${index}`} className={styles.carouselImage} />
-              <div className={styles.carouselOverlay}></div>
-              <div className={styles.carouselCaption}>
-                <h2>{slide.caption}</h2>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className={styles.indicators}>
-          {slides.map((slide, index) => (
-            <div
-              key={index}
-              className={`${styles.dot} ${index === activeIndex ? styles.activeDot : ""}`}
-              onClick={() => handleSlideChange(index)}
-            />
-          ))}
-        </div>
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                currentIndex={currentIndex}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+                handleMouseEnter={handleMouseEnter}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+          />
+        </Routes>
+        {showScrollDown && (
+          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+            <FontAwesomeIcon icon={faChevronDown} />
+          </div>
+        )}
+        {showScrollUp && (
+          <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+            <FontAwesomeIcon icon={faChevronUp} />
+          </div>
+        )}
       </div>
-    </div>
+    </Router>
   );
 };
 
-export default MyCarousel;
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-
-.carouselContainer {
-  width: 100%;
-  margin: 90px 0px 50px 0px;
-}
-
-.carousel {
-  position: relative;
-  overflow: hidden;
-}
-
-.slides {
-  display: flex;
-  transition: transform 0.5s ease;
-}
-
-.slide {
-  width: 100%;
-  position: relative;
-}
-
-.carouselImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.carouselOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
-  border-radius: 6px;
-  z-index: 1;
-}
-
-.carouselCaption {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: white;
-  z-index: 2;
-}
-
-.indicators {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #ccc;
-  margin: 0 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.dot:hover {
-  background-color: #6f36cd;
-}
-
-.activeDot {
-  background-color: #6f36cd;
-}
-
-.active {
-  opacity: 1;
-  z-index: 1;
-}
+export default App;
