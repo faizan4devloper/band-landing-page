@@ -13,7 +13,7 @@ import { cardsData as initialCardsData } from "./data";
 const App = () => {
   const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null); // Initially, no card is big
+  const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
   const cardsContainerRef = useRef(null);
@@ -83,7 +83,7 @@ const App = () => {
     const newCardIndex = newCardsData.length - 1;
     setCardsData(newCardsData);
     setBigIndex(newCardIndex); // Set the new card as active
-    setCurrentIndex(Math.max(newCardIndex - 4, 0));
+    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
   };
 
   return (
