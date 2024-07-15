@@ -13,7 +13,7 @@ import { cardsData as initialCardsData } from "./data";
 const App = () => {
   const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(0); // Start with the first card as big
+  const [bigIndex, setBigIndex] = useState(null); // Initially, no card is big
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
   const cardsContainerRef = useRef(null);
@@ -23,15 +23,19 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(newIndex); // Set the left navigated card as big
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(Math.max(newIndex - 4, 0));
+    }
   };
 
   const handleClickRight = () => {
-    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(newIndex); // Set the right navigated card as big
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
+    }
   };
 
   const handleScrollDown = () => {
@@ -76,8 +80,10 @@ const App = () => {
       description: "New Card Description",
     };
     const newCardsData = [...cardsData, newCard];
+    const newCardIndex = newCardsData.length - 1;
     setCardsData(newCardsData);
-    setBigIndex(newCardsData.length - 1); // Set the new card as active
+    setBigIndex(newCardIndex); // Set the new card as active
+    setCurrentIndex(Math.max(newCardIndex - 4, 0));
   };
 
   return (
