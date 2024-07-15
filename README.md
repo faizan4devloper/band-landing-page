@@ -7,10 +7,11 @@ import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
-import { cardsData } from "./data"; // Import card data from a separate file
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData } from "./data";
 
 const App = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
@@ -21,19 +22,15 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    if (bigIndex === null || bigIndex === 0) {
-      setBigIndex(cardsData.length - 1);
-    } else {
-      setBigIndex(bigIndex - 1);
-    }
+    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleClickRight = () => {
-    if (bigIndex === null || bigIndex === cardsData.length - 1) {
-      setBigIndex(0);
-    } else {
-      setBigIndex(bigIndex + 1);
-    }
+    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleScrollDown = () => {
@@ -83,6 +80,7 @@ const App = () => {
                 cardsData={cardsData}
                 handleClickLeft={handleClickLeft}
                 handleClickRight={handleClickRight}
+                currentIndex={currentIndex}
                 bigIndex={bigIndex}
                 toggleSize={toggleSize}
                 cardsContainerRef={cardsContainerRef}
@@ -115,11 +113,13 @@ const Home = ({
   cardsData,
   handleClickLeft,
   handleClickRight,
+  currentIndex,
   bigIndex,
   toggleSize,
   cardsContainerRef,
   handleMouseEnter,
 }) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
   return (
     <>
       <MyCarousel />
@@ -136,16 +136,19 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {cardsData.slice(0, 5).map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={index === bigIndex}
-            toggleSize={() => toggleSize(index)}
-          />
-        ))}
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
         <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
@@ -155,59 +158,3 @@ const Home = ({
 };
 
 export default App;
-
-
-import React, { useState, useEffect } from "react";
-import styles from "./AllCardsPage.module.css";
-import Cards from "./Cards";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
-const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
-  const [displayedCards, setDisplayedCards] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null);
-
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (currentIndex < cardsData.length) {
-        setDisplayedCards([cardsData[currentIndex]]);
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        clearInterval(intervalId);
-      }
-    }, 1000); // Change the interval time as needed
-
-    return () => clearInterval(intervalId);
-  }, [currentIndex, cardsData]);
-
-  return (
-    <div className={styles.allCardsPage}>
-      <button onClick={handleBackButtonClick} className={styles.backButton}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
-      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
-        {displayedCards.map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={index === bigIndex}
-            toggleSize={() => toggleSize(index)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default AllCardsPage;
