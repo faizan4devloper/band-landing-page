@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -54,6 +53,18 @@ const App = () => {
     }
   };
 
+  const addNewCard = () => {
+    const newCard = {
+      imageUrl: "path/to/new/image.jpg",
+      title: "New Card Title",
+      description: "New Card Description",
+    };
+    const newCardsData = [...cardsData, newCard];
+    const newCardIndex = newCardsData.length - 1;
+    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
+    setBigIndex(newCardIndex); // Set the new card as active
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -73,6 +84,7 @@ const App = () => {
     <Router>
       <div className={styles.app}>
         <Header />
+        <button onClick={addNewCard} className={styles.addButton}>Add New Card</button>
         <Routes>
           <Route
             path="/"
