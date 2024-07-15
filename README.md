@@ -157,13 +157,15 @@ const Home = ({
 export default App;
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./AllCardsPage.module.css";
 import Cards from "./Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
+  const [displayedCards, setDisplayedCards] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
 
   const handleBackButtonClick = () => {
@@ -174,13 +176,26 @@ const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
     setBigIndex(index === bigIndex ? null : index);
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (currentIndex < cardsData.length) {
+        setDisplayedCards([cardsData[currentIndex]]);
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        clearInterval(intervalId);
+      }
+    }, 1000); // Change the interval time as needed
+
+    return () => clearInterval(intervalId);
+  }, [currentIndex, cardsData]);
+
   return (
     <div className={styles.allCardsPage}>
       <button onClick={handleBackButtonClick} className={styles.backButton}>
         <FontAwesomeIcon icon={faArrowLeft} />
       </button>
       <div className={styles.allCardsContainer} ref={cardsContainerRef}>
-        {cardsData.map((card, index) => (
+        {displayedCards.map((card, index) => (
           <Cards
             key={index}
             imageUrl={card.imageUrl}
