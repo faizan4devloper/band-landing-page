@@ -22,11 +22,15 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    setCurrentIndex(currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1);
+    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleClickRight = () => {
-    setCurrentIndex(currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1);
+    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleScrollDown = () => {
@@ -132,16 +136,19 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {visibleCards.map((card, index) => (
-          <Cards
-            key={index}
-            imageUrl={card.imageUrl}
-            title={card.title}
-            description={card.description}
-            isBig={index === bigIndex}
-            toggleSize={() => toggleSize(index)}
-          />
-        ))}
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
         <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
