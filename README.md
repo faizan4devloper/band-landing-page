@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,10 +9,9 @@ import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import { cardsData } from "./data";
 
 const App = () => {
-  const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
@@ -23,19 +23,15 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    if (bigIndex !== null) {
-      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-      setBigIndex(newIndex);
-      setCurrentIndex(Math.max(newIndex - 4, 0));
-    }
+    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleClickRight = () => {
-    if (bigIndex !== null) {
-      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-      setBigIndex(newIndex);
-      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
-    }
+    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
+    setCurrentIndex(newIndex);
+    setBigIndex(null); // Reset bigIndex when navigating
   };
 
   const handleScrollDown = () => {
@@ -73,24 +69,10 @@ const App = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    const newCardIndex = newCardsData.length - 1;
-    setCardsData(newCardsData);
-    setBigIndex(newCardIndex); // Set the new card as active
-    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
-  };
-
   return (
     <Router>
       <div className={styles.app}>
         <Header />
-        <button onClick={addNewCard} className={styles.addButton}>Add New Card</button>
         <Routes>
           <Route
             path="/"
