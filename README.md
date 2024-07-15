@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,6 +9,7 @@ import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
 import { cardsData as initialCardsData } from "./data";
+import throttle from 'lodash/throttle';
 
 const App = () => {
   const [cardsData, setCardsData] = useState(initialCardsData);
@@ -60,7 +60,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       if (window.scrollY > 50) {
         setShowScrollUp(true);
         setShowScrollDown(false);
@@ -68,10 +68,12 @@ const App = () => {
         setShowScrollUp(false);
         setShowScrollDown(true);
       }
-    };
+    }, 200);
 
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const addNewCard = () => {
