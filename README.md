@@ -22,23 +22,11 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-
-    if (bigIndex !== null) {
-      const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-      setBigIndex(newBigIndex);
-    }
+    setCurrentIndex(currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1);
   };
 
   const handleClickRight = () => {
-    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-
-    if (bigIndex !== null) {
-      const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-      setBigIndex(newBigIndex);
-    }
+    setCurrentIndex(currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1);
   };
 
   const handleScrollDown = () => {
@@ -141,23 +129,20 @@ const Home = ({
             View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
           </Link>
         </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+        <span className={${styles.arrow} ${styles.leftArrow}} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {visibleCards.map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+        {visibleCards.map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
+        <span className={${styles.arrow} ${styles.rightArrow}} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
       </div>
@@ -166,3 +151,7 @@ const Home = ({
 };
 
 export default App;
+
+
+
+
