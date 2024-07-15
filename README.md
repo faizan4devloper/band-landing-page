@@ -50,7 +50,7 @@ const MyCarousel = () => {
         autoPlay={!isHovered}
         showStatus={false}
         interval={2000}
-        stopOnHover={false}
+        stopOnHover={true}
         className={styles.customIndicator}
       >
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
@@ -104,8 +104,6 @@ const MyCarousel = () => {
 };
 
 export default MyCarousel;
-
-
 
 .carouselContainer {
   width: 100%;
