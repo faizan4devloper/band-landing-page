@@ -24,13 +24,21 @@ const App = () => {
   const handleClickLeft = () => {
     const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
     setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+
+    if (bigIndex !== null) {
+      const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newBigIndex);
+    }
   };
 
   const handleClickRight = () => {
     const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+
+    if (bigIndex !== null) {
+      const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newBigIndex);
+    }
   };
 
   const handleScrollDown = () => {
