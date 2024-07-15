@@ -8,9 +8,10 @@ import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData } from "./data";
+import { cardsData as initialCardsData } from "./data";
 
 const App = () => {
+  const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
@@ -22,15 +23,19 @@ const App = () => {
   };
 
   const handleClickLeft = () => {
-    const newIndex = currentIndex === 0 ? cardsData.length - 5 : currentIndex - 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(Math.max(newIndex - 4, 0));
+    }
   };
 
   const handleClickRight = () => {
-    const newIndex = currentIndex === cardsData.length - 5 ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
-    setBigIndex(null); // Reset bigIndex when navigating
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
+    }
   };
 
   const handleScrollDown = () => {
@@ -53,18 +58,6 @@ const App = () => {
     }
   };
 
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    const newCardIndex = newCardsData.length - 1;
-    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
-    setBigIndex(newCardIndex); // Set the new card as active
-  };
-
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -79,6 +72,19 @@ const App = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const addNewCard = () => {
+    const newCard = {
+      imageUrl: "path/to/new/image.jpg",
+      title: "New Card Title",
+      description: "New Card Description",
+    };
+    const newCardsData = [...cardsData, newCard];
+    const newCardIndex = newCardsData.length - 1;
+    setCardsData(newCardsData);
+    setBigIndex(newCardIndex); // Set the new card as active
+    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
+  };
 
   return (
     <Router>
