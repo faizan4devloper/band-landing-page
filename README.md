@@ -1,5 +1,6 @@
 html, body {
   font-family: "Poppins", sans-serif;
+  overflow-y: scroll;
 }
 
 .app {
@@ -14,6 +15,12 @@ html, body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap; /* Allow wrapping */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.cardsContainer::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
 }
 
 .arrow {
