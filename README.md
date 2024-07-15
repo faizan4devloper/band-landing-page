@@ -10,16 +10,7 @@ import imgCarousel5 from "./carousel5.jpg";
 import imgCarousel6 from "./banner-1.png";
 
 const MyCarousel = () => {
-  const [isHovered, setIsHovered] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
 
   const handleIndicatorClick = (index) => {
     setSelectedIndex(index);
@@ -31,9 +22,7 @@ const MyCarousel = () => {
       <li
         className={indicatorClasses}
         onClick={() => handleIndicatorClick(index)}
-        tabIndex={0}
         key={index}
-        style={{ background: index === selectedIndex ? '#6f36cd' : '#ccc' }}
       />
     );
   };
@@ -42,29 +31,29 @@ const MyCarousel = () => {
     <div className={styles.carouselContainer}>
       <Carousel
         selectedItem={selectedIndex}
-        onChange={handleIndicatorClick}
+        onChange={setSelectedIndex}
         showArrows={false}
         showThumbs={false}
         showIndicators={false}
         infiniteLoop={true}
-        autoPlay={!isHovered}
+        autoPlay={true}
         showStatus={false}
         interval={2000}
         stopOnHover={false}
         className={styles.customIndicator}
       >
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel} className={styles.carouselImage} alt="Slide 1" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2>AWS<span>Gen AI Pilots</span></h2>
           </div>
         </div>
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel6} className={styles.carouselImage6} alt="Slide 2" />
           <div className={styles.carouselOverlay6}></div>
         </div>
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel} className={styles.carouselImage} alt="Slide 3" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
@@ -72,7 +61,7 @@ const MyCarousel = () => {
             <p>Gen AI Pilots</p>
           </div>
         </div>
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel3} className={styles.carouselImage} alt="Slide 4" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
@@ -80,7 +69,7 @@ const MyCarousel = () => {
             <p>Gen AI Pilots</p>
           </div>
         </div>
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel4} className={styles.carouselImage} alt="Slide 5" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
@@ -88,7 +77,7 @@ const MyCarousel = () => {
             <p>Gen AI Pilots</p>
           </div>
         </div>
-        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+        <div className={styles.carouselItem}>
           <img src={imgCarousel5} className={styles.carouselImage} alt="Slide 6" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
@@ -104,6 +93,7 @@ const MyCarousel = () => {
 };
 
 export default MyCarousel;
+
 
 
 
@@ -178,16 +168,6 @@ export default MyCarousel;
   color: #fff;
 }
 
-.carousel .slide {
-  min-width: 100%;
-  margin: 0;
-  height: 352px !important;
-  position: relative;
-  text-align: center;
-  overflow: hidden;
-}
-
-
 /* Custom Indicator Styles */
 .indicatorsContainer {
   display: flex;
@@ -204,13 +184,13 @@ export default MyCarousel;
   display: inline-block;
   margin: 0 5px;
   cursor: pointer;
-box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
- /*box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.2); */
- 
- 
-  
+  background: #ccc; /* Default color */
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth transitions */
 }
 
 .dot.selected {
-  background: #6f36cd !important; /* Purple color for selected dot */
+  background: #6f36cd; /* Purple color for selected dot */
+  transform: scale(1.3); /* Scale up when selected */
+  opacity: 1; /* Ensure full opacity for selected dot */
 }
+
