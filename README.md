@@ -11,6 +11,7 @@ import imgCarousel6 from "./banner-1.png";
 
 const MyCarousel = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -20,19 +21,19 @@ const MyCarousel = () => {
     setIsHovered(false);
   };
 
-  // Custom renderIndicator function for animated colorful dots
-  const renderIndicator = (onClickHandler, isSelected, index, label) => {
-    const indicatorClasses = `${styles.dot} ${isSelected ? styles.selected : ""}`;
+  const handleIndicatorClick = (index) => {
+    setSelectedIndex(index);
+  };
+
+  const renderIndicator = (index) => {
+    const indicatorClasses = `${styles.dot} ${index === selectedIndex ? styles.selected : ""}`;
     return (
       <li
         className={indicatorClasses}
-        onClick={onClickHandler}
-        onKeyDown={onClickHandler}
+        onClick={() => handleIndicatorClick(index)}
         tabIndex={0}
-        title={`${label} ${index + 1}`}
-        aria-label={`${label} ${index + 1}`}
         key={index}
-        style={{ background: isSelected ? '#6f36cd' : '#ccc' }}
+        style={{ background: index === selectedIndex ? '#6f36cd' : '#ccc' }}
       />
     );
   };
@@ -40,30 +41,31 @@ const MyCarousel = () => {
   return (
     <div className={styles.carouselContainer}>
       <Carousel
+        selectedItem={selectedIndex}
+        onChange={handleIndicatorClick}
         showArrows={false}
         showThumbs={false}
-        showIndicators={true}
+        showIndicators={false}
         infiniteLoop={true}
         autoPlay={!isHovered}
         showStatus={false}
         interval={2000}
         stopOnHover={false}
-        renderIndicator={renderIndicator}
         className={styles.customIndicator}
       >
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel} className={styles.carouselImage} />
+          <img src={imgCarousel} className={styles.carouselImage} alt="Slide 1" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2>AWS<span>Gen AI Pilots</span></h2>
           </div>
         </div>
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel6} className={styles.carouselImage6} />
+          <img src={imgCarousel6} className={styles.carouselImage6} alt="Slide 2" />
           <div className={styles.carouselOverlay6}></div>
         </div>
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel} className={styles.carouselImage} />
+          <img src={imgCarousel} className={styles.carouselImage} alt="Slide 3" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
@@ -71,7 +73,7 @@ const MyCarousel = () => {
           </div>
         </div>
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel3} className={styles.carouselImage} />
+          <img src={imgCarousel3} className={styles.carouselImage} alt="Slide 4" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
@@ -79,7 +81,7 @@ const MyCarousel = () => {
           </div>
         </div>
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel4} className={styles.carouselImage} />
+          <img src={imgCarousel4} className={styles.carouselImage} alt="Slide 5" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
@@ -87,19 +89,22 @@ const MyCarousel = () => {
           </div>
         </div>
         <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          <img src={imgCarousel5} className={styles.carouselImage} />
+          <img src={imgCarousel5} className={styles.carouselImage} alt="Slide 6" />
           <div className={styles.carouselOverlay}></div>
           <div className={styles.carouselCaption}>
             <h2>AWS EBU<span>Gen AI Pilots</span></h2>
           </div>
         </div>
       </Carousel>
+      <ul className={styles.indicatorsContainer}>
+        {[...Array(6)].map((_, index) => renderIndicator(index))}
+      </ul>
     </div>
   );
 };
 
 export default MyCarousel;
- 
+
 
 
 .carouselContainer {
@@ -142,15 +147,6 @@ export default MyCarousel;
   background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
   border-radius: 6px;
 }
-/*.carouselOverlay6 {*/
-/*  position: absolute;*/
-/*  top: 0;*/
-/*  left: 0;*/
-/*  width: 100%;*/
-/*  height: 100%;*/
-/*  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);*/
-/*  border-radius: 6px;*/
-/*}*/
 
 .carouselCaption {
   position: absolute;
@@ -188,22 +184,18 @@ export default MyCarousel;
   height: 352px !important;
   position: relative;
   text-align: center;
-  
   overflow: hidden;
 }
 
-.carousel .control-dots {
-  background-color: rgba(95, 30, 193, 1) !important;
-  z-index: 0 !important;
-  
+/* Custom Indicator Styles */
+.indicatorsContainer {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
 }
 
-.carouselContainer .carousel .control-dots .dot.selected {
-  background-color: #6f36cd !important;
-  
-}
-
-/* Custom Dot Indicator Styles */
 .dot {
   width: 12px;
   height: 12px;
@@ -216,5 +208,4 @@ export default MyCarousel;
 
 .dot.selected {
   background-color: #6f36cd;
-  /*box-shadow: 0px 0px 10px #6f36cd;*/
 }
