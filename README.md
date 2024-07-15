@@ -8,9 +8,10 @@ import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData } from "./data";
+import { cardsData as initialCardsData } from "./data";
 
 const App = () => {
+  const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null);
   const [showScrollDown, setShowScrollDown] = useState(true);
@@ -68,10 +69,22 @@ const App = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const addNewCard = () => {
+    const newCard = {
+      imageUrl: "path/to/new/image.jpg",
+      title: "New Card Title",
+      description: "New Card Description",
+    };
+    const newCardsData = [...cardsData, newCard];
+    setCardsData(newCardsData);
+    setBigIndex(newCardsData.length - 1); // Set the new card as active
+  };
+
   return (
     <Router>
       <div className={styles.app}>
         <Header />
+        <button onClick={addNewCard} className={styles.addButton}>Add New Card</button>
         <Routes>
           <Route
             path="/"
