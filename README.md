@@ -1,104 +1,195 @@
-.sidebar {
-  position: fixed;
-  top: 110px;
-  left: 30px;
-  width: 250px;
-  height: calc(100% - 75px);
-  /*background-color: rgba(240, 240, 240, 1);*/
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  /*box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);*/
-  padding: 20px;
-  overflow-y: auto;
-}
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
 
-.category {
-  margin-bottom: 20px;
-}
+const App = () => {
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const cardsContainerRef = useRef(null);
 
-.categoryHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  padding: 10px;
-  background-color: rgba(230, 230, 230, 1);
-  border-radius: 4px;
-}
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-.chevronIcon {
-  margin-left: 10px;
-}
+  const handleClickLeft = () => {
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(Math.max(newIndex - 4, 0));
+    }
+  };
 
-.dropdown {
-  padding: 10px;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 4px;
-  margin-top: 10px;
-}
+  const handleClickRight = () => {
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
+    }
+  };
 
-.dropdownItem {
-  padding: 5px;
-  cursor: pointer;
-}
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
 
-.dropdownItem:hover {
-  background-color: rgba(220, 220, 220, 1);
-}
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
 
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
 
-/* SideBar.module.css */
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
 
-.sideBar {
-  width: 340px;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
-}
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
 
-.menuItem {
-  display: flex;
-  flex-direction: row; /* Make the menu item a row layout */
-  justify-content: space-between; /* Align items with space between */
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0px;
-  cursor: pointer;
-  transition: background-color 0.3s; /* Add transition for smoother effect */
-  background: none;
-  border: none;
-}
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
 
-.menuItem:not(.active):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
-}
+  const addNewCard = () => {
+    const newCard = {
+      imageUrl: "path/to/new/image.jpg",
+      title: "New Card Title",
+      description: "New Card Description",
+    };
+    const newCardsData = [...cardsData, newCard];
+    const newCardIndex = newCardsData.length - 1;
+    setCardsData(newCardsData);
+    setBigIndex(newCardIndex); // Set the new card as active
+    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
+  };
 
-.active {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 8px 0 0 8px; /* Add border radius to the left side */
-}
+  return (
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                currentIndex={currentIndex}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+                handleMouseEnter={handleMouseEnter}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+          />
+        </Routes>
+        {showScrollDown && (
+          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+            <FontAwesomeIcon icon={faChevronDown} />
+          </div>
+        )}
+        {showScrollUp && (
+          <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+            <FontAwesomeIcon icon={faChevronUp} />
+          </div>
+        )}
+      </div>
+    </Router>
+  );
+};
 
-.active .iconImg {
-  filter: brightness(0) invert(1); /* Active color - white */
-}
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-.iconImg {
-  filter: brightness(0) invert(0); /* Default color - black */
-}
-
-.label {
-  margin-right: auto; /* Push label text to the right */
-  margin-left: 10px; /* Add some space between icon and label */
-  font-size: 12px;
-}
+export default App;
 
 
 
