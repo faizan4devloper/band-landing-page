@@ -1,198 +1,97 @@
-import React, { useRef, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import Header from "./components/Header/Header";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 
-const App = () => {
-  const [cardsData, setCardsData] = useState(initialCardsData);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(0);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const cardsContainerRef = useRef(null);
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
 
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleClickLeft = () => {
-    const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-    setBigIndex(newBigIndex);
-
-    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleClickRight = () => {
-    const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-    setBigIndex(newBigIndex);
-
-    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
-    }
-  };
-
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
-  };
-
-  const handleMouseEnter = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener("scroll", debounceScroll);
-
-    return () => window.removeEventListener("scroll", debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    setCardsData(newCardsData);
-
-    const newCardIndex = newCardsData.length - 1;
-    setBigIndex(newCardIndex);
-
-    if (newCardIndex > currentIndex + 4) {
-      setCurrentIndex(newCardIndex - 4);
-    } else {
-      setCurrentIndex(currentIndex);
-    }
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
   };
 
   return (
-    <Router>
-      <div className={styles.app}>
-        <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                currentIndex={currentIndex}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-                handleMouseEnter={handleMouseEnter}
-              />
-            }
-          />
-          <Route path="/dashboard" element={<SideBarPage />} />
-          <Route
-            path="/all-cards"
-            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-          />
-        </Routes>
-        {showScrollDown && (
-          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-            <FontAwesomeIcon icon={faChevronDown} />
-          </div>
-        )}
-        {showScrollUp && (
-          <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-            <FontAwesomeIcon icon={faChevronUp} />
-          </div>
-        )}
-      </div>
-    </Router>
-  );
-};
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
-  return (
-    <>
-      <MyCarousel />
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {visibleCards.map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
+    <div className={styles.sidebar}>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div 
+            className={styles.categoryHeader} 
+            onClick={() => toggleCategory(index)}
+          >
+            {category.name}
+            <FontAwesomeIcon 
+              icon={openCategory === index ? faChevronUp : faChevronDown} 
+              className={styles.chevronIcon} 
             />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div 
+                  key={itemIndex} 
+                  className={styles.dropdownItem} 
+                  onClick={() => onFilterChange(category.name, item)}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   );
 };
 
-export default App;
+export default CategorySidebar;
+
+.sidebar {
+  position: fixed;
+  top: 110px;
+  left: 115px;
+  width: 200px;
+  height: calc(100% - 75px);
+  /*background-color: rgba(240, 240, 240, 1);*/
+  border-right: 1px solid rgba(219, 197, 255, 1);
+  /*box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);*/
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.category {
+  margin-bottom: 20px;
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 10px 15px;
+  background-color: rgba(230, 230, 230, 1);
+  border-radius: 4px;
+}
+
+.chevronIcon {
+  margin-left: 10px;
+}
+
+.dropdown {
+  padding: 10px;
+  background-color: rgba(250, 250, 250, 1);
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.dropdownItem {
+  font-size: 11px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(220, 220, 220, 1);
+}
+
+
