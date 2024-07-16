@@ -1,198 +1,110 @@
-import React, { useRef, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import Header from "./components/Header/Header";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const App = () => {
-  const [cardsData, setCardsData] = useState(initialCardsData);
-  const [currentIndex, setCurrentIndex] = useState(0);
+const AllCardsPage = ({ cardsData, cardsContainerRef }) => {
   const [bigIndex, setBigIndex] = useState(null);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const cardsContainerRef = useRef(null);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleClickLeft = () => {
-    if (bigIndex === null) {
-      const newIndex = currentIndex === 0 ? cardsData.length - 1 : currentIndex - 1;
-      setCurrentIndex(newIndex);
-    } else {
-      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-      setBigIndex(newIndex);
-      setCurrentIndex(Math.max(newIndex - 4, 0));
-    }
-  };
-
-  const handleClickRight = () => {
-    if (bigIndex === null) {
-      const newIndex = currentIndex === cardsData.length - 1 ? 0 : currentIndex + 1;
-      setCurrentIndex(newIndex);
-    } else {
-      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-      setBigIndex(newIndex);
-      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
-    }
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
-    }
-  };
-
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
-  };
-
-  const handleMouseEnter = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener("scroll", debounceScroll);
-
-    return () => window.removeEventListener("scroll", debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    const newCardIndex = newCardsData.length - 1;
-    setCardsData(newCardsData);
-    setBigIndex(newCardIndex); // Set the new card as active
-    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
-  };
-
   return (
-    <Router>
-      <div className={styles.app}>
-        <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                currentIndex={currentIndex}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-                handleMouseEnter={handleMouseEnter}
-              />
-            }
-          />
-          <Route path="/dashboard" element={<SideBarPage />} />
-          <Route
-            path="/all-cards"
-            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-          />
-        </Routes>
-        {showScrollDown && (
-          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-            <FontAwesomeIcon icon={faChevronDown} />
-          </div>
-        )}
-        {showScrollUp && (
-          <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-            <FontAwesomeIcon icon={faChevronUp} />
-          </div>
-        )}
-      </div>
-    </Router>
-  );
-};
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
-  return (
-    <>
-      <MyCarousel />
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {visibleCards.map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
+    <div className={styles.allCardsPage}>
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+        {cardsData.map((card, index) => (
+          <div key={index}>
             <Cards
-              key={index}
               imageUrl={card.imageUrl}
               title={card.title}
               description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
+              isBig={index === bigIndex}
+              toggleSize={() => toggleSize(index)}
             />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
+          </div>
+        ))}
       </div>
-    </>
+    </div>
   );
 };
 
-export default App;
+export default AllCardsPage;
+
+.allCardsPage {
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 40px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-right: 30px;
+  position: fixed;
+  left: 40px;
+  top:75px;
+}
+
+.backIcon {
+  font-size: 12px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
+
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Four cards per row */
+  gap: 0; /* No gap, as borders will create the separation */
+  padding-top: 50px;
+  /*margin-top: 10px;*/
+}
+
+.allCardsContainer > div {
+  border-radius: 4px;
+  border: 1px solid #D3D3D3; /* Border around each card */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(4, 1fr); /* Four cards per row on smaller screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(3, 1fr); /* Three cards per row on even smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row on mobile devices */
+  }
+}
+
+@media (max-width: 400px) {
+  .allCardsContainer {
+    grid-template-columns: 1fr; /* One card per row on very small screens */
+  }
+}
