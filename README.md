@@ -1,196 +1,196 @@
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import styles from "./MyCarousel.module.css";
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
 
-import imgCarousel from "./carousel1.jpg";
-import imgCarousel3 from "./carousel3.jpg";
-import imgCarousel4 from "./carousel4.jpg";
-import imgCarousel5 from "./carousel5.jpg";
-import imgCarousel6 from "./banner-1.png";
+const App = () => {
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const cardsContainerRef = useRef(null);
 
-const MyCarousel = () => {
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const handleIndicatorClick = (index) => {
-    setSelectedIndex(index);
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const renderIndicator = (index) => {
-    const indicatorClasses = `${styles.dot} ${index === selectedIndex ? styles.selected : ""}`;
-    return (
-      <li
-        className={indicatorClasses}
-        onClick={() => handleIndicatorClick(index)}
-        key={index}
-      />
-    );
+  const handleClickLeft = () => {
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(Math.max(newIndex - 4, 0));
+    }
+  };
+
+  const handleClickRight = () => {
+    if (bigIndex !== null) {
+      const newIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newIndex);
+      setCurrentIndex(newIndex > 4 ? newIndex - 4 : 0);
+    }
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const addNewCard = () => {
+    const newCard = {
+      imageUrl: "path/to/new/image.jpg",
+      title: "New Card Title",
+      description: "New Card Description",
+    };
+    const newCardsData = [...cardsData, newCard];
+    const newCardIndex = newCardsData.length - 1;
+    setCardsData(newCardsData);
+    setBigIndex(newCardIndex); // Set the new card as active
+    setCurrentIndex(Math.max(newCardIndex - 4, 0)); // Adjust currentIndex to show the new card
   };
 
   return (
-    <div className={styles.carouselContainer}>
-      <Carousel
-        selectedItem={selectedIndex}
-        onChange={setSelectedIndex}
-        showArrows={false}
-        showThumbs={false}
-        showIndicators={false}
-        infiniteLoop={true}
-        autoPlay={true}
-        showStatus={false}
-        interval={2000}
-        stopOnHover={false}
-        className={styles.customIndicator}
-      >
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel} className={styles.carouselImage} alt="Slide 1" />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2>AWS<span>Gen AI Pilots</span></h2>
+    <Router>
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                currentIndex={currentIndex}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+                handleMouseEnter={handleMouseEnter}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+          />
+        </Routes>
+        {showScrollDown && (
+          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+            <FontAwesomeIcon icon={faChevronDown} />
           </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel6} className={styles.carouselImage6} alt="Slide 2" />
-          <div className={styles.carouselOverlay6}></div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel} className={styles.carouselImage} alt="Slide 3" />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
-            <p>Gen AI Pilots</p>
+        )}
+        {showScrollUp && (
+          <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+            <FontAwesomeIcon icon={faChevronUp} />
           </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel3} className={styles.carouselImage} alt="Slide 4" />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel4} className={styles.carouselImage} alt="Slide 5" />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2 style={{ borderBottom: "3px solid rgba(255, 255, 255, 1)" }}>AWS EBU</h2>
-            <p>Gen AI Pilots</p>
-          </div>
-        </div>
-        <div className={styles.carouselItem}>
-          <img src={imgCarousel5} className={styles.carouselImage} alt="Slide 6" />
-          <div className={styles.carouselOverlay}></div>
-          <div className={styles.carouselCaption}>
-            <h2>AWS EBU<span>Gen AI Pilots</span></h2>
-          </div>
-        </div>
-      </Carousel>
-      <ul className={styles.indicatorsContainer}>
-        {[...Array(6)].map((_, index) => renderIndicator(index))}
-      </ul>
-    </div>
+        )}
+      </div>
+    </Router>
   );
 };
 
-export default MyCarousel;
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+export default App;
 
 
 
-
-.carouselContainer {
-  width: 100%;
-  margin: 90px 0px 50px 0px;
-}
-
-.carouselItem {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 280px;
-  margin-bottom: 20px;
-  overflow: hidden;
-  width: 85%;
-  border-radius: 10px;
-  cursor: pointer;
-}
-
-.carouselImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.carouselImage6 {
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  object-position: center;
-}
-
-.carouselOverlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
-  border-radius: 6px;
-}
-
-.carouselCaption {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: white;
-  font-family: "Poppins", sans-serif;
-  z-index: 1;
-}
-
-.carouselCaption h2 {
-  display: flex;
-  font-weight: 600;
-  font-size: 38px;
-  margin: 0;
-  padding: 15px;
-  color: #fff;
-}
-
-.carouselCaption span {
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-  border-left: 3px solid rgba(255, 255, 255, 1);
-  padding: 18px 10px;
-  margin-left: 15px;
-  color: #fff;
-}
-
-/* Custom Indicator Styles */
-.indicatorsContainer {
-  display: flex;
-  justify-content: center;
-  list-style: none;
-  padding: 0;
-  margin-top: 10px;
-}
-
-.dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  display: inline-block;
-  margin: 0 5px;
-  cursor: pointer;
-  background: #ccc; /* Default color */
-  transition: transform 0.3s ease, opacity 0.3s ease; /* Smooth transitions */
-}
-
-.dot.selected {
-  background: #6f36cd; /* Purple color for selected dot */
-  transform: scale(1.3); /* Scale up when selected */
-  opacity: 1; /* Ensure full opacity for selected dot */
-}
 
