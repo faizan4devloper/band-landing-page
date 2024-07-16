@@ -18,6 +18,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 
   return (
     <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore By:</p>
       {categories.map((category, index) => (
         <div key={index} className={styles.category}>
           <div
@@ -52,8 +53,6 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 export default CategorySidebar;
 
 
-
-
 .sidebar {
   position: fixed;
   top: 110px;
@@ -68,6 +67,12 @@ export default CategorySidebar;
 
 .category {
   margin-bottom: 20px;
+}
+
+.sideHead{
+ margin-top: 0;
+    font-weight: 500;
+    margin-left: 15px;
 }
 
 .categoryHeader {
