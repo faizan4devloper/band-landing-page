@@ -127,3 +127,172 @@ export default AllCardsPage;
     grid-template-columns: 1fr; /* One card per row on very small screens */
   }
 }
+
+
+
+.allCardsPage {
+  padding: 20px;
+  margin-top: 40px;
+  margin-left: 270px; /* Make space for the sidebar */
+}
+
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 40px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-right: 30px;
+  position: fixed;
+  left: 40px;
+  top: 75px;
+}
+
+.backIcon {
+  font-size: 12px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
+
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* Five cards per row */
+  gap: 0; /* No gap, as borders will create the separation */
+  padding-top: 50px;
+  /*margin-top: 10px;*/
+}
+
+.allCardsContainer > div {
+  border-radius: 4px;
+  border: 1px solid #D3D3D3; /* Border around each card */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(4, 1fr); /* Four cards per row on smaller screens */
+  }
+}
+
+@media (max-width: 900px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(3, 1fr); /* Three cards per row on even smaller screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .allCardsContainer {
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row on mobile devices */
+  }
+}
+
+@media (max-width: 400px) {
+  .allCardsContainer {
+    grid-template-columns: 1fr; /* One card per row on very small screens */
+  }
+}
+
+
+
+import React, { useState } from "react";
+import styles from "./Sidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+
+const Sidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div 
+            className={styles.categoryHeader} 
+            onClick={() => toggleCategory(index)}
+          >
+            {category.name}
+            <FontAwesomeIcon 
+              icon={openCategory === index ? faChevronUp : faChevronDown} 
+              className={styles.chevronIcon} 
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div 
+                  key={itemIndex} 
+                  className={styles.dropdownItem} 
+                  onClick={() => onFilterChange(category.name, item)}
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+.sidebar {
+  position: fixed;
+  top: 75px;
+  left: 0;
+  width: 250px;
+  height: calc(100% - 75px);
+  background-color: rgba(240, 240, 240, 1);
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.category {
+  margin-bottom: 20px;
+}
+
+.categoryHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px;
+  background-color: rgba(230, 230, 230, 1);
+  border-radius: 4px;
+}
+
+.chevronIcon {
+  margin-left: 10px;
+}
+
+.dropdown {
+  padding: 10px;
+  background-color: rgba(250, 250, 250, 1);
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.dropdownItem {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(220, 220, 220, 1);
+}
