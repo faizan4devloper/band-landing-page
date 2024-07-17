@@ -46,7 +46,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
                     readOnly
                     className={styles.checkbox}
                   />
-                  {item}
+                  <span className={styles.itemText}>{item}</span>
                 </div>
               ))}
             </div>
@@ -58,7 +58,6 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 };
 
 export default CategorySidebar;
-
 
 
 
@@ -78,7 +77,7 @@ export default CategorySidebar;
   margin-bottom: 20px;
 }
 
-.sideHead{
+.sideHead {
   margin-top: 0;
   font-weight: 500;
   margin-left: 15px;
@@ -111,11 +110,17 @@ export default CategorySidebar;
   font-size: 11px;
   padding: 5px;
   cursor: pointer;
-  text-align: center;
+  text-align: left;
 }
 
 .checkbox {
   margin-right: 10px;
+  width: 16px;
+  height: 16px;
+}
+
+.itemText {
+  margin-left: 5px;
 }
 
 .dropdownItem:hover {
@@ -138,3 +143,4 @@ export default CategorySidebar;
   color: white;
   border-radius: 4px;
 }
+
