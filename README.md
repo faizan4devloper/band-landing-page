@@ -1,3 +1,17 @@
+const categories = [
+  {
+    name: "Industry",
+    svgIcon: "/path/to/industry-icon.svg", // Path to the SVG icon
+    items: ["Manufacturing", "Healthcare", "Retail"]
+  },
+  {
+    name: "Business Function",
+    svgIcon: "/path/to/business-icon.svg", // Path to the SVG icon
+    items: ["Finance", "Human Resources", "Marketing"]
+  },
+  // Add other categories as needed
+];
+
 import React, { useState } from "react";
 import styles from "./CategorySidebar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,6 +40,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
             className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
             onClick={() => toggleCategory(index)}
           >
+            <img src={category.svgIcon} alt={`${category.name} icon`} className={styles.svgIcon} />
             {category.name}
             <FontAwesomeIcon
               icon={openCategory === index ? faChevronUp : faChevronDown}
@@ -58,5 +73,3 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 };
 
 export default CategorySidebar;
-
-
