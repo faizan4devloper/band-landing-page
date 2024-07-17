@@ -1,4 +1,5 @@
 
+
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -197,3 +198,4 @@ const Home = ({
 };
 
 export default App;
+why the the after i click arrow left in starting cards will gone not showing any cards
