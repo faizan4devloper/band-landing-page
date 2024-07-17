@@ -36,7 +36,6 @@
   left: 0;
 }
 
-
 .categoryHeader {
   display: flex;
   justify-content: space-between;
@@ -46,7 +45,12 @@
   padding: 10px 15px;
   border-radius: 8px 0 0 8px;
   background-color: rgba(230, 235, 245, 1);
+  transition: background-color 0.3s, color 0.3s;
+}
 
+.categoryHeader:hover {
+  background-color: rgba(220, 230, 240, 1);
+  color: #5F1EC1;
 }
 
 .chevronIcon {
@@ -65,9 +69,9 @@
   align-items: center;
   font-size: 11px;
   padding: 5px;
-  
   cursor: pointer;
   text-align: left;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .checkbox {
@@ -83,18 +87,14 @@
 .dropdownItem:hover {
   background-color: rgba(220, 220, 220, 1);
   border-radius: 4px;
-    color:#5F1EC1;
-
+  color: #5F1EC1;
 }
 
 .categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(230, 235, 245, 1);
+  background-color: rgba(220, 230, 240, 1);
   border-radius: 8px 0 0 8px;
-  color:#5F1EC1;
-  
+  color: #5F1EC1;
 }
-
-
 
 .activeCategory {
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
@@ -108,8 +108,14 @@
   border-radius: 4px;
 }
 
-.svgIcon{
+.svgIcon {
   width: 20px;
   height: 20px;
-  /*margin-right: 10px;*/
+  transition: transform 0.2s, fill 0.2s; /* Add transition for smooth effect */
+}
+
+.categoryHeader:hover .svgIcon,
+.activeCategory .svgIcon {
+  transform: scale(1.1); /* Slightly enlarge on hover and active */
+  fill: #5F1EC1; /* Change color on hover and active */
 }
