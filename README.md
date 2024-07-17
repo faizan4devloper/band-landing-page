@@ -1,3 +1,76 @@
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeItems, setActiveItems] = useState({});
+
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  const handleItemClick = (category, item) => {
+    const isActive = activeItems[category]?.includes(item);
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: isActive
+        ? activeItems[category].filter(i => i !== item)
+        : [...(activeItems[category] || []), item],
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(category, updatedActiveItems[category]);
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore By</p>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div
+            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
+            onClick={() => toggleCategory(index)}
+          >
+            <img
+              src={category.svgIcon}
+              alt={`${category.name} icon`}
+              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
+            />
+            {category.name}
+            <FontAwesomeIcon
+              icon={openCategory === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className={`${styles.dropdownItem} ${activeItems[category.name]?.includes(item) ? styles.activeItem : ""}`}
+                  onClick={() => handleItemClick(category.name, item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={activeItems[category.name]?.includes(item)}
+                    readOnly
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemText}>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CategorySidebar;
+
+
 .sidebar {
   position: fixed;
   top: 110px;
@@ -115,70 +188,3 @@
 .activeIcon {
   filter: brightness(0) invert(1);
 }
-
-
-import React, { useState } from "react";
-import styles from "./CategorySidebar.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-
-const CategorySidebar = ({ categories, onFilterChange }) => {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [activeItem, setActiveItem] = useState({ category: null, item: null });
-
-  const toggleCategory = (index) => {
-    setOpenCategory(index === openCategory ? null : index);
-  };
-
-  const handleItemClick = (category, item) => {
-    const isActive = activeItem.category === category && activeItem.item === item;
-    setActiveItem({ category: isActive ? null : category, item: isActive ? null : item });
-    onFilterChange(category, isActive ? null : item);
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <p className={styles.sideHead}>Explore By</p>
-      {categories.map((category, index) => (
-        <div key={index} className={styles.category}>
-          <div
-            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
-            onClick={() => toggleCategory(index)}
-          >
-            <img
-              src={category.svgIcon}
-              alt={`${category.name} icon`}
-              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
-            />
-            {category.name}
-            <FontAwesomeIcon
-              icon={openCategory === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openCategory === index && (
-            <div className={styles.dropdown}>
-              {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={`${styles.dropdownItem} ${activeItem.category === category.name && activeItem.item === item ? styles.activeItem : ""}`}
-                  onClick={() => handleItemClick(category.name, item)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={activeItem.category === category.name && activeItem.item === item}
-                    readOnly
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemText}>{item}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-export default CategorySidebar;
