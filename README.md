@@ -1,3 +1,67 @@
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeItem, setActiveItem] = useState({ category: null, item: null });
+
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  const handleItemClick = (category, item) => {
+    const isActive = activeItem.category === category && activeItem.item === item;
+    setActiveItem({ category: isActive ? null : category, item: isActive ? null : item });
+    onFilterChange(category, isActive ? null : item);
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore By</p>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div
+            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
+            onClick={() => toggleCategory(index)}
+          >
+            <img src={category.svgIcon} alt={`${category.name} icon`} className={styles.svgIcon} />
+            {category.name}
+            <FontAwesomeIcon
+              icon={openCategory === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className={styles.dropdownItem}
+                  onClick={() => handleItemClick(category.name, item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={activeItem.category === category.name && activeItem.item === item}
+                    readOnly
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemText}>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CategorySidebar;
+
+
+
 .sidebar {
   position: fixed;
   top: 110px;
@@ -36,6 +100,7 @@
   left: 0;
 }
 
+
 .categoryHeader {
   display: flex;
   justify-content: space-between;
@@ -45,12 +110,7 @@
   padding: 10px 15px;
   border-radius: 8px 0 0 8px;
   background-color: rgba(230, 235, 245, 1);
-  transition: background-color 0.3s, color 0.3s;
-}
 
-.categoryHeader:hover {
-  background-color: rgba(220, 230, 240, 1);
-  color: #5F1EC1;
 }
 
 .chevronIcon {
@@ -69,9 +129,9 @@
   align-items: center;
   font-size: 11px;
   padding: 5px;
+  
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.3s, color 0.3s;
 }
 
 .checkbox {
@@ -87,14 +147,18 @@
 .dropdownItem:hover {
   background-color: rgba(220, 220, 220, 1);
   border-radius: 4px;
-  color: #5F1EC1;
+    color:#5F1EC1;
+
 }
 
 .categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(220, 230, 240, 1);
+  background-color: rgba(230, 235, 245, 1);
   border-radius: 8px 0 0 8px;
-  color: #5F1EC1;
+
+  
 }
+
+
 
 .activeCategory {
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
@@ -108,14 +172,9 @@
   border-radius: 4px;
 }
 
-.svgIcon {
+.svgIcon{
   width: 20px;
   height: 20px;
-  transition: transform 0.2s, fill 0.2s; /* Add transition for smooth effect */
+  /*margin-right: 10px;*/
 }
 
-.categoryHeader:hover .svgIcon,
-.activeCategory .svgIcon {
-  transform: scale(1.1); /* Slightly enlarge on hover and active */
-  fill: #5F1EC1; /* Change color on hover and active */
-}
