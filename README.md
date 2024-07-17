@@ -168,8 +168,8 @@ export default CategorySidebar;
 }
 
 .svgIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .svgIcon:hover {
@@ -177,5 +177,6 @@ export default CategorySidebar;
 }
 
 .activeIcon {
-  fill: #fff;
+filter: brightness(0) invert(1);
+  
 }
