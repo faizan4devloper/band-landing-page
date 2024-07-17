@@ -12,8 +12,9 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
   };
 
   const handleItemClick = (category, item) => {
-    setActiveItem({ category, item });
-    onFilterChange(category, item);
+    const isActive = activeItem.category === category && activeItem.item === item;
+    setActiveItem({ category: isActive ? null : category, item: isActive ? null : item });
+    onFilterChange(category, isActive ? null : item);
   };
 
   return (
@@ -39,6 +40,12 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
                   className={`${styles.dropdownItem} ${activeItem.category === category.name && activeItem.item === item ? styles.activeItem : ""}`}
                   onClick={() => handleItemClick(category.name, item)}
                 >
+                  <input
+                    type="checkbox"
+                    checked={activeItem.category === category.name && activeItem.item === item}
+                    readOnly
+                    className={styles.checkbox}
+                  />
                   {item}
                 </div>
               ))}
@@ -72,9 +79,9 @@ export default CategorySidebar;
 }
 
 .sideHead{
- margin-top: 0;
-    font-weight: 500;
-    margin-left: 15px;
+  margin-top: 0;
+  font-weight: 500;
+  margin-left: 15px;
 }
 
 .categoryHeader {
@@ -99,10 +106,16 @@ export default CategorySidebar;
 }
 
 .dropdownItem {
+  display: flex;
+  align-items: center;
   font-size: 11px;
   padding: 5px;
   cursor: pointer;
   text-align: center;
+}
+
+.checkbox {
+  margin-right: 10px;
 }
 
 .dropdownItem:hover {
