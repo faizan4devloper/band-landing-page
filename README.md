@@ -26,7 +26,11 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
             className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
             onClick={() => toggleCategory(index)}
           >
-            <img src={category.svgIcon} alt={`${category.name} icon`} className={styles.svgIcon} />
+            <img
+              src={category.svgIcon}
+              alt={`${category.name} icon`}
+              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
+            />
             {category.name}
             <FontAwesomeIcon
               icon={openCategory === index ? faChevronUp : faChevronDown}
@@ -38,7 +42,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
               {category.items.map((item, itemIndex) => (
                 <div
                   key={itemIndex}
-                  className={styles.dropdownItem}
+                  className={`${styles.dropdownItem} ${activeItem.category === category.name && activeItem.item === item ? styles.activeItem : ""}`}
                   onClick={() => handleItemClick(category.name, item)}
                 >
                   <input
@@ -59,7 +63,6 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 };
 
 export default CategorySidebar;
-
 
 
 .sidebar {
@@ -100,7 +103,6 @@ export default CategorySidebar;
   left: 0;
 }
 
-
 .categoryHeader {
   display: flex;
   justify-content: space-between;
@@ -110,7 +112,6 @@ export default CategorySidebar;
   padding: 10px 15px;
   border-radius: 8px 0 0 8px;
   background-color: rgba(230, 235, 245, 1);
-
 }
 
 .chevronIcon {
@@ -129,7 +130,6 @@ export default CategorySidebar;
   align-items: center;
   font-size: 11px;
   padding: 5px;
-  
   cursor: pointer;
   text-align: left;
 }
@@ -147,18 +147,13 @@ export default CategorySidebar;
 .dropdownItem:hover {
   background-color: rgba(220, 220, 220, 1);
   border-radius: 4px;
-    color:#5F1EC1;
-
+  color: #5F1EC1;
 }
 
 .categoryHeader:not(.activeCategory):hover {
   background-color: rgba(230, 235, 245, 1);
   border-radius: 8px 0 0 8px;
-
-  
 }
-
-
 
 .activeCategory {
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
@@ -172,9 +167,15 @@ export default CategorySidebar;
   border-radius: 4px;
 }
 
-.svgIcon{
+.svgIcon {
   width: 20px;
   height: 20px;
-  /*margin-right: 10px;*/
 }
 
+.svgIcon:hover {
+  fill: #5F1EC1;
+}
+
+.activeIcon {
+  fill: #fff;
+}
