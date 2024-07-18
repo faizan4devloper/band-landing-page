@@ -1,3 +1,4 @@
+
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -136,24 +137,24 @@ const MainApp = () => {
     };
   };
 
-  const addNewCard = () => {
-    const newCard = {
-      imageUrl: "path/to/new/image.jpg",
-      title: "New Card Title",
-      description: "New Card Description",
-    };
-    const newCardsData = [...cardsData, newCard];
-    setCardsData(newCardsData);
+  // const addNewCard = () => {
+  //   const newCard = {
+  //     imageUrl: "path/to/new/image.jpg",
+  //     title: "New Card Title",
+  //     description: "New Card Description",
+  //   };
+  //   const newCardsData = [...cardsData, newCard];
+  //   setCardsData(newCardsData);
 
-    const newCardIndex = newCardsData.length - 1;
-    setBigIndex(newCardIndex);
+  //   const newCardIndex = newCardsData.length - 1;
+  //   setBigIndex(newCardIndex);
 
-    if (newCardIndex > currentIndex + 4) {
-      setCurrentIndex(newCardIndex - 4);
-    } else {
-      setCurrentIndex(currentIndex);
-    }
-  };
+  //   if (newCardIndex > currentIndex + 4) {
+  //     setCurrentIndex(newCardIndex - 4);
+  //   } else {
+  //     setCurrentIndex(currentIndex);
+  //   }
+  // };
 
   return (
     <div className={styles.app}>
