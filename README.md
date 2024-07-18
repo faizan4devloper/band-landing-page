@@ -1,240 +1,154 @@
-import React, { useState } from "react";
-import styles from "./CategorySidebar.module.css";
+import image1 from "./components/Cards/card1.jpg";
+import image2 from "./components/Cards/card2.jpg";
+import image3 from "./components/Cards/card3.jpg";
+import image4 from "./components/Cards/card4.jpg";
+import image5 from "./components/Cards/card5.jpg";
+import image6 from "./components/Cards/card8.jpg";
+import image9 from "./components/Cards/card9.jpg";
+import image10 from "./components/Cards/card10.jpg";
+import image11 from "./components/Cards/card11.jpg";
+import image13 from "./components/Cards/card13.jpg";
+import image16 from "./components/Cards/card16.jpg";
+import image17 from "./components/Cards/card17.jpg";
+import image18 from "./components/Cards/card18.jpg";
+import image82 from "./components/Cards/card82.jpg";
+import image19 from "./components/Cards/card19.jpg";
+import imageSoon from "./components/Cards/dummy2.jpg";
+import image14 from "./components/Cards/AUTOMATION.jpg";
+import image15 from "./components/Cards/SOP.jpg";
+
+
+import demoVideo1 from "./components/Sidebar/Icons/Email-EAR.mp4";
+import demoVideo2 from "./components/Sidebar/Icons/SignatureExtraction.mp4";
+import demoVideo3 from "./components/Sidebar/Icons/IntelligentAssist.mp4";
+import demoVideo4 from "./components/Sidebar/Icons/CaseIntelligent.mp4";
+import demoVideo5 from "./components/Sidebar/Icons/CodeGreat.mp4";
+import demoVideo6 from "./components/Sidebar/Icons/SmartRecruit.mp4";
+
+import solutionFlow1 from "./components/Sidebar/Icons/solutionFlowGraph1.png";
+// import solutionFlow2 from "./components/Sidebar/Icons/solutionFlowGraph2.png";
+import solutionFlow3 from "./components/Sidebar/Icons/solutionFlowGraph3.png";
+import solutionFlow4 from "./components/Sidebar/Icons/solutionFlowGraph4.png";
+// import solutionFlow4 from "./components/Icons/solutionFlow4.png";
+// import solutionFlow5 from "./components/Icons/solutionFlow5.png";
+import solutionFlow6 from "./components/Sidebar/Icons/solutionFlowGraph6.png";
+
+
+import architecture1 from "./components/Sidebar/Icons/technicalArchitecture1.png";
+import architecture2 from "./components/Sidebar/Icons/technicalArchitecture2.png";
+import architecture3 from "./components/Sidebar/Icons/technicalArchitecture3.png";
+import architecture4 from "./components/Sidebar/Icons/technicalArchitecture4.png";
+import architecture5 from "./components/Sidebar/Icons/technicalArchitecture5.png";
+import architecture6 from "./components/Sidebar/Icons/technicalArchitecture6.png";
+
+export const cardsData = [
+//   {
+//     imageUrl: image1,
+//     title: "Email EAR",
+//     description: "Transform customer support process by automating email analysis, and providing crafted thoughtful response to incoming emails",
+//     content: {
+//       description: "Email EAR (Extract, Act and Respond) In today’s era, there are unprecedented ways of engaging the customer and this includes both traditional and digital channels. Unified experience across channels is key for customer delight.Despite the rise of alternative options, Email remains a preferred communication channel for customer support. Email provides unique benefits like maintaining a history of interactions, allowing customers to comprehensively explain issues, and enabling file attachments for additional context. However, the prioritization and queuing of emails often leads to delayed responses that create poor customer experiences. Our Gen AI-powered Email EAR (Extract, Act, and Respond) solution aims to transform the customer support process by automating the reading, analysis, and thoughtful responding to incoming emails. Specifically, our system can extract the core query, complaint, or issue within an email. It then understands what actions are required to resolve the customer's needs. Finally, it generates a user-friendly, detailed response explaining steps taken to address their questions or concerns.",
+//       solutionFlow: solutionFlow1,
+//       demo: demoVideo1,
+//       techArchitecture: architecture1,
+//       benefits: "This solution assists organizations in enhancing the customer experience for email responses. Automating responses to customer queries or integrating with applications to retrieve data or generate tickets facilitates completing the overall process without delays.  Timely and accurate responses help in increased self-service, reduced customer service inquiries, and higher customer satisfaction.  Human review of generated responses allows validation of customer feedback and enhancement of the knowledge base via feedback-driven updates.  Overall agent productivity stands to improve, as the solution can be seen as an agent assist that enables reviewing automatically generated responses and interacting with customers accordingly.  The adaptability of the solution allows it to be implemented across various verticals to address common customer pain points.",
+// adoption: [
+//         { industry: "Financial", adoption: "Can help in answering finance product information, Loan eligibility, Product Recommendation as per the email context" },
+//         { industry: "Education", adoption: "Can help students to get response to their queries related to Admission process, Scholarship schemes, Enrollment process etc." },
+//         { industry: "Healthcare/Insurance", adoption: "Can help customers to understand their health insurance eligibility, claim processing, claim status etc." },
+//         { industry: "Retail", adoption: "Queries related to product exchange / return can be better handled" }
+//       ],      
+//     },
+    
+//   },
+{
+    imageUrl: image3,
+    title: "Intelligent Assist",
+    description: "Efficiently search across an organization's document repository and retrieve relevant information to questions/requests from global workforces.",
+    content: {
+      description: "GenAI Intelligent Assist(Q&A) Every organization possesses a vast knowledge base embedded within its extensive document repositories. This knowledge is critical for supporting both customers and internal employees in comprehending organizational processes, products, policies, and more. For large, multinational corporations with a diverse, multi-lingual workforce, Gen AI-powered intelligent assistants can serve as highly effective support agents by accurately retrieving precise information from these knowledge sources at scale. Our Gen AI Intelligent Assist leverages generative intelligence to efficiently search across an organization's documents and provide accurate, relevant information to questions or requests. With multi-lingual capabilities, it can serve global workforces by delivering the right knowledge to the right people when they need it, regardless of language or location.",
+      solutionFlow: solutionFlow3,
+      demo: demoVideo3,
+      techArchitecture: architecture3,
+      benefits: "The purpose of this solution is to enhance the customer experience, making it adaptable across various industries. Specifically, it helps customers better understand the products and services an organization offers. Below are some examples of how this solution can be implemented across different industries",
+      adoption: [
+             { industry: "Financial", adoption: "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals." },
+             { industry: "Education", adoption: "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students." },
+             { industry: "Healthcare/Insurance", adoption: "Can assist customers in understanding various insurance products, determining health insurance eligibility, and providing personalized insurance product recommendations tailored to each customer's needs." },
+             { industry: "HR", adoption: "Can address employee inquiries regarding benefits, time off policies, training opportunities, and other related topics. This allows the company to provide 24/7 employee support and respond to questions in a timely manner." },
+             { industry: "Travel and Hospitality", adoption: "The virtual assistant can recommend activities, respond to common travel questions, and otherwise assist with trip planning to improve the traveler's experience and convenience." },
+             { industry: "Retail", adoption: "This solution could provide personalized recommendations and comparisons to help customers find the products best suited to their needs, answer common questions about product features and specifications." },
+        ]
+    },
+  },
+  {
+    imageUrl: image1,
+    title: "Email EAR",
+    description: "Transform customer support process by automating email analysis, and providing crafted thoughtful response to incoming emails",
+    content: {
+      description: "Email EAR (Extract, Act and Respond) In today’s era, there are unprecedented ways of engaging the customer and this includes both traditional and digital channels. Unified experience across channels is key for customer delight.Despite the rise of alternative options, Email remains a preferred communication channel for customer support. Email provides unique benefits like maintaining a history of interactions, allowing customers to comprehensively explain issues, and enabling file attachments for additional context. However, the prioritization and queuing of emails often leads to delayed responses that create poor customer experiences. Our Gen AI-powered Email EAR (Extract, Act, and Respond) solution aims to transform the customer support process by automating the reading, analysis, and thoughtful responding to incoming emails. Specifically, our system can extract the core query, complaint, or issue within an email. It then understands what actions are required to resolve the customer's needs. Finally, it generates a user-friendly, detailed response explaining steps taken to address their questions or concerns.",
+      solutionFlow: solutionFlow1,
+      demo: demoVideo1,
+      techArchitecture: architecture1,
+      benefits: "This solution assists organizations in enhancing the customer experience for email responses. Automating responses to customer queries or integrating with applications to retrieve data or generate tickets facilitates completing the overall process without delays.  Timely and accurate responses help in increased self-service, reduced customer service inquiries, and higher customer satisfaction.  Human review of generated responses allows validation of customer feedback and enhancement of the knowledge base via feedback-driven updates.  Overall agent productivity stands to improve, as the solution can be seen as an agent assist that enables reviewing automatically generated responses and interacting with customers accordingly.  The adaptability of the solution allows it to be implemented across various verticals to address common customer pain points.",
+adoption: [
+        { industry: "Financial", adoption: "Can help in answering finance product information, Loan eligibility, Product Recommendation as per the email context" },
+        { industry: "Education", adoption: "Can help students to get response to their queries related to Admission process, Scholarship schemes, Enrollment process etc." },
+        { industry: "Healthcare/Insurance", adoption: "Can help customers to understand their health insurance eligibility, claim processing, claim status etc." },
+        { industry: "Retail", adoption: "Queries related to product exchange / return can be better handled" }
+      ],      
+    },
+    
+  },
+
+  /* eslint-disable jsx-a11y/alt-text */
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import styles from "./SideBar.module.css";
 
-const CategorySidebar = ({ categories, onFilterChange }) => {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [activeItems, setActiveItems] = useState({});
+// Import individual images for each menu item
+import descriptionImg from "./Icons/Description.svg";
+import solutionFlowImg from "./Icons/SolutionFlow.svg";
+import demoImg from "./Icons/Demo.svg";
+import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
+import benefitsImg from "./Icons/Benefits.svg";
+import industyImg from "./Icons/Industry.svg"
 
-  const toggleCategory = (index) => {
-    setOpenCategory(index === openCategory ? null : index);
-  };
-
-  const handleItemClick = (category, item) => {
-    const isActive = activeItems[category]?.includes(item);
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: isActive
-        ? activeItems[category].filter(i => i !== item)
-        : [...(activeItems[category] || []), item],
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(category, updatedActiveItems[category]);
-  };
-
-  const handleRemoveFilter = (category, item) => {
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: activeItems[category].filter(i => i !== item),
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(category, updatedActiveItems[category]);
-  };
+const SideBar = ({ activeTab, handleTabChange }) => {
+  const menuItems = [
+    { id: "description", label: "Description", img: descriptionImg },
+    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
+    { id: "demo", label: "Demo", img: demoImg },
+    {
+      id: "techArchitecture",
+      label: "Technical Architecture",
+      img: techArchitectureImg,
+    },
+    { id: "benefits", label: "Benefits/Use Cases", img: benefitsImg },
+    { id:"adoption", label: "Industry Adoption", img: industyImg  },
+  ];
 
   return (
-    <div className={styles.sidebar}>
-      <p className={styles.sideHead}>Explore by</p>
-      <div className={styles.selectedFilters}>
-        {Object.entries(activeItems).flatMap(([category, items]) =>
-          items.map(item => (
-            <div key={`${category}-${item}`} className={styles.selectedFilter}>
-              <span>{item}</span>
-              <FontAwesomeIcon
-                icon={faTimes}
-                className={styles.removeIcon}
-                onClick={() => handleRemoveFilter(category, item)}
-              />
-            </div>
-          ))
-        )}
-      </div>
-      {categories.map((category, index) => (
-        <div key={index} className={styles.category}>
-          <div
-            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
-            onClick={() => toggleCategory(index)}
-          >
-            <img
-              src={category.svgIcon}
-              alt={`${category.name} icon`}
-              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
-            />
-            {category.name}
-            <FontAwesomeIcon
-              icon={openCategory === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openCategory === index && (
-            <div className={styles.dropdown}>
-              {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={styles.dropdownItem}
-                  onClick={() => handleItemClick(category.name, item)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={activeItems[category.name]?.includes(item)}
-                    readOnly
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemText}>{item}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+    <nav className={styles.sideBar}>
+      {menuItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => handleTabChange(item.id)}
+          className={`${styles.menuItem} ${
+            activeTab === item.id ? styles.active : ""
+          }`}
+        >
+          <img
+            src={item.img}
+            className={`${styles.iconImg} ${styles.hoverEffect}`}
+          />
+          <span className={styles.label}>{item.label}</span>
+          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
+        </button>
       ))}
-    </div>
+    </nav>
   );
 };
 
-export default CategorySidebar;
-
-
-
-
-.sidebar {
-  position: fixed;
-  top: 140px;
-  left: 135px;
-  width: 200px;
-  height: calc(100% - 75px);
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  padding: 20px;
-  padding-right: 0px;
-  overflow-y: auto;
-}
-
-.sideHead {
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 0;
-  color: #6f36cd;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 5px;
-}
-
-.sideHead::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-.selectedFilters {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.selectedFilter {
-  display: flex;
-  align-items: center;
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #6f36cd;
-}
-
-.removeIcon {
-  margin-left: 5px;
-  cursor: pointer;
-  color: #6f36cd;
-}
-
-.removeIcon:hover {
-  color: #d9534f; /* Adjust the color on hover */
-}
-
-.category {
-  margin-bottom: 20px;
-}
-
-.categoryHeader {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 10px 15px;
-  border-radius: 8px 0 0 8px;
-  background-color: rgba(230, 235, 245, 1);
-}
-
-.categoryHeader img {
-  margin-right: 8px;
-}
-
-.chevronIcon {
-  margin-left: auto;
-}
-
-.dropdown {
-  padding: 10px;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-.dropdownItem {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.checkbox {
-  margin-right: 10px;
-  width: 16px;
-  height: 16px;
-}
-
-.itemText {
-  margin-left: 5px;
-}
-
-.dropdownItem:hover {
-  background-color: rgba(220, 220, 220, 1);
-  border-radius: 4px;
-  color: #5F1EC1;
-}
-
-.categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
-}
-
-.activeCategory {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 8px 0 0 8px;
-}
-
-.activeItem {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 4px;
-}
-
-.svgIcon {
-  width: 16px;
-  height: 16px;
-}
-
-.svgIcon:hover {
-  fill: #5F1EC1;
-}
-
-.activeIcon {
-  filter: brightness(0) invert(1);
-}
+export default SideBar;
