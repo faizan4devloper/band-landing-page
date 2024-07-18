@@ -1,4 +1,3 @@
-
 import React, { useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,7 +13,6 @@ import { cardsData } from "./data"; // Import card data from a separate file
 const App = () => {
   const [bigIndex, setBigIndex] = React.useState(null);
   const cardsContainerRef = useRef(null);
-  const location = useLocation();
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
@@ -43,37 +41,37 @@ const App = () => {
     });
   };
 
+  const location = useLocation(); // Use location to get the current pathname
+
   return (
-    <Router> {/* Ensure Router is wrapping your entire application */}
-      <div className={styles.app}>
-        <Header />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                cardsData={cardsData}
-                handleClickLeft={handleClickLeft}
-                handleClickRight={handleClickRight}
-                bigIndex={bigIndex}
-                toggleSize={toggleSize}
-                cardsContainerRef={cardsContainerRef}
-              />
-            }
-          />
-          <Route path="/dashboard" element={<SideBarPage />} />
-          <Route
-            path="/all-cards"
-            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-          />
-        </Routes>
-        {location.pathname !== "/all-cards" && (
-          <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-            <FontAwesomeIcon icon={faChevronDown} />
-          </div>
-        )}
-      </div>
-    </Router>
+    <div className={styles.app}>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              cardsData={cardsData}
+              handleClickLeft={handleClickLeft}
+              handleClickRight={handleClickRight}
+              bigIndex={bigIndex}
+              toggleSize={toggleSize}
+              cardsContainerRef={cardsContainerRef}
+            />
+          }
+        />
+        <Route path="/dashboard" element={<SideBarPage />} />
+        <Route
+          path="/all-cards"
+          element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+        />
+      </Routes>
+      {location.pathname !== "/all-cards" && ( // Conditionally render scrollDownButton
+        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+          <FontAwesomeIcon icon={faChevronDown} />
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -116,4 +114,3 @@ const Home = ({
 };
 
 export default App;
-
