@@ -205,136 +205,72 @@
 
 
 
-::-webkit-scrollbar{
-  display: none;
-}
+import React, { useState, useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
+import BusinessSVG from "./business.svg";
+import IndustrySVG from "./industry.svg";
 
-html, body {
-  font-family: "Poppins", sans-serif;
-}
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const cardsContainerRef = useRef(null);
 
-.app {
-  width: 1100px;
-  margin: 0 auto;
-  /* height should be flexible based on content */
-}
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
 
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-  
-}
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-.arrow {
-  cursor: pointer;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
-}
+  const handleFilterChange = (category, item) => {
+    const filtered = cardsData.filter(card => card.category === category && card.type === item);
+    setFilteredCards(filtered);
+  };
 
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
+  const categories = [
+    {
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["LSH", "BFSI", "ENU", "Automative", "GOVT"]
+    },
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["SDLC", "HR", "Customer Support", "Finance"]
+    },
+    // Add other categories as needed
+  ];
 
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
+  return (
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>All Solutions Catalog</h4>
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.map((card, index) => (
+            <div key={index}>
+              <Cards
+                imageUrl={card.imageUrl}
+                title={card.title}
+                description={card.description}
+                isBig={index === bigIndex}
+                toggleSize={() => toggleSize(index)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-right: 112px;
-}
-
-.solutionHead {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  margin-left: 118px;
-}
-
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
-
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton,
-.scrollUpButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
-}
+export default AllCardsPage;
