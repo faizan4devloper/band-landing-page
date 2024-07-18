@@ -1,190 +1,187 @@
-import React, { useState } from "react";
-import styles from "./CategorySidebar.module.css";
+
+import React, { useRef } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage"; // Import the new component
+import { cardsData } from "./data"; // Import card data from a separate file
 
-const CategorySidebar = ({ categories, onFilterChange }) => {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [activeItems, setActiveItems] = useState({});
+const App = () => {
+  const [bigIndex, setBigIndex] = React.useState(null);
+  const cardsContainerRef = useRef(null);
 
-  const toggleCategory = (index) => {
-    setOpenCategory(index === openCategory ? null : index);
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleItemClick = (category, item) => {
-    const isActive = activeItems[category]?.includes(item);
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: isActive
-        ? activeItems[category].filter(i => i !== item)
-        : [...(activeItems[category] || []), item],
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(category, updatedActiveItems[category]);
+  const handleClickLeft = () => {
+    if (bigIndex === null || bigIndex === 0) {
+      setBigIndex(cardsData.length - 1);
+    } else {
+      setBigIndex(bigIndex - 1);
+    }
+  };
+
+  const handleClickRight = () => {
+    if (bigIndex === null || bigIndex === cardsData.length - 1) {
+      setBigIndex(0);
+    } else {
+      setBigIndex(bigIndex + 1);
+    }
+  };
+
+  const handleScrollDown = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
   };
 
   return (
-    <div className={styles.sidebar}>
-      <p className={styles.sideHead}>Explore By</p>
-      {categories.map((category, index) => (
-        <div key={index} className={styles.category}>
-          <div
-            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
-            onClick={() => toggleCategory(index)}
-          >
-            <img
-              src={category.svgIcon}
-              alt={`${category.name} icon`}
-              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
-            />
-            {category.name}
-            <FontAwesomeIcon
-              icon={openCategory === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
+    <Router> {/* Ensure Router is wrapping your entire application */}
+      <div className={styles.app}>
+        <Header />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                cardsData={cardsData}
+                handleClickLeft={handleClickLeft}
+                handleClickRight={handleClickRight}
+                bigIndex={bigIndex}
+                toggleSize={toggleSize}
+                cardsContainerRef={cardsContainerRef}
+              />
+            }
+          />
+          <Route path="/dashboard" element={<SideBarPage />} />
+          <Route
+            path="/all-cards"
+            element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+          />
+        </Routes>
+        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+          <FontAwesomeIcon icon={faChevronDown} />
+        </div>
+      </div>
+    </Router>
+  );
+};
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+}) => {
+  return (
+    <>
+      <MyCarousel />
+      <div className={styles.cardsContainer} ref={cardsContainerRef}>
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(0, 5).map((card, index) => (
+          <Cards
+            key={index}
+            imageUrl={card.imageUrl}
+            title={card.title}
+            description={card.description}
+            isBig={index === bigIndex}
+            toggleSize={() => toggleSize(index)}
+          />
+        ))}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+export default App;
+
+
+import React, { useState, useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+
+import BusinessSVG from "./business.svg";
+import IndustrySVG from "./industry.svg";
+
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const cardsContainerRef = useRef(null);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleFilterChange = (category, item) => {
+    const filtered = cardsData.filter(card => card.category === category && card.type === item);
+    setFilteredCards(filtered);
+  };
+
+ const categories = [
+  {
+    name: "Industry",
+    svgIcon: IndustrySVG,
+    items: ["Manufacturing", "Healthcare", "Retail"]
+  },
+  {
+    name: "Business Function",
+    svgIcon: BusinessSVG, // Path to the SVG icon
+    items: ["Finance", "Human Resources", "Marketing"]
+  },
+  // Add other categories as needed
+];
+
+  return (
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <div className={styles.mainContainerCards}>
+      <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+        {filteredCards.map((card, index) => (
+          <div key={index}>
+            <Cards
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={index === bigIndex}
+              toggleSize={() => toggleSize(index)}
             />
           </div>
-          {openCategory === index && (
-            <div className={styles.dropdown}>
-              {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={`${styles.dropdownItem} ${activeItems[category.name]?.includes(item) ? styles.activeItem : ""}`}
-                  onClick={() => handleItemClick(category.name, item)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={activeItems[category.name]?.includes(item)}
-                    readOnly
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemText}>{item}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
+      </div>
     </div>
   );
 };
 
-export default CategorySidebar;
+export default AllCardsPage;
 
-
-.sidebar {
-  position: fixed;
-  top: 110px;
-  left: 135px;
-  width: 200px;
-  height: calc(100% - 75px);
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  padding: 20px;
-  padding-right: 0px;
-  overflow-y: auto;
-}
-
-.category {
-  margin-bottom: 20px;
-}
-
-.sideHead {
-  font-size: 16px;
-  font-weight: 500;
-  margin-top: 0;
-  margin-left: 15px;
-  color: #6f36cd; /* Adjust the color as desired */
-  position: relative;
-  display: inline-block;
-  padding-bottom: 5px;
-}
-
-.sideHead::after {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
-
-.categoryHeader {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 10px 15px;
-  border-radius: 8px 0 0 8px;
-  background-color: rgba(230, 235, 245, 1);
-}
-
-.categoryHeader img {
-  margin-right: 8px; /* Adjust spacing between icon and text */
-}
-
-.chevronIcon {
-  margin-left: auto; /* Pushes the chevron icon to the right */
-}
-
-.dropdown {
-  padding: 10px;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 4px;
-  margin-top: 10px;
-}
-
-.dropdownItem {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  padding: 5px;
-  cursor: pointer;
-  text-align: left;
-}
-
-.checkbox {
-  margin-right: 10px;
-  width: 16px;
-  height: 16px;
-}
-
-.itemText {
-  margin-left: 5px;
-}
-
-.dropdownItem:hover {
-  background-color: rgba(220, 220, 220, 1);
-  border-radius: 4px;
-  color: #5F1EC1;
-}
-
-.categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
-}
-
-.activeCategory {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 8px 0 0 8px;
-}
-
-.activeItem {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 4px;
-}
-
-.svgIcon {
-  width: 18px;
-  height: 18px;
-}
-
-.svgIcon:hover {
-  fill: #5F1EC1;
-}
-
-.activeIcon {
-  filter: brightness(0) invert(1);
-}
