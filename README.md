@@ -1,155 +1,340 @@
-import React, { useState, useRef } from "react";
-import styles from "./AllCardsPage.module.css";
-import Cards from "./Cards";
-import CategorySidebar from "./CategorySidebar";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
-import BusinessSVG from "./business.svg";
-import IndustrySVG from "./industry.svg";
-
-const AllCardsPage = ({ cardsData }) => {
-  const [bigIndex, setBigIndex] = useState(null);
-  const [filteredCards, setFilteredCards] = useState(cardsData);
-  const cardsContainerRef = useRef(null);
-
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleFilterChange = (category, item) => {
-    const filtered = cardsData.filter(card => card.category === category && card.type === item);
-    setFilteredCards(filtered);
-  };
-
-  const categories = [
-    {
-      name: "Industry",
-      svgIcon: IndustrySVG,
-      items: ["LSH", "BFSI", "ENU", "Automotive", "GOVT"]
-    },
-    {
-      name: "Business Function",
-      svgIcon: BusinessSVG,
-      items: ["SDLC", "HR", "Customer Support", "Finance"]
-    },
-    // Add other categories as needed
-  ];
-
-  return (
-    <div className={styles.allCardsPage}>
-      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
-      <div className={styles.contentContainer}>
-        <div className={styles.header}>
-          <button onClick={handleBackButtonClick} className={styles.backButton}>
-            <FontAwesomeIcon icon={faArrowLeft} />
-          </button>
-          <h1 className={styles.catalogsHeading}>All Solutions Catalog</h1>
+  
+  import React, { useRef, useState, useEffect } from "react";
+  import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+  import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+  import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+  import Header from "./components/Header/Header";
+  import MyCarousel from "./components/Carousel/MyCarousel";
+  import Cards from "./components/Cards/Cards";
+  import styles from "./App.module.css";
+  import SideBarPage from "./components/Sidebar/SideBarPage";
+  import AllCardsPage from "./components/Cards/AllCardsPage";
+  import { cardsData as initialCardsData } from "./data";
+  
+  const App = () => {
+    const [cardsData, setCardsData] = useState(initialCardsData);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [bigIndex, setBigIndex] = useState(0);
+    const [showScrollDown, setShowScrollDown] = useState(true);
+    const [showScrollUp, setShowScrollUp] = useState(false);
+    const cardsContainerRef = useRef(null);
+    
+  
+    const toggleSize = (index) => {
+      setBigIndex(index === bigIndex ? null : index);
+    };
+  
+    const handleClickLeft = () => {
+      const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+      setBigIndex(newBigIndex);
+  
+      const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+      if(newCurrentIndex < currentIndex && currentIndex !== 0){
+      setCurrentIndex(newCurrentIndex);
+      }else{
+        setCurrentIndex(newCurrentIndex)
+      }
+    };
+  
+    const handleClickRight = () => {
+      const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+      setBigIndex(newBigIndex);
+  
+      const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+      setCurrentIndex(newCurrentIndex);
+    };
+  
+    const handleScrollDown = () => {
+      if (cardsContainerRef.current) {
+        cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+        setShowScrollDown(false);
+        setShowScrollUp(true);
+      }
+    };
+  
+    const handleScrollUp = () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      setShowScrollDown(true);
+      setShowScrollUp(false);
+    };
+  
+    const handleMouseEnter = () => {
+      if (cardsContainerRef.current) {
+        cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    };
+  
+    useEffect(() => {
+      const handleScroll = () => {
+        if (window.scrollY > 50) {
+          setShowScrollUp(true);
+          setShowScrollDown(false);
+        } else {
+          setShowScrollUp(false);
+          setShowScrollDown(true);
+        }
+      };
+  
+      const debounceScroll = debounce(handleScroll, 100);
+      window.addEventListener("scroll", debounceScroll);
+  
+      return () => window.removeEventListener("scroll", debounceScroll);
+    }, []);
+  
+    const debounce = (func, wait) => {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    };
+  
+    const addNewCard = () => {
+      const newCard = {
+        imageUrl: "path/to/new/image.jpg",
+        title: "New Card Title",
+        description: "New Card Description",
+      };
+      const newCardsData = [...cardsData, newCard];
+      setCardsData(newCardsData);
+  
+      const newCardIndex = newCardsData.length - 1;
+      setBigIndex(newCardIndex);
+  
+      if (newCardIndex > currentIndex + 4) {
+        setCurrentIndex(newCardIndex - 4);
+      } else {
+        setCurrentIndex(currentIndex);
+      }
+    };
+  
+    return (
+      <Router>
+        <div className={styles.app}>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
         </div>
-        <div className={styles.cardsContainer} ref={cardsContainerRef}>
-          {filteredCards.map((card, index) => (
-            <div key={index} className={`${styles.card} ${index === bigIndex ? styles.bigCard : ''}`}>
+      </Router>
+    );
+  };
+  
+  const Home = ({
+    cardsData,
+    handleClickLeft,
+    handleClickRight,
+    currentIndex,
+    bigIndex,
+    toggleSize,
+    cardsContainerRef,
+    handleMouseEnter,
+  }) => {
+    const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+    return (
+      <>
+        <MyCarousel />
+        <div
+          className={styles.cardsContainer}
+          ref={cardsContainerRef}
+          onMouseEnter={handleMouseEnter}
+        >
+          <div className={styles.viewAllContainer}>
+            <Link to="/all-cards" className={styles.viewAllButton}>
+              View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+            </Link>
+          </div>
+          <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+            <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+          </span>
+          {visibleCards.map((card, index) => {
+            const actualIndex = currentIndex + index;
+            return (
               <Cards
+                key={index}
                 imageUrl={card.imageUrl}
                 title={card.title}
                 description={card.description}
-                isBig={index === bigIndex}
-                toggleSize={() => toggleSize(index)}
+                isBig={actualIndex === bigIndex}
+                toggleSize={() => toggleSize(actualIndex)}
               />
-            </div>
-          ))}
+            );
+          })}
+          <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+            <FontAwesomeIcon icon={faArrowRight} title="Next" />
+          </span>
         </div>
-      </div>
-    </div>
-  );
-};
-
-export default AllCardsPage;
-
+      </>
+    );
+  };
+  
+  export default App;
 
 
 
-.allCardsPage {
-  display: flex;
-  padding: 20px;
+::-webkit-scrollbar{
+  display: none;
 }
 
-.contentContainer {
-  flex: 1;
-  margin-left: 30px;
+
+html, body {
+  font-family: "Poppins", sans-serif;
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.backButton {
-  background-color: rgba(230, 235, 245, 1);
-  padding: 7px;
-  border-radius: 4px;
-  width: 32px;
-  font-size: 18px;
-  border: none;
-  cursor: pointer;
-}
-
-.backButton:hover {
-  color: rgba(95, 30, 193, 1); /* Change button color on hover */
-}
-
-.catalogsHeading {
-  font-size: 24px;
-  margin-left: 10px;
+.app {
+  width: 1100px;
+  margin: 0 auto;
+  /* height should be flexible based on content */
 }
 
 .cardsContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  
 }
 
-.card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-}
-
-.card img {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px 8px 0 0;
-}
-
-.card-content {
-  padding: 15px;
-}
-
-.card-title {
+.arrow {
+  cursor: pointer;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  width: 18px;
+  height: 18px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
+  transition: transform 0.5s ease, background 0.5s ease;
 }
 
-.card-description {
+.arrow:hover {
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
+}
+
+.leftArrow {
+  left: -25px;
+  top: 90px;
+}
+
+.rightArrow {
+  right: -25px;
+  top: 90px;
+}
+
+@media screen and (max-width: 1100px) {
+  .app {
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app {
+    max-width: 100%;
+  }
+}
+
+.viewAllContainer {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-right: 112px;
+}
+
+.solutionHead {
+  font-weight: 600;
   font-size: 14px;
-  color: #555;
+  color: #808080;
+  margin-left: 118px;
 }
 
-.bigCard {
-  grid-column-end: span 2;
-  grid-row-end: span 2;
+.viewAllButton {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 7px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.viewAllButton:hover {
+  transform: translateY(-5px);
+  color: #5f1ec1;
+  background-color: rgba(13, 85, 198, 0.1);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.viewAllButton:hover .icon {
+  transform: translateX(5px);
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 21px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.scrollDownButton:hover, .scrollUpButton:hover {
+  background-color: rgba(13, 85, 198, 1);
 }
