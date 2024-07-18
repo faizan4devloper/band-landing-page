@@ -136,7 +136,12 @@ export default AllCardsPage;
   align-items: center;
   justify-content: center;
   padding: 10px; /* Optional: Add some padding for spacing */
+  /*padding-bottom: 50px;*/
   box-sizing: border-box;
+}
+
+.allCardsContainer > div:nth-last-child(-n+4) {
+  padding-bottom: 50px; 
 }
 
 
