@@ -1,3 +1,22 @@
+const cardsData = [
+  {
+    imageUrl: "image1.jpg",
+    title: "Intelligent Assist",
+    description: "Description for Intelligent Assist",
+    industry: "LSH",
+    businessFunction: "Customer Support"
+  },
+  {
+    imageUrl: "image2.jpg",
+    title: "Smart Analytics",
+    description: "Description for Smart Analytics",
+    industry: "BFSI",
+    businessFunction: "Finance"
+  },
+  // Add more cards as needed
+];
+
+
 import React, { useState, useRef } from "react";
 import styles from "./AllCardsPage.module.css";
 import Cards from "./Cards";
@@ -21,12 +40,23 @@ const AllCardsPage = ({ cardsData }) => {
     setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleFilterChange = (category, activeItems) => {
-    if (activeItems.length === 0 || activeItems.includes("All")) {
+  const handleFilterChange = (activeItems) => {
+    if (
+      Object.values(activeItems).every((items) => items.length === 0) ||
+      activeItems["Industry"]?.includes("All") ||
+      activeItems["Business Function"]?.includes("All")
+    ) {
       setFilteredCards(cardsData);
     } else {
-      const filtered = cardsData.filter(
-        (card) => card.category === category && activeItems.includes(card.type)
+      const filtered = cardsData.filter((card) =>
+        Object.entries(activeItems).every(([category, items]) => {
+          if (category === "Industry") {
+            return items.includes(card.industry);
+          } else if (category === "Business Function") {
+            return items.includes(card.businessFunction);
+          }
+          return true;
+        })
       );
       setFilteredCards(filtered);
     }
@@ -36,12 +66,12 @@ const AllCardsPage = ({ cardsData }) => {
     {
       name: "Industry",
       svgIcon: IndustrySVG,
-      items: ["All", "LSH", "BFSI", "ENU", "Automative", "GOVT"]
+      items: ["All", "LSH", "BFSI", "ENU", "Automative", "GOVT"],
     },
     {
       name: "Business Function",
       svgIcon: BusinessSVG,
-      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experiance"]
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
     },
     // Add other categories as needed
   ];
@@ -75,6 +105,8 @@ const AllCardsPage = ({ cardsData }) => {
 export default AllCardsPage;
 
 
+
+
 import React, { useState } from "react";
 import styles from "./CategorySidebar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -97,7 +129,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
         : [...(activeItems[category] || []), item],
     };
     setActiveItems(updatedActiveItems);
-    onFilterChange(category, updatedActiveItems[category]);
+    onFilterChange(updatedActiveItems);
   };
 
   const handleRemoveFilter = (category, item) => {
@@ -106,7 +138,7 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
       [category]: activeItems[category].filter((i) => i !== item),
     };
     setActiveItems(updatedActiveItems);
-    onFilterChange(category, updatedActiveItems[category]);
+    onFilterChange(updatedActiveItems);
   };
 
   return (
@@ -169,4 +201,3 @@ const CategorySidebar = ({ categories, onFilterChange }) => {
 };
 
 export default CategorySidebar;
-
