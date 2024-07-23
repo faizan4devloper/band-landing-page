@@ -8,7 +8,8 @@ import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons"; // Im
 
 import BusinessSVG from "./business.svg";
 import IndustrySVG from "./industry.svg";
-import NoResultsImage from "./no-results.svg"; // Import an image for no results
+// import NoResultsImage from "./no-results.svg"; // Import an image for no results
+import NoResultsImage from "./thinking-face-svgrepo-com.svg"
 
 const AllCardsPage = ({ cardsData }) => {
   const [bigIndex, setBigIndex] = useState(null);
@@ -96,7 +97,7 @@ const AllCardsPage = ({ cardsData }) => {
           ) : (
             <div className={styles.noResultsContainer}>
               <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
-              <p className={styles.noResults}>No results found</p>
+              <p className={styles.noResults}>No Solution found</p>
             </div>
           )}
         </div>
@@ -106,8 +107,6 @@ const AllCardsPage = ({ cardsData }) => {
 };
 
 export default AllCardsPage;
-
-
 
 
 .allCardsPage {
@@ -148,7 +147,7 @@ export default AllCardsPage;
   border-left: 4px solid rgba(95, 30, 193, 0.8);
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  width: 770px;
   padding: 0px 20px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -183,19 +182,19 @@ export default AllCardsPage;
 .noResultsContainer {
   grid-column: span 4;
   text-align: center;
+  background-color: grey;
   color: #888;
   font-size: 18px;
   padding: 20px;
 }
 
 .noResultsImage {
-  width: 150px; /* Adjust size as needed */
+  width: 80px; /* Adjust size as needed */
   height: auto;
-  margin-bottom: 20px; /* Space between image and text */
 }
 
 .noResults {
-  font-size: 24px; /* Larger font size for the message */
+  font-size: 22px; /* Larger font size for the message */
   color: rgba(95, 30, 193, 1); /* Matching color theme */
   margin: 0;
 }
