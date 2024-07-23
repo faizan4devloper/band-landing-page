@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -49,6 +48,7 @@ const SearchBar = ({ query, onQueryChange }) => {
   return (
     <div className={styles.searchBar}>
       <div className={styles.inputWrapper}>
+        <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
         <input
           type="text"
           placeholder={isTyping ? '' : placeholder}
@@ -56,7 +56,6 @@ const SearchBar = ({ query, onQueryChange }) => {
           onChange={handleChange}
           className={styles.searchInput}
         />
-        <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
       </div>
     </div>
   );
@@ -64,16 +63,13 @@ const SearchBar = ({ query, onQueryChange }) => {
 
 export default SearchBar;
 
-
-
-
 .searchBar {
   margin: 20px 0;
   display: flex;
   justify-content: center;
   position: absolute;
   bottom: 95%;
-  left: 69%;
+  left: 59%;
   align-items: center;
 }
 
@@ -85,7 +81,7 @@ export default SearchBar;
 
 .searchInput {
   width: 100%;
-  padding: 8px 40px 8px 16px; /* Add padding on the right for the icon */
+  padding: 10px 16px 10px 40px; /* Add padding on the right for the icon */
   border: 1px solid #d3d3d3;
   border-radius: 50px;
   font-size: 16px;
@@ -110,8 +106,8 @@ export default SearchBar;
 
 .searchIcon {
   position: absolute;
-  right: 16px;
-  top: 50%;
+  left: 16px;
+  top: 49%;
   transform: translateY(-50%);
   color: #888;
   pointer-events: none; /* Allow clicks to pass through */
