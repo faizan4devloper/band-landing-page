@@ -1,3 +1,80 @@
+// import React, { useState, useRef } from "react";
+// import styles from "./AllCardsPage.module.css";
+// import Cards from "./Cards";
+// import CategorySidebar from "./CategorySidebar";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+
+// import BusinessSVG from "./business.svg";
+// import IndustrySVG from "./industry.svg";
+
+// const AllCardsPage = ({ cardsData }) => {
+//   const [bigIndex, setBigIndex] = useState(null);
+//   const [filteredCards, setFilteredCards] = useState(cardsData);
+//   const cardsContainerRef = useRef(null);
+
+//   const handleBackButtonClick = () => {
+//     window.history.back();
+//   };
+
+//   const toggleSize = (index) => {
+//     setBigIndex(index === bigIndex ? null : index);
+//   };
+
+//   const handleFilterChange = (category, activeItems) => {
+//     if (activeItems.length === 0 || activeItems.includes("All")) {
+//       setFilteredCards(cardsData);
+//     } else {
+//       const filtered = cardsData.filter(
+//         (card) => card.category === category && activeItems.includes(card.type)
+//       );
+//       setFilteredCards(filtered);
+//     }
+//   };
+
+//   const categories = [
+//     {
+//       name: "Industry",
+//       svgIcon: IndustrySVG,
+//       items: ["All", "LSH", "BFSI", "ENU", "Automative", "GOVT"]
+//     },
+//     {
+//       name: "Business Function",
+//       svgIcon: BusinessSVG,
+//       items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experiance"]
+//     },
+//     // Add other categories as needed
+//   ];
+
+//   return (
+//     <div className={styles.allCardsPage}>
+//       <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+//       <button onClick={handleBackButtonClick} className={styles.backButton}>
+//         <FontAwesomeIcon icon={faArrowLeft} />
+//       </button>
+//       <h4 className={styles.catalogsHeading}>Gen AI Solution Catalog</h4>
+//       <div className={styles.mainContainerCards}>
+//         <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+//           {filteredCards.map((card, index) => (
+//             <div key={index}>
+//               <Cards
+//                 imageUrl={card.imageUrl}
+//                 title={card.title}
+//                 description={card.description}
+//                 isBig={index === bigIndex}
+//                 toggleSize={() => toggleSize(index)}
+//               />
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllCardsPage;
+
+
 import React, { useState, useRef } from "react";
 import styles from "./AllCardsPage.module.css";
 import Cards from "./Cards";
@@ -77,97 +154,91 @@ const AllCardsPage = ({ cardsData }) => {
 export default AllCardsPage;
 
 
-import React, { useState } from "react";
-import styles from "./CategorySidebar.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const CategorySidebar = ({ categories, onFilterChange }) => {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [activeItems, setActiveItems] = useState({});
+.allCardsPage {
+  padding:20px;
+  margin-top: 112px;
+  margin-left: 270px; /* Make space for the sidebar */
+  
+  position: fixed;
+  
+  
+  
+}
 
-  const toggleCategory = (index) => {
-    setOpenCategory(index === openCategory ? null : index);
-  };
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 7px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 32px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  /*margin-right: 30px;*/
+  margin-top: 10px;
+  position: fixed;
+  left: 156px;
+  top: 68px;
+}
 
-  const handleItemClick = (category, item) => {
-    const isActive = activeItems[category]?.includes(item);
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: isActive
-        ? activeItems[category].filter((i) => i !== item)
-        : [...(activeItems[category] || []), item],
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(updatedActiveItems);
-  };
+.backIcon {
+  font-size: 12px;
+}
 
-  const handleRemoveFilter = (category, item) => {
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: activeItems[category].filter((i) => i !== item),
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(updatedActiveItems);
-  };
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
 
-  return (
-    <div className={styles.sidebar}>
-      <p className={styles.sideHead}>Explore by</p>
-      <div className={styles.selectedFilters}>
-        {Object.entries(activeItems).flatMap(([category, items]) =>
-          items.map((item) => (
-            <div key={`${category}-${item}`} className={styles.selectedFilter}>
-              <span>{item}</span>
-              <FontAwesomeIcon
-                icon={faTimes}
-                className={styles.removeIcon}
-                onClick={() => handleRemoveFilter(category, item)}
-              />
-            </div>
-          ))
-        )}
-      </div>
-      {categories.map((category, index) => (
-        <div key={index} className={styles.category}>
-          <div
-            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
-            onClick={() => toggleCategory(index)}
-          >
-            <img
-              src={category.svgIcon}
-              alt={`${category.name} icon`}
-              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
-            />
-            {category.name}
-            <FontAwesomeIcon
-              icon={openCategory === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openCategory === index && (
-            <div className={styles.dropdown}>
-              {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={styles.dropdownItem}
-                  onClick={() => handleItemClick(category.name, item)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={activeItems[category.name]?.includes(item)}
-                    readOnly
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemText}>{item}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-};
 
-export default CategorySidebar;
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  
+  /* Beautiful scrollbar customization */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; /* Adjust scrollbar colors as needed */
+  scrollbar-radius:10px;
+
+}
+
+
+.allCardsContainer > div {
+  /*border-radius: 4px;*/
+  /*border: 0.1px solid #d3d3d3; */
+  /*box-shadow: 0px 2px 5px #00000029 !important;*/
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  /*padding-bottom: 50px;*/
+  box-sizing: border-box;
+}
+
+.allCardsContainer > div:nth-last-child(-n+4) {
+  padding-bottom: 50px; 
+}
+
+
+/*.mainContainerCards{*/
+/*  position: fixed*/
+/*}*/
+
+.catalogsHeading {
+  font-size: 18px; /* Adjust font size as needed */
+  margin:0 10px; /* Adjust spacing from the back button */
+  position: fixed;
+  top: 82px; /* Adjust vertical position */
+  left: 190px; /* Adjust horizontal position */
+}
