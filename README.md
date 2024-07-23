@@ -1,17 +1,217 @@
-/* Define global color variables */
-:root {
-  --primary-color: #1f77f6;
-  --secondary-color: #6f36cd;
-  --background-color-light: #ffffff;
-  --background-color-dark: #333333;
-  --text-color-light: #000000;
-  --text-color-dark: #ffffff;
-  --border-color: rgba(15, 95, 220, 1);
-}
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
+import {  BeatLoader } from "react-spinners"; // Import loaders
 
-::-webkit-scrollbar {
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(0);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const cardsContainerRef = useRef(null);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  useEffect(() => {
+    // Simulate a delay to show the loader
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? ( // Show loader while loading is true
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+
+
+export default App;
+
+
+
+
+
+::-webkit-scrollbar{
   display: none;
 }
+
 
 html, body {
   font-family: "Poppins", sans-serif;
@@ -23,13 +223,13 @@ html, body {
   /* height should be flexible based on content */
 }
 
-/* Card Container Styles */
 .cardsContainer {
   gap: 20px;
   border-radius: 12px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap; /* Allow wrapping */
+  
 }
 
 .arrow {
@@ -40,16 +240,16 @@ html, body {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  padding: 5px;
+  padding: 5px 5px 5px 5px;
   border-radius: 50px;
-  border: 2px solid var(--border-color);
-  color: var(--border-color);
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
   transition: transform 0.5s ease, background 0.5s ease;
 }
 
 .arrow:hover {
-  background-color: var(--border-color);
-  color: var(--background-color-light);
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
 }
 
 .leftArrow {
@@ -105,7 +305,7 @@ html, body {
 
 .viewAllButton:hover {
   transform: translateY(-5px);
-  color: var(--primary-color);
+  color: #5f1ec1;
   background-color: rgba(13, 85, 198, 0.1);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
@@ -124,8 +324,8 @@ html, body {
   position: fixed;
   left: 20px;
   bottom: 20px;
-  background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-  color: var(--background-color-light);
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
   border: none;
   border-radius: 4px;
   width: 21px;
@@ -139,7 +339,7 @@ html, body {
 }
 
 .scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: var(--primary-color);
+  background-color: rgba(13, 85, 198, 1);
 }
 
 /* Add this to your existing styles */
@@ -155,4 +355,163 @@ html, body {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
   z-index: 1000; /* Make sure loader appears above other content */
+}
+
+
+import React, { useState } from "react";
+import Modal from "react-modal";
+import { useNavigate } from 'react-router-dom';
+import styles from "./Header.module.css";
+import logoImage from "./HCL Tech.svg";
+import RequestDemoForm from "./RequestDemoForm";
+
+const Header = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate('/');
+  };
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  return (
+    <div className={styles.navbarWrapper}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img src={logoImage} alt="" onClick={handleImageClick} style={{cursor:'pointer'}} title="Navigate to Home"/>
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>Request For live Demo</button>
+        </div>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+    </div>
+  );
+};
+
+export default Header;
+
+.navbarWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  background-color: #fff;
+  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
+  padding: 10px 0px;
+  z-index: 1000;
+  /*margin-bottom: 30px;*/
+}
+.navbarWrapper .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 5px -200px;
+}
+.logo img {
+  max-height: 20px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  padding: 8px 8px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .6s ease;
+}
+
+.button:hover{
+    transform: translate(0, -5px);
+    
+    
+
+}
+
+.content {
+  padding-top: 70px; /* Adjust the value to match the height of your header */
+}
+
+.logo img::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.1s;
+}
+
+.logo img:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 900px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.3s ease-out;
 }
