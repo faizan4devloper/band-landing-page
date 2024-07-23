@@ -1,35 +1,59 @@
-.searchBar {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  bottom: 95%;
-  left: 69%;
-}
+import React, { useState, useEffect, useRef } from 'react';
+import styles from './SearchBar.module.css';
 
-.searchInput {
-  width: 100%;
-  max-width: 400px;
-  padding: 8px 16px;
-  border: 1px solid #d3d3d3;
-  border-radius: 50px; /* Rounded corners */
-  font-size: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  outline: none;
-  transition: all 0.3s ease; /* Smooth transition */
-  position: relative;
-  overflow: hidden; /* Ensure no overflow of typewriter effect */
-}
+const SearchBar = ({ query, onQueryChange }) => {
+  const [placeholder, setPlaceholder] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const fullPlaceholder = "Find your perfect solution...";
+  const typewriterRef = useRef(null);
 
-.searchInput::placeholder {
-  color: #888;
-  font-size: 12px;
-  opacity: 0.7; /* Slightly faded placeholder */
-}
+  useEffect(() => {
+    let currentText = '';
+    let index = 0;
+    let isTypingStopped = false;
 
-.searchInput:focus {
-  border-color: rgba(95, 30, 193, 1);
-  box-shadow: 0 4px 8px rgba(95, 30, 193, 0.3); /* Enhanced shadow on focus */
-  background-color: #fff; /* Subtle background change */
-  transform: scale(1.02); /* Slight scaling effect */
-}
+    const typeWriter = () => {
+      if (!isTypingStopped) {
+        if (index < fullPlaceholder.length) {
+          currentText += fullPlaceholder[index];
+          setPlaceholder(currentText);
+          index++;
+          typewriterRef.current = setTimeout(typeWriter, 100);
+        } else {
+          setTimeout(() => {
+            currentText = '';
+            setPlaceholder(currentText);
+            index = 0;
+            typeWriter();
+          }, 2000); // Pause before restarting
+        }
+      }
+    };
+
+    typeWriter();
+
+    return () => {
+      clearTimeout(typewriterRef.current);
+    };
+  }, [isTyping]);
+
+  const handleChange = (e) => {
+    onQueryChange(e.target.value);
+    setIsTyping(true);
+    clearTimeout(typewriterRef.current);
+  };
+
+  return (
+    <div className={styles.searchBar}>
+      <input
+        type="text"
+        placeholder={isTyping ? '' : placeholder}
+        value={query}
+        onChange={handleChange}
+        className={styles.searchInput}
+      />
+    </div>
+  );
+};
+
+export default SearchBar;
