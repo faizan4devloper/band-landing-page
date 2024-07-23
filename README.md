@@ -1,134 +1,173 @@
-import React, { useState } from "react";
-import styles from "./MainContent.module.css";
+import React, { useState, useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import CategorySidebar from "./CategorySidebar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
+import BusinessSVG from "./business.svg";
+import IndustrySVG from "./industry.svg";
 
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const cardsContainerRef = useRef(null);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
   };
 
-  if (!content || !content.description) {
-    return <div className={styles.mainContent}>Description not available</div>;
-  }
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-  const keywords = [
-    "extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"
+  const handleFilterChange = (activeItems) => {
+    const industryFilters = activeItems["Industry"] || [];
+    const businessFunctionFilters = activeItems["Business Function"] || [];
+
+    const filtered = cardsData.filter((card) => {
+      const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
+      const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
+      return matchesIndustry && matchesBusinessFunction;
+    });
+
+    setFilteredCards(filtered);
+  };
+
+  const categories = [
+    {
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["All", "LSH", "BFSI", "ENU", "Automative", "GOVT"],
+    },
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
+    },
+    // Add other categories as needed
   ];
 
-  const highlightKeywords = (text) => {
-    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
-    return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
-  };
-
-  const descriptionPoints = content.description.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
-
-  const benefitsPoints = content.benefits.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
-
-  const adoptionRows = content.adoption.map((row, index) => (
-    <tr key={index}>
-      <td>{row.industry}</td>
-      <td>{row.adoption}</td>
-    </tr>
-  ));
-
-  const solutionFlowRows = content.solutionFlowText?.map((row, index) => (
-    <tr key={index}>
-      <td>{row.step}</td>
-      <td>{row.description}</td>
-    </tr>
-  ));
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        <h2>Description</h2>
-        <ul>
-          {descriptionPoints}
-        </ul>
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        <h2>Solution Flow</h2>
-        <img
-          src={content.solutionFlow}
-          alt="Solution Flow"
-          className={maximizedImage === content.solutionFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.solutionFlow)}
-        />
-        {solutionFlowRows && (
-          <table className={styles.adoptionTable}>
-            <thead>
-              <tr>
-                <th>Step</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>{solutionFlowRows}</tbody>
-          </table>
-        )}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <h2>Demo</h2>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        <h2>Technical Architecture</h2>
-        <img
-          src={content.techArchitecture}
-          alt="Technical Architecture"
-          className={maximizedImage === content.techArchitecture ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.techArchitecture)}
-        />
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        <h2>Benefits</h2>
-        <ul>
-          {benefitsPoints}
-        </ul>
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        <h2>Solution Adoption</h2>
-        <table className={styles.adoptionTable}>
-          <thead>
-            <tr>
-              <th>Industry</th>
-              <th>Solution Adoption</th>
-            </tr>
-          </thead>
-          <tbody>{adoptionRows}</tbody>
-        </table>
-      </div>
-    ),
-  };
-
   return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>Gen AI Solution Catalog</h4>
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.map((card, index) => (
+            <div key={index}>
+              <Cards
+                imageUrl={card.imageUrl}
+                title={card.title}
+                description={card.description}
+                isBig={index === bigIndex}
+                toggleSize={() => toggleSize(index)}
+              />
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default MainContent;
+export default AllCardsPage;
+
+
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
+
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeItems, setActiveItems] = useState({});
+
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  const handleItemClick = (category, item) => {
+    const isActive = activeItems[category]?.includes(item);
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: isActive
+        ? activeItems[category].filter((i) => i !== item)
+        : [...(activeItems[category] || []), item],
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
+
+  const handleRemoveFilter = (category, item) => {
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: activeItems[category].filter((i) => i !== item),
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore by</p>
+      <div className={styles.selectedFilters}>
+        {Object.entries(activeItems).flatMap(([category, items]) =>
+          items.map((item) => (
+            <div key={`${category}-${item}`} className={styles.selectedFilter}>
+              <span>{item}</span>
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={styles.removeIcon}
+                onClick={() => handleRemoveFilter(category, item)}
+              />
+            </div>
+          ))
+        )}
+      </div>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div
+            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
+            onClick={() => toggleCategory(index)}
+          >
+            <img
+              src={category.svgIcon}
+              alt={`${category.name} icon`}
+              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
+            />
+            {category.name}
+            <FontAwesomeIcon
+              icon={openCategory === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className={styles.dropdownItem}
+                  onClick={() => handleItemClick(category.name, item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={activeItems[category.name]?.includes(item)}
+                    readOnly
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemText}>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CategorySidebar;
