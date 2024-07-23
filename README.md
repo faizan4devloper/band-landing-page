@@ -1,121 +1,170 @@
-.searchBar {
-  margin: 20px 0;
-  display: flex;
-  justify-content: center;
-  position: absolute;
-  bottom: 95%;
-  left: 50%;
-  transform: translateX(-50%);
-  align-items: center;
-}
+import React, { useState, useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import SearchBar from "./SearchBar"; // Import SearchBar
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-.inputWrapper {
-  position: relative;
-  width: 100%;
-  max-width: 400px;
-}
+import BusinessSVG from "./business.svg";
+import IndustrySVG from "./industry.svg";
 
-.searchInput {
-  width: 100%;
-  padding: 10px 40px 10px 16px; /* Add padding on the right for the icon */
-  border: 1px solid #d3d3d3;
-  border-radius: 50px;
-  font-size: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  outline: none;
-  transition: all 0.3s ease;
-  position: relative;
-}
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
+  const cardsContainerRef = useRef(null);
 
-.searchInput::placeholder {
-  color: #888;
-  font-size: 12px;
-  opacity: 0.7;
-}
-
-.searchInput:focus {
-  border-color: rgba(95, 30, 193, 1);
-  box-shadow: 0 4px 8px rgba(95, 30, 193, 0.3);
-  background-color: #fff;
-  transform: scale(1.02);
-}
-
-.searchIcon {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #888;
-  pointer-events: none; /* Allow clicks to pass through */
-}
-
-
-
-import React, { useState, useEffect, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import styles from './SearchBar.module.css';
-
-const SearchBar = ({ query, onQueryChange }) => {
-  const [placeholder, setPlaceholder] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const fullPlaceholder = "Find your perfect solution...";
-  const typewriterRef = useRef(null);
-
-  useEffect(() => {
-    let currentText = '';
-    let index = 0;
-    let isTypingStopped = false;
-
-    const typeWriter = () => {
-      if (!isTypingStopped && !isTyping) {
-        if (index < fullPlaceholder.length) {
-          currentText += fullPlaceholder[index];
-          setPlaceholder(currentText);
-          index++;
-          typewriterRef.current = setTimeout(typeWriter, 100);
-        } else {
-          setTimeout(() => {
-            currentText = '';
-            setPlaceholder(currentText);
-            index = 0;
-            typeWriter();
-          }, 2000); // Pause before restarting
-        }
-      }
-    };
-
-    typeWriter();
-
-    return () => {
-      clearTimeout(typewriterRef.current);
-    };
-  }, [isTyping]);
-
-  const handleChange = (e) => {
-    onQueryChange(e.target.value);
-    if (e.target.value.length > 0) {
-      setIsTyping(true);
-      clearTimeout(typewriterRef.current);
-    } else {
-      setIsTyping(false);
-    }
+  const handleBackButtonClick = () => {
+    window.history.back();
   };
 
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleFilterChange = (activeItems) => {
+    const industryFilters = activeItems["Industry"] || [];
+    const businessFunctionFilters = activeItems["Business Function"] || [];
+
+    const filtered = cardsData.filter((card) => {
+      const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
+      const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
+      return matchesIndustry && matchesBusinessFunction;
+    });
+
+    setFilteredCards(filtered);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = cardsData.filter(card =>
+      card.title.toLowerCase().includes(query.toLowerCase()) ||
+      card.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCards(filtered);
+  };
+
+  const categories = [
+    {
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["All", "LSH", "BFSI", "ENU", "Automotive", "GOVT"],
+    },
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
+    },
+  ];
+
+  const getLastRowStartIndex = () => {
+    const totalCards = filteredCards.length;
+    const cardsPerRow = 4;
+    const remainder = totalCards % cardsPerRow;
+    return remainder === 0 ? totalCards - cardsPerRow : totalCards - remainder;
+  };
+
+  const lastRowStartIndex = getLastRowStartIndex();
+
   return (
-    <div className={styles.searchBar}>
-      <div className={styles.inputWrapper}>
-        <input
-          type="text"
-          placeholder={isTyping ? '' : placeholder}
-          value={query}
-          onChange={handleChange}
-          className={styles.searchInput}
-        />
-        <FontAwesomeIcon icon={faSearch} className={styles.searchIcon} />
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>Gen AI Solution Catalog</h4>
+      <SearchBar query={searchQuery} onQueryChange={handleSearch} /> {/* Add SearchBar */}
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.map((card, index) => (
+            <div
+              key={index}
+              className={index >= lastRowStartIndex ? styles.lastRowCard : ""}
+            >
+              <Cards
+                imageUrl={card.imageUrl}
+                title={card.title}
+                description={card.description}
+                isBig={index === bigIndex}
+                toggleSize={() => toggleSize(index)}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default SearchBar;
+export default AllCardsPage;
+
+.allCardsPage {
+  padding: 20px;
+  margin-top: 112px;
+  margin-left: 270px; /* Make space for the sidebar */
+  position: fixed;
+}
+
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 7px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 32px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+  position: fixed;
+  left: 156px;
+  top: 68px;
+}
+
+.backIcon {
+  font-size: 12px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
+
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+
+  /* Beautiful scrollbar customization */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; /* Adjust scrollbar colors as needed */
+}
+
+.allCardsContainer > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  box-sizing: border-box;
+}
+
+.lastRowCard {
+  padding-bottom: 50px !important;
+}
+
+.catalogsHeading {
+  font-size: 18px; /* Adjust font size as needed */
+  margin: 0 10px; /* Adjust spacing from the back button */
+  position: fixed;
+  top: 82px; /* Adjust vertical position */
+  left: 190px; /* Adjust horizontal position */
+}
