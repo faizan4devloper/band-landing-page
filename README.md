@@ -1,48 +1,185 @@
-.noResultsContainer {
-  grid-column: span 4;
-  text-align: center;
-  padding: 40px;
-  background-color: #f4f4f4; /* Lighter background for contrast */
-  border: 2px dashed #ddd; /* Dashed border to highlight the section */
-  border-radius: 8px; /* Rounded corners for a modern look */
-  color: #666; /* Slightly darker text color for better readability */
-  font-size: 16px; /* Adjust font size for balance */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-}
 
-.noResultsImage {
-  width: 100px; /* Slightly larger image */
-  height: auto;
-  margin-bottom: 20px; /* Space between image and text */
-}
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
 
-.noResults {
-  font-size: 24px; /* Larger font size for emphasis */
-  color: #333; /* Darker text color for contrast */
-  margin: 0;
-}
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-.noResults p {
-  font-size: 18px; /* Slightly larger font size for additional message */
-  color: #555; /* A softer color for additional message text */
-  margin: 10px 0 0;
-}
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(0);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const cardsContainerRef = useRef(null);
 
-.noResults a {
-  color: #007bff; /* Blue color for links */
-  text-decoration: none; /* Remove underline */
-  font-weight: bold; /* Bold text for visibility */
-}
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-.noResults a:hover {
-  text-decoration: underline; /* Underline on hover for better UX */
-}
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
 
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
 
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-<div className={styles.noResultsContainer}>
-  <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
-  <p className={styles.noResults}>No solutions found.</p>
-  <p>Try adjusting your search or explore our <a href="/popular-categories">popular categories</a>.</p>
-</div>
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  return (
+    <div className={styles.app}>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              cardsData={cardsData}
+              handleClickLeft={handleClickLeft}
+              handleClickRight={handleClickRight}
+              currentIndex={currentIndex}
+              bigIndex={bigIndex}
+              toggleSize={toggleSize}
+              cardsContainerRef={cardsContainerRef}
+              handleMouseEnter={handleMouseEnter}
+            />
+          }
+        />
+        <Route path="/dashboard" element={<SideBarPage />} />
+        <Route
+          path="/all-cards"
+          element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+        />
+      </Routes>
+      {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+        <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+          <FontAwesomeIcon icon={faChevronDown} />
+        </div>
+      )}
+      {showScrollUp && (
+        <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+          <FontAwesomeIcon icon={faChevronUp} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
