@@ -1,18 +1,38 @@
-import React from 'react';
-import styles from './SearchBar.module.css';
+@keyframes placeholderAnimation {
+  0% {
+    color: #ccc;
+  }
+  50% {
+    color: #999;
+  }
+  100% {
+    color: #ccc;
+  }
+}
 
-const SearchBar = ({ query, onQueryChange }) => {
-  return (
-    <div className={styles.searchBar}>
-      <input
-        type="text"
-        placeholder="Find your perfect solution..."
-        value={query}
-        onChange={(e) => onQueryChange(e.target.value)}
-        className={styles.searchInput}
-      />
-    </div>
-  );
-};
+.searchBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
 
-export default SearchBar;
+.searchInput {
+  width: 100%;
+  max-width: 400px;
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #007BFF;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  animation: placeholderAnimation 2s infinite;
+}
