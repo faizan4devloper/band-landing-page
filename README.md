@@ -1,7 +1,7 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
 import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
@@ -9,7 +9,7 @@ import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
 import { cardsData as initialCardsData } from "./data";
-import {  BeatLoader } from "react-spinners"; // Import loaders
+import { BeatLoader } from "react-spinners";
 
 const Home = ({
   cardsData,
@@ -66,7 +66,7 @@ const MainApp = () => {
   const [bigIndex, setBigIndex] = useState(0);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
   const cardsContainerRef = useRef(null);
 
   const toggleSize = (index) => {
@@ -127,10 +127,9 @@ const MainApp = () => {
   }, []);
 
   useEffect(() => {
-    // Simulate a delay to show the loader
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // 2 seconds delay
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -149,7 +148,7 @@ const MainApp = () => {
 
   return (
     <div className={styles.app}>
-      {loading ? ( // Show loader while loading is true
+      {loading ? (
         <div className={styles.loader}>
           <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
         </div>
@@ -200,170 +199,28 @@ const App = () => (
   </Router>
 );
 
-
-
 export default App;
 
-::-webkit-scrollbar{
-  display: none;
-}
 
 
-html, body {
-  font-family: "Poppins", sans-serif;
-}
-
-.app {
-  width: 1100px;
-  margin: 0 auto;
-  /* height should be flexible based on content */
-}
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-  
-}
-
-.arrow {
-  cursor: pointer;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
-}
-
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
-
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
-
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-right: 112px;
-}
-
-.solutionHead {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  margin-left: 118px;
-}
-
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
-
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton,
-.scrollUpButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
-}
-
-/* Add this to your existing styles */
-.loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh; /* Full height */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-  z-index: 1000; /* Make sure loader appears above other content */
-}
-
-
-import React, { useState } from "react";
-import Modal from "react-modal";
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from "./Header.module.css";
-import logoImage from "./HCL Tech.svg";
-import RequestDemoForm from "./RequestDemoForm";
+import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import styles from './Header.module.css';
+import logoImage from './HCL Tech.svg';
+import RequestDemoForm from './RequestDemoForm';
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const handleImageClick = () => {
     navigate('/');
@@ -377,14 +234,25 @@ const Header = () => {
     setModalIsOpen(false);
   };
 
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
+
   return (
     <div className={styles.navbarWrapper}>
       <nav className={styles.header}>
         <div className={styles.logo}>
-          <img src={logoImage} alt="" onClick={handleImageClick} style={{cursor:'pointer'}} title="Navigate to Home"/>
+          <img src={logoImage} alt="" onClick={handleImageClick} style={{ cursor: 'pointer' }} title="Navigate to Home" />
         </div>
         <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>Request For live Demo</button>
+          <button className={styles.button} onClick={openModal}>Request For Live Demo</button>
+          <button className={styles.themeButton} onClick={toggleTheme} title="Toggle Theme">
+            {theme === 'light' ? (
+              <FontAwesomeIcon icon={faMoon} />
+            ) : (
+              <FontAwesomeIcon icon={faSun} />
+            )}
+          </button>
         </div>
       </nav>
       <div className={styles.border}></div>
@@ -403,3 +271,97 @@ const Header = () => {
 };
 
 export default Header;
+
+
+
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #5931d5;
+  --secondary-color: #1f77f6;
+  --button-background: #6f36cd;
+}
+
+[data-theme="dark"] {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --primary-color: #bb86fc;
+  --secondary-color: #03dac6;
+  --button-background: #3700b3;
+}
+
+.app {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.cardsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.arrow {
+  cursor: pointer;
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin: 0 10px;
+  transition: color 0.3s ease;
+}
+
+.arrow:hover {
+  color: var(--secondary-color);
+}
+
+.viewAllContainer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.viewAllButton {
+  display: inline-block;
+  background-color: var(--button-background);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.viewAllButton:hover {
+  background-color: var(--secondary-color);
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 24px;
+  transition: background-color 0.3s ease;
+}
+
+.scrollDownButton:hover,
+.scrollUpButton:hover {
+  background-color: var(--secondary-color);
+}
