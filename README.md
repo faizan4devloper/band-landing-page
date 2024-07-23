@@ -1,30 +1,7 @@
-import React, { createContext, useState, useContext } from "react";
-
-const ThemeContext = createContext();
-
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light");
-
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
-  };
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
-};
-
-export const useTheme = () => useContext(ThemeContext);
-
-
-
-
-import React, { useState, useEffect, useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp, faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
 import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
@@ -32,8 +9,7 @@ import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
 import { cardsData as initialCardsData } from "./data";
-import { BeatLoader } from "react-spinners"; // Import loaders
-import { ThemeProvider, useTheme } from "./ThemeContext"; // Import ThemeContext
+import {  BeatLoader } from "react-spinners"; // Import loaders
 
 const Home = ({
   cardsData,
@@ -49,7 +25,11 @@ const Home = ({
   return (
     <>
       <MyCarousel />
-      <div className={styles.cardsContainer} ref={cardsContainerRef} onMouseEnter={handleMouseEnter}>
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
         <div className={styles.viewAllContainer}>
           <Link to="/all-cards" className={styles.viewAllButton}>
             View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
@@ -88,7 +68,6 @@ const MainApp = () => {
   const [showScrollUp, setShowScrollUp] = useState(false);
   const [loading, setLoading] = useState(true); // Added loading state
   const cardsContainerRef = useRef(null);
-  const { theme, toggleTheme } = useTheme();
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
@@ -169,7 +148,7 @@ const MainApp = () => {
   };
 
   return (
-    <div className={styles.app} data-theme={theme}>
+    <div className={styles.app}>
       {loading ? ( // Show loader while loading is true
         <div className={styles.loader}>
           <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
@@ -177,9 +156,6 @@ const MainApp = () => {
       ) : (
         <>
           <Header />
-          <button onClick={toggleTheme} className={styles.themeToggle}>
-            {theme === "light" ? <FontAwesomeIcon icon={faMoon} /> : <FontAwesomeIcon icon={faSun} />}
-          </button>
           <Routes>
             <Route
               path="/"
@@ -220,45 +196,41 @@ const MainApp = () => {
 
 const App = () => (
   <Router>
-    <ThemeProvider>
-      <MainApp />
-    </ThemeProvider>
+    <MainApp />
   </Router>
 );
+
+
 
 export default App;
 
 
+import React from "react";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
 
-/* Define CSS variables for themes */
-:root {
-  --background-color: white;
-  --text-color: black;
-  --link-color: #808080;
-  --button-background: rgba(13, 85, 198, 0.1);
-  --button-hover-background: rgba(13, 85, 198, 1);
-  --button-hover-color: white;
-  --arrow-color: rgba(15, 95, 220, 1);
-  --arrow-hover-background: rgba(15, 95, 220, 1);
-  --arrow-hover-color: white;
+export const Home = ({ cardsData }) => {
+  return (
+    <div className={styles.cardsContainer}>
+      {cardsData.map((card, index) => (
+        <Cards
+          key={index}
+          imageUrl={card.imageUrl}
+          title={card.title}
+          description={card.description}
+        />
+      ))}
+    </div>
+  );
+};
+
+::-webkit-scrollbar{
+  display: none;
 }
 
-[data-theme="dark"] {
-  --background-color: #1f1f1f;
-  --text-color: white;
-  --link-color: #d1d1d1;
-  --button-background: rgba(255, 255, 255, 0.1);
-  --button-hover-background: rgba(255, 255, 255, 0.3);
-  --button-hover-color: black;
-  --arrow-color: #d1d1d1;
-  --arrow-hover-background: #d1d1d1;
-  --arrow-hover-color: black;
-}
 
 html, body {
   font-family: "Poppins", sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
 }
 
 .app {
@@ -273,6 +245,7 @@ html, body {
   display: flex;
   justify-content: center;
   flex-wrap: wrap; /* Allow wrapping */
+  
 }
 
 .arrow {
@@ -285,14 +258,14 @@ html, body {
   height: 18px;
   padding: 5px 5px 5px 5px;
   border-radius: 50px;
-  border: 2px solid var(--arrow-color);
-  color: var(--arrow-color);
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
   transition: transform 0.5s ease, background 0.5s ease;
 }
 
 .arrow:hover {
-  background-color: var(--arrow-hover-background);
-  color: var(--arrow-hover-color);
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
 }
 
 .leftArrow {
@@ -328,14 +301,14 @@ html, body {
 .solutionHead {
   font-weight: 600;
   font-size: 14px;
-  color: var(--link-color);
+  color: #808080;
   margin-left: 118px;
 }
 
 .viewAllButton {
   font-weight: 600;
   font-size: 14px;
-  color: var(--link-color);
+  color: #808080;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
   text-decoration: none;
@@ -344,13 +317,12 @@ html, body {
   padding: 6px 7px;
   border-radius: 5px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background-color: var(--button-background);
 }
 
 .viewAllButton:hover {
   transform: translateY(-5px);
-  color: var(--button-hover-color);
-  background-color: var(--button-hover-background);
+  color: #5f1ec1;
+  background-color: rgba(13, 85, 198, 0.1);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -382,8 +354,7 @@ html, body {
   transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.scrollDownButton:hover,
-.scrollUpButton:hover {
+.scrollDownButton:hover, .scrollUpButton:hover {
   background-color: rgba(13, 85, 198, 1);
 }
 
@@ -400,20 +371,4 @@ html, body {
   width: 100%;
   background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
   z-index: 1000; /* Make sure loader appears above other content */
-}
-
-.themeToggle {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background: none;
-  border: none;
-  color: var(--text-color);
-  cursor: pointer;
-  font-size: 24px;
-  transition: color 0.3s ease;
-}
-
-.themeToggle:hover {
-  color: var(--link-color);
 }
