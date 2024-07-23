@@ -20,25 +20,6 @@ export const useTheme = () => useContext(ThemeContext);
 
 
 
-import React from "react";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-
-export const Home = ({ cardsData }) => {
-  return (
-    <div className={styles.cardsContainer}>
-      {cardsData.map((card, index) => (
-        <Cards
-          key={index}
-          imageUrl={card.imageUrl}
-          title={card.title}
-          description={card.description}
-        />
-      ))}
-    </div>
-  );
-};
-
 
 import React, { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
@@ -198,7 +179,6 @@ const MainApp = () => {
           <Header />
           <button onClick={toggleTheme} className={styles.themeToggle}>
             {theme === "light" ? <FontAwesomeIcon icon={faMoon} /> : <FontAwesomeIcon icon={faSun} />}
-            button
           </button>
           <Routes>
             <Route
@@ -249,7 +229,6 @@ const App = () => (
 export default App;
 
 
-/* App.module.css */
 
 /* Define CSS variables for themes */
 :root {
@@ -438,21 +417,3 @@ html, body {
 .themeToggle:hover {
   color: var(--link-color);
 }
-
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
-import { ThemeProvider } from "./ThemeContext"
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <React.StrictMode>
-    <ThemeProvider>
-    <App />
-    </ThemeProvider>
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
