@@ -1,15 +1,35 @@
-import React, { useRef, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import Header from "./components/Header/Header";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import SideBarPage from "./components/Sidebar/SideBarPage";
-import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
-import {  BeatLoader } from "react-spinners"; // Import loaders
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import MainApp from './MainApp';
+
+const App = () => {
+  useEffect(() => {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.body.classList.toggle('dark-theme', theme === 'dark');
+  }, []);
+
+  return (
+    <Router>
+      <MainApp />
+    </Router>
+  );
+};
+
+export default App;
+
+
+import React, { useRef, useState, useEffect } from 'react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import MyCarousel from './components/Carousel/MyCarousel';
+import Cards from './components/Cards/Cards';
+import styles from './App.module.css';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import { cardsData as initialCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
 
 const Home = ({
   cardsData,
@@ -66,7 +86,7 @@ const MainApp = () => {
   const [bigIndex, setBigIndex] = useState(0);
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true); // Added loading state
+  const [loading, setLoading] = useState(true);
   const cardsContainerRef = useRef(null);
 
   const toggleSize = (index) => {
@@ -91,21 +111,21 @@ const MainApp = () => {
 
   const handleScrollDown = () => {
     if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
       setShowScrollDown(false);
       setShowScrollUp(true);
     }
   };
 
   const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     setShowScrollDown(true);
     setShowScrollUp(false);
   };
 
   const handleMouseEnter = () => {
     if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
 
@@ -121,16 +141,15 @@ const MainApp = () => {
     };
 
     const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener("scroll", debounceScroll);
+    window.addEventListener('scroll', debounceScroll);
 
-    return () => window.removeEventListener("scroll", debounceScroll);
+    return () => window.removeEventListener('scroll', debounceScroll);
   }, []);
 
   useEffect(() => {
-    // Simulate a delay to show the loader
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // 2 seconds delay
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -149,7 +168,7 @@ const MainApp = () => {
 
   return (
     <div className={styles.app}>
-      {loading ? ( // Show loader while loading is true
+      {loading ? (
         <div className={styles.loader}>
           <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
         </div>
@@ -178,7 +197,7 @@ const MainApp = () => {
               element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
             />
           </Routes>
-          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
             <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
               <FontAwesomeIcon icon={faChevronDown} />
             </div>
@@ -194,176 +213,15 @@ const MainApp = () => {
   );
 };
 
-const App = () => (
-  <Router>
-    <MainApp />
-  </Router>
-);
+export default MainApp;
 
-
-
-export default App;
-
-
-
-
-
-::-webkit-scrollbar{
-  display: none;
-}
-
-
-html, body {
-  font-family: "Poppins", sans-serif;
-}
-
-.app {
-  width: 1100px;
-  margin: 0 auto;
-  /* height should be flexible based on content */
-}
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-  
-}
-
-.arrow {
-  cursor: pointer;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
-}
-
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
-
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
-
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-right: 112px;
-}
-
-.solutionHead {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  margin-left: 118px;
-}
-
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
-
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton,
-.scrollUpButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
-}
-
-/* Add this to your existing styles */
-.loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh; /* Full height */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-  z-index: 1000; /* Make sure loader appears above other content */
-}
-
-
-import React, { useState } from "react";
-import Modal from "react-modal";
+import React, { useState } from 'react';
+import Modal from 'react-modal';
 import { useNavigate } from 'react-router-dom';
-import styles from "./Header.module.css";
-import logoImage from "./HCL Tech.svg";
-import RequestDemoForm from "./RequestDemoForm";
+import styles from './Header.module.css';
+import logoImage from './HCL Tech.svg';
+import RequestDemoForm from './RequestDemoForm';
+import ThemeSwitcher from '../ThemeSwitcher'; // Import ThemeSwitcher
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -385,9 +243,10 @@ const Header = () => {
     <div className={styles.navbarWrapper}>
       <nav className={styles.header}>
         <div className={styles.logo}>
-          <img src={logoImage} alt="" onClick={handleImageClick} style={{cursor:'pointer'}} title="Navigate to Home"/>
+          <img src={logoImage} alt="" onClick={handleImageClick} style={{ cursor: 'pointer' }} title="Navigate to Home"/>
         </div>
         <div className={styles.right}>
+          <ThemeSwitcher /> {/* Add the theme switcher */}
           <button className={styles.button} onClick={openModal}>Request For live Demo</button>
         </div>
       </nav>
@@ -408,110 +267,160 @@ const Header = () => {
 
 export default Header;
 
-.navbarWrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  background-color: #fff;
-  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 10px 0px;
-  z-index: 1000;
-  /*margin-bottom: 30px;*/
+
+:root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #5931d5;
+  --secondary-color: rgba(15, 95, 220, 1);
+  --hover-color: rgba(13, 85, 198, 0.1);
 }
-.navbarWrapper .header {
+
+.dark-theme {
+  --background-color: #121212;
+  --text-color: #ffffff;
+  --primary-color: #bb86fc;
+  --secondary-color: #03dac6;
+  --hover-color: #3700b3;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+a {
+  color: var(--primary-color);
+}
+
+button {
+  background: var(--primary-color);
+}
+
+button:hover {
+  background: var(--hover-color);
+}
+
+.app {
+  position: relative;
+}
+
+.loader {
   display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-around;
-  margin: 5px -200px;
-}
-.logo img {
-  max-height: 20px;
+  height: 100vh;
 }
 
-.right {
+.cardsContainer {
   display: flex;
-  align-items: center;
+  overflow-x: scroll;
+  position: relative;
 }
 
-.button {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  padding: 8px 8px;
-  font-size: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: .6s ease;
-}
-
-.button:hover{
-    transform: translate(0, -5px);
-    
-    
-
-}
-
-.content {
-  padding-top: 70px; /* Adjust the value to match the height of your header */
-}
-
-.logo img::after {
-  content: attr(title);
+.arrow {
   position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s, visibility 0.1s;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--text-color);
 }
 
-.logo img:hover::after {
-  opacity: 1;
-  visibility: visible;
+.leftArrow {
+  left: 10px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.rightArrow {
+  right: 10px;
+}
+
+.viewAllContainer {
+  text-align: center;
+}
+
+.viewAllButton {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: var(--primary-color);
+  cursor: pointer;
+}
+
+.icon {
+  margin-left: 8px;
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--primary-color);
+}
+
+.scrollUpButton {
+  bottom: 60px;
+}
+
+.scrollDownButton {
+  right: 10px;
+}
+
+.border {
+  height: 1px;
+  background: var(--primary-color);
 }
 
 .modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-top: 30px;
-  max-width: 900px;
-  width: 90%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-out;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
 
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
-  animation: fadeIn 0.3s ease-out;
+  background: rgba(0, 0, 0, 0.75);
+}
+
+
+import React, { useState, useEffect } from 'react';
+import styles from './ThemeSwitcher.module.css';
+
+const ThemeSwitcher = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const theme = localStorage.getItem('theme') || 'light';
+    setIsDarkMode(theme === 'dark');
+    document.body.classList.toggle('dark-theme', theme === 'dark');
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = isDarkMode ? 'light' : 'dark';
+    setIsDarkMode(!isDarkMode);
+    document.body.classList.toggle('dark-theme', !isDarkMode);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  return (
+    <button onClick={toggleTheme} className={styles.themeSwitcher}>
+      {isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode'}
+    </button>
+  );
+};
+
+export default ThemeSwitcher;
+
+.themeSwitcher {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.themeSwitcher:hover {
+  color: var(--primary-color);
 }
