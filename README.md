@@ -1,10 +1,17 @@
-
-
-
-::-webkit-scrollbar{
-  display: none;
+/* Define global color variables */
+:root {
+  --primary-color: #1f77f6;
+  --secondary-color: #6f36cd;
+  --background-color-light: #ffffff;
+  --background-color-dark: #333333;
+  --text-color-light: #000000;
+  --text-color-dark: #ffffff;
+  --border-color: rgba(15, 95, 220, 1);
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
 
 html, body {
   font-family: "Poppins", sans-serif;
@@ -16,13 +23,13 @@ html, body {
   /* height should be flexible based on content */
 }
 
+/* Card Container Styles */
 .cardsContainer {
   gap: 20px;
   border-radius: 12px;
   display: flex;
   justify-content: center;
   flex-wrap: wrap; /* Allow wrapping */
-  
 }
 
 .arrow {
@@ -33,16 +40,16 @@ html, body {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  padding: 5px 5px 5px 5px;
+  padding: 5px;
   border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
+  border: 2px solid var(--border-color);
+  color: var(--border-color);
   transition: transform 0.5s ease, background 0.5s ease;
 }
 
 .arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
+  background-color: var(--border-color);
+  color: var(--background-color-light);
 }
 
 .leftArrow {
@@ -98,7 +105,7 @@ html, body {
 
 .viewAllButton:hover {
   transform: translateY(-5px);
-  color: #5f1ec1;
+  color: var(--primary-color);
   background-color: rgba(13, 85, 198, 0.1);
   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
 }
@@ -117,8 +124,8 @@ html, body {
   position: fixed;
   left: 20px;
   bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
+  background: linear-gradient(90deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+  color: var(--background-color-light);
   border: none;
   border-radius: 4px;
   width: 21px;
@@ -132,7 +139,7 @@ html, body {
 }
 
 .scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
+  background-color: var(--primary-color);
 }
 
 /* Add this to your existing styles */
