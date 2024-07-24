@@ -1,3 +1,4 @@
+/* Sidebar Scrollbar */
 .sidebar {
   position: fixed;
   top: 140px;
@@ -8,6 +9,57 @@
   padding: 0 20px;
   padding-right: 0px;
   overflow-y: auto; /* Enable scrolling for the sidebar */
+}
+
+/* Custom Scrollbars */
+.sidebar::-webkit-scrollbar,
+.dropdown::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.dropdown::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.dropdown::-webkit-scrollbar-track {
+  background: rgba(230, 235, 245, 1);
+  border-radius: 4px;
+}
+
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%) rgba(230, 235, 245, 1);
+}
+
+.dropdown {
+  padding: 10px;
+  background-color: rgba(250, 250, 250, 1);
+  border-radius: 4px;
+  margin-top: 10px;
+  max-height: 150px; /* Set a maximum height for the dropdown */
+  overflow-y: auto; /* Enable scrolling for the dropdown */
+}
+
+.dropdown::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  border-radius: 4px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+  background: rgba(230, 235, 245, 1);
+  border-radius: 4px;
+}
+
+.dropdown {
+  scrollbar-width: thin;
+  scrollbar-color: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%) rgba(230, 235, 245, 1);
 }
 
 .selectedFilters {
