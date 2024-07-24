@@ -9,7 +9,7 @@ import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
 import { cardsData as initialCardsData } from "./data";
-import {  BeatLoader } from "react-spinners"; // Import loaders
+import { BeatLoader } from "react-spinners"; // Import loaders
 
 const Home = ({
   cardsData,
@@ -135,6 +135,12 @@ const MainApp = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Reset indices when location changes
+    setCurrentIndex(0);
+    setBigIndex(0);
+  }, [location]);
+
   const debounce = (func, wait) => {
     let timeout;
     return function executedFunction(...args) {
@@ -199,7 +205,5 @@ const App = () => (
     <MainApp />
   </Router>
 );
-
-
 
 export default App;
