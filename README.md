@@ -1,77 +1,204 @@
-// src/data.js
-import { images, videos, solutionFlows, architectures } from './components/AssetImports';
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-export const cardsData = [
-  {
-    imageUrl: images.IntelligentAssImg,
-    title: "Intelligent Assist",
-    description: "Efficiently search across an organization's document repository and retrieve relevant information to questions/requests from global workforces.",
-    industry: "All",
-    businessFunction: "Customer Support",
-    content: {
-      description: "GenAI Intelligent Assist(Q&A) Every organization possesses a vast knowledge base embedded within its extensive document repositories. This knowledge is critical for supporting both customers and internal employees in comprehending organizational processes, products, policies, and more. For large, multinational corporations with a diverse, multi-lingual workforce, Gen AI-powered intelligent assistants can serve as highly effective support agents by accurately retrieving precise information from these knowledge sources at scale. Our Gen AI Intelligent Assist leverages generative intelligence to efficiently search across an organization's documents and provide accurate, relevant information to questions or requests. With multi-lingual capabilities, it can serve global workforces by delivering the right knowledge to the right people when they need it, regardless of language or location.",
-      solutionFlow: solutionFlows.solutionFlow3,
-      solutionFlowText: [
-        { step: "Data Ingestion Pipeline", description: "Automated data ingestion pipeline to process documents at scale." },
-        { step: "Document Text Extraction", description: "Depending upon the document type (Audio, PDF, FAQ etc.), respective pipeline is triggered to extract text, tabular data from the documents." },
-        { step: "Data Chunking", description: "To enable contextual storage and retrieval, large documents are split into smaller chunks." },
-        { step: "Vector Embedding Generation", description: "All chunks are then processed to generate vector embeddings, which are stored in a vector database. This allows data querying and similarity-based searches using the vector embeddings." },
-        { step: "Natural Language Q&A", description: "Interactive GUI enables users to ask questions related to the products/policies in a very natural language way." },
-        { step: "Contextual Response", description: "The system checks relevant matching documents from the ingested knowledge repository. Based on the context, Gen AI model (LLM) generates the contextual response back to the user." },
-      ],
-      demo: videos.demoVideo3,
-      techArchitecture: architectures.architecture3,
-      benefits: "The purpose of this solution is to enhance the customer experience, making it adaptable across various industries. Specifically, it helps customers better understand the products and services an organization offers. Below are some examples of how this solution can be implemented across different industries",
-      adoption: [
-        { industry: "Financial", adoption: "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals." },
-        { industry: "Education", adoption: "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students." },
-        { industry: "Healthcare/Insurance", adoption: "Can assist customers in understanding various insurance products, determining health insurance eligibility, and providing personalized insurance product recommendations tailored to each customer's needs." },
-        { industry: "HR", adoption: "Can address employee inquiries regarding benefits, time off policies, training opportunities, and other related topics. This allows the company to provide 24/7 employee support and respond to questions in a timely manner." },
-        { industry: "Travel and Hospitality", adoption: "The virtual assistant can recommend activities, respond to common travel questions, and otherwise assist with trip planning to improve the traveler's experience and convenience." },
-        { industry: "Retail", adoption: "This solution could provide personalized recommendations and comparisons to help customers find the products best suited to their needs, answer common questions about product features and specifications." },
-      ]
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeItems, setActiveItems] = useState({});
+
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  const handleItemClick = (category, item) => {
+    const isActive = activeItems[category]?.includes(item);
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: isActive
+        ? activeItems[category].filter((i) => i !== item)
+        : [...(activeItems[category] || []), item],
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
+
+  const handleRemoveFilter = (category, item) => {
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: activeItems[category].filter((i) => i !== item),
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore by</p>
+      <div className={styles.selectedFilters}>
+        {Object.entries(activeItems).flatMap(([category, items]) =>
+          items.map((item) => (
+            <div key={`${category}-${item}`} className={styles.selectedFilter}>
+              <span>{item}</span>
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={styles.removeIcon}
+                onClick={() => handleRemoveFilter(category, item)}
+              />
+            </div>
+          ))
+        )}
+      </div>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div
+            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
+            onClick={() => toggleCategory(index)}
+          >
+            <img
+              src={category.svgIcon}
+              alt={`${category.name} icon`}
+              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
+            />
+            {category.name}
+            <FontAwesomeIcon
+              icon={openCategory === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className={styles.dropdownItem}
+                  onClick={() => handleItemClick(category.name, item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={activeItems[category.name]?.includes(item)}
+                    readOnly
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemText}>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CategorySidebar;
+
+import React, { useState, useRef } from "react";
+import styles from "./AllCardsPage.module.css";
+import Cards from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import SearchBar from "./SearchBar"; // Import SearchBar
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons"; // Import the search icon
+
+import BusinessSVG from "./business.svg";
+import IndustrySVG from "./industry.svg";
+// import NoResultsImage from "./no-results.svg"; // Import an image for no results
+import NoResultsImage from "./thinking-face-svgrepo-com.svg"
+
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
+  const cardsContainerRef = useRef(null);
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleFilterChange = (activeItems) => {
+    const industryFilters = activeItems["Industry"] || [];
+    const businessFunctionFilters = activeItems["Business Function"] || [];
+
+    const filtered = cardsData.filter((card) => {
+      const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
+      const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
+      return matchesIndustry && matchesBusinessFunction;
+    });
+
+    setFilteredCards(filtered);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = cardsData.filter(card =>
+      card.title.toLowerCase().includes(query.toLowerCase()) ||
+      card.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCards(filtered);
+  };
+
+  const categories = [
+    {
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["All", "LSH", "BFSI", "ENU", "Automotive", "GOVT"],
     },
-  },
-  // Other cards...
-];
-
-import AssetImports from './AssetImports';
-
-const { images, videos, solutionFlows, architectures } = AssetImports;
-
-
-export const cardsData = [
-
-{
-    imageUrl: images.IntelligentAssImg,
-    title: "Intelligent Assist",
-    description: "Efficiently search across an organization's document repository and retrieve relevant information to questions/requests from global workforces.",
-    industry: "All",
-    businessFunction: "Customer Support",
-    content: {
-      description: "GenAI Intelligent Assist(Q&A) Every organization possesses a vast knowledge base embedded within its extensive document repositories. This knowledge is critical for supporting both customers and internal employees in comprehending organizational processes, products, policies, and more. For large, multinational corporations with a diverse, multi-lingual workforce, Gen AI-powered intelligent assistants can serve as highly effective support agents by accurately retrieving precise information from these knowledge sources at scale. Our Gen AI Intelligent Assist leverages generative intelligence to efficiently search across an organization's documents and provide accurate, relevant information to questions or requests. With multi-lingual capabilities, it can serve global workforces by delivering the right knowledge to the right people when they need it, regardless of language or location.",
-      solutionFlow: solutionFlows.solutionFlow3,
-      solutionFlowText: [
-        { step: "Data Ingestion Pipeline", description: "Automated data ingestion pipeline to process documents at scale." },
-        { step: "Document Text Extraction", description: "Depending upon the document type (Audio, PDF, FAQ etc.), respective pipeline is triggered to extract text, tabular data from the documents." },
-        { step: "Data Chunking", description: "To enable contextual storage and retrieval, large documents are split into smaller chunks." },
-        { step: "Vector Embedding Generation", description: "All chunks are then processed to generate vector embeddings, which are stored in a vector database. This allows data querying and similarity-based searches using the vector embeddings." },
-        { step: "Natural Language Q&A", description: "Interactive GUI enables users to ask questions related to the products/policies in a very natural language way." },
-        { step: "Contextual Response", description: "The system checks relevant matching documents from the ingested knowledge repository. Based on the context, Gen AI model (LLM) generates the contextual response back to the user." },
-      ],
-      demo: videos.demoVideo3,
-      techArchitecture: architectures.architecture3,
-      benefits: "The purpose of this solution is to enhance the customer experience, making it adaptable across various industries. Specifically, it helps customers better understand the products and services an organization offers. Below are some examples of how this solution can be implemented across different industries",
-      adoption: [
-        { industry: "Financial", adoption: "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals." },
-        { industry: "Education", adoption: "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students." },
-        { industry: "Healthcare/Insurance", adoption: "Can assist customers in understanding various insurance products, determining health insurance eligibility, and providing personalized insurance product recommendations tailored to each customer's needs." },
-        { industry: "HR", adoption: "Can address employee inquiries regarding benefits, time off policies, training opportunities, and other related topics. This allows the company to provide 24/7 employee support and respond to questions in a timely manner." },
-        { industry: "Travel and Hospitality", adoption: "The virtual assistant can recommend activities, respond to common travel questions, and otherwise assist with trip planning to improve the traveler's experience and convenience." },
-        { industry: "Retail", adoption: "This solution could provide personalized recommendations and comparisons to help customers find the products best suited to their needs, answer common questions about product features and specifications." },
-      ]
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
     },
-  },
+  ];
 
+  const getLastRowStartIndex = () => {
+    const totalCards = filteredCards.length;
+    const cardsPerRow = 4;
+    const remainder = totalCards % cardsPerRow;
+    return remainder === 0 ? totalCards - cardsPerRow : totalCards - remainder;
+  };
 
-  export 'default' (imported as 'AssetImports') was not found in './AssetImports' (possible exports: architectures, images, solutionFlows, videos)
+  const lastRowStartIndex = getLastRowStartIndex();
+
+  return (
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>Gen AI Solution Catalog</h4>
+      <SearchBar query={searchQuery} onQueryChange={handleSearch} /> {/* Add SearchBar */}
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card, index) => (
+              <div
+                key={index}
+                className={index >= lastRowStartIndex ? styles.lastRowCard : ""}
+              >
+                <Cards
+                  imageUrl={card.imageUrl}
+                  title={card.title}
+                  description={card.description}
+                  isBig={index === bigIndex}
+                  toggleSize={() => toggleSize(index)}
+                />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noResultsContainer}>
+  <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
+  <p className={styles.noResults}>No solutions found.</p>
+</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AllCardsPage;
