@@ -63,18 +63,18 @@ const MainApp = () => {
   const location = useLocation();
   const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null); // Set to null initially
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
   const [loading, setLoading] = useState(true); // Added loading state
   const cardsContainerRef = useRef(null);
 
   const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
+    setBigIndex(index === bigIndex ? null : index); // Handle null state
   };
 
   const handleClickLeft = () => {
-    const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
     setBigIndex(newBigIndex);
 
     const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
@@ -82,7 +82,7 @@ const MainApp = () => {
   };
 
   const handleClickRight = () => {
-    const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
     setBigIndex(newBigIndex);
 
     const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
@@ -134,12 +134,6 @@ const MainApp = () => {
 
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    // Reset indices when location changes
-    setCurrentIndex(0);
-    setBigIndex(0);
-  }, [location]);
 
   const debounce = (func, wait) => {
     let timeout;
