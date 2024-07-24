@@ -8,13 +8,13 @@ import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons"; // Im
 
 import BusinessSVG from "./business.svg";
 import IndustrySVG from "./industry.svg";
-import NoResultsImage from "./thinking-face-svgrepo-com.svg";
+// import NoResultsImage from "./no-results.svg"; // Import an image for no results
+import NoResultsImage from "./thinking-face-svgrepo-com.svg"
 
 const AllCardsPage = ({ cardsData }) => {
   const [bigIndex, setBigIndex] = useState(null);
   const [filteredCards, setFilteredCards] = useState(cardsData);
   const [searchQuery, setSearchQuery] = useState(""); // Add search query state
-  const [activeFilters, setActiveFilters] = useState({}); // Track active filters
   const cardsContainerRef = useRef(null);
 
   const handleBackButtonClick = () => {
@@ -26,7 +26,6 @@ const AllCardsPage = ({ cardsData }) => {
   };
 
   const handleFilterChange = (activeItems) => {
-    setActiveFilters(activeItems);
     const industryFilters = activeItems["Industry"] || [];
     const businessFunctionFilters = activeItems["Business Function"] || [];
 
@@ -92,17 +91,14 @@ const AllCardsPage = ({ cardsData }) => {
                   description={card.description}
                   isBig={index === bigIndex}
                   toggleSize={() => toggleSize(index)}
-                  industry={card.industry}
-                  businessFunction={card.businessFunction}
-                  showTags={Object.keys(activeFilters).length > 0} // Show tags only if filters are active
                 />
               </div>
             ))
           ) : (
             <div className={styles.noResultsContainer}>
-              <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
-              <p className={styles.noResults}>No solutions found.</p>
-            </div>
+  <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
+  <p className={styles.noResults}>No solutions found.</p>
+</div>
           )}
         </div>
       </div>
@@ -112,64 +108,97 @@ const AllCardsPage = ({ cardsData }) => {
 
 export default AllCardsPage;
 
-
-
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import styles from "./CategorySidebar.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./Cards.module.css";
+import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const Card = ({ imageUrl, title, description, isBig, toggleSize, industry, businessFunction, showTags }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const CategorySidebar = ({ categories, onFilterChange }) => {
+  const [openCategory, setOpenCategory] = useState(null);
+  const [activeItems, setActiveItems] = useState({});
 
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  const toggleCategory = (index) => {
+    setOpenCategory(index === openCategory ? null : index);
+  };
+
+  const handleItemClick = (category, item) => {
+    const isActive = activeItems[category]?.includes(item);
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: isActive
+        ? activeItems[category].filter((i) => i !== item)
+        : [...(activeItems[category] || []), item],
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
+
+  const handleRemoveFilter = (category, item) => {
+    const updatedActiveItems = {
+      ...activeItems,
+      [category]: activeItems[category].filter((i) => i !== item),
+    };
+    setActiveItems(updatedActiveItems);
+    onFilterChange(updatedActiveItems);
+  };
 
   return (
-    <div className={styles.cardContainer}>
-      <div
-        className={`${styles.card} ${isBig ? styles.big : ""}`}
-        style={{ backgroundImage: `url(${imageUrl})` }}
-        onClick={toggleSize}
-      >
-        {!isBig && <div className={styles.cardTitle}>{title}</div>}
-        {isBig && (
-          <div className={styles.cardContent}>
-            <h3>{title}</h3>
-            <p>{description}</p>
-            {showTags && (
-              <div className={styles.tags}>
-                {industry && <span className={styles.tagIndustry}>{industry}</span>}
-                {businessFunction && <span className={styles.tagBusiness}>{businessFunction}</span>}
-              </div>
-            )}
-            <Link
-              to={{
-                pathname: "/dashboard",
-                search: `?title=${encodeURIComponent(title)}`,
-              }}
-              className={styles.readMoreLink}
-            >
-              <span
-                className={`${styles.arrow} ${styles.rightArrow} ${isHovered ? styles.hovered : ""}`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <span style={{ fontSize: isHovered ? "0.8em" : "1em" }}>
-                  {isHovered && "Read More "}
-                </span>
-                <span style={{ marginLeft: isHovered ? "5px" : "0", fontSize: isHovered ? "1.3em" : "1em" }}>
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </span>
-            </Link>
-          </div>
+    <div className={styles.sidebar}>
+      <p className={styles.sideHead}>Explore by</p>
+      <div className={styles.selectedFilters}>
+        {Object.entries(activeItems).flatMap(([category, items]) =>
+          items.map((item) => (
+            <div key={`${category}-${item}`} className={styles.selectedFilter}>
+              <span>{item}</span>
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={styles.removeIcon}
+                onClick={() => handleRemoveFilter(category, item)}
+              />
+            </div>
+          ))
         )}
       </div>
+      {categories.map((category, index) => (
+        <div key={index} className={styles.category}>
+          <div
+            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
+            onClick={() => toggleCategory(index)}
+          >
+            <img
+              src={category.svgIcon}
+              alt={`${category.name} icon`}
+              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
+            />
+            {category.name}
+            <FontAwesomeIcon
+              icon={openCategory === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openCategory === index && (
+            <div className={styles.dropdown}>
+              {category.items.map((item, itemIndex) => (
+                <div
+                  key={itemIndex}
+                  className={styles.dropdownItem}
+                  onClick={() => handleItemClick(category.name, item)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={activeItems[category.name]?.includes(item)}
+                    readOnly
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.itemText}>{item}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
-export default Card;
+export default CategorySidebar;
