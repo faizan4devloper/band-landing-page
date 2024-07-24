@@ -1,3 +1,23 @@
+
+const handleClickLeft = () => {
+  console.log('handleClickLeft called', { bigIndex, currentIndex });
+  const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+  setBigIndex(newBigIndex);
+
+  const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+  setCurrentIndex(newCurrentIndex);
+  console.log('New Indexes:', { newBigIndex, newCurrentIndex });
+};
+
+const handleClickRight = () => {
+  console.log('handleClickRight called', { bigIndex, currentIndex });
+  const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+  setBigIndex(newBigIndex);
+
+  const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+  setCurrentIndex(newCurrentIndex);
+  console.log('New Indexes:', { newBigIndex, newCurrentIndex });
+};
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
