@@ -11,6 +11,9 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  // Merge tags into a single string separated by "/"
+  const mergedTags = tags && tags.length > 1 ? tags.join("/") : tags?.[0];
+
   return (
     <div className={styles.cardsContainer}>
       <div
@@ -18,11 +21,9 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
         style={{ backgroundImage: `url(${imageUrl})` }}
         onClick={toggleSize}
       >
-        {tags && tags.length > 0 && (
+        {mergedTags && (
           <div className={styles.tagsContainer}>
-            {tags.map((tag, index) => (
-              <span key={index} className={styles.tag}>{tag}</span>
-            ))}
+            <span className={styles.tag}>{mergedTags}</span>
           </div>
         )}
         {!isBig && <div className={styles.cardTitle}>{title}</div>}
@@ -70,150 +71,10 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
 
 export default Card;
 
-.card {
-  width: 160px;
-  overflow: hidden;
-  height: 160px;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  position: relative;
-  margin-bottom: 15px;
-  /*margin-top: 15px;*/
-  transition: transform 0.6s ease;
-  box-shadow: 0px 3px 4px #5c5555;
-
-}
-
-.card:hover{
-  transform: translate(0, -10px);
-}
-
-.big {
-  width: 190px;
-  height: 190px;
-  z-index: 0;
-  transform: scale(1.1);
-}
-
-.cardTitle {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* Set a fixed height */
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-  border-radius: 12px;
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transition: opacity 0.3s ease;
-  text-align: center;
-}
-
-.cardContent {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 10px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 140px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  border-radius: 12px;
-    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transform: translateY(100%);
-  transition: transform 0.3s ease, background 0.3s ease; /* Adjusted transition timing */
-}
-
-.cardContent p{
-  backdrop-filter: none;
-  font-size: 10px;
-}
-
-.cardContent h3{
-  color:#eeecec;
-}
-
-.cardContent.slide-up {
-  transform: translateY(0);
-}
-
-.cardContent::before {
-  content: "";
-  position: absolute;
-  padding-top: 0px;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, #6f36cd, #1f77f6);
-  transition: top 0.3s ease;
-  border-radius: 12px;
-  z-index: -1;
-}
-.arrow {
- cursor: pointer;
-    position: absolute;
-    display: flex;
-    bottom: 10px;
-    right: 10px;
-    font-size: 14px;
-    width: 16px;
-    height: 16px;
-    padding: 5px 5px 5px 5px;
-    border-radius: 50px;
-    border: 2px solid rgba(255, 255, 255, 1);
-    color: rgba(255, 255, 255, 1);
-    overflow: hidden;
-    transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
-}
-
-.arrow:hover {
-  width: 80px; /* Increase width on hover */
-  align-items: center;
-  font-size: 10px;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    1
-  ); /* Change background color on hover */
-  color: rgba(15, 95, 220, 1); /* Change text color on hover */
-}
-
-.arrow.hovered {
-  width: 65px;
-}
-.card:hover .cardContent::before {
-  top: 0;
-}
-.readMore {
-  left: 10px;
-}
-.card:hover .cardContent::before {
-  background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
-}
-
-.big .cardContent {
-  transform: translateY(0);
-  padding-top:0px;
-}
-
-
-.tagsContainer{
+.tagsContainer {
   display: flex;
   flex-wrap: wrap;
-  padding:5px;
+  padding: 5px;
   position: absolute;
   top: -15px;
   left: -6px;
@@ -221,11 +82,11 @@ export default Card;
   margin-top: 10px;
 }
 
-.tag{
-  /*background-color: #d3d3d3;*/
+.tag {
   border-radius: 3px;
-  padding:3px 6px;
+  padding: 3px 6px;
   margin-right: 5px;
   font-size: 12px;
-  color:#000000;
+  color: #FFF;
+  background-color: #6f36cd; /* Adjust background color as needed */
 }
