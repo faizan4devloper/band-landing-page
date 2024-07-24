@@ -1,204 +1,206 @@
-import React, { useState, useRef } from "react";
-import styles from "./AllCardsPage.module.css";
-import Cards from "./Cards";
-import CategorySidebar from "./CategorySidebar";
-import SearchBar from "./SearchBar"; // Import SearchBar
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import styles from "./Cards.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faSearch } from "@fortawesome/free-solid-svg-icons"; // Import the search icon
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-import BusinessSVG from "./business.svg";
-import IndustrySVG from "./industry.svg";
-// import NoResultsImage from "./no-results.svg"; // Import an image for no results
-import NoResultsImage from "./thinking-face-svgrepo-com.svg";
+const Card = ({ imageUrl, title, description, isBig, toggleSize }) => {
+  const [isHovered, setIsHovered] = useState(false);
 
-const AllCardsPage = ({ cardsData }) => {
-  const [bigIndex, setBigIndex] = useState(null);
-  const [filteredCards, setFilteredCards] = useState(cardsData);
-  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
-  const cardsContainerRef = useRef(null);
-
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleFilterChange = (activeItems) => {
-    const industryFilters = activeItems["Industry"] || [];
-    const businessFunctionFilters = activeItems["Business Function"] || [];
-
-    const filtered = cardsData.filter((card) => {
-      const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
-      const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
-      return (industryFilters.length === 0 || matchesIndustry) && (businessFunctionFilters.length === 0 || matchesBusinessFunction);
-    });
-
-    setFilteredCards(filtered);
-  };
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    const filtered = cardsData.filter(card =>
-      card.title.toLowerCase().includes(query.toLowerCase()) ||
-      card.description.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredCards(filtered);
-  };
-
-  const categories = [
-    {
-      name: "Industry",
-      svgIcon: IndustrySVG,
-      items: ["All", "LSH", "BFSI", "ENU", "Automotive", "GOVT"],
-    },
-    {
-      name: "Business Function",
-      svgIcon: BusinessSVG,
-      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
-    },
-  ];
-
-  const getLastRowStartIndex = () => {
-    const totalCards = filteredCards.length;
-    const cardsPerRow = 4;
-    const remainder = totalCards % cardsPerRow;
-    return remainder === 0 ? totalCards - cardsPerRow : totalCards - remainder;
-  };
-
-  const lastRowStartIndex = getLastRowStartIndex();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
-    <div className={styles.allCardsPage}>
-      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
-      <button onClick={handleBackButtonClick} className={styles.backButton}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
-      <h4 className={styles.catalogsHeading}>Gen AI Solution Catalog</h4>
-      <SearchBar query={searchQuery} onQueryChange={handleSearch} /> {/* Add SearchBar */}
-      <div className={styles.mainContainerCards}>
-        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
-          {filteredCards.length > 0 ? (
-            filteredCards.map((card, index) => (
-              <div
-                key={index}
-                className={index >= lastRowStartIndex ? styles.lastRowCard : ""}
+    <div className={styles.cardsContainer}>
+      <div
+        className={`${styles.card} ${isBig ? styles.big : ""}`}
+        style={{ backgroundImage: `url(${imageUrl})` }}
+        onClick={toggleSize}
+      >
+        {!isBig && <div className={styles.cardTitle}>{title}</div> }
+        {isBig && (
+          <div className={styles.cardContent}>
+            <h3>{title}</h3>
+            <p>{description}</p>
+            <Link
+              to={{
+                pathname: "/dashboard",
+                search: `?title=${encodeURIComponent(title)}`,
+              }}
+              className={styles.readMoreLink}
+            >
+              <span
+                className={`${styles.arrow} ${styles.rightArrow} ${
+                  isHovered ? styles.hovered : ""
+                }`}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
               >
-                <Cards
-                  imageUrl={card.imageUrl}
-                  title={card.title}
-                  description={card.description}
-                  isBig={index === bigIndex}
-                  toggleSize={() => toggleSize(index)}
-                />
-              </div>
-            ))
-          ) : (
-            <div className={styles.noResultsContainer}>
-              <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
-              <p className={styles.noResults}>No solutions found.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default AllCardsPage;
-
-import React, { useState } from "react";
-import styles from "./CategorySidebar.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
-
-const CategorySidebar = ({ categories, onFilterChange }) => {
-  const [openCategory, setOpenCategory] = useState(null);
-  const [activeItems, setActiveItems] = useState({});
-
-  const toggleCategory = (index) => {
-    setOpenCategory(index === openCategory ? null : index);
-  };
-
-  const handleItemClick = (category, item) => {
-    const isActive = activeItems[category]?.includes(item);
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: isActive
-        ? activeItems[category].filter((i) => i !== item)
-        : [...(activeItems[category] || []), item],
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(updatedActiveItems);
-  };
-
-  const handleRemoveFilter = (category, item) => {
-    const updatedActiveItems = {
-      ...activeItems,
-      [category]: activeItems[category].filter((i) => i !== item),
-    };
-    setActiveItems(updatedActiveItems);
-    onFilterChange(updatedActiveItems);
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <p className={styles.sideHead}>Explore by</p>
-      <div className={styles.selectedFilters}>
-        {Object.entries(activeItems).flatMap(([category, items]) =>
-          items.map((item) => (
-            <div key={`${category}-${item}`} className={styles.selectedFilter}>
-              <span>{item}</span>
-              <FontAwesomeIcon
-                icon={faTimes}
-                className={styles.removeIcon}
-                onClick={() => handleRemoveFilter(category, item)}
-              />
-            </div>
-          ))
+                <span
+                  style={{
+                    fontSize: isHovered ? "0.8em" : "1em",
+                  }}
+                >
+                  {isHovered && "Read More "}
+                </span>
+                <span
+                  style={{
+                    marginLeft: isHovered ? "5px" : "0",
+                    fontSize: isHovered ? "1.3em" : "1em",
+                  }}
+                >
+                  <FontAwesomeIcon icon={faArrowRight} />
+                </span>
+              </span>
+            </Link>
+          </div>
         )}
       </div>
-      {categories.map((category, index) => (
-        <div key={index} className={styles.category}>
-          <div
-            className={`${styles.categoryHeader} ${openCategory === index ? styles.activeCategory : ""}`}
-            onClick={() => toggleCategory(index)}
-          >
-            <img
-              src={category.svgIcon}
-              alt={`${category.name} icon`}
-              className={`${styles.svgIcon} ${openCategory === index ? styles.activeIcon : ""}`}
-            />
-            {category.name}
-            <FontAwesomeIcon
-              icon={openCategory === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openCategory === index && (
-            <div className={styles.dropdown}>
-              {category.items.map((item, itemIndex) => (
-                <div
-                  key={itemIndex}
-                  className={styles.dropdownItem}
-                  onClick={() => handleItemClick(category.name, item)}
-                >
-                  <input
-                    type="checkbox"
-                    checked={activeItems[category.name]?.includes(item)}
-                    readOnly
-                    className={styles.checkbox}
-                  />
-                  <span className={styles.itemText}>{item}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
     </div>
   );
 };
 
-export default CategorySidebar;
+export default Card;
+
+
+.card {
+  width: 160px;
+  overflow: hidden;
+  height: 160px;
+  border-radius: 12px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 15px;
+  /*margin-top: 15px;*/
+  transition: transform 0.6s ease;
+  box-shadow: 0px 3px 4px #5c5555;
+
+}
+
+.card:hover{
+  transform: translate(0, -10px);
+}
+
+.big {
+  width: 190px;
+  height: 190px;
+  z-index: 0;
+  transform: scale(1.1);
+}
+
+.cardTitle {
+  position: absolute;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* Set a fixed height */
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
+    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
+  backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+  border-radius: 12px;
+  color: white;
+  padding: 18px;
+  box-sizing: border-box;
+  transition: opacity 0.3s ease;
+  text-align: center;
+}
+
+.cardContent {
+  position: absolute;
+  font-family: "Poppins", sans-serif;
+  font-size: 10px;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
+    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
+  border-radius: 12px;
+    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
+  color: white;
+  padding: 18px;
+  box-sizing: border-box;
+  transform: translateY(100%);
+  transition: transform 0.3s ease, background 0.3s ease; /* Adjusted transition timing */
+}
+
+.cardContent p{
+  backdrop-filter: none;
+  font-size: 10px;
+}
+
+.cardContent h3{
+  color:#eeecec;
+}
+
+.cardContent.slide-up {
+  transform: translateY(0);
+}
+
+.cardContent::before {
+  content: "";
+  position: absolute;
+  padding-top: 0px;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, #6f36cd, #1f77f6);
+  transition: top 0.3s ease;
+  border-radius: 12px;
+  z-index: -1;
+}
+.arrow {
+ cursor: pointer;
+    position: absolute;
+    display: flex;
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+    width: 16px;
+    height: 16px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 50px;
+    border: 2px solid rgba(255, 255, 255, 1);
+    color: rgba(255, 255, 255, 1);
+    overflow: hidden;
+    transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
+}
+
+.arrow:hover {
+  width: 80px; /* Increase width on hover */
+  align-items: center;
+  font-size: 10px;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    1
+  ); /* Change background color on hover */
+  color: rgba(15, 95, 220, 1); /* Change text color on hover */
+}
+
+.arrow.hovered {
+  width: 65px;
+}
+.card:hover .cardContent::before {
+  top: 0;
+}
+.readMore {
+  left: 10px;
+}
+.card:hover .cardContent::before {
+  background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
+}
+
+.big .cardContent {
+  transform: translateY(0);
+  padding-top:0px;
+}
+
+
