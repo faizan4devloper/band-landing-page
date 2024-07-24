@@ -2,6 +2,159 @@ const MainApp = () => {
   const location = useLocation();
   const [cardsData, setCardsData] = useState(initialCardsData);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    if (cardsData.length === 0) return;
+
+    let newBigIndex = bigIndex === null ? cardsData.length - 1 : (bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1);
+    let newCurrentIndex = newBigIndex;
+
+    if (newBigIndex < currentIndex) {
+      newCurrentIndex = Math.max(newBigIndex, 0);
+    }
+
+    setBigIndex(newBigIndex);
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    if (cardsData.length === 0) return;
+
+    let newBigIndex = bigIndex === null ? 0 : (bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1);
+    let newCurrentIndex = newBigIndex;
+
+    if (newBigIndex > currentIndex + 4) {
+      newCurrentIndex = Math.max(newBigIndex - 4, 0);
+    }
+
+    setBigIndex(newBigIndex);
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setCurrentIndex(0);
+      setBigIndex(null);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const MainApp = () => {
+const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null); // Initialize with null
   const [showScrollDown, setShowScrollDown] = useState(true);
   const [showScrollUp, setShowScrollUp] = useState(false);
