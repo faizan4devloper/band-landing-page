@@ -1,163 +1,205 @@
-.sidebar {
-  position: fixed;
-  top: 140px;
-  left: 135px;
-  width: 200px;
-  height: calc(100% - 75px);
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  padding: 0 20px;
-  padding-right: 0px;
-  overflow-y: auto;
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #6f36cd rgba(255, 255, 255, 0.1); /* For Firefox */
-}
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
+import {  BeatLoader } from "react-spinners"; // Import loaders
 
-/* Webkit browsers (Chrome, Safari) */
-.sidebar::-webkit-scrollbar {
-  width: 8px;
-}
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-.sidebar::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-}
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(0);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const cardsContainerRef = useRef(null);
 
-.sidebar::-webkit-scrollbar-thumb {
-  background: #6f36cd;
-  border-radius: 8px;
-}
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-  background: #1f77f6;
-}
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
 
-.sideHead {
-  font-size: 14px;
-  font-weight: 500;
-  margin-top: 0;
-  color: #808080;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 5px;
-}
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-.sideHead::after {
-  content: '';
-  display: block;
-  width: 200px;
-  height: 2px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  position: absolute;
-  bottom: 0;
-  left: 0;
-}
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
 
-.selectedFilters {
-  margin-bottom: 20px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-.selectedFilter {
-  display: flex;
-  align-items: center;
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #6f36cd;
-}
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
 
-.removeIcon {
-  margin-left: 5px;
-  cursor: pointer;
-  color: #6f36cd;
-}
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
 
-.removeIcon:hover {
-  color: #d9534f; /* Adjust the color on hover */
-}
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
-.category {
-  margin-bottom: 20px;
-}
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
 
-.categoryHeader {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  font-size: 12px;
-  padding: 10px 15px;
-  border-radius: 8px 0 0 8px;
-  background-color: rgba(230, 235, 245, 1);
-}
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
 
-.categoryHeader img {
-  margin-right: 8px;
-}
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
 
-.chevronIcon {
-  margin-left: auto;
-}
+  useEffect(() => {
+    // Simulate a delay to show the loader
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // 2 seconds delay
 
-.dropdown {
-  padding: 10px;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 4px;
-  margin-top: 10px;
-}
+    return () => clearTimeout(timer);
+  }, []);
 
-.dropdownItem {
-  display: flex;
-  align-items: center;
-  font-size: 11px;
-  padding: 5px;
-  cursor: pointer;
-}
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
 
-.checkbox {
-  margin-right: 10px;
-  width: 16px;
-  height: 16px;
-}
+  return (
+    <div className={styles.app}>
+      {loading ? ( // Show loader while loading is true
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
-.itemText {
-  margin-left: 5px;
-}
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
 
-.dropdownItem:hover {
-  background-color: rgba(220, 220, 220, 1);
-  border-radius: 4px;
-  color: #5F1EC1;
-}
 
-.categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
-}
 
-.activeCategory {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 8px 0 0 8px;
-}
-
-.activeItem {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 4px;
-}
-
-.svgIcon {
-  width: 16px;
-  height: 16px;
-}
-
-.svgIcon:hover {
-  fill: #5F1EC1;
-}
-
-.activeIcon {
-  filter: brightness(0) invert(1);
-}
+export default App;
