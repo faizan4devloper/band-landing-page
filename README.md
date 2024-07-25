@@ -1,3 +1,49 @@
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderRadius: "4px",
+    width: "91%", // Control width
+    border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    color: "#555",
+    boxShadow: "none", // Remove the default box-shadow
+    "&:hover": {
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc"
+    }
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
+    color: state.isSelected ? "#fff" : "#555",
+    fontSize: "12px", // Option font size
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: state.isSelected ? "#5f1ec1" : "#f0f0f0" // Change hover background color
+    }
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    fontSize: "12px", // Placeholder font size
+    color: "#999" // Placeholder color
+  }),
+  menu: (provided) => ({
+    ...provided,
+    width: "91%",
+    maxHeight: "150px", // Limit the height of the menu to 150px (approx. 5 options)
+    overflowY: "auto", // Enable vertical scrolling when necessary
+    zIndex: 2 // Ensure it is above other elements
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    fontSize: "12px",
+    color: "#555" // Single value color
+  })
+};
+
+
+
+
 import React, { useState } from "react";
 import Select from "react-select";
 import styles from "./RequestDemoForm.module.css";
