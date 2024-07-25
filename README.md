@@ -53,7 +53,7 @@ const RequestDemoForm = ({ closeModal }) => {
     menu: (provided) => ({
       ...provided,
       width: "91%",
-      height: "200px", // Limit the height of the menu to 150px (approx. 5 options)
+      maxHeight: "200px", // Limit the height of the menu to 150px (approx. 5 options)
       overflowY: "auto", 
       zIndex: 2 // Ensure it is above other elements
     }),
