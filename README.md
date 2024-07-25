@@ -1,175 +1,143 @@
-/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
-.app {
-  overflow: -moz-scrollbars-none; /* For Firefox */
-  -ms-overflow-style: none; /* For Internet Explorer and Edge */
-  scrollbar-width: none; /* For Firefox */
-  height: 100vh; /* Ensure height is set for scrolling */
-}
+import React, { useState } from "react";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-/* Hide scrollbar for WebKit browsers */
-.app::-webkit-scrollbar {
-  display: none; /* Hide scrollbar */
-}
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
 
-/* Hide scrollbar for modern browsers */
-.app {
-  scrollbar-width: thin; /* Set scrollbar width to thin or auto */
-  scrollbar-color: transparent; /* Hide scrollbar color */
-}
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setIsSubmitted(true);
+  };
 
-/* Other existing styles */
-::-webkit-scrollbar {
-  width: 8px;
-}
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
+    closeModal();
+  };
 
-::-webkit-scrollbar-thumb {
-  background: #5f1ec1; 
-  border-radius: 10px;
-}
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: "4px",
+      width: "91%", // Control width
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+      cursor: "pointer",
+      backgroundColor: "#fff",
+      color: "#555",
+      boxShadow: "none", // Remove the default box-shadow
+      "&:hover": {
+        border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc"
+      }
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
+      color: state.isSelected ? "#fff" : "#555",
+      fontSize: "12px", // Option font size
+      width: "100%", // Option width
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: state.isSelected ? "#5f1ec1" : "#f0f0f0" // Change hover background color
+      }
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      fontSize: "12px", // Placeholder font size
+      color: "#999" // Placeholder color
+    }),
+    menu: (provided) => ({
+      ...provided,
+      width: "91%",
+      // height: "150px", // Limit the height of the menu to 150px (approx. 5 options)
+      // overflowY: "auto", 
+      zIndex: 2 // Ensure it is above other elements
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      fontSize: "12px",
+      color: "#555" // Single value color
+    })
+  };
 
-/* Uncomment and adjust if needed */
-::-webkit-scrollbar-thumb:hover {
-  background: #999; 
-}
+  return (
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={handleCloseModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>*User Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>*Email Address</label>
+            <input type="email" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>GenAI Solution Name</label>
+            <div className={styles.customSelect}>
+              <Select
+                styles={customStyles}
+                value={selectedSolution}
+                onChange={setSelectedSolution}
+                options={[
+                  { value: "option1", label: "Intelligent Assist" },
+                  { value: "option2", label: "Email EAR" },
+                  { value: "option3", label: "Case Intelligence" },
+                  { value: "option4", label: "Smart Recruit" },
+                  { value: "option5", label: "iAssure Claim" },
+                  { value: "option6", label: "Assistant For EVs" },
+                  { value: "option7", label: "AutoWise Companion" },
+                  { value: "option8", label: "Citizen Advisor" },
+                  { value: "option9", label: "Fin Competitor Summary Gen" },
+                  { value: "option10", label: "Signature Extraction & Verification" },
+                  { value: "option11", label: "AI Force" },
+                  { value: "option12", label: "API based Test Case Generation" },
+                  { value: "option13", label: "AMS Support Automation" },
+                  { value: "option14", label: "SOP Assistance" },
+                  // { value: "option15", label: "Code GReat" },
+                  // { value: "option16", label: "AAIG-API Analyzer & Insight Generator" },
+                  // { value: "option17", label: "Responsible Gen AI with Llama-13 B" },
+                  // { value: "option18", label: "Graph data Interpretation using Gen AI" },
+                  // { value: "option19", label: "Predictive Asset Maintenance​(PAM)​" }
+                ]}
+              />
+            </div>
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>More Details</label>
+            <textarea
+              placeholder="Enter your business details and scope of this demo in your usecase."
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Submit
+          </button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted
+          successfully.
+        </p>
+      )}
+    </div>
+  );
+};
 
-html, body {
-  font-family: "Poppins", sans-serif;
-}
-
-.app {
-  width: 1100px;
-  margin: 0 auto;
-  /* height should be flexible based on content */
-}
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-}
-
-.arrow {
-  cursor: pointer;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  padding: 5px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
-}
-
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
-
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
-
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
-
-@media screen and (max-width: 1100px) {
-  .app {
-    padding: 0 10px;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .app {
-    max-width: 100%;
-  }
-}
-
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-right: 112px;
-}
-
-.solutionHead {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  margin-left: 118px;
-}
-
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
-
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton,
-.scrollUpButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
-}
-
-.loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh; /* Full height */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
-  z-index: 1000; /* Make sure loader appears above other content */
-}
+export default RequestDemoForm;
