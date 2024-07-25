@@ -23,7 +23,7 @@ const RequestDemoForm = ({ closeModal }) => {
     control: (provided, state) => ({
       ...provided,
       borderRadius: "4px",
-      width: "100%", // Full width to match the parent container
+      width: "91%", // Control width
       border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
       cursor: "pointer",
       backgroundColor: "#fff",
@@ -38,7 +38,6 @@ const RequestDemoForm = ({ closeModal }) => {
       backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
       color: state.isSelected ? "#fff" : "#555",
       fontSize: "12px", // Option font size
-      width: "100%", // Option width
       cursor: "pointer",
       "&:hover": {
         backgroundColor: state.isSelected ? "#5f1ec1" : "#f0f0f0" // Change hover background color
@@ -51,7 +50,7 @@ const RequestDemoForm = ({ closeModal }) => {
     }),
     menu: (provided) => ({
       ...provided,
-      width: "100%", // Ensure the menu width is the same as the control
+      width: "91%",
       maxHeight: "150px", // Limit the height of the menu to 150px (approx. 5 options)
       overflowY: "auto", // Enable vertical scrolling when necessary
       zIndex: 2 // Ensure it is above other elements
@@ -116,7 +115,7 @@ const RequestDemoForm = ({ closeModal }) => {
           <div className={styles.formGroup}>
             <label>More Details</label>
             <textarea
-              placeholder="Enter your business details and scope of this demo in your usecase."
+              placeholder="Enter your business details and scope of this demo in your use case."
               rows="4"
               required
             ></textarea>
@@ -127,7 +126,8 @@ const RequestDemoForm = ({ closeModal }) => {
         </form>
       ) : (
         <p className={styles.successMessage}>
-          Thank you! Your request for a live demo has been submitted successfully.
+          Thank you! Your request for a live demo has been submitted
+          successfully.
         </p>
       )}
     </div>
@@ -135,104 +135,3 @@ const RequestDemoForm = ({ closeModal }) => {
 };
 
 export default RequestDemoForm;
-
-
-
-
-.formContainer {
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
-  max-height: 80vh; /* Set a max-height for the form container */
-  overflow: auto; /* Ensure proper scrolling behavior */
-  z-index: 1000;
-}
-
-.demoHead {
-  color: #5f1ec1;
-  margin-bottom: 10px;
-  text-align: center;
-  margin-top: -10px;
-  font-size: 18px;
-}
-
-.formGroup {
-  margin-bottom: 10px;
-  position: relative;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #000;
-  font-size: 12px;
-  transition: color 0.3s;
-}
-
-input::placeholder, textarea::placeholder {
-  color: #999999; /* Light gray */
-  opacity: 1;
-}
-
-input, textarea {
-  width: 90%;
-  padding: 5px;
-  border: none;
-  background-color: transparent;
-  border-bottom: 1px solid #ccc; /* Only bottom border */
-  border-radius: 0;
-  font-size: 12px;
-  transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
-}
-
-input:focus, textarea:focus {
-  border-color: #5f1ec1;
-  outline: none;
-}
-
-.submitButton {
-  background-color: #5f1ec1;
-  margin-top: 0px;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-  width: 78%; /* Make the button take the full width */
-}
-
-.closeButton {
-  position: absolute;
-  top: 25px;
-  right: 25px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: #aaa;
-}
-
-.closeButton:hover {
-  color: #555;
-}
-
-.successMessage {
-  text-align: center;
-  color: #5f1ec1;
-  font-size: 16px;
-}
-
-/* Custom scrollbar styling for the react-select menu */
-.react-select__menu {
-  overflow: auto;
-}
