@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Select from "react-select";
 import styles from "./RequestDemoForm.module.css";
@@ -54,22 +55,7 @@ const RequestDemoForm = ({ closeModal }) => {
       width: "91%",
       maxHeight: "150px", // Limit the height of the menu to 150px (approx. 5 options)
       overflowY: "auto", // Enable vertical scrolling
-      zIndex: 2, // Ensure it is above other elements
-      // Custom scrollbar styles
-      "::-webkit-scrollbar": {
-        width: "6px"
-      },
-      "::-webkit-scrollbar-track": {
-        background: "#f1f1f1",
-        borderRadius: "8px"
-      },
-      "::-webkit-scrollbar-thumb": {
-        background: "#5f1ec1",
-        borderRadius: "8px"
-      },
-      "::-webkit-scrollbar-thumb:hover": {
-        background: "#555"
-      }
+      zIndex: 2 // Ensure it is above other elements
     }),
     singleValue: (provided) => ({
       ...provided,
@@ -119,6 +105,8 @@ const RequestDemoForm = ({ closeModal }) => {
                   { value: "option15", label: "Code GReat" },
                   { value: "option16", label: "AAIG-API Analyzer & Insight Generator" },
                   { value: "option17", label: "Responsible Gen AI with Llama-13 B" },
+                  { value: "option18", label: "Graph data Interpretation using Gen AI" },
+                  { value: "option19", label: "Predictive Asset Maintenance​(PAM)​" }
                 ]}
               />
             </div>
