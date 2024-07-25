@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Select from "react-select";
 import styles from "./RequestDemoForm.module.css";
@@ -52,24 +53,9 @@ const RequestDemoForm = ({ closeModal }) => {
     menu: (provided) => ({
       ...provided,
       width: "91%",
-      maxHeight: "150px", // Limit the height of the menu to 150px (approx. 5 options)
-      overflowY: "auto", // Enable vertical scrolling
-      zIndex: 2, // Ensure it is above other elements
-      // Custom scrollbar styles
-      "::-webkit-scrollbar": {
-        width: "6px"
-      },
-      "::-webkit-scrollbar-track": {
-        background: "#f1f1f1",
-        borderRadius: "8px"
-      },
-      "::-webkit-scrollbar-thumb": {
-        background: "#5f1ec1",
-        borderRadius: "8px"
-      },
-      "::-webkit-scrollbar-thumb:hover": {
-        background: "#555"
-      }
+      height: "200px", // Limit the height of the menu to 150px (approx. 5 options)
+      overflowY: "auto", 
+      zIndex: 2 // Ensure it is above other elements
     }),
     singleValue: (provided) => ({
       ...provided,
