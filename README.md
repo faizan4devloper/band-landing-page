@@ -1,24 +1,38 @@
-{
-  "intelligentAssist": [
-    { "step": "Data Ingestion Pipeline", "description": "Automated data ingestion pipeline to process documents at scale." },
-    { "step": "Document Text Extraction", "description": "Depending upon the document type (Audio, PDF, FAQ etc.), respective pipeline is triggered to extract text, tabular data from the documents." },
-    { "step": "Data Chunking", "description": "To enable contextual storage and retrieval, large documents are split into smaller chunks." },
-    { "step": "Vector Embedding Generation", "description": "All chunks are then processed to generate vector embeddings, which are stored in a vector database. This allows data querying and similarity-based searches using the vector embeddings." },
-    { "step": "Natural Language Q&A", "description": "Interactive GUI enables users to ask questions related to the products/policies in a very natural language way." },
-    { "step": "Contextual Response", "description": "The system checks relevant matching documents from the ingested knowledge repository. Based on the context, Gen AI model (LLM) generates the contextual response back to the user." }
-  ],
-  "emailEAR": [
-    { "step": "Email Context Extraction", "description": "LLM powered Natural language processing is leveraged to extract the question or request from the email, classify the type of email, and understand the sentiment or tone of the sender." },
-    { "step": "Agent Routing", "description": "Take advantage of LLM Agents to route the emails to the respective handler for subsequent actions." },
-    { "step": "Actions", "description": "Perform the following actions based on the defined context." },
-    { "step": "Response Generation", "description": "The system leverages LLM’s natural language generation capabilities to compose a response incorporating the results of the actions above in a well-structured format tailored to the email context, classification, and sentiment." },
-    { "step": "Explainability", "description": "The system can explain the reasoning and data flows behind its actions to enhance transparency using capabilities like the ReAct framework." }
-  ],
-  "smartRecruit": [
-    { "step": "Screening Candidates", "description": "Reviewing resumes and screening candidates is tedious. Interview Assist uses Gen AI LLM’s natural language processing to quickly parse resumes and rank candidates based on relevance to the job description. This allows recruiters to focus on the most promising applicants." },
-    { "step": "Generating Interview Questions", "description": "Coming up with relevant, thoughtful interview questions can be difficult. Interview Assist recommend personalized questions based on the candidate's background, resume and the Job Description." },
-    { "step": "Summarizing Candidate Profiles", "description": "Interview Assist helps summarize the candidate’s work profile taking relevant experience, Job Description into consideration." },
-    { "step": "Generating Interview Feedback", "description": "Providing quality feedback to candidates can be challenging. Interview Assist analyzes the candidate's resume and interview responses and automatically generates personalized feedback assessing strengths, weaknesses, and fit for the role. This saves time while providing helpful feedback to candidates." },
-    { "step": "Facial Recognition", "description": "Interview Assist uses computer vision and facial recognition to identify candidates during video interviews. This automates attendance taking and ensures the intended candidate is present." }
-  ]
-}
+import { images, videos, solutionFlows, architectures } from './AssetImports';
+import descriptions from './Data/Descriptions.json';
+import solutionFlowsData from './Data/SolutionsFlow.json';
+import adoptionData from './Data/Adoption.json';
+
+export const cardsData = [
+  {
+    imageUrl: images.IntelligentAss,
+    title: "Intelligent Assist",
+    description: "Efficiently search across an organization's document repository and retrieve relevant information to questions/requests from global workforces.",
+    industry: "All",
+    businessFunction: "Customer Support",
+    content: {
+      description: descriptions.intelligentAssist,
+      solutionFlow: solutionFlows.IntelligentAssistFlow,
+      solutionFlowText: solutionFlowsData.intelligentAssist,
+      demo: videos.demoVideo3,
+      techArchitecture: architectures.IntelligentAssistArchitecture,
+      benefits: "The purpose of this solution is to enhance the customer experience, making it adaptable across various industries. Specifically, it helps customers better understand the products and services an organization offers. Below are some examples of how this solution can be implemented across different industries",      
+      adoption: adoptionData.intelligentAssist
+    }
+  },
+  {
+    imageUrl: images.EmailEAR,
+    title: "Email EAR",
+    description: "Transform customer support process by automating email analysis, and providing crafted thoughtful response to incoming emails",
+    industry: "All",
+    businessFunction: "Customer Support",
+    content: {
+      description: descriptions.emailEAR,
+      solutionFlow: solutionFlows.EmailEarFlow,
+      solutionFlowText: solutionFlowsData.emailEAR,
+      demo: videos.demoVideo1,
+      techArchitecture: architectures.EmailEARArchitecture,
+      benefits: "This solution assists organizations in enhancing the customer experience for email responses. Automating responses to customer queries or integrating with applications to retrieve data or generate tickets facilitates completing the overall process without delays.  Timely and accurate responses help in increased self-service, reduced customer service inquiries, and higher customer satisfaction.  Human review of generated responses allows validation of customer feedback and enhancement of the knowledge base via feedback-driven updates.  Overall agent productivity stands to improve, as the solution can be seen as an agent assist that enables reviewing automatically generated responses and interacting with customers accordingly.  The adaptability of the solution allows it to be implemented across various verticals to address common customer pain points.",     
+      adoption: adoptionData.emailEAR
+    }
+  },
