@@ -1,11 +1,39 @@
-Uncaught TypeError: Cannot read properties of undefined (reading 'split')
-    at mapAssets (data.js:33:1)
-    at ./src/data.js (data.js:39:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/App.js (SolutionFlow.svg:31:1)
+// Your file with the mapAssets function
+
+const { images, videos, solutionFlows, architectures, benefitsImages } = require('./AssetImports');
+
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl?.split('.').pop()],
+    content: {
+      ...card.content,
+      solutionFlow: solutionFlows[card.content.solutionFlow?.split('.').pop()],
+      demo: videos[card.content.demo?.split('.').pop()],
+      techArchitecture: architectures[card.content.techArchitecture?.split('.').pop()],
+      benefitsImg: benefitsImages[card.content.benefitsImg?.split('.').pop()],
+    },
+  };
+}
+
+export const cardsData = [
+  mapAssets(IntelligentAssist),
+  mapAssets(EmailEAR),
+  mapAssets(CaseIntelligence),
+  mapAssets(SmartRecruit),
+  mapAssets(IAssureClaim),
+  mapAssets(AssistantEV),
+  mapAssets(AutoWiseCompanion),
+  mapAssets(CitizenAdvisor),
+  mapAssets(FinCompetitor),
+  mapAssets(SignatureExtraction),
+  mapAssets(AiForce),
+  mapAssets(ApiCase),
+  mapAssets(AmsSupport),
+  mapAssets(CodeGreat),
+  mapAssets(AaigApi),
+  mapAssets(ResponsibleGen),
+  mapAssets(GraphData),
+  mapAssets(PredictiveAsset),
+  // Map other card JSON files similarly
+];
