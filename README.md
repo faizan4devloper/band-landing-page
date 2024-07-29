@@ -1,3 +1,136 @@
+
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import IAssureClaim from './CardsData/IAssureClaim.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+// Import other card JSON files similarly
+
+const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits } = require('./AssetImports');
+
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow) 
+        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
+        : [],
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
+      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
+      benefits: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
+
+    },
+  };
+}
+
+
+export const cardsData = [
+  mapAssets(IntelligentAssist),
+  mapAssets(EmailEAR),
+  mapAssets(CaseIntelligence),
+  mapAssets(SmartRecruit),
+  mapAssets(IAssureClaim),
+  mapAssets(AssistantEV),
+  mapAssets(AutoWiseCompanion),
+  mapAssets(CitizenAdvisor),
+  mapAssets(FinCompetitor),
+  mapAssets(SignatureExtraction),
+  mapAssets(AiForce),
+  mapAssets(ApiCase),
+  mapAssets(AmsSupport),
+  mapAssets(CodeGreat),
+  mapAssets(AaigApi),
+  mapAssets(ResponsibleGen),
+  mapAssets(GraphData),
+  mapAssets(PredictiveAsset),
+  // Map other card JSON files similarly
+];
+
+
+
+// Images
+export const images = {
+  IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
+  IAssureClaim: require('./components/Cards/CardsImages/card9.jpg'),
+  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/dummy2.jpg'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
+  Signature: require('./components/Cards/CardsImages/card2.jpg'),
+  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
+  APICase: require('./components/Cards/CardsImages/card13.jpg'),
+  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
+  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
+  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
+  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
+  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
+  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
+  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+};
+
+// Videos
+export const videos = {
+  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
+  SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
+  IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
+  CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
+  CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
+  SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
+};
+
+// Solution Flows
+export const solutionFlows = {
+  EmailEarFlow: require('./components/Sidebar/Icons/EmailEarFlowGraph.png'),
+  IntelligentAssistFlow: require('./components/Sidebar/Icons/IntelligentAssistFlowGraph.png'),
+  CaseIntelligenceFlow: require('./components/Sidebar/Icons/CaseIntelligenceFlowGraph.png'),
+  SmartRecruitFlow: require('./components/Sidebar/Icons/SmartRecruitFlowGraph.png'),
+  IAssureClaimFlow: require('./components/Sidebar/Icons/IAssureClaimFlowGraph.png'),
+  CitizenAdvisorFlow1: require('./components/Sidebar/Icons/Slide1.png'),
+  CitizenAdvisorFlow2: require('./components/Sidebar/Icons/Slide2.png'),
+  CitizenAdvisorFlow3: require('./components/Sidebar/Icons/Slide3.png'),
+  CitizenAdvisorFlow4: require('./components/Sidebar/Icons/Slide4.png'),
+};
+
+// Technical Architectures
+export const architectures = {
+  IntelligentAssistArchitecture: require('./components/Sidebar/Icons/IntelligentAssistarchitecture.png'),
+  EmailEARArchitecture: require('./components/Sidebar/Icons/EmailEARarchitecture.png'),
+  CaseIntelligenceArchitecture: require('./components/Sidebar/Icons/CaseIntelligencearchitecture.png'),
+  SmartRecruitArchitecture: require('./components/Sidebar/Icons/SmartRecruitarchitecture.png'),
+  AssistantEvArchitecture: require('./components/Sidebar/Icons/AssistantEvachitecture.png'),
+  IAssureClaimArchitecture: require('./components/Sidebar/Icons/IAssureClaimarchitecture.png'),
+  AIForceArchitecture: require('./components/Sidebar/Icons/AIForcearchitecture.png'),
+  DescriptionDemo: require('./components/Sidebar/Icons/CitizenAdvisorDesc.png'),
+};
+
+
+export const descriptions = {
+  DescriptionDemo: require('./components/Sidebar/Icons/CitizenAdvisorDesc.png'),
+};
+
+export const solutionsBenefits = {
+  citizenBenefits: require('./components/Sidebar/Icons/CitizenAdvisorBenefits.png'),
+};
+
+
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
@@ -17,22 +150,22 @@ const MainContent = ({ activeTab, content }) => {
     return <div className={styles.mainContent}>Description not available</div>;
   }
 
-  const keywords = [
-    "extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"
-  ];
+  // const keywords = [
+  //   "extract", "Act", "Respond", "query", "complaint", "issue", "generates", "user-friendly", "questions", "concerns", "detailed response", "prioritization", "queuing", "delayed responses", "Gen AI-powered", "automating", "reading", "analysis", "thoughtful responding", "customer experience", "automates", "Gen AI-powered", "solution", "organization", "intelligent", "assist", "data capture", "manual processes", "Email EAR", "(Extract, Act and Respond)", "Unified experience"
+  // ];
 
-  const highlightKeywords = (text) => {
-    const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
-    return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
-  };
+  // const highlightKeywords = (text) => {
+  //   const regex = new RegExp(`\\b(${keywords.join("|")})\\b`, "gi");
+  //   return text.replace(regex, (matched) => `<span class="${styles.highlight}">${matched}</span>`);
+  // };
 
-  const descriptionPoints = content.description.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
+  // const descriptionPoints = content.description.split(". ").map((point, index) => (
+  //   <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  // ));
 
-  const benefitsPoints = content.benefits.split(". ").map((point, index) => (
-    <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
-  ));
+  // const benefitsPoints = content.benefits.split(". ").map((point, index) => (
+  //   <li key={index} dangerouslySetInnerHTML={{ __html: highlightKeywords(point.trim()) }}></li>
+  // ));
 
   const adoptionRows = content.adoption.map((row, index) => (
     <tr key={index}>
@@ -90,9 +223,12 @@ const MainContent = ({ activeTab, content }) => {
     benefits: (
       <div className={styles.benefits}>
         <h2>Benefits</h2>
-        <ul>
-          {benefitsPoints}
-        </ul>
+        <img
+          src={content.benefitsFlow}
+          alt="benefits Flow"
+          className={maximizedImage === content.benefitsFlow ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content.benefitsFlow)}
+        />
       </div>
     ),
     adoption: (
@@ -126,9 +262,6 @@ const MainContent = ({ activeTab, content }) => {
 
 export default MainContent;
 
-
-
-
 {
   "imageUrl": "images.CitizenAdvisor",
   "title": "Citizen Advisor",
@@ -137,221 +270,10 @@ export default MainContent;
   "businessFunction": "Customer Experience",
   "content": {
     "description": "descriptions.DescriptionDemo",
-    "solutionFlow": ["solutionFlows.IntelligentAssistFlow1", "solutionFlows.IntelligentAssistFlow2", "solutionFlows.IntelligentAssistFlow3", "solutionFlows.IntelligentAssistFlow4"],
+    "solutionFlow": ["solutionFlows.CitizenAdvisorFlow1", "solutionFlows.CitizenAdvisorFlow2", "solutionFlows.CitizenAdvisorFlow3", "solutionFlows.CitizenAdvisorFlow4"],
     "demo": "videos.demoVideo5",
     "techArchitecture": "architectures.architecture5",
-    "benefits": "Adoption: - By bringing together key capabilities for developers, IT ops, QA, and admins, our solution helps organizations deliver higher-quality software faster and more efficiently. It can help developers accelerate coding projects to boost productivity. DevOps engineers can create scripts to automate deployment pipelines for faster release cycles. Quality assurance specialists can use code analysis features to review code quality and adherence to best practices. Systems administrators can deploy monitoring and notification services to effectively manage infrastructure resources.",
-    "adoption": [
-      {"industry": "Financial", "adoption": "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals."},
-      {"industry": "Education", "adoption": "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students."},
-      {"industry": "Healthcare/Insurance", "adoption": "Can assist customers in understanding various insurance products, determining health insurance eligibility, and providing personalized insurance product recommendations tailored to each customer's needs."},
-      {"industry": "HR", "adoption": "Can address employee inquiries regarding benefits, time off policies, training opportunities, and other related topics. This allows the company to provide 24/7 employee support and respond to questions in a timely manner."},
-      {"industry": "Travel and Hospitality", "adoption": "The virtual assistant can recommend activities, respond to common travel questions, and otherwise assist with trip planning to improve the traveler's experience and convenience."},
-      {"industry": "Retail", "adoption": "This solution could provide personalized recommendations and comparisons to help customers find the products best suited to their needs, answer common questions about product features and specifications."}
-    ]
-  }
-}
-
-
-
-
-const images = {
-  CitizenAdvisor: 'path/to/citizenAdvisorImage.jpg',
-  IntelligentAssistFlow1: 'path/to/intelligentAssistFlow1.jpg',
-  IntelligentAssistFlow2: 'path/to/intelligentAssistFlow2.jpg',
-  IntelligentAssistFlow3: 'path/to/intelligentAssistFlow3.jpg',
-  IntelligentAssistFlow4: 'path/to/intelligentAssistFlow4.jpg',
-  // Add other images similarly
-};
-
-const videos = {
-  demoVideo5: 'path/to/demoVideo5.mp4',
-  // Add other videos similarly
-};
-
-const solutionFlows = {
-  IntelligentAssistFlow1: 'path/to/intelligentAssistFlow1.jpg',
-  IntelligentAssistFlow2: 'path/to/intelligentAssistFlow2.jpg',
-  IntelligentAssistFlow3: 'path/to/intelligentAssistFlow3.jpg',
-  IntelligentAssistFlow4: 'path/to/intelligentAssistFlow4.jpg',
-  // Add other solution flows similarly
-};
-
-const architectures = {
-  architecture5: 'path/to/architecture5.jpg',
-  // Add other architectures similarly
-};
-
-const descriptions = {
-  DescriptionDemo: 'path/to/descriptionDemo.jpg',
-  // Add other descriptions similarly
-};
-
-module.exports = { images, videos, solutionFlows, architectures, descriptions };
-
-
-
-
-function mapAssets(card) {
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
-    content: {
-      ...card.content,
-      solutionFlow: card.content.solutionFlow ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) : [],
-      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
-      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
-      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
-    },
-  };
-}
-
-export const cardsData = [
-  mapAssets(IntelligentAssist),
-  mapAssets(EmailEAR),
-  mapAssets(CaseIntelligence),
-  mapAssets(SmartRecruit),
-  mapAssets(IAssureClaim),
-  mapAssets(AssistantEV),
-  mapAssets(AutoWiseCompanion),
-  mapAssets(CitizenAdvisor),
-  mapAssets(FinCompetitor),
-  mapAssets(SignatureExtraction),
-  mapAssets(AiForce),
-  mapAssets(ApiCase),
-  mapAssets(AmsSupport),
-  mapAssets(CodeGreat),
-  mapAssets(AaigApi),
-  mapAssets(ResponsibleGen),
-  mapAssets(GraphData),
-  mapAssets(PredictiveAsset),
-  // Map other card JSON files similarly
-];
-
-
-.mainContent {
-  /* your existing styles */
-}
-
-.description {
-  /* your existing styles */
-}
-
-.solution {
-  /* your existing styles */
-}
-
-.demo {
-  /* your existing styles */
-}
-
-.architecture {
-  /* your existing styles */
-}
-
-.benefits {
-  /* your existing styles */
-}
-
-.adoption {
-  /* your existing styles */
-}
-
-.highlight {
-  background-color: yellow; /* or any highlight color */
-}
-
-.maximized {
-  width: 100%;
-  height: auto;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-
-.closeIcon {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  cursor: pointer;
-  color: white;
-  font-size: 24px;
-  z-index: 1001;
-}
-
-
-
-
-ERROR
-card.content.solutionFlow.split is not a function
-TypeError: card.content.solutionFlow.split is not a function
-    at mapAssets (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3658:89)
-    at ./src/data.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3665:519)
-    at options.factory (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86476:31)
-    at __webpack_require__ (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:85897:32)
-    at fn (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86134:21)
-    at ./src/components/Sidebar/SideBarPage.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3354:63)
-    at options.factory (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86476:31)
-    at __webpack_require__ (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:85897:32)
-    at fn (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86134:21)
-    at ./src/App.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:622:89)
-
-
-
-
-
-
-
-function mapAssets(card) {
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
-    content: {
-      ...card.content,
-      solutionFlow: Array.isArray(card.content.solutionFlow) 
-        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
-        : [],
-      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
-      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
-      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
-    },
-  };
-}
-
-
-
-
-
-
-
-
-{
-  "imageUrl": "images.CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": "descriptions.DescriptionDemo",
-    "solutionFlow": ["solutionFlows.IntelligentAssistFlow1", "solutionFlows.IntelligentAssistFlow2", "solutionFlows.IntelligentAssistFlow3", "solutionFlows.IntelligentAssistFlow4"],
-    "demo": "videos.demoVideo5",
-    "techArchitecture": "architectures.architecture5",
-    "benefits": "Adoption: - By bringing together key capabilities for developers, IT ops, QA, and admins, our solution helps organizations deliver higher-quality software faster and more efficiently. It can help developers accelerate coding projects to boost productivity. DevOps engineers can create scripts to automate deployment pipelines for faster release cycles. Quality assurance specialists can use code analysis features to review code quality and adherence to best practices. Systems administrators can deploy monitoring and notification services to effectively manage infrastructure resources.",
+    "benefits": "benefits.citizenBenefits",
     "adoption": [
       {"industry": "Financial", "adoption": "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals."},
       {"industry": "Education", "adoption": "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students."},
