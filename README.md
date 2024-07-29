@@ -293,3 +293,20 @@ export const cardsData = [
   font-size: 24px;
   z-index: 1001;
 }
+
+
+
+
+ERROR
+card.content.solutionFlow.split is not a function
+TypeError: card.content.solutionFlow.split is not a function
+    at mapAssets (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3658:89)
+    at ./src/data.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3665:519)
+    at options.factory (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86476:31)
+    at __webpack_require__ (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:85897:32)
+    at fn (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86134:21)
+    at ./src/components/Sidebar/SideBarPage.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3354:63)
+    at options.factory (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86476:31)
+    at __webpack_require__ (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:85897:32)
+    at fn (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:86134:21)
+    at ./src/App.js (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:622:89)
