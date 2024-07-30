@@ -1,3 +1,4 @@
+
 .mainContent {
   display: flex;
   flex-direction: column;
@@ -100,57 +101,7 @@
   margin-bottom: 50px;
 }
 
-.benefits p,
-.description li {
-  margin: 0;
-  font-size: 12px;
-}
 
-.benefits h2,
-.description h2 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #5f1ec1;
-  margin-bottom: 10px;
-}
-
-.adoptionTable {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
-
-.adoptionTable th,
-.adoptionTable td {
-  border: 1px solid #ddd;
-  font-size: 12px;
-  padding: 10px;
-  text-align: left;
-  vertical-align: top;
-}
-
-.adoptionTable th {
-  background-color: #5f1ec1;
-  color: #fff;
-  text-transform: capitalize;
-  letter-spacing: 1px;
-  font-weight: bold;
-}
-
-.adoptionTable tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.adoptionTable tr:hover {
-  background-color: #f1f1f1;
-}
-
-.adoptionTable td:first-child {
-  font-weight: bold;
-  color: #5f1ec1;
-}
 
 .highlight {
   font-style: italic;
@@ -165,11 +116,9 @@
 .customThumbs {
   display: flex;
   flex-direction: column;
-  margin-right: 20px; /* Increased margin for better spacing */
 }
 
 .customThumbContainer {
-  margin-bottom: 10px; /* Increased margin for better spacing */
   cursor: pointer;
 }
 
