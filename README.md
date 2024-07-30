@@ -1,4 +1,20 @@
-
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow) 
+        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
+        : [],
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
+      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
+      benefitsFlow: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
+      adoptionFlow: card.content.adoption ? adoption[card.content.adoption.split('.').pop()] : null, // Corrected here
+    },
+  };
+}
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
