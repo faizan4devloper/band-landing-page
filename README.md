@@ -4,20 +4,37 @@ function mapAssets(card) {
     imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
     content: {
       ...card.content,
-      solutionFlow: Array.isArray(card.content.solutionFlow) 
-        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()])
         : [],
       demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
-      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
-      descriptionFlow: Array.isArray(card.content.description) 
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => architectures[arch.split('.').pop()])
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
         ? card.content.description.map(desc => descriptions[desc.split('.').pop()])
-        : card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
-      benefitsFlow: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
-      adoptionFlow: typeof card.content.adoption === 'string' ? adoption[card.content.adoption.split('.').pop()] : null,
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => solutionsBenefits[benefit.split('.').pop()])
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => adoption[adopt.split('.').pop()])
+        : [],
     },
   };
 }
 
+Uncaught TypeError: adopt.split is not a function
+    at bundle.js:sourcemap:3563:110
+    at Array.map (<anonymous>)
+    at mapAssets (bundle.js:sourcemap:3563:82)
+    at ./src/data.js (bundle.js:sourcemap:3567:20)
+    at options.factory (bundle.js:sourcemap:86459:31)
+    at __webpack_require__ (bundle.js:sourcemap:85880:32)
+    at fn (bundle.js:sourcemap:86117:21)
+    at ./src/components/Sidebar/SideBarPage.js (bundle.js:sourcemap:3254:63)
+    at options.factory (bundle.js:sourcemap:86459:31)
+    at __webpack_require__ (bundle.js:sourcemap:85880:32)
 
 function mapAssets(card) {
   return {
