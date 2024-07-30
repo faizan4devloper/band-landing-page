@@ -266,7 +266,4 @@ export default MainContent;
   font-style: italic;
   color: #5f1ec1;
   font-weight: bold;
-}
-
-
-
+}i want the carousel thumb left side of the caousel and the the carousel thum in blocks
