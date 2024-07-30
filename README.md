@@ -30,11 +30,9 @@ const MainContent = ({ activeTab, content }) => {
     ),
     solutionFlow: (
       <div className={styles.solution}>
-        <Carousel
-          showArrows={false}
-          showIndicators={false}
-          renderThumbs={() =>
-            content.solutionFlow.map((image, index) => (
+        <div className={styles.carouselContainer}>
+          <div className={styles.customThumbs}>
+            {content.solutionFlow.map((image, index) => (
               <div
                 key={index}
                 className={`${styles.customThumbContainer} ${maximizedImage === image ? styles.selected : ""}`}
@@ -42,21 +40,21 @@ const MainContent = ({ activeTab, content }) => {
               >
                 <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
               </div>
-            ))
-          }
-          className={styles.customCarousel}
-        >
-          {content.solutionFlow.map((image, index) => (
-            <div key={index}>
-              <img
-                src={image}
-                alt={`Solution Flow ${index + 1}`}
-                className={maximizedImage === image ? styles.maximized : ""}
-                onClick={() => toggleMaximize(image)}
-              />
-            </div>
-          ))}
-        </Carousel>
+            ))}
+          </div>
+          <Carousel showArrows={false} showIndicators={false} className={styles.customCarousel}>
+            {content.solutionFlow.map((image, index) => (
+              <div key={index}>
+                <img
+                  src={image}
+                  alt={`Solution Flow ${index + 1}`}
+                  className={maximizedImage === image ? styles.maximized : ""}
+                  onClick={() => toggleMaximize(image)}
+                />
+              </div>
+            ))}
+          </Carousel>
+        </div>
       </div>
     ),
     demo: (
@@ -110,6 +108,9 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
+
+
+
 
 .mainContent {
   display: flex;
@@ -271,15 +272,24 @@ export default MainContent;
   font-weight: bold;
 }
 
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+}
+
 .customThumbContainer {
-  display: inline-block;
-  margin: 0 5px;
+  margin-bottom: 5px;
   cursor: pointer;
 }
 
 .customThumb {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   object-fit: cover;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
