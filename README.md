@@ -20,7 +20,6 @@ const MainContent = ({ activeTab, content }) => {
   const contentMap = {
     description: (
       <div className={styles.description}>
-        <h2>Description</h2>
         <img
           src={content.descriptionFlow}
           alt="description Flow"
@@ -31,37 +30,30 @@ const MainContent = ({ activeTab, content }) => {
     ),
     solutionFlow: (
       <div className={styles.solution}>
-        <h2>Solution Flow</h2>
-        <div className={styles.customCarousel}>
-          <Carousel
-            showArrows={false}
-            showIndicators={false}
-            showThumbs={true}
-            thumbWidth={100} // Optional: Adjust thumbnail width
-          >
-            {content.solutionFlow.map((image, index) => (
-              <div key={index}>
-                <img
-                  src={image}
-                  alt={`Solution Flow ${index + 1}`}
-                  className={maximizedImage === image ? styles.maximized : ""}
-                  onClick={() => toggleMaximize(image)}
-                />
-              </div>
-            ))}
-          </Carousel>
-        </div>
+        <Carousel 
+        showArrows={false}
+        showIndicators={false}
+        >
+          {content.solutionFlow.map((image, index) => (
+            <div key={index}>
+              <img
+                src={image}
+                alt={`Solution Flow ${index + 1}`}
+                className={maximizedImage === image ? styles.maximized : ""}
+                onClick={() => toggleMaximize(image)}
+              />
+            </div>
+          ))}
+        </Carousel>
       </div>
     ),
     demo: (
       <div className={styles.demo}>
-        <h2>Demo</h2>
         <Video src={content.demo} />
       </div>
     ),
     techArchitecture: (
       <div className={styles.architecture}>
-        <h2>Technical Architecture</h2>
         <img
           src={content.techArchitecture}
           alt="Technical Architecture"
@@ -72,7 +64,6 @@ const MainContent = ({ activeTab, content }) => {
     ),
     benefits: (
       <div className={styles.benefits}>
-        <h2>Benefits</h2>
         <img
           src={content.benefitsFlow}
           alt="Benefits Flow"
@@ -83,7 +74,6 @@ const MainContent = ({ activeTab, content }) => {
     ),
     adoption: (
       <div className={styles.adoption}>
-        <h2>Solution Adoption</h2>
         <img
           src={content.adoptionFlow}
           alt="Adoption Flow"
@@ -107,7 +97,7 @@ const MainContent = ({ activeTab, content }) => {
   );
 };
 
-export default MainContent;
+export default MainContent
 
 
 
@@ -115,39 +105,194 @@ export default MainContent;
 
 
 
-/* Wrapper for the carousel and thumbnails */
-.custom-carousel .carousel .slider-wrapper {
-  display: flex;
-  flex-direction: row-reverse; /* This will place the main image on the right and thumbnails on the left */
-}
-
-.custom-carousel .carousel .thumbs-wrapper {
-  width: 120px; /* Adjust the width as needed */
-  order: -1; /* This will place the thumbnails before the main image */
-  background-color: #f9f9f9; /* Background color for thumbnail area */
-}
-
-.custom-carousel .carousel .thumbs {
+.mainContent {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center the thumbnails */
-}
-
-.custom-carousel .carousel .thumb {
-  margin-bottom: 10px; /* Space between thumbnails */
-  display: block;
-  width: 100%; /* Make thumbnails take full width */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add shadow to thumbnails */
-  border-radius: 5px; /* Optional: Rounded corners */
-}
-
-.custom-carousel .carousel .thumb.selected,
-.custom-carousel .carousel .thumb:hover {
-  border: 2px solid #5f1ec1; /* Border color for selected and hovered thumbnails */
-}
-
-.custom-carousel .carousel .thumb img {
   width: 100%;
-  display: block;
-  border-radius: 5px; /* Optional: Rounded corners for images */
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
 }
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track background color */
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1; /* Thumb color */
+  border-radius: 20px; /* Rounded corners */
+  border: 3px solid #f1f1f1; /* Border around the thumb */
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299; /* Thumb color on hover */
+}
+
+/* Other existing styles for .mainContent */
+/*.mainContent h2 {*/
+/*  font-size: 20px;*/
+/*  font-weight: 600;*/
+/*  color: #5f1ec1;*/
+/*  margin-bottom: 10px;*/
+/*  margin-top: 0;*/
+/*  border-bottom: 2px solid rgba(95, 30, 193, 0.8);*/
+/*  padding-bottom: 5px;*/
+/*}*/
+
+.mainContent ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.mainContent ul li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.maximized {
+  max-width: 80%;
+  max-height: 80%;
+  margin:auto;
+  /*margin-top: 20px;*/
+  display: block;
+}
+
+.closeIcon{
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  font-size: 25px;
+  color:#ffffff;
+  cursor: pointer;
+  z-index: 1001;
+}
+.closeIcon:hover{
+  color: #808080;
+}
+
+.overlay {
+  position: fixed;
+  top: 25px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.benefits, .description, .demo, .architecture, .adoption, .solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.benefits p, .description li {
+  margin: 0;
+  font-size: 12px;
+}
+
+.benefits h2, .description h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5f1ec1;
+  margin-bottom: 10px;
+}
+
+.adoptionTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.adoptionTable th, .adoptionTable td {
+  border: 1px solid #ddd;
+  font-size: 12px;
+  padding: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.adoptionTable th {
+  background-color: #5f1ec1;
+  color: #fff;
+  text-transform: capitalize;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.adoptionTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.adoptionTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.adoptionTable td:first-child {
+  font-weight: bold;
+  color: #5f1ec1;
+}
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+
+.carousel .thumbs-wrapper {
+  position: absolute;
+  left: 0;
+  width: 100px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+.carousel .thumb {
+  width: 80px;
+  height: 80px;
+  margin: 10px 0;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.carousel .thumb.selected {
+  border-color: #5f1ec1 !important;
+}
+
