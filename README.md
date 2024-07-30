@@ -1,3 +1,131 @@
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()])
+        : [],
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => architectures[arch.split('.').pop()])
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => descriptions[desc.split('.').pop()])
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => solutionsBenefits[benefit.split('.').pop()])
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => adoption[adopt.split('.').pop()])
+        : [],
+    },
+  };
+}
+
+
+
+
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <Carousel
+        showArrows={true}
+        showIndicators={true}
+        showThumbs={true}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className={maximizedImage === image ? styles.maximized : ""}
+              onClick={() => toggleMaximize(image)}
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderImageOrCarousel = (images) => (
+    images.length > 1 ? renderCarousel(images) : (
+      <img
+        src={images[0]}
+        alt="Single Image"
+        className={maximizedImage === images[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(images[0])}
+      />
+    )
+  );
+
+  if (!content || !content.description) {
+    return <div className={styles.mainContent}>Description not available</div>;
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.descriptionFlow)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefitsFlow)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoptionFlow)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+
+
+
 
 // Images
 export const images = {
@@ -42,13 +170,8 @@ export const solutionFlows = {
   CitizenAdvisorFlow2: require('./components/Sidebar/Icons/Slide2.png'),
   CitizenAdvisorFlow3: require('./components/Sidebar/Icons/Slide3.png'),
   CitizenAdvisorFlow4: require('./components/Sidebar/Icons/Slide4.png'),
-  
   SmartRecruitSolutionFlow1: require('./components/Sidebar/Icons/SmartRecruitSolutionFlow1.png'),
   SmartRecruitSolutionFlow2: require('./components/Sidebar/Icons/SmartRecruitSolutionFlow2.png'),
-  
-  
-  
-  
 };
 
 // Technical Architectures
@@ -61,19 +184,21 @@ export const architectures = {
   IAssureClaimArchitecture: require('./components/Sidebar/Icons/IAssureClaimarchitecture.png'),
   AIForceArchitecture: require('./components/Sidebar/Icons/AIForcearchitecture.png'),
   CitizenAdvisorArchitecture: require('./components/Sidebar/Icons/Slide7.png'),
-  // DescriptionDemo: require('./components/Sidebar/Icons/CitizenAdvisorDesc.png'),
 };
 
-
+// Descriptions
 export const descriptions = {
   citizenDescription: require('./components/Sidebar/Icons/CitizenAdvisorDesc.png'),
   smartRecruitDescription: require('./components/Sidebar/Icons/SmartRecruitDescription1.png'),
 };
 
+// Solutions Benefits
 export const solutionsBenefits = {
   citizenBenefits: require('./components/Sidebar/Icons/CitizenAdvisorBenefits.png'),
   smartRecruitBenefits: require('./components/Sidebar/Icons/SmartRecruitBenefits.png'),
 };
+
+// Adoption
 export const adoption = {
   citizenAdoption: require('./components/Sidebar/Icons/CitizenAdoption.png'),
   smartRecruitAdoption: require('./components/Sidebar/Icons/SmartRecruitAdoption.png'),
@@ -81,199 +206,24 @@ export const adoption = {
 
 
 
-import IntelligentAssist from './CardsData/IntelligentAssist.json';
-import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
-
-
-const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
-
-function mapAssets(card) {
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
-    content: {
-      ...card.content,
-      solutionFlow: Array.isArray(card.content.solutionFlow) 
-        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
-        : [],
-      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
-      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
-      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
-      benefitsFlow: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
-      adoptionFlow: typeof card.content.adoption === 'string' ? adoption[card.content.adoption.split('.').pop()] : null,
-    },
-  };
-}
-
-export const cardsData = [
-  mapAssets(IntelligentAssist),
-  mapAssets(EmailEAR),
-  mapAssets(CaseIntelligence),
-  mapAssets(SmartRecruit),
-  mapAssets(IAssureClaim),
-  mapAssets(AssistantEV),
-  mapAssets(AutoWiseCompanion),
-  mapAssets(CitizenAdvisor),
-  mapAssets(FinCompetitor),
-  mapAssets(SignatureExtraction),
-  mapAssets(AiForce),
-  mapAssets(ApiCase),
-  mapAssets(AmsSupport),
-  mapAssets(CodeGreat),
-  mapAssets(AaigApi),
-  mapAssets(ResponsibleGen),
-  mapAssets(GraphData),
-  mapAssets(PredictiveAsset),
-];
-
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
-  };
-
-  if (!content || !content.description) {
-    return <div className={styles.mainContent}>Description not available</div>;
-  }
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        <img
-          src={content.descriptionFlow}
-          alt="Description Flow"
-          className={maximizedImage === content.descriptionFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.descriptionFlow)}
-        />
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        <div className={styles.carouselContainer}>
-          <div className={styles.customThumbs}>
-            {content.solutionFlow.map((image, index) => (
-              <div
-                key={index}
-                className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-                onClick={() => setCurrentSlide(index)}
-              >
-                <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-              </div>
-            ))}
-          </div>
-          <Carousel
-            showArrows={false}
-            showIndicators={false}
-            showThumbs={false}
-            showStatus={false}
-            selectedItem={currentSlide}
-            onChange={(index) => setCurrentSlide(index)}
-            className={styles.customCarousel}
-          >
-            {content.solutionFlow.map((image, index) => (
-              <div key={index}>
-                <img
-                  src={image}
-                  alt={`Solution Flow ${index + 1}`}
-                  className={maximizedImage === image ? styles.maximized : ""}
-                  onClick={() => toggleMaximize(image)}
-                />
-              </div>
-            ))}
-          </Carousel>
-        </div>
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        <img
-          src={content.techArchitecture}
-          alt="Technical Architecture"
-          className={maximizedImage === content.techArchitecture ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.techArchitecture)}
-        />
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        <img
-          src={content.benefitsFlow}
-          alt="Benefits Flow"
-          className={maximizedImage === content.benefitsFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.benefitsFlow)}
-        />
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        <img
-          src={content.adoptionFlow}
-          alt="Adoption Flow"
-          className={maximizedImage === content.adoptionFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.adoptionFlow)}
-        />
-      </div>
-    ),
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
-
 {
-  "imageUrl": "images.CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
+  "imageUrl": "SmartRecruit",
+  "title": "Smart Recruit",
+  "description": "A powerful tool for streamlining the recruitment process using AI and automation.",
+  "industry": "HR",
+  "businessFunction": "Recruitment",
   "content": {
-    "description": "descriptions.citizenDescription",
-    "solutionFlow": ["solutionFlows.CitizenAdvisorFlow1", "solutionFlows.CitizenAdvisorFlow2", "solutionFlows.CitizenAdvisorFlow3", "solutionFlows.CitizenAdvisorFlow4"],
-    "demo": "videos.demoVideo5",
-    "techArchitecture": "architectures.CitizenAdvisorArchitecture",
-    "benefits": "solutionsBenefits.citizenBenefits",
-    "adoption": "adoption.citizenAdoption"
+    "description": [
+      "smartRecruitDescription1",
+      "smartRecruitDescription2"
+    ],
+    "solutionFlow": [
+      "SmartRecruitSolutionFlow1",
+      "SmartRecruitSolutionFlow2"
+    ],
+    "demo": "SmartRecruitDemo",
+    "techArchitecture": "SmartRecruitArchitecture",
+    "benefits": "smartRecruitBenefits",
+    "adoption": "smartRecruitAdoption"
   }
 }
