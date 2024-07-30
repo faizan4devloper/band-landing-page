@@ -1,160 +1,365 @@
-function mapAssets(card) {
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
-    content: {
-      ...card.content,
-      solutionFlow: Array.isArray(card.content.solutionFlow) 
-        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
-        : [],
-      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
-      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
-      descriptionFlow: card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
-      benefitsFlow: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
-    },
-  };
-}
-
-
-
-
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
+import { BeatLoader } from "react-spinners"; // Import loaders
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null); // Set to null initially
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const cardsContainerRef = useRef(null);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index); // Handle null state
   };
 
-  if (!content || !content.description) {
-    return <div className={styles.mainContent}>Description not available</div>;
-  }
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
 
-  const adoptionRows = content.adoption.map((row, index) => (
-    <tr key={index}>
-      <td>{row.industry}</td>
-      <td>{row.adoption}</td>
-    </tr>
-  ));
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        <h2>Description</h2>
-        <img
-          src={content.descriptionFlow}
-          alt="Description Flow"
-          className={maximizedImage === content.descriptionFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.descriptionFlow)}
-        />
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        <h2>Solution Flow</h2>
-        <Carousel>
-          {content.solutionFlow.map((image, index) => (
-            <div key={index}>
-              <img
-                src={image}
-                alt={`Solution Flow ${index + 1}`}
-                className={maximizedImage === image ? styles.maximized : ""}
-                onClick={() => toggleMaximize(image)}
-              />
-            </div>
-          ))}
-        </Carousel>
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <h2>Demo</h2>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        <h2>Technical Architecture</h2>
-        <img
-          src={content.techArchitecture}
-          alt="Technical Architecture"
-          className={maximizedImage === content.techArchitecture ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.techArchitecture)}
-        />
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        <h2>Benefits</h2>
-        <img
-          src={content.benefitsFlow}
-          alt="Benefits Flow"
-          className={maximizedImage === content.benefitsFlow ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content.benefitsFlow)}
-        />
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        <h2>Solution Adoption</h2>
-        <table className={styles.adoptionTable}>
-          <thead>
-            <tr>
-              <th>Industry</th>
-              <th>Solution Adoption</th>
-            </tr>
-          </thead>
-          <tbody>{adoptionRows}</tbody>
-        </table>
-      </div>
-    ),
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  useEffect(() => {
+    // Simulate a delay to show the loader
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
   };
 
   return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+    <div className={styles.app}>
+      {loading ? ( // Show loader while loading is true
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
         </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
 
-export default MainContent;
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
 
+export default App;
 
+::-webkit-scrollbar {
+  width: 4px;
+}
 
+/*::-webkit-scrollbar-track {*/
+/*  background: #ddd;*/
+/*} */
 
-{
-  "imageUrl": "images.CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": "descriptions.DescriptionDemo",
-    "solutionFlow": ["solutionFlows.CitizenAdvisorFlow1", "solutionFlows.CitizenAdvisorFlow2", "solutionFlows.CitizenAdvisorFlow3", "solutionFlows.CitizenAdvisorFlow4"],
-    "demo": "videos.demoVideo5",
-    "techArchitecture": "architectures.architecture5",
-    "benefits": "solutionsBenefits.citizenBenefits",
-    "adoption": [
-      {"industry": "Financial", "adoption": "The solution could explain complex financial products and services to customers in straightforward language. Customers could receive personalized product recommendations based on their financial situations and goals."},
-      {"industry": "Education", "adoption": "Can serve as virtual tutors or teaching assistants, answering students' questions, providing feedback, and adapting instruction to each learner's level of understanding. This enables more personalized and effective education for students."},
-      {"industry": "Healthcare/Insurance", "adoption": "Can assist customers in understanding various insurance products, determining health insurance eligibility, and providing personalized insurance product recommendations tailored to each customer's needs."},
-      {"industry": "HR", "adoption": "Can address employee inquiries regarding benefits, time off policies, training opportunities, and other related topics. This allows the company to provide 24/7 employee support and respond to questions in a timely manner."},
-      {"industry": "Travel and Hospitality", "adoption": "The virtual assistant can recommend activities, respond to common travel questions, and otherwise assist with trip planning to improve the traveler's experience and convenience."},
-      {"industry": "Retail", "adoption": "This solution could provide personalized recommendations and comparisons to help customers find the products best suited to their needs, answer common questions about product features and specifications."}
-    ]
+::-webkit-scrollbar-thumb {
+  background: #5f1ec1; 
+  border-radius: 10px;
+}
+
+/*::-webkit-scrollbar-thumb:hover {*/
+/*  background: #999; */
+/*}*/
+html, body {
+  font-family: "Poppins", sans-serif;
+  
+}
+
+.app {
+  width: 1100px;
+  margin: 0 auto;
+  /* height should be flexible based on content */
+  /*overflow-y: none;*/
+}
+
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  
+}
+
+.arrow {
+  cursor: pointer;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
+  transition: transform 0.5s ease, background 0.5s ease;
+}
+
+.arrow:hover {
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
+}
+
+.leftArrow {
+  left: -25px;
+  top: 90px;
+}
+
+.rightArrow {
+  right: -25px;
+  top: 90px;
+}
+
+@media screen and (max-width: 1100px) {
+  .app {
+    padding: 0 10px;
   }
 }
 
+@media screen and (max-width: 768px) {
+  .app {
+    max-width: 100%;
+  }
+}
+
+.viewAllContainer {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-right: 112px;
+}
+
+.solutionHead {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  margin-left: 118px;
+}
+
+.viewAllButton {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 7px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.viewAllButton:hover {
+  transform: translateY(-5px);
+  color: #5f1ec1;
+  background-color: rgba(13, 85, 198, 0.1);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.viewAllButton:hover .icon {
+  transform: translateX(5px);
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 21px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.scrollDownButton:hover, .scrollUpButton:hover {
+  background-color: rgba(13, 85, 198, 1);
+}
+
+/* Add this to your existing styles */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Full height */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  z-index: 1000; /* Make sure loader appears above other content */
+}
