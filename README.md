@@ -8,6 +8,7 @@ import Video from "./Video";
 
 const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const toggleMaximize = (imageSrc) => {
     setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
@@ -35,14 +36,21 @@ const MainContent = ({ activeTab, content }) => {
             {content.solutionFlow.map((image, index) => (
               <div
                 key={index}
-                className={`${styles.customThumbContainer} ${maximizedImage === image ? styles.selected : ""}`}
-                onClick={() => toggleMaximize(image)}
+                className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+                onClick={() => setCurrentSlide(index)}
               >
                 <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
               </div>
             ))}
           </div>
-          <Carousel showArrows={false} showIndicators={false} className={styles.customCarousel}>
+          <Carousel
+            showArrows={false}
+            showIndicators={false}
+            showThumbs={false}
+            selectedItem={currentSlide}
+            onChange={(index) => setCurrentSlide(index)}
+            className={styles.customCarousel}
+          >
             {content.solutionFlow.map((image, index) => (
               <div key={index}>
                 <img
@@ -108,9 +116,6 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
-
-
-
 
 .mainContent {
   display: flex;
