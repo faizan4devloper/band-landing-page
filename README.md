@@ -16,21 +16,10 @@ const MainContent = ({ activeTab, content }) => {
 
   const renderCarousel = (images) => (
     <div className={styles.carouselContainer}>
-      <div className={styles.customThumbs}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-            onClick={() => setCurrentSlide(index)}
-          >
-            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-          </div>
-        ))}
-      </div>
       <Carousel
-        showArrows={false}
-        showIndicators={false}
-        showThumbs={false}
+        showArrows={true}
+        showIndicators={true}
+        showThumbs={true}
         selectedItem={currentSlide}
         onChange={(index) => setCurrentSlide(index)}
         className={styles.customCarousel}
