@@ -1,14 +1,22 @@
-Uncaught TypeError: adopt.split is not a function
-    at data.js:43:1
-    at Array.map (<anonymous>)
-    at mapAssets (data.js:43:1)
-    at ./src/data.js (data.js:49:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow) 
+        ? card.content.solutionFlow.map(flow => solutionFlows[flow.split('.').pop()]) 
+        : [],
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: card.content.techArchitecture ? architectures[card.content.techArchitecture.split('.').pop()] : null,
+      descriptionFlow: Array.isArray(card.content.description) 
+        ? card.content.description.map(desc => descriptions[desc.split('.').pop()])
+        : card.content.description ? descriptions[card.content.description.split('.').pop()] : null,
+      benefitsFlow: card.content.benefits ? solutionsBenefits[card.content.benefits.split('.').pop()] : null,
+      adoptionFlow: typeof card.content.adoption === 'string' ? adoption[card.content.adoption.split('.').pop()] : null,
+    },
+  };
+}
 
 
 function mapAssets(card) {
