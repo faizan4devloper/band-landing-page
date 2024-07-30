@@ -35,13 +35,13 @@ const MainContent = ({ activeTab, content }) => {
           showIndicators={false}
           renderThumbs={() =>
             content.solutionFlow.map((image, index) => (
-              <img
+              <div
                 key={index}
-                src={image}
-                alt={`Thumbnail ${index + 1}`}
-                className={`${styles.customThumb} ${maximizedImage === image ? styles.selected : ""}`}
+                className={`${styles.customThumbContainer} ${maximizedImage === image ? styles.selected : ""}`}
                 onClick={() => toggleMaximize(image)}
-              />
+              >
+                <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+              </div>
             ))
           }
           className={styles.customCarousel}
@@ -111,49 +111,6 @@ const MainContent = ({ activeTab, content }) => {
 
 export default MainContent;
 
-
-/* Add specificity and !important to ensure styles are applied */
-.customCarousel .carousel .thumbs-wrapper {
-  position: absolute !important;
-  left: 0 !important;
-  top: 0 !important;
-  bottom: 0 !important;
-  width: 150px !important;
-  background-color: #fff !important;
-  border-right: 1px solid #ddd !important;
-  overflow-y: auto !important;
-}
-
-.customCarousel .carousel .thumbs {
-  display: block !important;
-}
-
-.customCarousel .carousel .thumbs li {
-  display: block !important;
-  width: 100% !important;
-  margin-bottom: 10px !important;
-  padding: 5px !important;
-  cursor: pointer !important;
-}
-
-.customCarousel .carousel .thumbs img {
-  width: 100% !important;
-  height: auto !important;
-  display: block !important;
-  border-radius: 4px !important;
-  transition: transform 0.3s ease !important;
-}
-
-.customCarousel .carousel .thumbs .selected img {
-  transform: scale(1.05) !important;
-  border: 2px solid #5f1ec1 !important;
-}
-
-.customCarousel .carousel .carousel-slider {
-  margin-left: 150px !important;
-}
-
-/* Rest of your styles */
 .mainContent {
   display: flex;
   flex-direction: column;
@@ -161,26 +118,27 @@ export default MainContent;
   padding: 0px 20px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 100px);
-  overflow-y: auto;
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
 }
 
+/* Custom Scrollbar Styling */
 .mainContent::-webkit-scrollbar {
-  width: 12px;
+  width: 12px; /* Width of the scrollbar */
 }
 
 .mainContent::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f1f1; /* Track background color */
 }
 
 .mainContent::-webkit-scrollbar-thumb {
-  background-color: #5f1ec1;
-  border-radius: 20px;
-  border: 3px solid #f1f1f1;
+  background-color: #5f1ec1; /* Thumb color */
+  border-radius: 20px; /* Rounded corners */
+  border: 3px solid #f1f1f1; /* Border around the thumb */
 }
 
 .mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: #3d1299;
+  background-color: #3d1299; /* Thumb color on hover */
 }
 
 .mainContent ul {
@@ -311,4 +269,24 @@ export default MainContent;
   font-style: italic;
   color: #5f1ec1;
   font-weight: bold;
+}
+
+.customThumbContainer {
+  display: inline-block;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
 }
