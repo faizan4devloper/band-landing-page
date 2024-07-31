@@ -18,7 +18,7 @@ const Home = ({
   handleMouseEnter,
 }) => {
   const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
 
   const handleScroll = () => {
@@ -38,6 +38,10 @@ const Home = ({
     if (videoRef.current && typeof videoRef.current.play === "function") {
       if (isPlaying) {
         videoRef.current.pause();
+        setTimeout(() => {
+          videoRef.current.play();
+          setIsPlaying(true);
+        }, 2000); // Resume after 2 seconds
       } else {
         videoRef.current.play();
       }
@@ -50,6 +54,12 @@ const Home = ({
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play(); // Ensure video plays initially
+    }
   }, []);
 
   return (
