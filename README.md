@@ -6,7 +6,7 @@ import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import { Link } from "react-router-dom";
 
-import BgVideo from "./MicrosoftTeams-video.mp4";
+import BgVideo from "./BgVideos.mp4";
 
 const Home = ({
   cardsData,
@@ -88,7 +88,6 @@ const Home = ({
   );
 };
 export default Home;
-
 
 ::-webkit-scrollbar {
   width: 4px;
