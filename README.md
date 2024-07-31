@@ -1,98 +1,116 @@
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
+import React, { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import { Link } from "react-router-dom";
+import BgVideo from "./BgVideos1.mp4";
 
-const Header = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const [videoState, setVideoState] = useState("hidden");
+  const [isPlaying, setIsPlaying] = useState(true);
+  const videoRef = useRef(null);
 
-  const handleImageClick = () => {
-    navigate("/");
-  };
+  const handleScroll = () => {
+    if (videoRef.current) {
+      const videoPosition = videoRef.current.getBoundingClientRect().top;
+      const triggerPoint = window.innerHeight / 2;
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      setIsVisible(false);
-    } else {
-      // Scrolling up
-      setIsVisible(true);
+      if (videoPosition <= triggerPoint) {
+        setVideoState("big");
+      } else if (videoPosition > triggerPoint + 100) {
+        setVideoState("small");
+      }
     }
-    setLastScrollY(window.scrollY);
+  };
+
+  const togglePlayPause = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      if (isPlaying) {
+        videoElement.pause();
+      } else {
+        videoElement.play();
+      }
+      setIsPlaying(!isPlaying);
+    } else {
+      console.error("Video element is not available or not properly referenced.");
+    }
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      videoElement.play();
+    } else {
+      console.error("Video element is not available or not properly referenced on mount.");
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            style={{ cursor: "pointer" }}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-        </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
+    <>
+      <MyCarousel />
+      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
+        <video
+          className={styles.video}
+          src={BgVideo}
+          muted
+          loop
+          ref={videoRef}
+          onClick={togglePlayPause} // Allow play/pause by clicking on video
+        />
+        <button
+          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
+          onClick={togglePlayPause}
+        >
+          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+        </button>
+      </div>
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
       >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
-    </div>
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
   );
 };
 
-export default Header;
-
-
-.navbarWrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  background-color: #fff;
-  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 8px 0px;
-  z-index: 1000;
-  transition: transform 0.5s ease-in-out;
-}
-
-.navbarWrapper.hide {
-  transform: translateY(-100%);
-}
-
-.navbarWrapper.show {
-  transform: translateY(0);
-}
+export default Home;
