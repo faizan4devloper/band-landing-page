@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
@@ -18,6 +18,7 @@ const Home = ({
   handleMouseEnter,
 }) => {
   const [videoState, setVideoState] = useState("hidden");
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
   const handleScroll = () => {
@@ -33,6 +34,17 @@ const Home = ({
     }
   };
 
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -45,11 +57,14 @@ const Home = ({
         <video
           className={styles.video}
           src={BgVideo}
-          controls
           muted
-          autoPlay
           loop
+          ref={videoRef}
+          onClick={togglePlayPause} /* Allow play/pause by clicking on video */
         />
+        <button className={styles.playPauseButton} onClick={togglePlayPause}>
+          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+        </button>
       </div>
       <div
         className={styles.cardsContainer}
@@ -87,32 +102,61 @@ const Home = ({
 
 export default Home;
 
+
+
+
 .videoContainer {
   position: relative;
   display: flex;
   justify-content: center;
   margin: 20px 0;
   transition: transform 0.6s ease, width 0.6s ease, height 0.6s ease, opacity 0.6s ease;
-  opacity: 0; /* Initial state: hidden */
+  opacity: 0;
 }
 
 .videoContainer.hidden {
-  transform: translateX(-100%); /* Move off-screen to the left */
+  transform: translateX(-100%);
 }
 
 .videoContainer.small {
   transform: translateX(0) scale(0.5);
-  opacity: 1; /* Make visible */
+  opacity: 1;
 }
 
 .videoContainer.big {
   transform: translateX(0) scale(1);
-  opacity: 1; /* Make visible */
+  opacity: 1;
 }
 
 .video {
   width: 100%;
   height: auto;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 1s ease;
+  cursor: pointer; /* Indicate clickable for play/pause */
+}
+
+.playPauseButton {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.playPauseButton:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+.playPauseButton:focus {
+  outline: none;
 }
