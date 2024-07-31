@@ -89,3 +89,48 @@ const Home = ({
 };
 
 export default Home;
+
+
+
+
+.videoContainer {
+  position: fixed;
+  left: -100%; /* Start off-screen to the left */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60%;
+  height: auto;
+  transition: transform 0.6s ease, left 0.6s ease, width 0.6s ease, opacity 0.6s ease;
+  opacity: 0;
+}
+
+.videoContainer.big {
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the video */
+  width: 100%; /* Expand to full width */
+  opacity: 1;
+}
+
+.videoContainer.small {
+  left: -100%; /* Exit to the left */
+  transform: translateY(-50%) scale(0.8); /* Shrink and move up */
+  width: 60%;
+  opacity: 0;
+}
+
+.video {
+  width: 100%;
+  height: auto;
+  border-radius: 10px; /* Optional: add some border radius for smoother look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: shadow for depth */
+}
+
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping */
+}
+
+/* Other styles unchanged */
