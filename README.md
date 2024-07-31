@@ -1,3 +1,68 @@
+// S3 Configuration
+const S3_BUCKET_URL = 'https://aiml-convai.s3.amazonaws.com';
+const BASE_PATHS = {
+  citizenAdvisor: 'portal-slides/citizenadvisor',
+  smartRecruit: 'portal-slides/smart-recruit',
+};
+
+// Local Path Configuration
+const LOCAL_PATHS = {
+  images: './components/Cards/CardsImages',
+  solutionFlows: './components/Sidebar/Icons',
+};
+
+// Images
+export const images = {
+  IntelligentAss: require(`${LOCAL_PATHS.images}/card3.jpg`),
+  EmailEAR: require(`${LOCAL_PATHS.images}/card1.jpg`),
+  // Add other local images...
+  CitizenAdvisor: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/dummy2.jpg`,
+};
+
+// Videos
+export const videos = {
+  EmailEARDemo: `${S3_BUCKET_URL}/demovideos/Email-EAR_Demo_new.mp4`,
+  SignatureExtractionDemo: `${S3_BUCKET_URL}/demovideos/Sign_Verification_New.mp4`,
+  // Add other videos...
+};
+
+// Solution Flows
+export const solutionFlows = {
+  EmailEarFlow: require(`${LOCAL_PATHS.solutionFlows}/EmailEarFlowGraph.png`),
+  IntelligentAssistFlow: require(`${LOCAL_PATHS.solutionFlows}/IntelligentAssistFlowGraph.png`),
+  // Add other local solution flows...
+  CitizenAdvisorFlow1: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/solutionFlows/CitizenAdvisorFlow1.png`,
+  CitizenAdvisorFlow2: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/solutionFlows/CitizenAdvisorFlow2.png`,
+  // Add other S3 solution flows...
+};
+
+// Technical Architectures
+export const architectures = {
+  IntelligentAssistArchitecture: require(`${LOCAL_PATHS.solutionFlows}/IntelligentAssistarchitecture.png`),
+  // Add other local technical architectures...
+  CitizenAdvisorArchitecture: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/technical-architecture/CitizenAdvisorArchitecture.png`,
+};
+
+// Descriptions
+export const descriptions = {
+  citizenDescription: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/description/CitizenAdvisorDescription.png`,
+  // Add other descriptions...
+};
+
+// Solutions Benefits
+export const solutionsBenefits = {
+  citizenBenefits: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/benefits/CitizenAdvisorBenefits.png`,
+  // Add other solutions benefits...
+};
+
+// Adoption
+export const adoption = {
+  citizenAdoption: `${S3_BUCKET_URL}/${BASE_PATHS.citizenAdvisor}/industry-adoption/CitizenAdvisorAdoption.png`,
+  // Add other adoption images...
+};
+
+
+
 // Images
 export const images = {
   IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
