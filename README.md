@@ -1,136 +1,284 @@
-import React, { useState, useEffect, useRef } from "react";
+
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import IAssureClaim from './CardsData/IAssureClaim.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+
+
+const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
+
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => typeof flow === 'string' ? solutionFlows[flow.split('.').pop()] : null)
+        : (typeof card.content.solutionFlow === 'string' ? [solutionFlows[card.content.solutionFlow.split('.').pop()]] : []),
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => typeof arch === 'string' ? architectures[arch.split('.').pop()] : null)
+        : (typeof card.content.techArchitecture === 'string' ? [architectures[card.content.techArchitecture.split('.').pop()]] : []),
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => typeof desc === 'string' ? descriptions[desc.split('.').pop()] : null)
+        : (typeof card.content.description === 'string' ? [descriptions[card.content.description.split('.').pop()]] : []),
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => typeof benefit === 'string' ? solutionsBenefits[benefit.split('.').pop()] : null)
+        : (typeof card.content.benefits === 'string' ? [solutionsBenefits[card.content.benefits.split('.').pop()]] : []),
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => typeof adopt === 'string' ? adoption[adopt.split('.').pop()] : null)
+        : (typeof card.content.adoption === 'string' ? [adoption[card.content.adoption.split('.').pop()]] : []),
+    },
+  };
+}
+
+export const cardsData = [
+  mapAssets(IntelligentAssist),
+  mapAssets(EmailEAR),
+  mapAssets(CaseIntelligence),
+  mapAssets(SmartRecruit),
+  mapAssets(IAssureClaim),
+  mapAssets(AssistantEV),
+  mapAssets(AutoWiseCompanion),
+  mapAssets(CitizenAdvisor),
+  mapAssets(FinCompetitor),
+  mapAssets(SignatureExtraction),
+  mapAssets(AiForce),
+  mapAssets(ApiCase),
+  mapAssets(AmsSupport),
+  mapAssets(CodeGreat),
+  mapAssets(AaigApi),
+  mapAssets(ResponsibleGen),
+  mapAssets(GraphData),
+  mapAssets(PredictiveAsset),
+];
+
+
+// Images
+export const images = {
+  IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
+  IAssureClaim: require('./components/Cards/CardsImages/card9.jpg'),
+  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/dummy2.jpg'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
+  Signature: require('./components/Cards/CardsImages/card2.jpg'),
+  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
+  APICase: require('./components/Cards/CardsImages/card13.jpg'),
+  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
+  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
+  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
+  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
+  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
+  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
+  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+};
+
+// Videos
+export const videos = {
+  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
+  SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
+  IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
+  CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
+  CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
+  SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
+  CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Citizen_Advisor-Demo1.mp4',
+};  
+
+// Solution Flows
+export const solutionFlows = {
+  EmailEarFlow: require('./components/Sidebar/Icons/EmailEarFlowGraph.png'),
+  IntelligentAssistFlow: require('./components/Sidebar/Icons/IntelligentAssistFlowGraph.png'),
+  CaseIntelligenceFlow: require('./components/Sidebar/Icons/CaseIntelligenceFlowGraph.png'),
+  // SmartRecruitFlow: require('./components/Sidebar/Icons/SmartRecruitFlowGraph.png'),
+  IAssureClaimFlow: require('./components/Sidebar/Icons/IAssureClaimFlowGraph.png'),
+  CitizenAdvisorFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow1.png',
+  CitizenAdvisorFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow2.png',
+  CitizenAdvisorFlow3: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow3.png',
+  CitizenAdvisorFlow4: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow4.png',
+  CitizenAdvisorFlow5: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow5.png',
+  
+  SmartRecruitFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow1.png',
+  SmartRecruitFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow2.png',
+};
+
+// Technical Architectures
+export const architectures = {
+  IntelligentAssistArchitecture: require('./components/Sidebar/Icons/IntelligentAssistarchitecture.png'),
+  EmailEARArchitecture: require('./components/Sidebar/Icons/EmailEARarchitecture.png'),
+  CaseIntelligenceArchitecture: require('./components/Sidebar/Icons/CaseIntelligencearchitecture.png'),
+  SmartRecruitArchitecture: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/technical-architecture/SmartRecruitArchitecture.png',
+  AssistantEvArchitecture: require('./components/Sidebar/Icons/AssistantEvachitecture.png'),
+  IAssureClaimArchitecture: require('./components/Sidebar/Icons/IAssureClaimarchitecture.png'),
+  AIForceArchitecture: require('./components/Sidebar/Icons/AIForcearchitecture.png'),
+  CitizenAdvisorArchitecture:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/technical-architecture/CitizenAdvisorArchitecture.png',
+};
+
+// Descriptions
+export const descriptions = {
+  citizenDescription:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/description/CitizenAdvisorDescription.png',
+  smartRecruitDescription1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription1.png',
+  smartRecruitDescription2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription2.png',
+};
+
+// Solutions Benefits
+export const solutionsBenefits = {
+  citizenBenefits:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/benefits/CitizenAdvisorBenefits.png',
+  smartRecruitBenefits:'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/benefits/SmartRecruitBenefits.png',
+};
+
+// Adoption
+export const adoption = {
+  citizenAdoption:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/industry-adoption/CitizenAdvisorAdoption.png',
+  smartRecruitAdoption: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/industry-adoption/SmartRecruitAdoption.png',
+};
+
+
+
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
 
-import BgVideo from "./BgVideos.mp4";
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoSize, setVideoSize] = useState("small"); // State to manage video size
-  const videoRef = useRef(null);
-
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2; // Adjust trigger point as needed
-
-      if (videoPosition <= triggerPoint && videoPosition > 0) {
-        setVideoSize("big");
-      } else if (videoPosition <= 0) {
-        setVideoSize("small");
-      }
-    }
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
   };
 
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+          >
+            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className={maximizedImage === image ? styles.maximized : ""}
+              onClick={() => toggleMaximize(image)}
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
 
-  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  const renderImageOrCarousel = (images) => (
+    images.length > 1 ? renderCarousel(images) : (
+      <img
+        src={images[0]}
+        alt="Single Image"
+        className={maximizedImage === images[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(images[0])}
+      />
+    )
+  );
+
+  if (!content || !content.description) {
+    return <div className={styles.mainContent}>Description not available</div>;
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.descriptionFlow)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefitsFlow)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoptionFlow)}
+      </div>
+    ),
+  };
 
   return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoSize]}`} ref={videoRef}>
-        <video
-          className={styles.video}
-          src={BgVideo}
-          controls
-          muted
-          autoPlay
-          loop
-        />
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
         </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {visibleCards.map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
+      )}
+    </div>
   );
 };
 
-export default Home;
+export default MainContent;
 
-
-
-
-.videoContainer {
-  position: fixed;
-  left: -100%; /* Start off-screen to the left */
-  top: 50%;
-  transform: translateY(-50%);
-  width: 60%;
-  height: auto;
-  transition: transform 0.6s ease, left 0.6s ease, width 0.6s ease, opacity 0.6s ease;
-  opacity: 0;
+{
+  "imageUrl": "images.CitizenAdvisor",
+  "title": "Citizen Advisor",
+  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
+  "industry": "GOVT",
+  "businessFunction": "Customer Experience",
+  "content": {
+    "description": "descriptions.citizenDescription",
+    "solutionFlow": ["solutionFlows.CitizenAdvisorFlow1", "solutionFlows.CitizenAdvisorFlow2", "solutionFlows.CitizenAdvisorFlow3", "solutionFlows.CitizenAdvisorFlow4", "solutionFlows.CitizenAdvisorFlow5"],
+    "demo": "videos.CitizenAdvisorDemo",
+    "techArchitecture": "architectures.CitizenAdvisorArchitecture",
+    "benefits": "solutionsBenefits.citizenBenefits",
+    "adoption": "adoption.citizenAdoption"
+  }
 }
-
-.videoContainer.big {
-  left: 50%;
-  transform: translate(-50%, -50%); /* Center the video */
-  width: 100%; /* Expand to full width */
-  opacity: 1;
-}
-
-.videoContainer.small {
-  left: -100%; /* Exit to the left */
-  transform: translateY(-50%) scale(0.8); /* Shrink and move up */
-  width: 60%;
-  opacity: 0;
-}
-
-.video {
-  width: 100%;
-  height: auto;
-  border-radius: 10px; /* Optional: add some border radius for smoother look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: shadow for depth */
-}
-
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-}
-
-/* Other styles unchanged */
