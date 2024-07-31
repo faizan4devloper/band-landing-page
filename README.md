@@ -1,115 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
-import BgVideo from "./BgVideos1.mp4";
+Uncaught TypeError: videoRef.current.play is not a function
+    at Home.js:62:1
+    at commitHookEffectListMount (react-dom.development.js:23150:1)
+    at invokePassiveEffectMountInDEV (react-dom.development.js:25154:1)
+    at invokeEffectsInDev (react-dom.development.js:27351:1)
+    at commitDoubleInvokeEffectsInDEV (react-dom.development.js:27330:1)
+    at flushPassiveEffectsImpl (react-dom.development.js:27056:1)
+    at flushPassiveEffects (react-dom.development.js:26984:1)
+    at performSyncWorkOnRoot (react-dom.development.js:26076:1)
+    at flushSyncCallbacks (react-dom.development.js:12042:1)
+    at commitRootImpl (react-dom.development.js:26959:1)
+2react-dom.development.js:18687 The above error occurred in the <Home> component:
 
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(true);
-  const videoRef = useRef(null);
+    at Home (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1064:3)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50022:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50713:5)
+    at div
+    at MainApp (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:645:81)
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50647:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48600:5)
+    at App
 
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
-
-      if (videoPosition <= triggerPoint) {
-        setVideoState("big");
-      } else if (videoPosition > triggerPoint + 100) {
-        setVideoState("small");
-      }
-    }
-  };
-
-  const togglePlayPause = () => {
-    if (videoRef.current && typeof videoRef.current.play === "function") {
-      if (isPlaying) {
-        videoRef.current.pause();
-        setTimeout(() => {
-          videoRef.current.play();
-          setIsPlaying(true);
-        }, 2000); // Resume after 2 seconds
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    } else {
-      console.error("Video element is not available or not properly referenced.");
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play(); // Ensure video plays initially
-    }
-  }, []);
-
-  return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`} ref={videoRef}>
-        <video
-          className={styles.video}
-          src={BgVideo}
-          muted
-          loop
-          ref={videoRef}
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-        />
-        <button className={styles.playPauseButton} onClick={togglePlayPause}>
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
-};
-
-export default Home;
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries
