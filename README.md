@@ -24,7 +24,7 @@ const Home = ({
   const handleScroll = () => {
     if (videoRef.current) {
       const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2; // Adjust trigger point as needed
+      const triggerPoint = window.innerHeight / 2; 
 
       if (videoPosition <= triggerPoint) {
         setVideoSize("big");
@@ -88,6 +88,7 @@ const Home = ({
   );
 };
 export default Home;
+
 
 
 ::-webkit-scrollbar {
@@ -272,8 +273,8 @@ html, body {
 }
 .videoContainer.small {
   transform: scale(0.8); /* Small state */
-  width: 60%; /* Adjust width for small state */
-  height: auto; /* Maintain aspect ratio */
+  width: 50px; /* Adjust width for small state */
+  height: 50px; /* Maintain aspect ratio */
   }
 
 
@@ -284,8 +285,8 @@ html, body {
 }
 
 .video {
-  width: 100%;
+  width: 115%;
   height: auto;
-  border-radius: 10px; /* Optional: add some border radius for smoother look */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: shadow for depth */
+  transition: 1s ease;
 }
