@@ -5,7 +5,7 @@ import MyCarousel from "./components/Carousel/MyCarousel";
 import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import { Link } from "react-router-dom";
-import BgVideo from "./BgVideos1.mp4";
+const BgVideo = "./https://aiml-convai.s3.amazonaws.com/portal-bg-video/BgVideos.webM";
 
 const Home = ({
   cardsData,
@@ -114,51 +114,4 @@ const Home = ({
 };
 
 export default Home;
-
-
-.playPauseButton {
-  position: absolute;
-  bottom: 20px;
-  left: 20px;
-  background-color: rgba(95, 30, 193, 0.8); /* Change color for better visibility */
-  color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 12px;
-  cursor: pointer;
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px; /* Increase icon size */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Add subtle shadow */
-}
-
-.playPauseButton:hover {
-  background-color: rgba(95, 30, 193, 1);
-  transform: scale(1.2); /* Scale up on hover */
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4); /* More pronounced shadow on hover */
-}
-
-.playPauseButton:focus {
-  outline: none;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-}
-
-.playPauseButton.pulse {
-  animation: pulse 2s infinite; /* Apply pulsing animation */
-}
+Uncaught (in promise) DOMException: Failed to load because no supported source was found.
