@@ -1,4 +1,98 @@
+If you prefer not to use AWS SDK credentials or keys directly, you can use a more secure and manageable approach by leveraging AWS IAM roles and AWS Lambda functions. Here’s a high-level strategy:
 
+### **1. Use IAM Roles**
+
+**For Cloud9**:
+1. **Attach an IAM Role to Your Cloud9 Environment**:
+   - Go to the AWS Management Console.
+   - Navigate to **Cloud9**.
+   - Select your Cloud9 environment and go to **Actions** > **Modify Environment**.
+   - Attach an IAM role with permissions to access S3 (read-only access if you only need to list objects).
+
+### **2. Use a Serverless Approach**
+
+**AWS Lambda with API Gateway**:
+1. **Create a Lambda Function**:
+   - Go to the AWS Management Console.
+   - Navigate to **Lambda** and create a new function.
+   - Use the IAM role with S3 read access.
+   - Write a Lambda function to list objects in your S3 bucket.
+
+   Example Lambda function (Node.js):
+   ```javascript
+   const AWS = require('aws-sdk');
+   const s3 = new AWS.S3();
+
+   exports.handler = async (event) => {
+     const params = {
+       Bucket: 'your-bucket-name',
+       Prefix: 'aiml-convai/portal-slide/citizenadvisor/solutionFlow/'
+     };
+
+     try {
+       const data = await s3.listObjectsV2(params).promise();
+       const urls = data.Contents.map(item => `https://${params.Bucket}.s3.amazonaws.com/${item.Key}`);
+       return {
+         statusCode: 200,
+         body: JSON.stringify(urls)
+       };
+     } catch (err) {
+       return {
+         statusCode: 500,
+         body: JSON.stringify({ error: 'Error fetching S3 objects' })
+       };
+     }
+   };
+   ```
+
+2. **Deploy the Lambda Function** and **Create an API Gateway Endpoint**:
+   - Set up an API Gateway to expose the Lambda function as an HTTP endpoint.
+
+### **3. Access the API from Cloud9**
+
+**Fetch URLs from Your Frontend**:
+1. **Update Your `AssetImports.js`**:
+   - Replace the S3 SDK code with a fetch request to your Lambda API Gateway endpoint.
+
+   ```javascript
+   import React, { useEffect, useState } from 'react';
+
+   const AssetImports = () => {
+     const [assets, setAssets] = useState([]);
+
+     useEffect(() => {
+       const fetchAssets = async () => {
+         try {
+           const response = await fetch('https://your-api-id.execute-api.your-region.amazonaws.com/your-stage/endpoint');
+           const data = await response.json();
+           setAssets(data);
+         } catch (err) {
+           console.error('Error fetching assets', err);
+         }
+       };
+
+       fetchAssets();
+     }, []);
+
+     return (
+       <div>
+         {assets.map((url, index) => (
+           <img key={index} src={url} alt={`Asset ${index}`} />
+         ))}
+       </div>
+     );
+   };
+
+   export default AssetImports;
+   ```
+
+### **Benefits**
+
+- **No Hardcoding of Credentials**: Uses IAM roles for secure access.
+- **Dynamic Asset Management**: Easily update or add files to S3 without modifying your frontend code.
+- **Scalability**: Lambda functions can handle large requests and scale automatically.
+
+This approach enhances security by avoiding direct use of AWS keys and leverages serverless architecture to dynamically manage S3 assets.
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
