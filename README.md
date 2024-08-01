@@ -1,256 +1,82 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
-import BgVideo from "./BgVideos1.mp4";
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
-
-      if (videoPosition <= triggerPoint && videoState !== "big") {
-        setVideoState("big");
-        if (!isPlaying) {
-          videoRef.current.play();
-          setIsPlaying(true);
-        }
-      } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
-        setVideoState("small");
-        if (isPlaying) {
-          videoRef.current.pause();
-          setIsPlaying(false);
-        }
-      }
-    }
-  };
-
-  const togglePlayPause = () => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      if (isPlaying) {
-        videoElement.pause();
-      } else {
-        videoElement.play();
-      }
-      setIsPlaying(!isPlaying);
-    } else {
-      console.error("Video element is not available or not properly referenced.");
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
-        <video
-          className={styles.video}
-          src={BgVideo}
-          muted
-          loop
-          ref={videoRef}
-          playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-        />
-        <button
-          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
-          onClick={togglePlayPause}
-        >
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
+// Images
+export const images = {
+  IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
+  IAssureClaim: require('./components/Cards/CardsImages/card9.jpg'),
+  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/dummy2.jpg'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
+  Signature: require('./components/Cards/CardsImages/card2.jpg'),
+  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
+  APICase: require('./components/Cards/CardsImages/card13.jpg'),
+  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
+  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
+  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
+  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
+  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
+  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
+  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
 };
 
-export default Home;
+// Videos
+export const videos = {
+  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
+  SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
+  IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
+  CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
+  CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
+  SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
+  CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Citizen_Advisor-Demo1.mp4',
+};  
 
-
-
-
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
-import BgVideo from "./BgVideos1.mp4";
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(true);
-  const videoRef = useRef(null);
-
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
-
-      if (videoPosition <= triggerPoint) {
-        setVideoState("big");
-      } else if (videoPosition > triggerPoint + 100) {
-        setVideoState("small");
-      }
-    }
-  };
-
-  const togglePlayPause = () => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      if (isPlaying) {
-        videoElement.pause();
-      } else {
-        videoElement.play();
-      }
-      setIsPlaying(!isPlaying);
-    } else {
-      console.error("Video element is not available or not properly referenced.");
-    }
-  };
-
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    
-    const handleAutoPlay = () => {
-      if (videoElement && videoElement.paused) {
-        videoElement.play().catch(error => {
-          console.warn("Autoplay failed: ", error);
-          // Maybe add a fallback UI here or inform the user to manually start the video
-        });
-      }
-    };
-
-    // Attempt to play the video when the component mounts
-    handleAutoPlay();
-
-    // Adding event listener for user interaction
-    document.addEventListener("click", handleAutoPlay);
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      document.removeEventListener("click", handleAutoPlay);
-    };
-  }, []);
-
-  return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
-        <video
-          className={styles.video}
-          src={BgVideo}
-          muted
-          loop
-          ref={videoRef}
-          playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-        />
-        <button
-          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
-          onClick={togglePlayPause}
-        >
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
+// Solution Flows
+export const solutionFlows = {
+  EmailEarFlow: require('./components/Sidebar/Icons/EmailEarFlowGraph.png'),
+  IntelligentAssistFlow: require('./components/Sidebar/Icons/IntelligentAssistFlowGraph.png'),
+  CaseIntelligenceFlow: require('./components/Sidebar/Icons/CaseIntelligenceFlowGraph.png'),
+  // SmartRecruitFlow: require('./components/Sidebar/Icons/SmartRecruitFlowGraph.png'),
+  IAssureClaimFlow: require('./components/Sidebar/Icons/IAssureClaimFlowGraph.png'),
+  CitizenAdvisorFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow1.png',
+  CitizenAdvisorFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow2.png',
+  CitizenAdvisorFlow3: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow3.png',
+  CitizenAdvisorFlow4: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow4.png',
+  CitizenAdvisorFlow5: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow5.png',
+  
+  SmartRecruitFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow1.png',
+  SmartRecruitFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow2.png',
 };
 
-export default Home;
+// Technical Architectures
+export const architectures = {
+  IntelligentAssistArchitecture: require('./components/Sidebar/Icons/IntelligentAssistarchitecture.png'),
+  EmailEARArchitecture: require('./components/Sidebar/Icons/EmailEARarchitecture.png'),
+  CaseIntelligenceArchitecture: require('./components/Sidebar/Icons/CaseIntelligencearchitecture.png'),
+  SmartRecruitArchitecture: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/technical-architecture/SmartRecruitArchitecture.png',
+  AssistantEvArchitecture: require('./components/Sidebar/Icons/AssistantEvachitecture.png'),
+  IAssureClaimArchitecture: require('./components/Sidebar/Icons/IAssureClaimarchitecture.png'),
+  AIForceArchitecture: require('./components/Sidebar/Icons/AIForcearchitecture.png'),
+  CitizenAdvisorArchitecture:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/technical-architecture/CitizenAdvisorArchitecture.png',
+};
+
+// Descriptions
+export const descriptions = {
+  citizenDescription:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/description/CitizenAdvisorDescription.png',
+  smartRecruitDescription1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription1.png',
+  smartRecruitDescription2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription2.png',
+};
+
+// Solutions Benefits
+export const solutionsBenefits = {
+  citizenBenefits:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/benefits/CitizenAdvisorBenefits.png',
+  smartRecruitBenefits:'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/benefits/SmartRecruitBenefits.png',
+};
+
+// Adoption
+export const adoption = {
+  citizenAdoption:'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/industry-adoption/CitizenAdvisorAdoption.png',
+  smartRecruitAdoption: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/industry-adoption/SmartRecruitAdoption.png',
+};
+
+
