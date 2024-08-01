@@ -1,21 +1,54 @@
 {
-  "imageUrl": "CitizenAdvisor",  // Update to use the key directly as 'images.CitizenAdvisor' will be resolved in AssetImports
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelation",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": "citizenDescription",  // Key name from URLJson.json
-    "solutionFlow": [
-      "CitizenAdvisorFlow1",  // Key names from URLJson.json
-      "CitizenAdvisorFlow2",
-      "CitizenAdvisorFlow3",
-      "CitizenAdvisorFlow4",
-      "CitizenAdvisorFlow5"
-    ],
-    "demo": "CitizenAdvisorDemo",  // Key name from videos object in AssetImports
-    "techArchitecture": "CitizenAdvisorArchitecture",  // Key name from architectures object in AssetImports
-    "benefits": "citizenBenefits",  // Key name from solutionsBenefits object in AssetImports
-    "adoption": "citizenAdoption"  // Key name from adoption object in AssetImports
+  "descriptions": {
+    "citizenDescription": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/description/CitizenAdvisorDescription.png",
+    "smartRecruitDescription1": "https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription1.png",
+    "smartRecruitDescription2": "https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription2.png"
+  },
+  "solutionFlows": {
+    "CitizenAdvisorFlow1": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow1.png",
+    "CitizenAdvisorFlow2": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow2.png",
+    "CitizenAdvisorFlow3": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow3.png",
+    "CitizenAdvisorFlow4": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow4.png",
+    "CitizenAdvisorFlow5": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow5.png"
+  },
+  "architectures": {
+    "CitizenAdvisorArchitecture": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/technical-architecture/CitizenAdvisorArchitecture.png"
+  },
+  "solutionsBenefits": {
+    "citizenBenefits": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/benefits/CitizenAdvisorBenefits.png"
+  },
+  "adoption": {
+    "citizenAdoption": "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/industry-adoption/CitizenAdvisorAdoption.png"
   }
+}
+
+
+
+
+import URLJson from './URLJson.json'; // Import URLJson
+
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => URLJson.solutionFlows[flow] || null)
+        : (URLJson.solutionFlows[card.content.solutionFlow] || []),
+      demo: card.content.demo ? URLJson.videos[card.content.demo] : null,
+      techArchitecture: card.content.techArchitecture
+        ? URLJson.architectures[card.content.techArchitecture] || null
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => URLJson.descriptions[desc] || null)
+        : (URLJson.descriptions[card.content.description] || []),
+      benefitsFlow: card.content.benefits
+        ? URLJson.solutionsBenefits[card.content.benefits] || null
+        : [],
+      adoptionFlow: card.content.adoption
+        ? URLJson.adoption[card.content.adoption] || null
+        : [],
+    },
+  };
 }
