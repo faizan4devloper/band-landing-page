@@ -1,82 +1,258 @@
+// data.js
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
+// ... other imports
 
-import { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } from './AssetImports';
+export async function getCardsData() {
+  try {
+    const urldata = await fetchUrldata();
 
-// Fetch urldata.json dynamically
-async function fetchUrldata() {
-  const response = await fetch('https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json'); // Adjust the path to your urldata.json
-  if (!response.ok) {
-    throw new Error('Failed to fetch urldata.json');
+    function mapAssets(card) {
+      return {
+        ...card,
+        imageUrl: card.imageUrl ? images[card.imageUrl] : null,
+        content: {
+          ...card.content,
+          solutionFlow: Array.isArray(card.content.solutionFlow)
+            ? card.content.solutionFlow.map(flow => urldata[flow] || solutionFlows[flow])
+            : [],
+          demo: card.content.demo ? (urldata[card.content.demo] || videos[card.content.demo]) : null,
+          techArchitecture: Array.isArray(card.content.techArchitecture)
+            ? card.content.techArchitecture.map(arch => urldata[arch] || architectures[arch])
+            : [],
+          descriptionFlow: Array.isArray(card.content.description)
+            ? card.content.description.map(desc => urldata[desc] || descriptions[desc])
+            : [],
+          benefitsFlow: Array.isArray(card.content.benefits)
+            ? card.content.benefits.map(benefit => urldata[benefit] || solutionsBenefits[benefit])
+            : [],
+          adoptionFlow: Array.isArray(card.content.adoption)
+            ? card.content.adoption.map(adopt => urldata[adopt] || adoption[adopt])
+            : [],
+        },
+      };
+    }
+
+    return [
+      mapAssets(IntelligentAssist),
+      mapAssets(EmailEAR),
+      // ... other mappings
+    ];
+  } catch (error) {
+    console.error('Error initializing cards data:', error);
+    return []; // Return an empty array in case of error
   }
-  return response.json();
 }
 
-async function initializeCardsData() {
-  const urldata = await fetchUrldata();
 
-  function mapAssets(card) {
-    return {
-      ...card,
-      imageUrl: card.imageUrl ? images[card.imageUrl] : null,
-      content: {
-        ...card.content,
-        solutionFlow: Array.isArray(card.content.solutionFlow)
-          ? card.content.solutionFlow.map(flow => urldata[flow] || solutionFlows[flow])
-          : [],
-        demo: card.content.demo ? (urldata[card.content.demo] || videos[card.content.demo]) : null,
-        techArchitecture: Array.isArray(card.content.techArchitecture)
-          ? card.content.techArchitecture.map(arch => urldata[arch] || architectures[arch])
-          : [],
-        descriptionFlow: Array.isArray(card.content.description)
-          ? card.content.description.map(desc => urldata[desc] || descriptions[desc])
-          : [],
-        benefitsFlow: Array.isArray(card.content.benefits)
-          ? card.content.benefits.map(benefit => urldata[benefit] || solutionsBenefits[benefit])
-          : [],
-        adoptionFlow: Array.isArray(card.content.adoption)
-          ? card.content.adoption.map(adopt => urldata[adopt] || adoption[adopt])
-          : [],
-      },
+
+
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { getCardsData } from "./data"; // Updated import
+import { BeatLoader } from "react-spinners"; // Import loaders
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null); // Set to null initially
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const cardsContainerRef = useRef(null);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index); // Handle null state
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
     };
-  }
 
-  return [
-    mapAssets(IntelligentAssist),
-    mapAssets(EmailEAR),
-    mapAssets(CaseIntelligence),
-    mapAssets(SmartRecruit),
-    mapAssets(IAssureClaim),
-    mapAssets(AssistantEV),
-    mapAssets(AutoWiseCompanion),
-    mapAssets(CitizenAdvisor),
-    mapAssets(FinCompetitor),
-    mapAssets(SignatureExtraction),
-    mapAssets(AiForce),
-    mapAssets(ApiCase),
-    mapAssets(AmsSupport),
-    mapAssets(CodeGreat),
-    mapAssets(AaigApi),
-    mapAssets(ResponsibleGen),
-    mapAssets(GraphData),
-    mapAssets(PredictiveAsset),
-  ];
-}
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
 
-export const cardsData = await initializeCardsData();
+    return () => window.removeEventListener("scroll", debounceScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCardsData();
+        setCardsData(data);
+      } catch (error) {
+        console.error("Error fetching and initializing cards data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? ( // Show loader while loading is true
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
