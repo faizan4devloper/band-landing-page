@@ -1,4 +1,4 @@
-
+//data.js
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
@@ -69,7 +69,7 @@ export const cardsData = [
 
 
 
-
+//citizenAdvisor.json
 {
   "imageUrl": "CitizenAdvisor",
   "title": "Citizen Advisor",
