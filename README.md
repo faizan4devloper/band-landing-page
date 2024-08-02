@@ -1,99 +1,38 @@
-// AssetImport.js
+Uncaught TypeError: Cannot read properties of undefined (reading 'slice')
+    at Home (Home.js:98:1)
+    at renderWithHooks (react-dom.development.js:16305:1)
+    at mountIndeterminateComponent (react-dom.development.js:20074:1)
+    at beginWork (react-dom.development.js:21587:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27451:1)
+    at performUnitOfWork (react-dom.development.js:26557:1)
+    at workLoopSync (react-dom.development.js:26466:1)
+react-dom.development.js:18687 The above error occurred in the <Home> component:
 
-// Dummy placeholders for images and other assets
-export const images = {};
-export const videos = {};
-export const solutionFlows = {};
-export const architectures = {};
-export const descriptions = {};
-export const solutionsBenefits = {};
-export const adoption = {};
+    at Home (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:995:3)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49988:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50679:5)
+    at div
+    at MainApp (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:645:81)
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50613:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48566:5)
+    at App
 
-
-
-// data.js
-import IntelligentAssist from './CardsData/IntelligentAssist.json';
-import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
-
-const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
-
-const ASSET_URL = 'https://your-bucket-name.s3.amazonaws.com/urldata.json';
-
-const fetchData = async (url) => {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error('Failed to fetch data');
-  }
-  return response.json();
-};
-
-const mapAssets = (card, data) => {
-  const mapAssetUrls = (keys, data) => {
-    return keys.map(key => (data[key] ? data[key][0] : null));
-  };
-
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? mapAssetUrls([card.imageUrl], data)[0] : null,
-    content: {
-      ...card.content,
-      solutionFlow: Array.isArray(card.content.solutionFlow)
-        ? mapAssetUrls(card.content.solutionFlow, data)
-        : [],
-      demo: card.content.demo ? mapAssetUrls([card.content.demo], data)[0] : null,
-      techArchitecture: Array.isArray(card.content.techArchitecture)
-        ? mapAssetUrls(card.content.techArchitecture, data)
-        : [],
-      description: Array.isArray(card.content.description)
-        ? mapAssetUrls(card.content.description, data)
-        : [],
-      benefits: Array.isArray(card.content.benefits)
-        ? mapAssetUrls(card.content.benefits, data)
-        : [],
-      adoption: Array.isArray(card.content.adoption)
-        ? mapAssetUrls(card.content.adoption, data)
-        : [],
-    },
-  };
-};
-
-export const loadCardsData = async () => {
-  const data = await fetchData(ASSET_URL);
-
-  return [
-    mapAssets(IntelligentAssist, data),
-    mapAssets(EmailEAR, data),
-    mapAssets(CaseIntelligence, data),
-    mapAssets(SmartRecruit, data),
-    mapAssets(IAssureClaim, data),
-    mapAssets(AssistantEV, data),
-    mapAssets(AutoWiseCompanion, data),
-    mapAssets(CitizenAdvisor, data),
-    mapAssets(FinCompetitor, data),
-    mapAssets(SignatureExtraction, data),
-    mapAssets(AiForce, data),
-    mapAssets(ApiCase, data),
-    mapAssets(AmsSupport, data),
-    mapAssets(CodeGreat, data),
-    mapAssets(AaigApi, data),
-    mapAssets(ResponsibleGen, data),
-    mapAssets(GraphData, data),
-    mapAssets(PredictiveAsset, data),
-  ];
-};
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ react-dom.development.js:18687
+Show 1 more frame
+Show less
+react-dom.development.js:26923 Uncaught TypeError: Cannot read properties of undefined (reading 'slice')
+    at Home (Home.js:98:1)
+    at renderWithHooks (react-dom.development.js:16305:1)
+    at mountIndeterminateComponent (react-dom.development.js:20074:1)
+    at beginWork (react-dom.development.js:21587:1)
+    at beginWork$1 (react-dom.development.js:27426:1)
+    at performUnitOfWork (react-dom.development.js:26557:1)
+    at workLoopSync (react-dom.development.js:26466:1)
+    at renderRootSync (react-dom.development.js:26434:1)
+    at recoverFromConcurrentError (react-dom.development.js:25850:1)
+    at performConcurrentWorkOnRoot (react-dom.development.js:25750:1)
