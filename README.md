@@ -1,4 +1,17 @@
-//data.js
+// AssetImport.js
+
+// Dummy placeholders for images and other assets
+export const images = {};
+export const videos = {};
+export const solutionFlows = {};
+export const architectures = {};
+export const descriptions = {};
+export const solutionsBenefits = {};
+export const adoption = {};
+
+
+
+// data.js
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
@@ -18,76 +31,69 @@ import ResponsibleGen from './CardsData/ResponsibleGen.json';
 import GraphData from './CardsData/GraphData.json';
 import PredictiveAsset from './CardsData/PredictiveAsset.json';
 
-
 const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
 
-function mapAssets(card) {
+const ASSET_URL = 'https://your-bucket-name.s3.amazonaws.com/urldata.json';
+
+const fetchData = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch data');
+  }
+  return response.json();
+};
+
+const mapAssets = (card, data) => {
+  const mapAssetUrls = (keys, data) => {
+    return keys.map(key => (data[key] ? data[key][0] : null));
+  };
+
   return {
     ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    imageUrl: card.imageUrl ? mapAssetUrls([card.imageUrl], data)[0] : null,
     content: {
       ...card.content,
       solutionFlow: Array.isArray(card.content.solutionFlow)
-        ? card.content.solutionFlow.map(flow => typeof flow === 'string' ? solutionFlows[flow.split('.').pop()] : null)
+        ? mapAssetUrls(card.content.solutionFlow, data)
         : [],
-      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      demo: card.content.demo ? mapAssetUrls([card.content.demo], data)[0] : null,
       techArchitecture: Array.isArray(card.content.techArchitecture)
-        ? card.content.techArchitecture.map(arch => typeof arch === 'string' ? architectures[arch.split('.').pop()] : null)
+        ? mapAssetUrls(card.content.techArchitecture, data)
         : [],
-      descriptionFlow: Array.isArray(card.content.description)
-        ? card.content.description.map(desc => typeof desc === 'string' ? descriptions[desc.split('.').pop()] : null)
+      description: Array.isArray(card.content.description)
+        ? mapAssetUrls(card.content.description, data)
         : [],
-      benefitsFlow: Array.isArray(card.content.benefits)
-        ? card.content.benefits.map(benefit => typeof benefit === 'string' ? solutionsBenefits[benefit.split('.').pop()] : null)
+      benefits: Array.isArray(card.content.benefits)
+        ? mapAssetUrls(card.content.benefits, data)
         : [],
-      adoptionFlow: Array.isArray(card.content.adoption)
-        ? card.content.adoption.map(adopt => typeof adopt === 'string' ? adoption[adopt.split('.').pop()] : null)
+      adoption: Array.isArray(card.content.adoption)
+        ? mapAssetUrls(card.content.adoption, data)
         : [],
     },
   };
-}
-export const cardsData = [
-  mapAssets(IntelligentAssist),
-  mapAssets(EmailEAR),
-  mapAssets(CaseIntelligence),
-  mapAssets(SmartRecruit),
-  mapAssets(IAssureClaim),
-  mapAssets(AssistantEV),
-  mapAssets(AutoWiseCompanion),
-  mapAssets(CitizenAdvisor),
-  mapAssets(FinCompetitor),
-  mapAssets(SignatureExtraction),
-  mapAssets(AiForce),
-  mapAssets(ApiCase),
-  mapAssets(AmsSupport),
-  mapAssets(CodeGreat),
-  mapAssets(AaigApi),
-  mapAssets(ResponsibleGen),
-  mapAssets(GraphData),
-  mapAssets(PredictiveAsset),
-];
+};
 
+export const loadCardsData = async () => {
+  const data = await fetchData(ASSET_URL);
 
-
-//citizenAdvisor.json
-{
-  "imageUrl": "CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": ["citizenDescription"],
-    "solutionFlow": [
-      "CitizenAdvisorFlow1", 
-      "CitizenAdvisorFlow2", 
-      "CitizenAdvisorFlow3", 
-      "CitizenAdvisorFlow4", 
-      "CitizenAdvisorFlow5"
-    ],
-    "demo": "CitizenAdvisorDemo",
-    "techArchitecture": ["CitizenAdvisorArchitecture"],
-    "benefits": ["citizenBenefits"],
-    "adoption": ["citizenAdoption"]
-  }
-}
+  return [
+    mapAssets(IntelligentAssist, data),
+    mapAssets(EmailEAR, data),
+    mapAssets(CaseIntelligence, data),
+    mapAssets(SmartRecruit, data),
+    mapAssets(IAssureClaim, data),
+    mapAssets(AssistantEV, data),
+    mapAssets(AutoWiseCompanion, data),
+    mapAssets(CitizenAdvisor, data),
+    mapAssets(FinCompetitor, data),
+    mapAssets(SignatureExtraction, data),
+    mapAssets(AiForce, data),
+    mapAssets(ApiCase, data),
+    mapAssets(AmsSupport, data),
+    mapAssets(CodeGreat, data),
+    mapAssets(AaigApi, data),
+    mapAssets(ResponsibleGen, data),
+    mapAssets(GraphData, data),
+    mapAssets(PredictiveAsset, data),
+  ];
+};
