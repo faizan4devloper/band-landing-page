@@ -1,11 +1,25 @@
-Uncaught TypeError: card.content.solutionFlow.map is not a function
-    at mapAssets (data.js:16:1)
-    at useCardsData (data.js:26:1)
-    at MainApp (App.js:23:1)
-    at renderWithHooks (react-dom.development.js:16305:1)
-    at mountIndeterminateComponent (react-dom.development.js:20074:1)
-    at beginWork (react-dom.development.js:21587:1)
-    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
-    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
-    at invokeGuardedCallback (react-dom.development.js:4277:1)
-    at beginWork$1 (react-dom.development.js:27451:1)
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => typeof flow === 'string' ? solutionFlows[flow.split('.').pop()] : null)
+        : [], // Default to an empty array if not an array
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => typeof arch === 'string' ? architectures[arch.split('.').pop()] : null)
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => typeof desc === 'string' ? descriptions[desc.split('.').pop()] : null)
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => typeof benefit === 'string' ? solutionsBenefits[benefit.split('.').pop()] : null)
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => typeof adopt === 'string' ? adoption[adopt.split('.').pop()] : null)
+        : [],
+    },
+  };
+}
