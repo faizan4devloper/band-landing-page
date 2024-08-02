@@ -1,11 +1,37 @@
-Uncaught TypeError: card.content.solutionFlow.map is not a function
-    at mapAssets (data.js:41:1)
-    at ./src/data.js (data.js:52:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/App.js (SolutionFlow.svg:31:1)
+function mapAssets(card) {
+  const getDynamicAsset = (key) => dynamicAssets[key] || null;
+
+  const getArray = (data) => Array.isArray(data) ? data : [data]; // Ensure data is an array
+
+  return {
+    ...card,
+    imageUrl: getDynamicAsset(card.imageUrl),
+    content: {
+      ...card.content,
+      solutionFlow: getArray(card.content.solutionFlow).map(getDynamicAsset),
+      demo: [getDynamicAsset(card.content.demo)],
+      techArchitecture: getArray(card.content.techArchitecture).map(getDynamicAsset),
+      descriptionFlow: getArray(card.content.description).map(getDynamicAsset),
+      benefitsFlow: getArray(card.content.benefits).map(getDynamicAsset),
+      adoptionFlow: getArray(card.content.adoption).map(getDynamicAsset),
+    },
+  };
+}
+
+
+
+{
+  "imageUrl": "CitizenAdvisor",
+  "title": "Citizen Advisor",
+  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
+  "industry": "GOVT",
+  "businessFunction": "Customer Experience",
+  "content": {
+    "description": ["citizenDescription"],
+    "solutionFlow": ["CitizenAdvisorFlow1", "CitizenAdvisorFlow2"],
+    "demo": "CitizenAdvisorDemo",
+    "techArchitecture": ["CitizenAdvisorArchitecture"],
+    "benefits": ["citizenBenefits"],
+    "adoption": ["citizenAdoption"]
+  }
+}
