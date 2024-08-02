@@ -20,7 +20,52 @@
   }
 }
 
-// data.js
+
+
+const S3_BASE_URL = 'https://aiml-convai.s3.amazonaws.com/portal-slides';
+
+const generateS3Url = (category, subcategory, filename) => 
+  `${S3_BASE_URL}/${category}/${subcategory}/${filename}`;
+
+export const dynamicAssets = {
+  // CitizenAdvisor assets
+  citizenDescription: generateS3Url('citizenadvisor', 'description', 'CitizenAdvisorDescription.png'),
+  citizenBenefits: generateS3Url('citizenadvisor', 'benefits', 'CitizenAdvisorBenefits.png'),
+  citizenAdoption: generateS3Url('citizenadvisor', 'industry-adoption', 'CitizenAdvisorAdoption.png'),
+  CitizenAdvisorFlow1: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow1.png'),
+  CitizenAdvisorFlow2: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow2.png'),
+  CitizenAdvisorFlow3: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow3.png'),
+  CitizenAdvisorFlow4: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow4.png'),
+  CitizenAdvisorFlow5: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow5.png'),
+  CitizenAdvisorArchitecture: generateS3Url('citizenadvisor', 'technical-architecture', 'CitizenAdvisorArchitecture.png'),
+
+  // SmartRecruit assets
+  smartRecruitDescription1: generateS3Url('smart-recruit', 'description', 'SmartRecruitDescription1.png'),
+  smartRecruitDescription2: generateS3Url('smart-recruit', 'description', 'SmartRecruitDescription2.png'),
+  SmartRecruitFlow1: generateS3Url('smart-recruit', 'solutionFlows', 'SmartRecruitFlow1.png'),
+  SmartRecruitFlow2: generateS3Url('smart-recruit', 'solutionFlows', 'SmartRecruitFlow2.png'),
+  SmartRecruitDemo: generateS3Url('smart-recruit', 'demo', 'SmartRecruitDemo.mp4'),
+  SmartRecruitArchitecture: generateS3Url('smart-recruit', 'technical-architecture', 'SmartRecruitArchitecture.png'),
+  smartRecruitBenefits: generateS3Url('smart-recruit', 'benefits', 'SmartRecruitBenefits.png'),
+  smartRecruitAdoption: generateS3Url('smart-recruit', 'industry-adoption', 'SmartRecruitAdoption.png'),
+};
+
+export const images = {
+  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/SmartRecruit.jpg'),
+  // Add other images as needed...
+};
+
+export const videos = {
+  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
+  SmartRecruitDemo: dynamicAssets.SmartRecruitDemo,
+  // Add other videos as needed...
+};
+
+
+
 import {
   images,
   videos,
@@ -53,9 +98,15 @@ import PredictiveAsset from './CardsData/PredictiveAsset.json';
 import { dynamicAssets } from './AssetImports';
 
 function mapAssets(card) {
-  const getDynamicAsset = (key) => dynamicAssets[key] || null;
+  const getDynamicAsset = (key) => {
+    const asset = dynamicAssets[key];
+    if (!asset) {
+      console.warn(`Asset not found for key: ${key}`);
+    }
+    return asset || null;
+  };
 
-  const getArray = (data) => Array.isArray(data) ? data : [data]; // Ensure data is an array
+  const getArray = (data) => Array.isArray(data) ? data : [data];
 
   return {
     ...card,
@@ -65,14 +116,12 @@ function mapAssets(card) {
       solutionFlow: getArray(card.content.solutionFlow).map(getDynamicAsset),
       demo: [getDynamicAsset(card.content.demo)],
       techArchitecture: getArray(card.content.techArchitecture).map(getDynamicAsset),
-      descriptionFlow: getArray(card.content.description).map(getDynamicAsset),
-      benefitsFlow: getArray(card.content.benefits).map(getDynamicAsset),
-      adoptionFlow: getArray(card.content.adoption).map(getDynamicAsset),
+      description: getArray(card.content.description).map(getDynamicAsset),
+      benefits: getArray(card.content.benefits).map(getDynamicAsset),
+      adoption: getArray(card.content.adoption).map(getDynamicAsset),
     },
   };
 }
-
-
 
 export const cardsData = [
   mapAssets(IntelligentAssist),
@@ -94,42 +143,3 @@ export const cardsData = [
   mapAssets(GraphData),
   mapAssets(PredictiveAsset),
 ];
-
-
-
-const S3_BASE_URL = 'https://aiml-convai.s3.amazonaws.com/portal-slides';
-
-const generateS3Url = (category, subcategory, filename) => 
-  `${S3_BASE_URL}/${category}/${subcategory}/${filename}`;
-
-export const images = {
-  IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  // ...
-};
-
-// Generate dynamic URLs for CitizenAdvisor category
-export const dynamicAssets = {
-  citizenDescription: generateS3Url('citizenadvisor', 'description', 'CitizenAdvisorDescription.png'),
-  citizenBenefits: generateS3Url('citizenadvisor', 'benefits', 'CitizenAdvisorBenefits.png'),
-  citizenAdoption: generateS3Url('citizenadvisor', 'industry-adoption', 'CitizenAdvisorAdoption.png'),
-  CitizenAdvisorFlow1: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow1.png'),
-  CitizenAdvisorFlow2: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow2.png'),
-  CitizenAdvisorFlow3: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow3.png'),
-  CitizenAdvisorFlow4: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow4.png'),
-  CitizenAdvisorFlow5: generateS3Url('citizenadvisor', 'solutionFlows', 'CitizenAdvisorFlow5.png'),
-  CitizenAdvisorArchitecture: generateS3Url('citizenadvisor', 'technical-architecture', 'CitizenAdvisorArchitecture.png'),
-};
-
-// Videos
-export const videos = {
-  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-  // ...
-};
-
-// Similarly, generate dynamic URLs for other categories if needed
-export const smartRecruitAssets = {
-  smartRecruitDescription1: generateS3Url('smart-recruit', 'description', 'SmartRecruitDescription1.png'),
-  // ...
-};
