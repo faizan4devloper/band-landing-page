@@ -1,7 +1,21 @@
-// data.js
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
-// import other JSON files similarly
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import IAssureClaim from './CardsData/IAssureClaim.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
 
 const ASSET_URL = 'https://your-bucket-name.s3.amazonaws.com/urldata.json';
 
@@ -49,11 +63,67 @@ export const loadCardsData = async () => {
   return [
     mapAssets(IntelligentAssist, data),
     mapAssets(EmailEAR, data),
-    // map other card data similarly
+    mapAssets(CaseIntelligence, data),
+    mapAssets(SmartRecruit, data),
+    mapAssets(IAssureClaim, data),
+    mapAssets(AssistantEV, data),
+    mapAssets(AutoWiseCompanion, data),
+    mapAssets(CitizenAdvisor, data),
+    mapAssets(FinCompetitor, data),
+    mapAssets(SignatureExtraction, data),
+    mapAssets(AiForce, data),
+    mapAssets(ApiCase, data),
+    mapAssets(AmsSupport, data),
+    mapAssets(CodeGreat, data),
+    mapAssets(AaigApi, data),
+    mapAssets(ResponsibleGen, data),
+    mapAssets(GraphData, data),
+    mapAssets(PredictiveAsset, data),
   ];
 };
 
 
+
+
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import IAssureClaim from './CardsData/IAssureClaim.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+
+export const cardsData = [
+  IntelligentAssist,
+  EmailEAR,
+  CaseIntelligence,
+  SmartRecruit,
+  IAssureClaim,
+  AssistantEV,
+  AutoWiseCompanion,
+  CitizenAdvisor,
+  FinCompetitor,
+  SignatureExtraction,
+  AiForce,
+  ApiCase,
+  AmsSupport,
+  CodeGreat,
+  AaigApi,
+  ResponsibleGen,
+  GraphData,
+  PredictiveAsset,
+];
 
 
 
@@ -121,7 +191,7 @@ const Home = ({
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [videoState, isPlaying]);
 
   return (
     <>
@@ -156,7 +226,7 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {cardsData && cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
           const actualIndex = currentIndex + index;
           return (
             <Cards
@@ -183,14 +253,14 @@ export default Home;
 
 
 import React, { useRef, useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
 import Home from "./Home"; // Import the updated Home component
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { loadCardsData } from "./data"; // Updated import for dynamic data fetching
+import { loadCardsData } from "./AssetImport"; // Import loadCardsData
 import { BeatLoader } from "react-spinners"; // Import loaders
 import styles from "./App.module.css"; // Ensure this is imported for styling
 
