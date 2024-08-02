@@ -1,15 +1,23 @@
-Uncaught TypeError: keys.map is not a function
-    at getSolutionFlows (data.js:34:1)
-    at mapAssets (data.js:45:1)
-    at ./src/data.js (data.js:55:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
-    at options.factory (react refresh:6:1)
-    at __webpack_require__ (bootstrap:22:1)
-    at fn (hot module replacement:61:1)
-manifest.json:1 
-        
-        
-       Failed to load resource: the server resp
+function mapAssets(card) {
+  const getImage = (key) => key ? images[key.split('.').pop()] : null;
+  const getVideo = (key) => key ? videos[key.split('.').pop()] : null;
+  const getSolutionFlows = (keys) => Array.isArray(keys) ? keys.map(key => solutionFlows[key.split('.').pop()]) : [];
+  const getArchitectures = (keys) => Array.isArray(keys) ? keys.map(key => architectures[key.split('.').pop()]) : [];
+  const getDescriptions = (keys) => Array.isArray(keys) ? keys.map(key => descriptions[key.split('.').pop()]) : [];
+  const getBenefits = (keys) => Array.isArray(keys) ? keys.map(key => solutionsBenefits[key.split('.').pop()]) : [];
+  const getAdoption = (keys) => Array.isArray(keys) ? keys.map(key => adoption[key.split('.').pop()]) : [];
+
+  return {
+    ...card,
+    imageUrl: getImage(card.imageUrl),
+    content: {
+      ...card.content,
+      solutionFlow: getSolutionFlows(card.content.solutionFlow),
+      demo: getVideo(card.content.demo),
+      techArchitecture: getArchitectures(card.content.techArchitecture),
+      descriptionFlow: getDescriptions(card.content.description),
+      benefitsFlow: getBenefits(card.content.benefits),
+      adoptionFlow: getAdoption(card.content.adoption),
+    },
+  };
+}
