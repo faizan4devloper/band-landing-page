@@ -1,154 +1,203 @@
-// AssetImport.js
-export const images = {
-  IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
-  IAssureClaim: require('./components/Cards/CardsImages/card9.jpg'),
-  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
-  CitizenAdvisor: require('./components/Cards/CardsImages/dummy2.jpg'),
-  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
-  Signature: require('./components/Cards/CardsImages/card2.jpg'),
-  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
-  APICase: require('./components/Cards/CardsImages/card13.jpg'),
-  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
-  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
-  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
-  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
-  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
-  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
-  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+import React, { useRef, useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import Header from "./components/Header/Header";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import SideBarPage from "./components/Sidebar/SideBarPage";
+import AllCardsPage from "./components/Cards/AllCardsPage";
+import { cardsData as initialCardsData } from "./data";
+import { BeatLoader } from "react-spinners"; // Import loaders
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
 };
 
-export const videos = {
-  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-  SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
-  IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
-  CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
-  CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
-  SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
-  CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Citizen_Advisor-Demo1.mp4',
-};
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null); // Set to null initially
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true); // Added loading state
+  const cardsContainerRef = useRef(null);
 
-export const solutionFlows = {};
-export const architectures = {};
-export const descriptions = {};
-export const solutionsBenefits = {};
-export const adoption = {};
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index); // Handle null state
+  };
 
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
 
-import IntelligentAssist from './CardsData/IntelligentAssist.json';
-import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-import { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } from './AssetImport';
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
 
-// Fetch urldata.json dynamically
-async function fetchUrldata() {
-  const response = await fetch('/path/to/urldata.json'); // Adjust the path to your urldata.json
-  if (!response.ok) {
-    throw new Error('Failed to fetch urldata.json');
-  }
-  return response.json();
-}
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
 
-async function initializeCardsData() {
-  const urldata = await fetchUrldata();
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
 
-  function mapAssets(card) {
-    return {
-      ...card,
-      imageUrl: card.imageUrl ? images[card.imageUrl] : null,
-      content: {
-        ...card.content,
-        solutionFlow: Array.isArray(card.content.solutionFlow)
-          ? card.content.solutionFlow.map(flow => urldata[flow] || solutionFlows[flow])
-          : [],
-        demo: card.content.demo ? (urldata[card.content.demo] || videos[card.content.demo]) : null,
-        techArchitecture: Array.isArray(card.content.techArchitecture)
-          ? card.content.techArchitecture.map(arch => urldata[arch] || architectures[arch])
-          : [],
-        descriptionFlow: Array.isArray(card.content.description)
-          ? card.content.description.map(desc => urldata[desc] || descriptions[desc])
-          : [],
-        benefitsFlow: Array.isArray(card.content.benefits)
-          ? card.content.benefits.map(benefit => urldata[benefit] || solutionsBenefits[benefit])
-          : [],
-        adoptionFlow: Array.isArray(card.content.adoption)
-          ? card.content.adoption.map(adopt => urldata[adopt] || adoption[adopt])
-          : [],
-      },
-    };
-  }
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
 
-  return [
-    mapAssets(IntelligentAssist),
-    mapAssets(EmailEAR),
-    mapAssets(CaseIntelligence),
-    mapAssets(SmartRecruit),
-    mapAssets(IAssureClaim),
-    mapAssets(AssistantEV),
-    mapAssets(AutoWiseCompanion),
-    mapAssets(CitizenAdvisor),
-    mapAssets(FinCompetitor),
-    mapAssets(SignatureExtraction),
-    mapAssets(AiForce),
-    mapAssets(ApiCase),
-    mapAssets(AmsSupport),
-    mapAssets(CodeGreat),
-    mapAssets(AaigApi),
-    mapAssets(ResponsibleGen),
-    mapAssets(GraphData),
-    mapAssets(PredictiveAsset),
-  ];
-}
-
-export const cardsData = await initializeCardsData();
-
-
-
-import React, { useEffect, useState } from 'react';
-import { initializeCardsData } from './data';
-
-const App = () => {
-  const [cards, setCards] = useState([]);
+  const handleMouseEnter = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await initializeCardsData();
-      setCards(data);
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
     };
 
-    fetchData();
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener("scroll", debounceScroll);
+
+    return () => window.removeEventListener("scroll", debounceScroll);
   }, []);
 
+  useEffect(() => {
+    // Simulate a delay to show the loader
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000); // 2 seconds delay
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
   return (
-    <div>
-      {cards.map((card, index) => (
-        <div key={index}>
-          <img src={card.imageUrl} alt={card.title} />
-          <h2>{card.title}</h2>
-          <p>{card.description}</p>
-          {/* Render other card content as needed */}
+    <div className={styles.app}>
+      {loading ? ( // Show loader while loading is true
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
         </div>
-      ))}
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                  handleMouseEnter={handleMouseEnter}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== "/all-cards" && location.pathname !== "/dashboard" && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
 
-export default App;
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+)
+
+export default App
