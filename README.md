@@ -1,23 +1,12 @@
-function mapAssets(card) {
-  const getImage = (key) => key ? images[key.split('.').pop()] : null;
-  const getVideo = (key) => key ? videos[key.split('.').pop()] : null;
-  const getSolutionFlows = (keys) => Array.isArray(keys) ? keys.map(key => solutionFlows[key.split('.').pop()]) : [];
-  const getArchitectures = (keys) => Array.isArray(keys) ? keys.map(key => architectures[key.split('.').pop()]) : [];
-  const getDescriptions = (keys) => Array.isArray(keys) ? keys.map(key => descriptions[key.split('.').pop()]) : [];
-  const getBenefits = (keys) => Array.isArray(keys) ? keys.map(key => solutionsBenefits[key.split('.').pop()]) : [];
-  const getAdoption = (keys) => Array.isArray(keys) ? keys.map(key => adoption[key.split('.').pop()]) : [];
-
-  return {
-    ...card,
-    imageUrl: getImage(card.imageUrl),
-    content: {
-      ...card.content,
-      solutionFlow: getSolutionFlows(card.content.solutionFlow),
-      demo: getVideo(card.content.demo),
-      techArchitecture: getArchitectures(card.content.techArchitecture),
-      descriptionFlow: getDescriptions(card.content.description),
-      benefitsFlow: getBenefits(card.content.benefits),
-      adoptionFlow: getAdoption(card.content.adoption),
-    },
-  };
-}
+data.js:39 Uncaught 
+TypeError: key.split is not a function
+    at data.js:39:1
+    at Array.map (<anonymous>)
+    at getAdoption (data.js:39:1)
+    at mapAssets (data.js:51:1)
+    at ./src/data.js (data.js:57:1)
+    at options.factory (react refresh:6:1)
+    at __webpack_require__ (bootstrap:22:1)
+    at fn (hot module replacement:61:1)
+    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
+    at options.factory (react refresh:6:1)
