@@ -1,3 +1,62 @@
+// data.js
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+// import other JSON files similarly
+
+const ASSET_URL = 'https://your-bucket-name.s3.amazonaws.com/urldata.json';
+
+const fetchData = async (url) => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error('Failed to fetch data');
+  }
+  return response.json();
+};
+
+const mapAssets = (card, data) => {
+  const mapAssetUrls = (keys, data) => {
+    return keys.map(key => (data[key] ? data[key][0] : null));
+  };
+
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? mapAssetUrls([card.imageUrl], data)[0] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? mapAssetUrls(card.content.solutionFlow, data)
+        : [],
+      demo: card.content.demo ? mapAssetUrls([card.content.demo], data)[0] : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? mapAssetUrls(card.content.techArchitecture, data)
+        : [],
+      description: Array.isArray(card.content.description)
+        ? mapAssetUrls(card.content.description, data)
+        : [],
+      benefits: Array.isArray(card.content.benefits)
+        ? mapAssetUrls(card.content.benefits, data)
+        : [],
+      adoption: Array.isArray(card.content.adoption)
+        ? mapAssetUrls(card.content.adoption, data)
+        : [],
+    },
+  };
+};
+
+export const loadCardsData = async () => {
+  const data = await fetchData(ASSET_URL);
+
+  return [
+    mapAssets(IntelligentAssist, data),
+    mapAssets(EmailEAR, data),
+    // map other card data similarly
+  ];
+};
+
+
+
+
+
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
@@ -97,7 +156,7 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+        {cardsData && cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
           const actualIndex = currentIndex + index;
           return (
             <Cards
@@ -131,13 +190,13 @@ import Header from "./components/Header/Header";
 import Home from "./Home"; // Import the updated Home component
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import { loadCardsData } from "./data"; // Updated import for dynamic data fetching
 import { BeatLoader } from "react-spinners"; // Import loaders
 import styles from "./App.module.css"; // Ensure this is imported for styling
 
 const MainApp = () => {
   const location = useLocation();
-  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [cardsData, setCardsData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null); // Set to null initially
   const [showScrollDown, setShowScrollDown] = useState(true);
@@ -203,12 +262,18 @@ const MainApp = () => {
   }, []);
 
   useEffect(() => {
-    // Simulate a delay to show the loader
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // 2 seconds delay
+    const fetchCardsData = async () => {
+      try {
+        const data = await loadCardsData();
+        setCardsData(data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Failed to load card data", error);
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchCardsData();
   }, []);
 
   const debounce = (func, wait) => {
