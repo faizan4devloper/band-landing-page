@@ -1,12 +1,11 @@
-ERROR in ./src/components/Sidebar/SideBarPage.js 28:19-33
-export 'cardsData' (imported as 'cardsData') was not found in '../../data' (possible exports: useCardsData)
-ERROR
-[eslint] 
-src/App.js
-  Line 21:29:  'useRef' is not defined  no-undef
-
-src/data.js
-  Line 23:15:  'IntelligentAssist' is not defined  no-undef
-  Line 24:15:  'EmailEAR' is not defined           no-undef
-  Line 25:15:  'CaseIntelligence' is not defined   no-undef
-  Line 26:15:  'SmartRecruit' is not defined       no-undef
+Uncaught TypeError: card.content.solutionFlow.map is not a function
+    at mapAssets (data.js:16:1)
+    at useCardsData (data.js:26:1)
+    at MainApp (App.js:23:1)
+    at renderWithHooks (react-dom.development.js:16305:1)
+    at mountIndeterminateComponent (react-dom.development.js:20074:1)
+    at beginWork (react-dom.development.js:21587:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27451:1)
