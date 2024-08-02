@@ -8,7 +8,7 @@ import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
-import { cardsData as initialCardsData } from "./data";
+import { initializeCardsData } from "./data";
 import { BeatLoader } from "react-spinners"; // Import loaders
 
 const Home = ({
@@ -61,7 +61,7 @@ const Home = ({
 
 const MainApp = () => {
   const location = useLocation();
-  const [cardsData, setCardsData] = useState(initialCardsData);
+  const [cardsData, setCardsData] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigIndex, setBigIndex] = useState(null); // Set to null initially
   const [showScrollDown, setShowScrollDown] = useState(true);
@@ -127,12 +127,18 @@ const MainApp = () => {
   }, []);
 
   useEffect(() => {
-    // Simulate a delay to show the loader
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // 2 seconds delay
+    const fetchData = async () => {
+      try {
+        const data = await initializeCardsData();
+        setCardsData(data);
+      } catch (error) {
+        console.error("Error fetching and initializing cards data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    fetchData();
   }, []);
 
   const debounce = (func, wait) => {
@@ -198,6 +204,6 @@ const App = () => (
   <Router>
     <MainApp />
   </Router>
-)
+);
 
-export default App
+export default App;
