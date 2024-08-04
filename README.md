@@ -1,31 +1,115 @@
-Uncaught TypeError: Cannot read properties of undefined (reading 'length')
-    at renderImageOrCarousel (MainContent.js:54:1)
-    at MainContent (MainContent.js:96:1)
-    at renderWithHooks (react-dom.development.js:16305:1)
-    at updateFunctionComponent (react-dom.development.js:19588:1)
-    at beginWork (react-dom.development.js:21601:1)
-    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
-    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
-    at invokeGuardedCallback (react-dom.development.js:4277:1)
-    at beginWork$1 (react-dom.development.js:27451:1)
-    at performUnitOfWork (react-dom.development.js:26557:1)
-react-dom.development.js:18687 The above error occurred in the <MainContent> component:
 
-    at MainContent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3006:3)
-    at div
-    at div
-    at SideBarPage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3414:84)
-    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49993:5)
-    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50684:5)
-    at div
-    at MainApp (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:645:81)
-    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50618:15)
-    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48571:5)
-    at App
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-logCapturedError @ react-dom.development.js:18687
-Show 1 more frame
-Show less
-react-dom.development.js:26923 Uncaught 
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+          >
+            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className={maximizedImage === image ? styles.maximized : ""}
+              onClick={() => toggleMaximize(image)}
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderImageOrCarousel = (images) => (
+    images.length > 1 ? renderCarousel(images) : (
+      <img
+        src={images[0]}
+        alt="Single Image"
+        className={maximizedImage === images[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(images[0])}
+      />
+    )
+  );
+
+  if (!content || !content.description) {
+    return <div className={styles.mainContent}>Description not available</div>;
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.descriptionFlow)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefitsFlow)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoptionFlow)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
