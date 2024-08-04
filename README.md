@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { images, videos } from './AssetImports';
 
+// Import JSON data for cards
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
@@ -20,6 +21,7 @@ import ResponsibleGen from './CardsData/ResponsibleGen.json';
 import GraphData from './CardsData/GraphData.json';
 import PredictiveAsset from './CardsData/PredictiveAsset.json';
 
+// Function to fetch asset data from S3
 const fetchAssets = async () => {
   try {
     const response = await axios.get('https://aiml-convai.s3.amazonaws.com/portal-slides/URLJson.json');
@@ -30,27 +32,36 @@ const fetchAssets = async () => {
   }
 };
 
+// Function to map assets to card data
 const mapAssets = async (card) => {
-  const assetData = await fetchAssets();
-  const assetKey = card.title.replace(/\s+/g, '');
-  const data = assetData[assetKey] || {};
-  console.log('https://aiml-convai.s3.amazonaws.com/portal-slides/URLJson.json')
+  try {
+    const assetData = await fetchAssets();
+    const assetKey = card.title.replace(/\s+/g, ''); // Clean the card title to match the asset key
+    const data = assetData[assetKey] || {}; // Retrieve asset data using the cleaned key
 
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl] : null,
-    content: {
-      ...card.content,
-      solutionFlow: data.solutionFlow || [],
-      demo: card.content.demo ? videos[card.content.demo] : null,
-      techArchitecture: data.techArchitecture || [],
-      descriptionFlow: data.description || [],
-      benefitsFlow: data.benefits || [],
-      adoption: data.adoption || []
-    }
-  };
+    console.log('Mapping assets for:', card.title);
+    console.log('Fetched asset data:', data);
+
+    return {
+      ...card,
+      imageUrl: card.imageUrl ? images[card.imageUrl] : null,
+      content: {
+        ...card.content,
+        solutionFlow: data.solutionFlow || [],
+        demo: card.content.demo ? videos[card.content.demo] : null,
+        techArchitecture: data.techArchitecture || [],
+        descriptionFlow: data.description || [],
+        benefitsFlow: data.benefits || [],
+        adoption: data.adoption || []
+      }
+    };
+  } catch (error) {
+    console.error('Error mapping assets for card:', card.title, error);
+    return card; // Return the original card data in case of an error
+  }
 };
 
+// Function to get all card data
 export const getCardsData = async () => {
   const cardData = [
     IntelligentAssist,
@@ -77,7 +88,10 @@ export const getCardsData = async () => {
   return mappedCards;
 };
 
-// CitizenAdvisor.json
+
+
+
+
 {
   "imageUrl": "CitizenAdvisor",
   "title": "Citizen Advisor",
@@ -86,63 +100,10 @@ export const getCardsData = async () => {
   "businessFunction": "Customer Experience",
   "content": {
     "description": ["citizenDescription"],
-    "solutionFlow": ["citizenAdvisorSolution" ],
+    "solutionFlow": ["citizenAdvisorSolution"],
     "demo": "CitizenAdvisorDemo",
     "techArchitecture": ["CitizenAdvisorArchitecture"],
     "benefits": ["citizenBenefits"],
     "adoption": ["citizenAdoption"]
   }
 }
-
-
-
-// URLJson.json from s3 bucket
-{
-    "CitizenAdvisor": {
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/benefits/Slide8.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/techArchitecture/Slide7.png"],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide6.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide3.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide5.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide2.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide4.png"
-      ],
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/description/Slide1.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/adoption/Slide9.png"]
-    },
-    "CaseIntelligence": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/benefits/Slide4.png"]
-    },
-    "IntelligentAssist": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/benefits/Slide4.png"]
-    },
-    "SmartRecruit": {
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/adoption/Slide7.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/benefits/Slide6.png"],
-      "description": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide1.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide2.png"
-      ],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide3.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide4.png"
-      ],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/techArchitecture/Slide5.png"]
-    },
-    "EmailEAR": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/benefits/Slide4.png"]
-    }
-  }
