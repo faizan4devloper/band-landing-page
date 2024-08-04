@@ -22,9 +22,14 @@ const MainApp = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchCardsData;
-      setCardsData(data);
-      setLoading(false); // Set loading to false after data is fetched
+      try {
+        const data = await fetchCardsData(); // Call the function to get the data
+        setCardsData(data);
+      } catch (error) {
+        console.error('Error fetching cards data:', error);
+      } finally {
+        setLoading(false); // Set loading to false after data is fetched
+      }
     };
 
     fetchData();
