@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
@@ -51,19 +50,23 @@ const MainContent = ({ activeTab, content }) => {
     </div>
   );
 
-  const renderImageOrCarousel = (images) => (
-    images.length > 1 ? renderCarousel(images) : (
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return <div>No images available</div>;
+    }
+    
+    return images.length > 1 ? renderCarousel(images) : (
       <img
         src={images[0]}
         alt="Single Image"
         className={maximizedImage === images[0] ? styles.maximized : ""}
         onClick={() => toggleMaximize(images[0])}
       />
-    )
-  );
+    );
+  };
 
-  if (!content || !content.description) {
-    return <div className={styles.mainContent}>Description not available</div>;
+  if (!content) {
+    return <div className={styles.mainContent}>Content not available</div>;
   }
 
   const contentMap = {
