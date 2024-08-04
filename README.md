@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import MyCarousel from "./components/Carousel/MyCarousel";
@@ -21,7 +21,7 @@ const Home = ({
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef(null);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     if (videoRef.current) {
       const videoPosition = videoRef.current.getBoundingClientRect().top;
       const triggerPoint = window.innerHeight / 2;
@@ -40,9 +40,9 @@ const Home = ({
         }
       }
     }
-  };
+  }, [videoState, isPlaying]);
 
-  const togglePlayPause = () => {
+  const togglePlayPause = useCallback(() => {
     const videoElement = videoRef.current;
     if (videoElement) {
       if (isPlaying) {
@@ -54,15 +54,12 @@ const Home = ({
     } else {
       console.error("Video element is not available or not properly referenced.");
     }
-  };
+  }, [isPlaying]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <>
@@ -75,7 +72,7 @@ const Home = ({
           loop
           ref={videoRef}
           playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
+          onClick={togglePlayPause}
         />
         <button
           className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
@@ -101,12 +98,13 @@ const Home = ({
           const actualIndex = currentIndex + index;
           return (
             <Cards
-              key={index}
+              key={card.id} // Use a unique key if possible
               imageUrl={card.imageUrl}
               title={card.title}
               description={card.description}
               isBig={actualIndex === bigIndex}
               toggleSize={() => toggleSize(actualIndex)}
+              tags={card.tags} // Pass tags if needed
             />
           );
         })}
@@ -124,9 +122,6 @@ export default Home;
 
 
 
-
-
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "./Cards.module.css";
@@ -136,6 +131,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  // Remove this if not needed
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
