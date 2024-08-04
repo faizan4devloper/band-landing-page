@@ -1,125 +1,215 @@
-// AssetImports.js
-export const images = {
-  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
-  IAssureClaim: require('./components/Cards/CardsImages/card9.jpg'),
-  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
-  CitizenAdvisor: require('./components/Cards/CardsImages/dummy2.jpg'),
-  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
-  Signature: require('./components/Cards/CardsImages/card2.jpg'),
-  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
-  APICase: require('./components/Cards/CardsImages/card13.jpg'),
-  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
-  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
-  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
-  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
-  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
-  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
-  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+ERROR in ./src/App.js 29:25-39
+export 'cardsData' (imported as 'fetchCardsData') was not found in './data' (possible exports: getCardsData)
+ERROR in ./src/components/Sidebar/SideBarPage.js 23:25-39
+export 'cardsData' (imported as 'fetchCardsData') was not found in '../../data' (possible exports: getCardsData)
+
+
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import Header from '../Header/Header';
+import SideBar from './SideBar';
+import MainContent from './MainContent';
+import styles from './SideBarPage.module.css';
+import { cardsData as fetchCardsData } from '../../data';
+
+const SideBarPage = () => {
+  const [activeTab, setActiveTab] = useState('description');
+  const [cardContent, setCardContent] = useState({});
+  const [cardTitle, setCardTitle] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchCardsData;
+      const params = new URLSearchParams(location.search);
+      const title = params.get('title');
+      if (title) {
+        setCardTitle(title);
+        const card = data.find((c) => c.title === title);
+        if (card) {
+          setCardContent(card.content);
+        }
+      }
+    };
+
+    fetchData();
+  }, [location.search]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  return (
+    <div className={styles.sideBarPage}>
+      <Header />
+      <div className={styles.header2}>
+        <button onClick={handleBackButtonClick} className={styles.backButton}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
+      </div>
+      <div className={styles.contentWrapper}>
+        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
+        <MainContent activeTab={activeTab} content={cardContent} />
+      </div>
+    </div>
+  );
 };
 
-// Videos
-export const videos = {
-  EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-  SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
-  IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
-  CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
-  CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
-  SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
-  CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Citizen_Advisor-Demo1.mp4',
-};
-
-// Fetch remote JSON
-export const fetchAssets = async () => {
-  const response = await fetch('https://aiml-convai.s3.amazonaws.com/portal-slides/URLJson.json');
-  return await response.json();
-};
+export default SideBarPage;
 
 
 
 
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import { cardsData as fetchCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
 
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
 
-import IntelligentAssist from './CardsData/IntelligentAssist.json';
-import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchCardsData;
+      setCardsData(data);
+      setLoading(false); // Set loading to false after data is fetched
+    };
 
-import { images, videos, fetchAssets } from './AssetImports';
+    fetchData();
+  }, []);
 
-async function mapAssets(card, assetData) {
-  const assetKey = card.title.replace(/\s+/g, '');
-  const data = assetData[assetKey] || {};
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
 
-  return {
-    ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl] : null,
-    content: {
-      ...card.content,
-      solutionFlow: data.solutionFlow || [],
-      demo: card.content.demo ? videos[card.content.demo] : null,
-      techArchitecture: data.techArchitecture || [],
-      descriptionFlow: data.description || [],
-      benefitsFlow: data.benefits || [],
-      adoption: data.adoption || []
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
     }
   };
-}
 
-export async function getCardsData() {
-  const assets = await fetchAssets();
-  
-  return [
-    await mapAssets(IntelligentAssist, assets),
-    await mapAssets(EmailEAR, assets),
-    await mapAssets(CaseIntelligence, assets),
-    await mapAssets(SmartRecruit, assets),
-    await mapAssets(IAssureClaim, assets),
-    await mapAssets(AssistantEV, assets),
-    await mapAssets(AutoWiseCompanion, assets),
-    await mapAssets(CitizenAdvisor, assets),
-    await mapAssets(FinCompetitor, assets),
-    await mapAssets(SignatureExtraction, assets),
-    await mapAssets(AiForce, assets),
-    await mapAssets(ApiCase, assets),
-    await mapAssets(AmsSupport, assets),
-    await mapAssets(CodeGreat, assets),
-    await mapAssets(AaigApi, assets),
-    await mapAssets(ResponsibleGen, assets),
-    await mapAssets(GraphData, assets),
-    await mapAssets(PredictiveAsset, assets),
-  ];
-}
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
 
-{
-  "imageUrl": "CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": ["citizenDescription"],
-    "solutionFlow": ["citizenAdvisorSolutionFlow"],
-    "demo": "CitizenAdvisorDemo",
-    "techArchitecture": ["CitizenAdvisorTechArchitecture"],
-    "benefits": ["citizenAdvisorBenefits"],
-    "adoption": ["citizenAdvisorAdoption"]
-  }
-}
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
