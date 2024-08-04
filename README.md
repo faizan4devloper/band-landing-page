@@ -1,49 +1,53 @@
-{
-    "CitizenAdvisor": {
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/benefits/Slide8.JPG"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/techArchitecture/Slide7.JPG"],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide6.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide3.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide5.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide2.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide4.JPG"
-      ],
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/description/Slide1.JPG"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/adoption/Slide9.JPG"]
-    },
-    "CaseIntelligence": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/description/Slide1.JPG"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/techArchitecture/Slide3.JPG"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/adoption/Slide5.JPG"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/solutionFlow/Slide2.JPG"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/benefits/Slide4.JPG"]
-    },
-    "IntelligentAssist": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/description/Slide1.JPG"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/techArchitecture/Slide3.JPG"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/adoption/Slide5.JPG"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/solutionFlow/Slide2.JPG"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/benefits/Slide4.JPG"]
-    },
-    "SmartRecruit": {
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/adoption/Slide7.JPG"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/benefits/Slide6.JPG"],
-      "description": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide1.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide2.JPG"
-      ],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide3.JPG",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide4.JPG"
-      ],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/techArchitecture/Slide5.JPG"]
-    },
-    "EmailEAR": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/description/Slide1.JPG"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/techArchitecture/Slide3.JPG"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/adoption/Slide5.JPG"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/solutionFlow/Slide2.JPG"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/benefits/Slide4.JPG"]
+// data.js
+import { images, videos } from './AssetImports';
+
+async function fetchAssets() {
+  const response = await fetch('https://aiml-convai.s3.amazonaws.com/portal-slides/URLJson.json');
+  return await response.json();
+}
+
+async function mapAssets(card) {
+  const assetData = await fetchAssets();
+  const assetKey = card.title.replace(/\s+/g, '');
+  const data = assetData[assetKey] || {};
+
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl] : null,
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow || [],
+      demo: card.content.demo ? videos[card.content.demo] : null,
+      techArchitecture: data.techArchitecture || [],
+      descriptionFlow: data.description || [],
+      benefitsFlow: data.benefits || [],
+      adoption: data.adoption || []
     }
-  }
+  };
+}
+
+export async function getCardsData() {
+  const cardData = [
+    IntelligentAssist,
+    EmailEAR,
+    CaseIntelligence,
+    SmartRecruit,
+    IAssureClaim,
+    AssistantEV,
+    AutoWiseCompanion,
+    CitizenAdvisor,
+    FinCompetitor,
+    SignatureExtraction,
+    AiForce,
+    ApiCase,
+    AmsSupport,
+    CodeGreat,
+    AaigApi,
+    ResponsibleGen,
+    GraphData,
+    PredictiveAsset
+  ];
+
+  const mappedCards = await Promise.all(cardData.map(mapAssets));
+  return mappedCards;
+}
