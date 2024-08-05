@@ -1,3 +1,85 @@
+import axios from 'axios';
+import { images, videos } from './AssetImports';
+
+const URL_JSON_URL = 'https://aiml-convai.s3.amazonaws.com/URLJson.json';
+
+async function fetchURLJson() {
+  const response = await axios.get(URL_JSON_URL);
+  return response.data;
+}
+
+function mapAssets(card, assets) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? assets.images[card.imageUrl] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => assets.solutionFlows[flow])
+        : [],
+      demo: typeof card.content.demo === 'string'
+        ? assets.videos[card.content.demo]
+        : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => assets.architectures[arch])
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => assets.descriptions[desc])
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => assets.solutionsBenefits[benefit])
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => assets.adoption[adopt])
+        : [],
+    },
+  };
+}
+
+async function getCardsData() {
+  const urlJson = await fetchURLJson();
+
+  const assets = {
+    images: images,  // Static images from AssetImports
+    videos: videos,  // Static videos from AssetImports
+    solutionFlows: urlJson.solutionFlows || {},
+    architectures: urlJson.architectures || {},
+    descriptions: urlJson.descriptions || {},
+    solutionsBenefits: urlJson.solutionsBenefits || {},
+    adoption: urlJson.adoption || {},
+  };
+
+  const cardDataFiles = [
+    'IntelligentAssist',
+    'EmailEAR',
+    'CaseIntelligence',
+    'SmartRecruit',
+    'IAssureClaim',
+    'AssistantEV',
+    'AutoWiseCompanion',
+    'CitizenAdvisor',
+    'FinCompetitor',
+    'SignatureExtraction',
+    'AiForce',
+    'ApiCase',
+    'AmsSupport',
+    'CodeGreat',
+    'AaigApi',
+    'ResponsibleGen',
+    'GraphData',
+    'PredictiveAsset'
+  ];
+
+  const cardDataPromises = cardDataFiles.map(file =>
+    import(`./CardsData/${file}.json`).then(module => mapAssets(module.default, assets))
+  );
+
+  const cardsData = await Promise.all(cardDataPromises);
+  return cardsData;
+}
+
+export default getCardsData;
+
 
 
 import React, { useRef, useState, useEffect } from "react";
@@ -154,3 +236,61 @@ const App = () => (
 );
 
 export default App;
+
+
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import Header from "../Header/Header";
+import SideBar from "./SideBar";
+import MainContent from "./MainContent";
+import styles from "./SideBarPage.module.css"; // Import the module.css file for styling
+import { cardsData } from "../../data"; // Import cardsData from the data file
+
+const SideBarPage = () => {
+  const [activeTab, setActiveTab] = useState("description");
+  const [cardContent, setCardContent] = useState({});
+  const [cardTitle, setCardTitle] = useState("");
+  const location = useLocation();
+
+  useEffect(() => {
+    // Extract card title from query parameter
+    const params = new URLSearchParams(location.search);
+    const title = params.get("title");
+    if (title) {
+      setCardTitle(title);
+      const card = cardsData.find((c) => c.title === title);
+      if (card) {
+        setCardContent(card.content);
+      }
+    }
+  }, [location.search]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
+
+  // Function to handle clicking on the back button
+  const handleBackButtonClick = () => {
+    window.history.back(); // Go back to the previous page
+  };
+
+  return (
+    <div className={styles.sideBarPage}>
+      <Header />
+      <div className={styles.header2}>
+        <button onClick={handleBackButtonClick} className={styles.backButton}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
+      </div>
+      <div className={styles.contentWrapper}>
+        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
+        <MainContent activeTab={activeTab} content={cardContent} />
+      </div>
+    </div>
+  );
+};
+
+export default SideBarPage;
