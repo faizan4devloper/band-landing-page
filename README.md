@@ -42,7 +42,7 @@ const Home = ({
           const actualIndex = currentIndex + index;
           return (
             <Cards
-              key={index}
+              key={card.title} // Use unique card title as key
               imageUrl={card.imageUrl}
               title={card.title}
               description={card.description}
@@ -198,10 +198,9 @@ const App = () => (
   <Router>
     <MainApp />
   </Router>
-)
+);
 
-export default App
-
+export default App;
 
 
 import React, { useState, useEffect } from "react";
@@ -209,7 +208,6 @@ import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Header from "../Header/Header";
-// import Footer from "../Footer/Footer";
 import SideBar from "./SideBar";
 import MainContent from "./MainContent";
 import styles from "./SideBarPage.module.css"; // Import the module.css file for styling
@@ -261,7 +259,6 @@ const SideBarPage = () => {
 };
 
 export default SideBarPage;
-
 
 
 import axios from 'axios';
