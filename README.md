@@ -1,132 +1,82 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
-import BgVideo from "./BgVideos1.mp4";
+Uncaught TypeError: card.content.demo.split is not a function
+    at mapAssets (data.js:22:1)
+    at ./src/data.js (data.js:28:1)
+    at options.factory (hot module replacement:388:1)
+    at __webpack_require__ (bootstrap:11:1)
+    at fn (hot module replacement:50:1)
+    at ./src/components/Sidebar/SideBarPage.js (SideBar.js:51:1)
+    at options.factory (hot module replacement:388:1)
+    at __webpack_require__ (bootstrap:11:1)
+    at fn (hot module replacement:50:1)
+    at ./src/App.js (SolutionFlow.svg:31:1)
 
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
 
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
 
-      if (videoPosition <= triggerPoint && videoState !== "big") {
-        setVideoState("big");
-      } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
-        setVideoState("small");
-        if (isPlaying) {
-          videoRef.current.pause();
-          setIsPlaying(false);
-        }
-      }
-    }
+    
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import IAssureClaim from './CardsData/IAssureClaim.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+
+
+const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
+
+function mapAssets(card) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => typeof flow === 'string' ? solutionFlows[flow.split('.').pop()] : null)
+        : [],
+      demo: card.content.demo ? videos[card.content.demo.split('.').pop()] : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => typeof arch === 'string' ? architectures[arch.split('.').pop()] : null)
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => typeof desc === 'string' ? descriptions[desc.split('.').pop()] : null)
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => typeof benefit === 'string' ? solutionsBenefits[benefit.split('.').pop()] : null)
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => typeof adopt === 'string' ? adoption[adopt.split('.').pop()] : null)
+        : [],
+    },
   };
-
-  const togglePlayPause = () => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      if (isPlaying) {
-        videoElement.pause();
-      } else {
-        videoElement.play().catch(error => {
-          console.error("Autoplay prevented:", error);
-          alert("Please click the play button to start the video.");
-        });
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-
-    // Play video on user interaction (click)
-    const handleUserInteraction = () => {
-      if (videoRef.current && !isPlaying && videoState === "big") {
-        videoRef.current.play().catch(error => {
-          console.error("Autoplay prevented:", error);
-          alert("Please click the play button to start the video.");
-        });
-        setIsPlaying(true);
-      }
-    };
-
-    window.addEventListener("click", handleUserInteraction);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("click", handleUserInteraction);
-    };
-  }, [videoState, isPlaying]);
-
-  return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
-        <video
-          className={styles.video}
-          src={BgVideo}
-          muted
-          loop
-          ref={videoRef}
-          playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-        />
-        <button
-          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
-          onClick={togglePlayPause}
-        >
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
-  );
-};
-
-export default Home;
+}
+export const cardsData = [
+  mapAssets(IntelligentAssist),
+  mapAssets(EmailEAR),
+  mapAssets(CaseIntelligence),
+  mapAssets(SmartRecruit),
+  mapAssets(IAssureClaim),
+  mapAssets(AssistantEV),
+  mapAssets(AutoWiseCompanion),
+  mapAssets(CitizenAdvisor),
+  mapAssets(FinCompetitor),
+  mapAssets(SignatureExtraction),
+  mapAssets(AiForce),
+  mapAssets(ApiCase),
+  mapAssets(AmsSupport),
+  mapAssets(CodeGreat),
+  mapAssets(AaigApi),
+  mapAssets(ResponsibleGen),
+  mapAssets(GraphData),
+  mapAssets(PredictiveAsset),
+];
