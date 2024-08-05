@@ -1,16 +1,63 @@
-
-
 import React, { useRef, useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Header from "./components/Header/Header";
-import Home from "./Home"; // Import the updated Home component
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
 import SideBarPage from "./components/Sidebar/SideBarPage";
 import AllCardsPage from "./components/Cards/AllCardsPage";
 import { cardsData as initialCardsData } from "./data";
 import { BeatLoader } from "react-spinners"; // Import loaders
-import styles from "./App.module.css"; // Ensure this is imported for styling
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const visibleCards = cardsData.slice(currentIndex, currentIndex + 5);
+  return (
+    <>
+      <MyCarousel />
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {visibleCards.map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
 const MainApp = () => {
   const location = useLocation();
@@ -151,9 +198,10 @@ const App = () => (
   <Router>
     <MainApp />
   </Router>
-);
+)
 
-export default App;
+export default App
+
 
 
 import React, { useState, useEffect } from "react";
@@ -213,3 +261,87 @@ const SideBarPage = () => {
 };
 
 export default SideBarPage;
+
+
+
+import axios from 'axios';
+import { images, videos } from './AssetImports';
+
+const URL_JSON_URL = 'https://aiml-convai.s3.amazonaws.com/URLJson.json';
+
+async function fetchURLJson() {
+  const response = await axios.get(URL_JSON_URL);
+  return response.data;
+}
+
+function mapAssets(card, assets) {
+  return {
+    ...card,
+    imageUrl: card.imageUrl ? assets.images[card.imageUrl] : null,
+    content: {
+      ...card.content,
+      solutionFlow: Array.isArray(card.content.solutionFlow)
+        ? card.content.solutionFlow.map(flow => assets.solutionFlows[flow])
+        : [],
+      demo: typeof card.content.demo === 'string'
+        ? assets.videos[card.content.demo]
+        : null,
+      techArchitecture: Array.isArray(card.content.techArchitecture)
+        ? card.content.techArchitecture.map(arch => assets.architectures[arch])
+        : [],
+      descriptionFlow: Array.isArray(card.content.description)
+        ? card.content.description.map(desc => assets.descriptions[desc])
+        : [],
+      benefitsFlow: Array.isArray(card.content.benefits)
+        ? card.content.benefits.map(benefit => assets.solutionsBenefits[benefit])
+        : [],
+      adoptionFlow: Array.isArray(card.content.adoption)
+        ? card.content.adoption.map(adopt => assets.adoption[adopt])
+        : [],
+    },
+  };
+}
+
+async function getCardsData() {
+  const urlJson = await fetchURLJson();
+
+  const assets = {
+    images: images,  // Static images from AssetImports
+    videos: videos,  // Static videos from AssetImports
+    solutionFlows: urlJson.solutionFlows || {},
+    architectures: urlJson.architectures || {},
+    descriptions: urlJson.descriptions || {},
+    solutionsBenefits: urlJson.solutionsBenefits || {},
+    adoption: urlJson.adoption || {},
+  };
+
+  const cardDataFiles = [
+    'IntelligentAssist',
+    'EmailEAR',
+    'CaseIntelligence',
+    'SmartRecruit',
+    'IAssureClaim',
+    'AssistantEV',
+    'AutoWiseCompanion',
+    'CitizenAdvisor',
+    'FinCompetitor',
+    'SignatureExtraction',
+    'AiForce',
+    'ApiCase',
+    'AmsSupport',
+    'CodeGreat',
+    'AaigApi',
+    'ResponsibleGen',
+    'GraphData',
+    'PredictiveAsset'
+  ];
+
+  const cardDataPromises = cardDataFiles.map(file =>
+    import(`./CardsData/${file}.json`).then(module => mapAssets(module.default, assets))
+  );
+
+  const cardsData = await Promise.all(cardDataPromises);
+  return cardsData;
+}
+
+export default getCardsData;
