@@ -1,4 +1,4 @@
-// AssetImpor
+// AssetImports.js
 export const images = {
   IntelligentAss: require('./components/Cards/CardsImages/card3.jpg'),
   EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
@@ -20,7 +20,6 @@ export const images = {
   PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
 };
 
-// Videos
 export const videos = {
   EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
   SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
@@ -29,196 +28,96 @@ export const videos = {
   CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
   SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
   CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Citizen_Advisor-Demo1.mp4',
-};  
-
-// Solution Flows
-export const solutionFlows = {
-  EmailEarFlow: require('./components/Sidebar/Icons/EmailEarFlowGraph.png'),
-  IntelligentAssistFlow: require('./components/Sidebar/Icons/IntelligentAssistFlowGraph.png'),
-  CaseIntelligenceFlow: require('./components/Sidebar/Icons/CaseIntelligenceFlowGraph.png'),
-  IAssureClaimFlow: require('./components/Sidebar/Icons/IAssureClaimFlowGraph.png'),
-  CitizenAdvisorFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow1.png',
-  CitizenAdvisorFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow2.png',
-  CitizenAdvisorFlow3: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow3.png',
-  CitizenAdvisorFlow4: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow4.png',
-  CitizenAdvisorFlow5: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/solutionFlows/CitizenAdvisorFlow5.png',
-  SmartRecruitFlow1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow1.png',
-  SmartRecruitFlow2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/solutionFlows/SmartRecruitSolutionFlow2.png',
 };
 
-// Technical Architectures
-export const architectures = {
-  IntelligentAssistArchitecture: require('./components/Sidebar/Icons/IntelligentAssistarchitecture.png'),
-  EmailEARArchitecture: require('./components/Sidebar/Icons/EmailEARarchitecture.png'),
-  CaseIntelligenceArchitecture: require('./components/Sidebar/Icons/CaseIntelligencearchitecture.png'),
-  SmartRecruitArchitecture: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/technical-architecture/SmartRecruitArchitecture.png',
-  AssistantEvArchitecture: require('./components/Sidebar/Icons/AssistantEvachitecture.png'),
-  IAssureClaimArchitecture: require('./components/Sidebar/Icons/IAssureClaimarchitecture.png'),
-  AIForceArchitecture: require('./components/Sidebar/Icons/AIForcearchitecture.png'),
-  CitizenAdvisorArchitecture: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/technical-architecture/CitizenAdvisorArchitecture.png',
-};
-
-// Descriptions
-export const descriptions = {
-  citizenDescription: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/description/CitizenAdvisorDescription.png',
-  smartRecruitDescription1: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription1.png',
-  smartRecruitDescription2: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/description/SmartRecruitDescription2.png',
-};
-
-// Solutions Benefits
-export const solutionsBenefits = {
-  citizenBenefits: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/benefits/CitizenAdvisorBenefits.png',
-  smartRecruitBenefits: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/benefits/SmartRecruitBenefits.png',
-};
-
-// Adoption
-export const adoption = {
-  citizenAdoption: 'https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisor/industry-adoption/CitizenAdvisorAdoption.png',
-  smartRecruitAdoption: 'https://aiml-convai.s3.amazonaws.com/portal-slides/smart-recruit/industry-adoption/SmartRecruitAdoption.png',
-};
+// Solution Flows, Technical Architectures, Descriptions, Solutions Benefits, and Adoption will be handled dynamically
+export const solutionFlows = {};
+export const architectures = {};
+export const descriptions = {};
+export const solutionsBenefits = {};
+export const adoption = {};
 
 
 
 
+import axios from 'axios';
+import { images, videos } from './AssetImports';
 
-import IntelligentAssist from './CardsData/IntelligentAssist.json';
-import EmailEAR from './CardsData/EmailEAR.json';
-import CaseIntelligence from './CardsData/CaseIntelligence.json';
-import SmartRecruit from './CardsData/SmartRecruit.json';
-import IAssureClaim from './CardsData/IAssureClaim.json';
-import AssistantEV from './CardsData/AssistantEV.json';
-import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
-import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
-import FinCompetitor from './CardsData/FinCompetitor.json';
-import SignatureExtraction from './CardsData/SignatureExtraction.json';
-import AiForce from './CardsData/AiForce.json';
-import ApiCase from './CardsData/ApiCase.json';
-import AmsSupport from './CardsData/AmsSupport.json';
-import CodeGreat from './CardsData/CodeGreat.json';
-import AaigApi from './CardsData/AaigApi.json';
-import ResponsibleGen from './CardsData/ResponsibleGen.json';
-import GraphData from './CardsData/GraphData.json';
-import PredictiveAsset from './CardsData/PredictiveAsset.json';
+const URL_JSON_URL = 'https://aiml-convai.s3.amazonaws.com/URLJson.json';
 
+async function fetchURLJson() {
+  const response = await axios.get(URL_JSON_URL);
+  return response.data;
+}
 
-const { images, videos, solutionFlows, architectures, descriptions, solutionsBenefits, adoption } = require('./AssetImports');
-
-
-function mapAssets(card) {
+function mapAssets(card, assets) {
   return {
     ...card,
-    imageUrl: card.imageUrl ? images[card.imageUrl.split('.').pop()] : null,
+    imageUrl: card.imageUrl ? assets.images[card.imageUrl] : null,
     content: {
       ...card.content,
       solutionFlow: Array.isArray(card.content.solutionFlow)
-        ? card.content.solutionFlow.map(flow => typeof flow === 'string' ? solutionFlows[flow.split('.').pop()] : null)
+        ? card.content.solutionFlow.map(flow => assets.solutionFlows[flow])
         : [],
       demo: typeof card.content.demo === 'string'
-        ? videos[card.content.demo.split('.').pop()]
-        : null, // Ensure demo is a string before splitting
+        ? assets.videos[card.content.demo]
+        : null,
       techArchitecture: Array.isArray(card.content.techArchitecture)
-        ? card.content.techArchitecture.map(arch => typeof arch === 'string' ? architectures[arch.split('.').pop()] : null)
+        ? card.content.techArchitecture.map(arch => assets.architectures[arch])
         : [],
       descriptionFlow: Array.isArray(card.content.description)
-        ? card.content.description.map(desc => typeof desc === 'string' ? descriptions[desc.split('.').pop()] : null)
+        ? card.content.description.map(desc => assets.descriptions[desc])
         : [],
       benefitsFlow: Array.isArray(card.content.benefits)
-        ? card.content.benefits.map(benefit => typeof benefit === 'string' ? solutionsBenefits[benefit.split('.').pop()] : null)
+        ? card.content.benefits.map(benefit => assets.solutionsBenefits[benefit])
         : [],
       adoptionFlow: Array.isArray(card.content.adoption)
-        ? card.content.adoption.map(adopt => typeof adopt === 'string' ? adoption[adopt.split('.').pop()] : null)
+        ? card.content.adoption.map(adopt => assets.adoption[adopt])
         : [],
     },
   };
 }
 
-export const cardsData = [
-  mapAssets(IntelligentAssist),
-  mapAssets(EmailEAR),
-  mapAssets(CaseIntelligence),
-  mapAssets(SmartRecruit),
-  mapAssets(IAssureClaim),
-  mapAssets(AssistantEV),
-  mapAssets(AutoWiseCompanion),
-  mapAssets(CitizenAdvisor),
-  mapAssets(FinCompetitor),
-  mapAssets(SignatureExtraction),
-  mapAssets(AiForce),
-  mapAssets(ApiCase),
-  mapAssets(AmsSupport),
-  mapAssets(CodeGreat),
-  mapAssets(AaigApi),
-  mapAssets(ResponsibleGen),
-  mapAssets(GraphData),
-  mapAssets(PredictiveAsset),
-];
+async function getCardsData() {
+  const urlJson = await fetchURLJson();
 
+  const assets = {
+    images: images,  // Static images from AssetImports
+    videos: videos,  // Static videos from AssetImports
+    solutionFlows: urlJson.solutionFlows || {},
+    architectures: urlJson.architectures || {},
+    descriptions: urlJson.descriptions || {},
+    solutionsBenefits: urlJson.solutionsBenefits || {},
+    adoption: urlJson.adoption || {},
+  };
 
+  const cardDataFiles = [
+    'IntelligentAssist',
+    'EmailEAR',
+    'CaseIntelligence',
+    'SmartRecruit',
+    'IAssureClaim',
+    'AssistantEV',
+    'AutoWiseCompanion',
+    'CitizenAdvisor',
+    'FinCompetitor',
+    'SignatureExtraction',
+    'AiForce',
+    'ApiCase',
+    'AmsSupport',
+    'CodeGreat',
+    'AaigApi',
+    'ResponsibleGen',
+    'GraphData',
+    'PredictiveAsset'
+  ];
 
-{
-  "imageUrl": "images.CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos information to an intuitive, personalized revelations",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": ["citizenDescription"],
-    "solutionFlow": ["solutionFlows.CitizenAdvisorFlow1", "solutionFlows.CitizenAdvisorFlow2", "solutionFlows.CitizenAdvisorFlow3", "solutionFlows.CitizenAdvisorFlow4"],
-    "demo": "CitizenAdvisorDemo",
-    "techArchitecture": ["CitizenAdvisorArchitecture"],
-    "benefits": ["citizenBenefits"],
-    "adoption": ["citizenAdoption"]
-  }
+  const cardDataPromises = cardDataFiles.map(file =>
+    import(`./CardsData/${file}.json`).then(module => mapAssets(module.default, assets))
+  );
+
+  const cardsData = await Promise.all(cardDataPromises);
+  return cardsData;
 }
 
-
-
-{
-    "CitizenAdvisor": {
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/benefits/Slide8.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/techArchitecture/Slide7.png"],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide6.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide3.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide5.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide2.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/solutionFlow/Slide4.png"
-      ],
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/description/Slide1.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/citizenadvisorv1/adoption/Slide9.png"]
-    },
-    "CaseIntelligence": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/caseintelligence/benefits/Slide4.png"]
-    },
-    "IntelligentAssist": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/intelligentassist/benefits/Slide4.png"]
-    },
-    "SmartRecruit": {
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/adoption/Slide7.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/benefits/Slide6.png"],
-      "description": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide1.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/description/Slide2.png"
-      ],
-      "solutionFlow": [
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide3.png",
-        "https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/solutionFlow/Slide4.png"
-      ],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/smartrecruit/techArchitecture/Slide5.png"]
-    },
-    "EmailEAR": {
-      "description": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/description/Slide1.png"],
-      "techArchitecture": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/techArchitecture/Slide3.png"],
-      "adoption": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/adoption/Slide5.png"],
-      "solutionFlow": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/solutionFlow/Slide2.png"],
-      "benefits": ["https://aiml-convai.s3.amazonaws.com/portal-slides/emailear/benefits/Slide4.png"]
-    }
-  }
+export default getCardsData;
