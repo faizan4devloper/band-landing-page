@@ -1,3 +1,4 @@
+
 // AssetImports.js
 import axios from 'axios';
 export const images = {
@@ -406,3 +407,47 @@ export default MainContent;
     "adoption": "CitizenAdvisoradoption"
   }
 }
+why the description, solutionFlow, techArchitecture, benefits, adoption  not displaying means images
+Based on the code provided, the `fetchAssets` function is responsible for fetching the JSON data from the S3 bucket and caching it. However, the function itself doesn't directly display the data. It simply returns the fetched data, which can then be used in other parts of the application.
+
+The `getCardsData` function is where the data is mapped and transformed to be used in the application. This function calls `fetchAssets` and then maps the fetched data to the corresponding card data.
+
+In the `MainApp` component, the `useEffect` hook is used to call `getCardsData` and set the `cardsData` state with the resulting data. This is where the data is actually being used in the application.
+
+The reason the fetched data is not directly displayed is that the `fetchAssets` function is designed to be a reusable utility function that can be used across different parts of the application. The actual display of the data is handled in the `Home`, `AllCardsPage`, and other components that consume the `cardsData`.
+
+To display the fetched data, you would need to update the rendering logic in the components that use the `cardsData`. For example, in the `Home` component, you can display the data using the mapped `cardsData` that is passed as a prop.
+I understand now. The `fetchAssets` function is responsible for fetching the JSON data from the S3 bucket, but it doesn't directly display the data. Instead, the fetched data is used in the `getCardsData` function, which maps and transforms the data to be used in the application.
+
+The actual display of the data happens in the `Home`, `AllCardsPage`, and other components that consume the `cardsData`. In these components, you would need to update the rendering logic to display the fetched data correctly.
+
+For example, in the `Home` component, you can use the `cardsData` prop to display the data, like this:
+
+```jsx
+const Home = ({ cardsData, /* other props */ }) => {
+  return (
+    <div>
+      {cardsData.map((card, index) => (
+        <div key={index}>
+          <h3>{card.title}</h3>
+          <p>{card.description}</p>
+          {/* Display other card data */}
+          {/* Use the mapped data from the fetchAssets function */}
+          {card.content.solutionFlow && (
+            <div>
+              <h4>Solution Flow</h4>
+              {/* Render the solution flow images */}
+              {card.content.solutionFlow.map((image, index) => (
+                <img key={index} src={image} alt={`Solution Flow ${index}`} />
+              ))}
+            </div>
+          )}
+          {/* Render other card content */}
+        </div>
+      ))}
+    </div>
+  );
+};
+```
+
+Similarly, you can update the rendering logic in the `AllCardsPage` and other components that use the `cardsData` to display the fetched data correctly.
