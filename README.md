@@ -1,78 +1,119 @@
-import { images, videos, fetchAssets } from './AssetImports';
 
-// Mapping assets for a specific card
-async function mapAssets(card) {
-  const assets = await fetchAssets();
-  
-  // Sanitize the title to match the keys in urldata.json
-  const assetKey = card.title.replace(/\s+/g, '');
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
 
-  // Access the data for the specific asset
-  const data = {
-    solutionFlow: assets[`${assetKey}solutionFlow`] || null,
-    techArchitecture: assets[`${assetKey}techArchitecture`] || null,
-    description: assets[`${assetKey}description`] || null,
-    benefits: assets[`${assetKey}benefits`] || null,
-    adoption: assets[`${assetKey}adoption`] || null,
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
   };
-  
-  console.log(`Data for ${card.title}:`, data);
 
-  return {
-    ...card,
-    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
-    content: {
-      ...card.content,
-      solutionFlow: data.solutionFlow || null,
-      demo: videos[card.content.demo] || null,
-      techArchitecture: data.techArchitecture || null,
-      description: data.description || null,
-      benefits: data.benefits || null,
-      adoption: data.adoption || null,
-    },
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+          >
+            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className={maximizedImage === image ? styles.maximized : ""}
+              onClick={() => toggleMaximize(image)}
+            />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return <div>No images available</div>;
+    }
+    
+    return images.length > 1 ? renderCarousel(images) : (
+      <img
+        src={images[0]}
+        alt="Single Image"
+        className={maximizedImage === images[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(images[0])}
+      />
+    );
   };
-}
 
-// Mapping cards data asynchronously
-export async function getCardsData() {
-  const cardsData = await Promise.all([
-    mapAssets(IntelligentAssist),
-    mapAssets(EmailEAR),
-    mapAssets(CaseIntelligence),
-    mapAssets(SmartRecruit),
-    mapAssets(IAssureClaim),
-    mapAssets(AssistantEV),
-    mapAssets(AutoWiseCompanion),
-    mapAssets(CitizenAdvisor),
-    mapAssets(FinCompetitor),
-    mapAssets(SignatureExtraction),
-    mapAssets(AiForce),
-    mapAssets(ApiCase),
-    mapAssets(AmsSupport),
-    mapAssets(CodeGreat),
-    mapAssets(AaigApi),
-    mapAssets(ResponsibleGen),
-    mapAssets(GraphData),
-    mapAssets(PredictiveAsset),
-  ]);
-
-  return cardsData;
-}
-
-
-
-
-{
-  "imageUrl": "CitizenAdvisor",
-  "title": "Citizen Advisor",
-  "description": "An experience transformation from disconnected silos of information to intuitive, personalized revelations.",
-  "industry": "GOVT",
-  "businessFunction": "Customer Experience",
-  "content": {
-    "description": "CitizenAdvisordescription",
-    "demo": "CitizenAdvisorDemo",
-    "techArchitecture": "CitizenAdvisortechArchitecture",
-    "benefits": "CitizenAdvisorbenefits",
-    "adoption": "CitizenAdvisoradoption"
+  if (!content) {
+    return <div className={styles.mainContent}>Content not available</div>;
   }
-}
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.descriptionFlow)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefitsFlow)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoptionFlow)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
