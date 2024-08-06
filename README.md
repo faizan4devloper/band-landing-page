@@ -1,3 +1,102 @@
+import axios from 'axios';
+
+// Static Image Imports
+export const images = {
+  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
+  ClaimAssist: require('./components/Cards/CardsImages/card9.jpg'),
+  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.jpg'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
+  Signature: require('./components/Cards/CardsImages/card2.jpg'),
+  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
+  APICase: require('./components/Cards/CardsImages/card13.jpg'),
+  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
+  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
+  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
+  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
+  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
+  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
+  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
+};
+
+// Function to Fetch and Cache JSON Data Using Axios
+export async function fetchAssets() {
+  try {
+    const response = await axios.get('https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch assets:', error);
+    return {}; // Fallback to an empty object in case of error
+  }
+}
+
+// Mapping assets for a specific card
+async function mapAssets(card) {
+  const assets = await fetchAssets();
+  
+  // Sanitize the title to match the keys in urldata.json
+  const assetKey = card.title.replace(/\s+/g, '');
+
+  // Access the data for the specific asset
+  const data = {
+    solutionFlow: assets[`${assetKey}solutionFlow`] || null,
+    techArchitecture: assets[`${assetKey}techArchitecture`] || null,
+    description: assets[`${assetKey}description`] || null,
+    benefits: assets[`${assetKey}benefits`] || null,
+    adoption: assets[`${assetKey}adoption`] || null,
+    demo: assets[`${assetKey}demo`] || null,
+  };
+  
+  console.log(`Data for ${card.title}:`, data);
+
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow || null,
+      demo: data.demo || null,
+      techArchitecture: data.techArchitecture || null,
+      description: data.description || null,
+      benefits: data.benefits || null,
+      adoption: data.adoption || null,
+    },
+  };
+}
+
+// Mapping cards data asynchronously
+export async function getCardsData() {
+  const cardsData = await Promise.all([
+    mapAssets(IntelligentAssist),
+    mapAssets(EmailEAR),
+    mapAssets(CaseIntelligence),
+    mapAssets(SmartRecruit),
+    mapAssets(ClaimAssist),
+    mapAssets(AssistantEV),
+    mapAssets(AutoWiseCompanion),
+    mapAssets(CitizenAdvisor),
+    mapAssets(FinCompetitor),
+    mapAssets(SignatureExtraction),
+    mapAssets(AiForce),
+    mapAssets(ApiCase),
+    mapAssets(AmsSupport),
+    mapAssets(CodeGreat),
+    mapAssets(AaigApi),
+    mapAssets(ResponsibleGen),
+    mapAssets(GraphData),
+    mapAssets(PredictiveAsset),
+  ]);
+
+  return cardsData;
+}
+
+
+
+
 // AssetImports.js
 import axios from 'axios';
 
