@@ -1,160 +1,33 @@
-import axios from 'axios';
 
-// Static Images
-export const images = {
-  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
-  ClaimAssist: require('./components/Cards/CardsImages/card9.jpg'),
-  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
-  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.jpg'),
-  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
-  Signature: require('./components/Cards/CardsImages/card2.jpg'),
-  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
-  APICase: require('./components/Cards/CardsImages/card13.jpg'),
-  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
-  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
-  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
-  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
-  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
-  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
-  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
-  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
-};
-
-// Optional: Dynamic Videos Loading if Required
-// export const videos = {
-//   EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-//   SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
-//   IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
-//   CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
-//   CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
-//   SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
-//   CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/portal-videos/CitizenAdvisorDemo.mp4',
-// };
-
-// Fetch and cache JSON data using Axios with cache-busting
-export async function fetchAssets() {
-  try {
-    const response = await axios.get(`https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json?timestamp=${new Date().getTime()}`, {
-      headers: {
-        'Cache-Control': 'no-cache', // Disable caching
-      }
-    });
-
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch assets:', error);
-    return {}; // Fallback to an empty object in case of error
-  }
-}
-
-// Example usage: Fetch assets and do something with them
-fetchAssets().then(data => {
-  console.log('Fetched Assets:', data);
-  // You can do further processing here, like updating your state or storing the data
-});
-
-// Export additional utility functions or constants as needed
-// AssetImports.js
-import axios from 'axios';
-
-export const images = {
-  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
-  ClaimAssist: require('./components/Cards/CardsImages/card9.jpg'),
-  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
-  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.jpg'),
-  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
-  Signature: require('./components/Cards/CardsImages/card2.jpg'),
-  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
-  APICase: require('./components/Cards/CardsImages/card13.jpg'),
-  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
-  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
-  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
-  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
-  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
-  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
-  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
-  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
-};
-
-// // Videos
-// export const videos = {
-//   EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-//   SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
-//   IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
-//   CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
-//   CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
-//   SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
-//   CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/portal-videos/CitizenAdvisorDemo.mp4',
-// };
+**Build the image > docker build -t my-react-app > Run a Container > docker run -d -p 3000:3000 my-react-app
 
 
-// Fetch and cache JSON data using Axios
-export async function fetchAssets() {
-  try {
-    const response = await axios.get('https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json');
-    console.log(response.data)
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch assets:', error);
-    return {}; // Fallback to an empty object in case of error
-  }
-}
+# Step 1: Build the React app
+FROM node:18 AS build
 
+# Set the working directory
+WORKDIR /app
 
+# Copy package.json and package-lock.json
+COPY package*.json ./
 
-// AssetImports.js
-import axios from 'axios';
+# Install dependencies
+RUN npm install
 
-export const images = {
-  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
-  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
-  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
-  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
-  ClaimAssist: require('./components/Cards/CardsImages/card9.jpg'),
-  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
-  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.jpg'),
-  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
-  Signature: require('./components/Cards/CardsImages/card2.jpg'),
-  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
-  APICase: require('./components/Cards/CardsImages/card13.jpg'),
-  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
-  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
-  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
-  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
-  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
-  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
-  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
-  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
-};
+# Copy the rest of the application code
+COPY . .
 
-// // Videos
-// export const videos = {
-//   EmailEARDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4',
-//   SignatureExtractionDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4',
-//   IntelligentAssistDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4',
-//   CaseIntelligenceDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4',
-//   CodeGReatDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4',
-//   SmartRecruitDemo: 'https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4',
-//   CitizenAdvisorDemo: 'https://aiml-convai.s3.amazonaws.com/portal-videos/CitizenAdvisorDemo.mp4',
-// };
+# Build the React app
+RUN npm run build
 
+# Step 2: Serve the React app using Nginx
+FROM nginx:alpine
 
-// Fetch and cache JSON data using Axios
-export async function fetchAssets() {
-  try {
-    const response = await axios.get('https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json');
-    console.log(response.data)
-    return response.data;
-  } catch (error) {
-    console.error('Failed to fetch assets:', error);
-    return {}; // Fallback to an empty object in case of error
-  }
-}
+# Copy built assets from the previous stage
+COPY --from=build /app/build /usr/share/nginx/html
 
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
