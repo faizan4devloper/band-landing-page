@@ -1,3 +1,6 @@
+Uncaught (in promise) DOMException: The play() request was interrupted because the media was removed from the document. https://goo.gl/LdLk22
+
+
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
