@@ -23,6 +23,56 @@ export const images = {
   AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
 };
 
+// Static Video Imports with Cache Busting
+export const videos = {
+  EmailEARDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/Email-EAR_Demo_new.mp4?v=${Date.now()}`,
+  SignatureExtractionDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/Sign_Verification_New.mp4?v=${Date.now()}`,
+  IntelligentAssistDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/Intelligent_Assist-QnA_DemoVideo_new.mp4?v=${Date.now()}`,
+  CaseIntelligenceDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/Case-Intelligence_demo.mp4?v=${Date.now()}`,
+  CodeGReatDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/CodeGreat_Demo_new.mp4?v=${Date.now()}`,
+  SmartRecruitDemo: `https://aiml-convai.s3.amazonaws.com/demovideos/SmartRecruit_IvAssist_Demo.mp4?v=${Date.now()}`,
+  CitizenAdvisorDemo: `https://aiml-convai.s3.amazonaws.com/portal-videos/CitizenAdvisorDemo.mp4?v=${Date.now()}`,
+};
+
+// Function to Fetch and Cache JSON Data Using Axios
+export async function fetchAssets() {
+  try {
+    const response = await axios.get(`https://aiml-convai.s3.amazonaws.com/portal-slides/urldata.json?v=${Date.now()}`);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch assets:', error);
+    return {}; // Fallback to an empty object in case of error
+  }
+}
+
+
+
+
+import axios from 'axios';
+
+// Static Image Imports
+export const images = {
+  IntelligentAssist: require('./components/Cards/CardsImages/card3.jpg'),
+  EmailEAR: require('./components/Cards/CardsImages/card1.jpg'),
+  CaseIntelligence: require('./components/Cards/CardsImages/card4.jpg'),
+  SmartRecruit: require('./components/Cards/CardsImages/card8.jpg'),
+  ClaimAssist: require('./components/Cards/CardsImages/card9.jpg'),
+  AssistantEV: require('./components/Cards/CardsImages/card10.jpg'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.jpg'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/card82.jpg'),
+  Signature: require('./components/Cards/CardsImages/card2.jpg'),
+  AIForce: require('./components/Cards/CardsImages/card19.jpg'),
+  APICase: require('./components/Cards/CardsImages/card13.jpg'),
+  AMSSupport: require('./components/Cards/CardsImages/AUTOMATION.jpg'),
+  SOP: require('./components/Cards/CardsImages/SOP.jpg'),
+  CodeGReat: require('./components/Cards/CardsImages/card5.jpg'),
+  AAIG: require('./components/Cards/CardsImages/card16.jpg'),
+  ResponsibleGen: require('./components/Cards/CardsImages/card17.jpg'),
+  GraphData: require('./components/Cards/CardsImages/card18.jpg'),
+  PredictiveAsset: require('./components/Cards/CardsImages/card11.jpg'),
+  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.jpg'),
+};
+
 // Function to Fetch and Cache JSON Data Using Axios
 export async function fetchAssets() {
   try {
