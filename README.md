@@ -1,130 +1,123 @@
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
+import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
+import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import { Link } from "react-router-dom";
+import BgVideo from "./BgVideos1.mp4";
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const [videoState, setVideoState] = useState("hidden");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
 
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
-  };
+ const handleScroll = () => {
+  if (videoRef.current) {
+    const videoPosition = videoRef.current.getBoundingClientRect().top;
+    const triggerPoint = window.innerHeight / 2;
 
-  const renderCarousel = (images) => (
-    <div className={styles.carouselContainer}>
-      <div className={styles.customThumbs}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-            onClick={() => setCurrentSlide(index)}
-          >
-            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-          </div>
-        ))}
-      </div>
-      <Carousel
-        showArrows={false}
-        showIndicators={false}
-        showThumbs={false}
-        showStatus={false}
-        selectedItem={currentSlide}
-        onChange={(index) => setCurrentSlide(index)}
-        className={styles.customCarousel}
-      >
-        {images.map((image, index) => (
-          <div key={index}>
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className={maximizedImage === image ? styles.maximized : ""}
-              onClick={() => toggleMaximize(image)}
-            />
-          </div>
-        ))}
-      </Carousel>
-    </div>
-  );
-
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <div>No content available</div>;
+    if (videoPosition <= triggerPoint && videoState !== "big") {
+      setVideoState("big");
+      if (!isPlaying) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
+      setVideoState("small");
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
     }
-    
-    if (typeof content === 'string') {
-      return <div>{content}</div>;
-    }
-
-    return content.length > 1 ? renderCarousel(content) : (
-      <img
-        src={content[0]}
-        alt="Single Image"
-        className={maximizedImage === content[0] ? styles.maximized : ""}
-        onClick={() => toggleMaximize(content[0])}
-      />
-    );
-  };
-
-  const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <div>No images available</div>;
-    }
-    
-    return renderContent(images);
-  };
-
-  if (!content) {
-    return <div className={styles.mainContent}>Content not available</div>;
   }
+};
 
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
+
+  const togglePlayPause = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      if (isPlaying) {
+        videoElement.pause();
+      } else {
+        videoElement.play();
+      }
+      setIsPlaying(!isPlaying);
+    } else {
+      console.error("Video element is not available or not properly referenced.");
+    }
   };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+    <>
+      <MyCarousel />
+      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
+        <video
+          className={styles.video}
+          src={BgVideo}
+          muted
+          loop
+          ref={videoRef}
+          playsInline
+          onClick={togglePlayPause} // Allow play/pause by clicking on video
+        />
+        <button
+          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
+          onClick={togglePlayPause}
+        >
+          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+        </button>
+      </div>
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
         </div>
-      )}
-    </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
   );
 };
 
-export default MainContent;
+export default Home;
+
