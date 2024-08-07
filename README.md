@@ -1,3 +1,57 @@
+/* Desktop and large screens */
+@media screen and (min-width: 1024px) {
+  .app {
+    width: 1100px;
+    margin: 0 auto;
+  }
+
+  .allCardsPage {
+    padding: 20px;
+    margin-top: 112px;
+    margin-left: 270px;
+    position: fixed;
+  }
+
+  .cardsContainer {
+    gap: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* Tablet screens */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .app {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .allCardsPage {
+    margin-left: 220px;
+  }
+
+  .cardsContainer {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
+
+/* Prevent layout changes for phones */
+@media screen and (max-width: 767px) {
+  .app,
+  .allCardsPage,
+  .cardsContainer {
+    display: none; /* Hide main content on phones */
+  }
+}
+
+
+
+
 // App.module.css
 ::-webkit-scrollbar {
   width: 4px;
