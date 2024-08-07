@@ -5,6 +5,30 @@ const handleFilterChange = (updatedActiveItems) => {
   const businessFunctionFilters = updatedActiveItems["Business Function"] || [];
 
   const filtered = cardsData.filter((card) => {
+    const matchesIndustry =
+      industryFilters.length === 0 ||
+      industryFilters.includes("All") || // If "All" is selected, show all cards for Industry
+      industryFilters.includes(card.industry);
+
+    const matchesBusinessFunction =
+      businessFunctionFilters.length === 0 ||
+      businessFunctionFilters.includes("All") || // If "All" is selected, show all cards for Business Function
+      businessFunctionFilters.includes(card.businessFunction);
+
+    return matchesIndustry && matchesBusinessFunction;
+  });
+
+  setFilteredCards(filtered);
+};
+
+
+const handleFilterChange = (updatedActiveItems) => {
+  setActiveItems(updatedActiveItems);
+
+  const industryFilters = updatedActiveItems["Industry"] || [];
+  const businessFunctionFilters = updatedActiveItems["Business Function"] || [];
+
+  const filtered = cardsData.filter((card) => {
     const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
     const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
     return matchesIndustry && matchesBusinessFunction;
