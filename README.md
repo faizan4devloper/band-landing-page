@@ -1,33 +1,123 @@
+import React, { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import { Link } from "react-router-dom";
+import BgVideo from "./BgVideos1.mp4";
 
-**Build the image > docker build -t my-react-app > Run a Container > docker run -d -p 3000:3000 my-react-app
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const [videoState, setVideoState] = useState("hidden");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+ const handleScroll = () => {
+  if (videoRef.current) {
+    const videoPosition = videoRef.current.getBoundingClientRect().top;
+    const triggerPoint = window.innerHeight / 2;
+
+    if (videoPosition <= triggerPoint && videoState !== "big") {
+      setVideoState("big");
+      if (!isPlaying) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
+      setVideoState("small");
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  }
+};
 
 
-# Step 1: Build the React app
-FROM node:18 AS build
+  const togglePlayPause = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      if (isPlaying) {
+        videoElement.pause();
+      } else {
+        videoElement.play();
+      }
+      setIsPlaying(!isPlaying);
+    } else {
+      console.error("Video element is not available or not properly referenced.");
+    }
+  };
 
-# Set the working directory
-WORKDIR /app
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
-# Install dependencies
-RUN npm install
+  return (
+    <>
+      <MyCarousel />
+      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
+        <video
+          className={styles.video}
+          src={BgVideo}
+          muted
+          loop
+          ref={videoRef}
+          playsInline
+          onClick={togglePlayPause} // Allow play/pause by clicking on video
+        />
+        <button
+          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
+          onClick={togglePlayPause}
+        >
+          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+        </button>
+      </div>
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
 
-# Copy the rest of the application code
-COPY . .
+export default Home;
 
-# Build the React app
-RUN npm run build
-
-# Step 2: Serve the React app using Nginx
-FROM nginx:alpine
-
-# Copy built assets from the previous stage
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
