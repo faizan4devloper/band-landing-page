@@ -1,3 +1,124 @@
+
+
+
+const handleScroll = () => {
+  if (videoRef.current) {
+    const videoPosition = videoRef.current.getBoundingClientRect().top;
+    const triggerPoint = window.innerHeight / 2;
+
+    if (videoPosition <= triggerPoint && videoState !== "big") {
+      setVideoState("big");
+      if (!isPlaying) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
+      setVideoState("small");
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  }
+};
+
+const debounce = (func, wait) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+};
+
+const handleDebouncedScroll = debounce(handleScroll, 100);
+
+useEffect(() => {
+  window.addEventListener("scroll", handleDebouncedScroll);
+
+  return () => {
+    window.removeEventListener("scroll", handleDebouncedScroll);
+  };
+}, [handleDebouncedScroll]);.videoContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  opacity: 0;
+  width: 100%;
+  height: 95vh;
+  transform: translateX(-100%); /* Start hidden to the left */
+}
+
+.videoContainer.big {
+  transform: translateX(0); /* Slide in from left */
+  opacity: 1;
+}
+
+.videoContainer.small {
+  transform: translateX(-100%); /* Slide out to the left */
+  opacity: 0; /* Smoothly disappear */
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+.video:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.playPauseButton {
+  position: absolute;
+  bottom: 20px;
+  right: 25px;
+  background-color: rgba(95, 30, 193, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.playPauseButton:hover {
+  background-color: rgba(95, 30, 193, 1);
+  transform: scale(1.2) rotate(5deg); /* Added rotation for a dynamic effect */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.playPauseButton.pulse {
+  animation: pulse 2s infinite;
+}
+
+
+
 /* CSS Enhancements */
 
 /* Container animations */
