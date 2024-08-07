@@ -1,3 +1,88 @@
+/* CSS Enhancements */
+
+/* Container animations */
+.videoContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  opacity: 0;
+  width: 100%;
+  height: 95vh;
+}
+
+.videoContainer.small {
+  transform: translateX(0) scale(0.5);
+  opacity: 1;
+}
+
+.videoContainer.big {
+  transform: translateX(0) scale(1);
+  opacity: 1;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+/* Hover and active effects */
+.video:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.playPauseButton {
+  position: absolute;
+  bottom: 20px;
+  right: 25px;
+  background-color: rgba(95, 30, 193, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.playPauseButton:hover {
+  background-color: rgba(95, 30, 193, 1);
+  transform: scale(1.2) rotate(5deg); /* Added rotation for a dynamic effect */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Pulse effect on button */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.playPauseButton.pulse {
+  animation: pulse 2s infinite;
+}
+
+
+
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
