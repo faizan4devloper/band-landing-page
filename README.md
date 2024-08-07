@@ -1,4 +1,28 @@
+const handleFilterChange = (updatedActiveItems) => {
+  setActiveItems(updatedActiveItems);
 
+  const industryFilters = updatedActiveItems["Industry"] || [];
+  const businessFunctionFilters = updatedActiveItems["Business Function"] || [];
+
+  const filtered = cardsData.filter((card) => {
+    const matchesIndustry = industryFilters.length === 0 || industryFilters.includes(card.industry) || industryFilters.includes("All");
+    const matchesBusinessFunction = businessFunctionFilters.length === 0 || businessFunctionFilters.includes(card.businessFunction) || businessFunctionFilters.includes("All");
+    return matchesIndustry && matchesBusinessFunction;
+  });
+
+  setFilteredCards(filtered);
+};
+
+const generateTags = (card) => {
+  const tags = [];
+  if (activeItems["Industry"]?.includes(card.industry) && card.industry !== "All") {
+    tags.push(card.industry);
+  }
+  if (activeItems["Business Function"]?.includes(card.businessFunction) && card.businessFunction !== "All") {
+    tags.push(card.businessFunction);
+  }
+  return tags;
+};
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import styles from "./AllCardsPage.module.css";
