@@ -1,3 +1,5 @@
+The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22
+
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
