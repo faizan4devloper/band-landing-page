@@ -1,261 +1,209 @@
-/* General Styles */
-::-webkit-scrollbar {
-  width: 4px;
-}
+import json
 
-::-webkit-scrollbar-thumb {
-  background: #5f1ec1; 
-  border-radius: 10px;
-}
+def lambda_handler(event, context):
+    try:
+        # Extract the form data from the event object
+        form_data = json.loads(event['body'])
+        userName = form_data['userName']
+        email = form_data['email']
+        solution = form_data['solution']
+        domain = form_data['domain']
+        customerName = form_data['customerName']
+        details = form_data['details']
 
-html, body {
-  font-family: "Poppins", sans-serif;
-  margin: 0;
-  padding: 0;
-}
+        # Process the form data as needed
+        print('Form data:', {
+            'userName': userName,
+            'email': email,
+            'solution': solution,
+            'domain': domain,
+            'customerName': customerName,
+            'details': details
+        })
 
-.app {
-  width: 100%; /* Changed to 100% for responsiveness */
-  margin: 0 auto;
-}
+        # Return a successful response
+        return {
+            'statusCode': 200,
+            'body': json.dumps({'message': 'Form submitted successfully'})
+        }
+    except Exception as e:
+        print('Error processing form:', e)
 
-.cardsContainer {
-  gap: 20px;
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'body': json.dumps({'message': 'Error submitting form'})
+        }
 
-.arrow {
-  cursor: pointer;
-  position: relative;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 50px;
-  border: 2px solid rgba(15, 95, 220, 1);
-  color: rgba(15, 95, 220, 1);
-  transition: transform 0.5s ease, background 0.5s ease;
-}
 
-.arrow:hover {
-  background-color: rgba(15, 95, 220, 1);
-  color: white;
-}
 
-.leftArrow {
-  left: -25px;
-  top: 90px;
-}
+import React, { useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-.rightArrow {
-  right: -25px;
-  top: 90px;
-}
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+  
+  
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-.viewAllContainer {
-  width: 100%;
-  display: flex;
-  justify-content: right;
-  align-items: center;
-  margin-right: 112px;
-}
+  // Get the form data
+  const formData = {
+    userName: 'John Doe', // Replace with the actual user name from the form
+    email: 'johndoe@example.com', // Replace with the actual email from the form
+    solution: selectedSolution.label, // Get the selected solution label
+    domain: 'Example Domain', // Replace with the actual domain from the form
+    customerName: 'Example Customer', // Replace with the actual customer name from the form
+    details: 'This is the additional details provided in the form.' // Replace with the actual details from the form
+  };
 
-.solutionHead {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  margin-left: 118px;
-}
-
-.viewAllButton {
-  font-weight: 600;
-  font-size: 14px;
-  color: #808080;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 7px;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.viewAllButton:hover {
-  transform: translateY(-5px);
-  color: #5f1ec1;
-  background-color: rgba(13, 85, 198, 0.1);
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
-}
-
-.viewAllButton:hover .icon {
-  transform: translateX(5px);
-}
-
-.scrollDownButton,
-.scrollUpButton {
-  position: fixed;
-  left: 20px;
-  bottom: 20px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  width: 21px;
-  height: 22px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.scrollDownButton:hover, .scrollUpButton:hover {
-  background-color: rgba(13, 85, 198, 1);
-}
-
-.loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
-  z-index: 1000;
-}
-
-.videoContainer {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%; /* Full width */
-  height: 100vh; /* Full viewport height */
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* Prevent overflow */
-}
-
-.video {
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  object-fit: cover; /* Cover the container */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
-}
-
-.video:hover {
-  transform: scale(1.02);
-  filter: brightness(1.1);
-}
-
-.playPauseButton {
-  position: absolute;
-  bottom: 20px;
-  right: 25px;
-  background-color: rgba(95, 30, 193, 0.8);
-  color: white;
-  border: none;
-  padding: 12px 15px;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.playPauseButton:hover {
-  background-color: rgba(95, 30, 193, 1);
-  transform: scale(1.2);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  try {
+    // Send the form data to the Lambda function through the API Gateway
+    await axios.post('https://75x831r7ea.execute-api.us-east-1.amazonaws.com/v1', formData);
+    
+    setIsSubmitted(true);
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    // Handle error case
   }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  }
-}
+};
 
-.playPauseButton.pulse {
-  animation: pulse 2s infinite;
-}
 
-/* Responsive Styles */
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
+    closeModal();
+  };
 
-/* Large Screens (Desktop) */
-@media screen and (min-width: 1024px) {
-  .app {
-    width: 100%;
-    margin: 0 auto;
-  }
+ const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    borderRadius: "4px",
+    width: "91%", // Control width
+    border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    color: "#555",
+    boxShadow: "none", // Remove the default box-shadow
+    "&:hover": {
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc"
+    }
+  }),
+  option: (provided, state) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
+    color: state.isSelected ? "#fff" : "#555",
+    fontSize: "12px", // Option font size
+    cursor: "pointer",
+    "&:hover": {
+      backgroundColor: state.isSelected ? "#5f1ec1" : "#f0f0f0" // Change hover background color
+    }
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    fontSize: "12px", // Placeholder font size
+    color: "#999" // Placeholder color
+  }),
+  menu: (provided) => ({
+    ...provided,
+    width: "91%",
+     // Limit the height of the menu to 150px
+    overflowY: "auto", // Enable vertical scrolling when necessary
+    zIndex: 2 // Ensure it is above other elements
+  }),
+  menuList: (provided) => ({
+    ...provided,
+    maxHeight: "150px",
+    padding: 0 // Remove padding to avoid additional scrolling issues
+  }),
+  singleValue: (provided) => ({
+    ...provided,
+    fontSize: "12px",
+    color: "#555" // Single value color
+  })
+};
 
-  .allCardsPage {
-    padding: 20px;
-    margin-top: 112px;
-    margin-left: 270px;
-    position: fixed;
-  }
 
-  .cardsContainer {
-    gap: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
 
-/* Tablet Screens */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  .app {
-    width: 100%;
-    padding: 0 20px;
-  }
+  return (
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={handleCloseModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>*User Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>*Email Address</label>
+            <input type="email" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>GenAI Solution Name</label>
+            <div className={styles.customSelect}>
+              <Select
+                styles={customStyles}
+                value={selectedSolution}
+                onChange={setSelectedSolution}
+                options={[
+                  { value: "option1", label: "Intelligent Assist" },
+                  { value: "option2", label: "Email EAR" },
+                  { value: "option3", label: "Case Intelligence" },
+                  { value: "option4", label: "Smart Recruit" },
+                  { value: "option5", label: "iAssure Claim" },
+                  { value: "option6", label: "Assistant For EVs" },
+                  { value: "option7", label: "AutoWise Companion" },
+                  { value: "option8", label: "Citizen Advisor" },
+                  { value: "option9", label: "Fin Competitor Summary Gen" },
+                  { value: "option10", label: "Signature Extraction & Verification" },
+                  { value: "option11", label: "AI Force" },
+                  { value: "option12", label: "API based Test Case Generation" },
+                  { value: "option13", label: "AMS Support Automation" },
+                  { value: "option14", label: "SOP Assistance" },
+                  { value: "option15", label: "Code GReat" },
+                  { value: "option16", label: "AAIG-API Analyzer & Insight Generator" },
+                  { value: "option17", label: "Responsible Gen AI with Llama-13 B" },
+                  { value: "option18", label: "Graph data Interpretation using Gen AI" },
+                  { value: "option19", label: "Predictive Asset Maintenance​(PAM)​" },
+                ]}
+              />
+            </div>
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input type="text" required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>More Details</label>
+            <textarea
+              placeholder="Enter your business details and scope of this demo in your use case."
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Submit
+          </button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted
+          successfully.
+        </p>
+      )}
+    </div>
+  );
+};
 
-  .allCardsPage {
-    margin-left: 220px;
-  }
-
-  .cardsContainer {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .sidebar {
-    width: 200px;
-  }
-}
-
-/* Small Screens (Phones) */
-@media screen and (max-width: 767px) {
-  .app,
-  .allCardsPage,
-  .cardsContainer {
-    display: none; /* Hide main content on phones */
-  }
-}
+export default RequestDemoForm;
