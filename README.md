@@ -1,5 +1,77 @@
 import json
 import boto3
+from botocore.exceptions import ClientError
+
+# Initialize the DynamoDB client
+dynamodb = boto3.resource('dynamodb')
+
+# Replace 'RequestDemoSubmissions' with your actual table name
+table = dynamodb.Table('RequestDemoSubmissions')
+
+def lambda_handler(event, context):
+    try:
+        # Extract the form data from the event object
+        form_data = json.loads(event['body'])
+        userName = form_data['userName']
+        email = form_data['email']
+        solution = form_data['solution']
+        domain = form_data['domain']
+        customerName = form_data['customerName']
+        details = form_data['details']
+
+        # Save the form data to DynamoDB
+        response = table.put_item(
+            Item={
+                'email': email,  # Primary Key
+                'userName': userName,
+                'solution': solution,
+                'domain': domain,
+                'customerName': customerName,
+                'details': details
+            }
+        )
+
+        # Return a successful response
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            'body': json.dumps({'message': 'Form submitted and saved to DynamoDB successfully'})
+        }
+    except ClientError as e:
+        print('DynamoDB error:', e)
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            'body': json.dumps({'message': 'Error saving form data to DynamoDB'})
+        }
+    except Exception as e:
+        print('Error processing form:', e)
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            'body': json.dumps({'message': 'Error submitting form'})
+        }
+
+
+
+
+
+import json
+import boto3
 import uuid
 
 # Initialize DynamoDB client
