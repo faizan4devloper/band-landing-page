@@ -1,5 +1,74 @@
 import json
 import boto3
+import uuid
+
+# Initialize DynamoDB client
+dynamodb = boto3.resource('dynamodb')
+table_name = 'DemoRequests'  # Replace with your DynamoDB table name
+table = dynamodb.Table(table_name)
+
+def lambda_handler(event, context):
+    try:
+        # Extract the form data from the event object
+        if 'body' in event:
+            form_data = json.loads(event['body'])
+            userName = form_data.get('userName')
+            email = form_data.get('email')
+            solution = form_data.get('solution')
+            domain = form_data.get('domain')
+            customerName = form_data.get('customerName')
+            details = form_data.get('details')
+
+            # Generate a unique request ID
+            requestId = str(uuid.uuid4())
+
+            # Prepare the item to be stored in DynamoDB
+            item = {
+                'requestId': requestId,
+                'userName': userName,
+                'email': email,
+                'solution': solution,
+                'domain': domain,
+                'customerName': customerName,
+                'details': details
+            }
+
+            # Store the item in DynamoDB
+            table.put_item(Item=item)
+
+            # Log the form data
+            print('Form data:', item)
+
+            # Return a successful response
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                },
+                'body': json.dumps({'message': 'Form submitted successfully'})
+            }
+        else:
+            raise ValueError("No body in event")
+            
+    except Exception as e:
+        print('Error processing form:', e)
+
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+            },
+            'body': json.dumps({'message': 'Error submitting form'})
+        }
+
+
+
+
+import json
+import boto3
 from botocore.exceptions import ClientError
 
 # Initialize the DynamoDB client
