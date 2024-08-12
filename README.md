@@ -1,3 +1,12 @@
+Access to XMLHttpRequest at 'https://75x831r7ea.execute-api.us-east-1.amazonaws.com/v1' from origin 'https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+RequestDemoForm.js:38 Error submitting form: AxiosError
+handleSubmit @ RequestDemoForm.js:38
+75x831r7ea.execute-api.us-east-1.amazonaws.com/v1:1 
+        
+        
+       Failed to load resource: net::ERR_FAILED
+
+
 import React, { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
