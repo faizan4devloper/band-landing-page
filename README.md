@@ -1,3 +1,9 @@
+File "/home/ec2-user/ServiceSphere_BP_onlychatbot/workdir/app.py", line 220
+  """
+     ^
+SyntaxError: f-string expression part cannot include a backslash
+
+
 import streamlit as st
 
 # Example suggestions list
