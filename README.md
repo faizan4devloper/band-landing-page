@@ -1,3 +1,13 @@
+ValueError: unexpected '{' in field name
+Traceback:
+File "/home/ec2-user/.local/lib/python3.11/site-packages/streamlit/runtime/scriptrunner/script_runner.py", line 589, in _run_script
+    exec(code, module.__dict__)
+File "/home/ec2-user/ServiceSphere_BP_onlychatbot/workdir/app.py", line 278, in <module>
+    """.format(''.join([f'<li onclick="selectSuggestion(\'{suggestion}\')">{suggestion}</li>' for suggestion in suggestions]))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 import streamlit as st
 import requests
 
