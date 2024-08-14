@@ -1,28 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Search Bar with Suggestions</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="search-container">
-      <input
-        type="text"
-        id="search-input"
-        placeholder="Search..."
-        autocomplete="off"
-      />
-      <ul id="suggestions-list" class="suggestions"></ul>
-    </div>
+# Create the HTML and JavaScript for autocomplete functionality
+autocomplete_html = f"""
+<input type="text" id="autocomplete" list="suggestions" placeholder="You are talking to an AI, ask any question..." style="width: 100%; padding: 10px; font-size: 16px;" onkeydown="if (event.key === 'Enter') onEnterPress()">
+<datalist id="suggestions">
+    {''.join([f'<option value="{suggestion}"></option>' for suggestion in suggestions])}
+</datalist>
 
-    <script src="index.js"></script>
-  </body>
-</html>
-
-
-
+<script>
+    function onEnterPress() {{
+        var input = document.getElementById('autocomplete').value;
+        var hiddenField = window.parent.document.getElementById('hidden_input');
+        hiddenField.value = input;
+        hiddenField.dispatchEvent(new Event('input', {{ bubbles: true }}));
+    }}
+</script>
+"""
 
 
 body {
@@ -92,41 +83,3 @@ body {
     transform: translateY(0);
   }
 }
-
-const searchInput = document.getElementById("search-input");
-const suggestionsList = document.getElementById("suggestions-list");
-
-const suggestions = [
-  "Olympic 2024",
-  "Olympic news",
-  "Olympic schedule",
-  "Olympic sports",
-  "Olympic history",
-];
-
-searchInput.addEventListener("input", () => {
-  const query = searchInput.value.toLowerCase();
-  suggestionsList.innerHTML = "";
-  if (query) {
-    const filteredSuggestions = suggestions.filter((suggestion) =>
-      suggestion.toLowerCase().includes(query)
-    );
-    if (filteredSuggestions.length) {
-      filteredSuggestions.forEach((suggestion) => {
-        const listItem = document.createElement("li");
-        listItem.textContent = suggestion;
-        listItem.addEventListener("click", () => {
-          searchInput.value = suggestion;
-          suggestionsList.innerHTML = "";
-          suggestionsList.style.display = "none";
-        });
-        suggestionsList.appendChild(listItem);
-      });
-      suggestionsList.style.display = "block";
-    } else {
-      suggestionsList.style.display = "none";
-    }
-  } else {
-    suggestionsList.style.display = "none";
-  }
-});
