@@ -1,139 +1,130 @@
 import streamlit as st
+import uuid
+import boto3
+import bedrock
+import warnings
+warnings.filterwarnings('ignore')
+import json
+import os
+import sys
+import requests
+import json
+import base64
+import pandas as pd 
+from langchain.chains import RetrievalQA
+from langchain.document_loaders import TextLoader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain import PromptTemplate
+from langchain.chains.question_answering import load_qa_chain
+from langchain.document_loaders.csv_loader import CSVLoader
+from langchain.docstore.document import Document
+from langchain.chains import VectorDBQA,RetrievalQA
 
-# Example suggestions list
+
+## Q&A - Title ###
+st.header("❓ KB Assist Only ChatBot 🔎", divider='blue')
+# Define the text to be displayed with placeholders
+text_template_write = "<span style='color:{color}; font-size:{font_size}; font-style:{font_style};'>{content}</span>"
+# Fill in the placeholders with desired values
+color = "yellow"  # Specify the color (e.g., "blue", "red", "#FFA500")
+font_size = "17px"  # Specify the font size (e.g., "16px", "20px")
+font_style = "bold"  # Specify the font style (e.g., "normal", "italic", "oblique")
+content = "[ The Smart Way to Get Answers ]"  # Specify the content of the text
+# Format the text string with the specified values
+text = text_template_write.format(color=color, font_size=font_size, font_style=font_style, content=content)
+
+# Display the text using st.write
+st.write(text, unsafe_allow_html=True)  
+##---END---Q&A - Title ###
+
+
+### Changed 9Aug -AutoComplete
+## Not working -> showing 2 boxes and 2nd box only working on enter 
+USER_ICON = "user-icon.png"
+AI_ICON = "ai-icon.png"
+
+# Initialize session state variables
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+if "llm_chain" not in st.session_state:
+    st.session_state["llm_app"] = "bedrock"  # Placeholder for your bedrock model
+    st.session_state["llm_chain"] = "bedrock_chain"  # Placeholder for your bedrock chain
+
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+
+if "answers" not in st.session_state:
+    st.session_state.answers = []
+
+if "input" not in st.session_state:
+    st.session_state.input = ""
+
+    # Orig lambda url :
+# Define a list of suggestions (FAQs or previously asked questions)
 suggestions = [
-    "What is AI?",
-    "How does machine learning work?",
-    "Tell me about React components",
-    "Explain cloud computing",
-    "What is AWS?"
+    "What is the weather like today?",
+    "How can I reset my password?",
+    "What are the benefits of using Streamlit?",
+    "How do I integrate OpenAI with Streamlit?",
+    "Can you explain the current market trends?"
 ]
 
-# Create the HTML and JavaScript code
-autocomplete_html = f"""
-<div class="search-container">
-    <input type="text" id="autocomplete" placeholder="You are talking to an AI, ask any question..." onkeyup="filterSuggestions()" onkeydown="if (event.key === 'Enter') onEnterPress()">
-    <ul id="suggestions" class="suggestions">
-        {''.join([f'<li onclick="selectSuggestion(\'{suggestion}\')">{suggestion}</li>' for suggestion in suggestions])}
-    </ul>
-</div>
+def write_top_bar():
+    col1, col2, col3 = st.columns([2, 10, 3])
+    with col3:
+        clear = st.button("Clear Chat")
+    return clear
 
-<script>
-    function filterSuggestions() {{
-        var input = document.getElementById('autocomplete').value.toLowerCase();
-        var suggestionItems = document.getElementById('suggestions').getElementsByTagName('li');
-        for (var i = 0; i < suggestionItems.length; i++) {{
-            var item = suggestionItems[i];
-            if (item.textContent.toLowerCase().includes(input)) {{
-                item.style.display = "";
-            }} else {{
-                item.style.display = "none";
-            }}
-        }}
-        if (input === "") {{
-            document.getElementById('suggestions').style.display = "none";
-        }} else {{
-            document.getElementById('suggestions').style.display = "block";
-        }}
-    }}
+clear = write_top_bar()
 
-    function selectSuggestion(value) {{
-        document.getElementById('autocomplete').value = value;
-        document.getElementById('suggestions').style.display = 'none';
-        onEnterPress();
-    }}
+if clear:
+    st.session_state.questions = []
+    st.session_state.answers = []
+    st.session_state.input = ""
 
-    function onEnterPress() {{
-        var input = document.getElementById('autocomplete').value;
-        var hiddenField = window.parent.document.getElementById('hidden_input');
-        hiddenField.value = input;
-        hiddenField.dispatchEvent(new Event('input', {{ bubbles: true }}));
-    }}
+def handle_input():
+    input = st.session_state.input
+#         lambda_url = "pop"  # Replace with your endpoint
+    lambda_url="dummy" # bp-kb-assist-lambda
+    api_url = lambda_url
+    responses = requests.post(api_url, json={'func': 'generate_response', 'question': input})
 
-    // Hide suggestions when clicking outside
-    document.addEventListener('click', function(e) {{
-        if (!document.querySelector('.search-container').contains(e.target)) {{
-            document.getElementById('suggestions').style.display = 'none';
-        }}
-    }});
-</script>
+    if responses.status_code == 200:
+        response_text = responses.text
+    else:
+        response_text = "Error: Unable to fetch response."
 
-<style>
-    body {{
-        font-family: "Arial", sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        background-color: #f0f0f5;
-    }}
+    st.session_state.questions.append({"question": input, "id": len(st.session_state.questions)})
+    st.session_state.answers.append({"answer": response_text, "id": len(st.session_state.answers)})
+    st.session_state.input = ""
 
-    .search-container {{
-        position: relative;
-        width: 400px;
-        max-width: 90%;
-    }}
+def write_user_message(md):
+    col1, col2 = st.columns([1, 12])
+    with col1:
+        st.image(USER_ICON, use_column_width="always", caption="User")
+    with col2:
+        st.warning(md["question"])
 
-    #autocomplete {{
-        width: 100%;
-        padding: 12px 16px;
-        font-size: 18px;
-        border: 2px solid #ddd;
-        border-radius: 30px;
-        outline: none;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }}
+def render_answer(answer):
+    col1, col2 = st.columns([1, 12])
+    with col1:
+        st.image(AI_ICON, use_column_width="always", caption="Bot")
+    with col2:
+        st.info(answer["answer"])
 
-    #autocomplete:focus {{
-        border-color: #007bff;
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-    }}
+def write_chat_message(md):
+    chat = st.container()
+    with chat:
+        render_answer(md)
 
-    .suggestions {{
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        max-height: 200px;
-        overflow-y: auto;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        z-index: 10;
-        display: none;
-    }}
+# Display the chat history
+with st.container():
+    for q, a in zip(st.session_state.questions, st.session_state.answers):
+        write_user_message(q)
+        write_chat_message(a)
 
-    .suggestions li {{
-        padding: 12px 16px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s, color 0.3s;
-    }}
-
-    .suggestions li:hover {{
-        background-color: #007bff;
-        color: #fff;
-    }}
-</style>
-"""
-
-# Display the autocomplete HTML and JavaScript in Streamlit
-st.components.v1.html(autocomplete_html, height=400)
-
-# Hidden input to capture the value from the JavaScript code
-hidden_input = st.text_input("Hidden Input", key="hidden_input")
-
-# Display the selected input value
-st.write("You entered:", hidden_input)
-
-
-
-
+st.markdown("---")
 
 # Create the HTML and JavaScript code
 autocomplete_html = f"""
@@ -228,10 +219,10 @@ autocomplete_html = f"""
 st.components.v1.html(autocomplete_html, height=300)
 
 # Hidden input to capture the value from the JavaScript code
-hidden_input = st.text_input("Hidden Input", key="hidden_input")
+# hidden_input = st.text_input("Hidden Input", key="hidden_input")
 
 # Display the selected input value
-st.write("You entered:", hidden_input)
+# st.write("You entered:", hidden_input)
 
 
 # Display the HTML in the Streamlit app
