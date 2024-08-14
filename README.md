@@ -1,4 +1,140 @@
 import streamlit as st
+
+# Example suggestions list
+suggestions = [
+    "What is AI?",
+    "How does machine learning work?",
+    "Tell me about React components",
+    "Explain cloud computing",
+    "What is AWS?"
+]
+
+# Create the HTML and JavaScript code for a dropdown with autocomplete
+dropdown_html = f"""
+<div class="search-container">
+    <input type="text" id="search-input" onkeyup="filterFunction()" placeholder="Start typing..." style="width: 100%; padding: 10px; font-size: 16px;">
+    <ul id="suggestions" class="suggestions">
+        {''.join([f'<li onclick="selectSuggestion(\'{suggestion}\')">{suggestion}</li>' for suggestion in suggestions])}
+    </ul>
+</div>
+
+<script>
+    function filterFunction() {{
+        var input, filter, ul, li, a, i;
+        input = document.getElementById('search-input');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("suggestions");
+        li = ul.getElementsByTagName('li');
+
+        // Show the suggestions dropdown
+        ul.style.display = filter ? 'block' : 'none';
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {{
+            if (li[i].innerHTML.toUpperCase().indexOf(filter) > -1) {{
+                li[i].style.display = "";
+            }} else {{
+                li[i].style.display = "none";
+            }}
+        }}
+    }}
+
+    function selectSuggestion(value) {{
+        document.getElementById('search-input').value = value;
+        document.getElementById('suggestions').style.display = 'none';
+        var hiddenField = window.parent.document.getElementById('hidden_input');
+        hiddenField.value = value;
+        hiddenField.dispatchEvent(new Event('input', {{ bubbles: true }}));
+    }}
+</script>
+
+<style>
+    body {{
+        font-family: "Arial", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f5;
+    }}
+
+    .search-container {{
+        position: relative;
+        width: 400px;
+        max-width: 90%;
+    }}
+
+    #search-input {{
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 18px;
+        border: 2px solid #ddd;
+        border-radius: 30px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }}
+
+    #search-input:focus {{
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+    }}
+
+    .suggestions {{
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.3s ease-in-out;
+        position: absolute;
+        width: 100%;
+        z-index: 1000;
+    }}
+
+    .suggestions li {{
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s, color 0.3s;
+    }}
+
+    .suggestions li:hover {{
+        background-color: #007bff;
+        color: #fff;
+    }}
+
+    @keyframes fadeIn {{
+        from {{
+            opacity: 0;
+            transform: translateY(-10px);
+        }}
+        to {{
+            opacity: 1;
+            transform: translateY(0);
+        }}
+    }}
+</style>
+"""
+
+# Display the dropdown with autocomplete HTML in Streamlit
+st.components.v1.html(dropdown_html, height=350)
+
+# Hidden input to capture the selected value
+hidden_input = st.text_input("Selected Option", key="hidden_input")
+
+# Display the selected option
+st.write("You selected:", hidden_input)
+
+
+
+
+import streamlit as st
 import uuid
 import boto3
 import bedrock
