@@ -1,3 +1,13 @@
+def write_top_bar():
+    col1, col2, col3 = st.columns([2, 10, 3])
+    with col3:
+        clear = st.button("Clear Chat", key="clear_chat_button")
+    return clear
+
+
+
+
+
 DuplicateWidgetID: There are multiple identical st.button widgets with the same generated key.
 
 When a widget is created, it's assigned an internal key based on its structure. Multiple widgets with an identical structure will result in the same internal key, which causes this error.
