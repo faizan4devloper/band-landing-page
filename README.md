@@ -37,7 +37,6 @@ text = text_template_write.format(color=color, font_size=font_size, font_style=f
 st.write(text, unsafe_allow_html=True)  
 ##---END---Q&A - Title ###
 
-#  lambda_url="https://nfa5fc7dkn5xxivcgpdnll5ska0czqkr.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda   
 
 ### Changed 9Aug -AutoComplete
 ## Not working -> showing 2 boxes and 2nd box only working on enter 
@@ -62,7 +61,6 @@ if "input" not in st.session_state:
     st.session_state.input = ""
 
     # Orig lambda url :
-#     lambda_url="https://nfa5fc7dkn5xxivcgpdnll5ska0czqkr.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda
 # Define a list of suggestions (FAQs or previously asked questions)
 suggestions = [
     "What is the weather like today?",
