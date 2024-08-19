@@ -1,3 +1,9 @@
+<div class="search-container">
+    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
+    <ul class="suggestions" id="suggestions-list"></ul>
+</div>
+
+
 import streamlit as st
 import requests
 
