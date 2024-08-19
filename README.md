@@ -1,103 +1,3 @@
-<div class="search-container">
-    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
-    <ul class="suggestions" id="suggestions-list"></ul>
-</div>
-
-
-import streamlit as st
-import requests
-
-# Lambda Function URL
-LAMBDA_URL = "https://your-lambda-url.amazonaws.com/your-endpoint"
-
-def handle_input():
-    user_input = st.session_state["input"]
-    
-    # Sending input data to AWS Lambda
-    response = requests.post(LAMBDA_URL, json={"query": user_input})
-    
-    # Handling the response from Lambda
-    if response.status_code == 200:
-        st.write("Lambda Response:", response.json())
-    else:
-        st.error("Failed to connect to Lambda.")
-
-autocomplete_html = """
-<style>
-    #autocomplete {
-        width: 100%;
-        padding: 12px 16px;
-        font-size: 18px;
-        border: 2px solid #ddd;
-        border-radius: 30px;
-        outline: none;
-        transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    #autocomplete:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-    }
-    .suggestions {
-        list-style: none;
-        padding: 0;
-        margin: 8px 0 0;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        max-height: 200px;
-        overflow-y: auto;
-        display: none;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        animation: fadeIn 0.3s ease-in-out;
-        scrollbar-width: thin;
-        scrollbar-color: #007bff #f0f0f5;
-    }
-    .suggestions::-webkit-scrollbar {
-        width: 8px;
-    }
-    .suggestions::-webkit-scrollbar-track {
-        background-color: #f0f0f5;
-    }
-    .suggestions::-webkit-scrollbar-thumb {
-        background-color: #007bff;
-        border-radius: 4px;
-    }
-    .suggestions li {
-        padding: 12px 16px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background-color 0.3s, color 0.3s;
-    }
-    .suggestions li:hover {
-        background-color: #007bff;
-        color: #fff;
-    }
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
-"""
-
-# Display the autocomplete HTML
-st.components.v1.html(autocomplete_html, height=300)
-
-# Hidden input to capture the value
-st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=handle_input)
-
-# Display the selected input value
-st.write("You entered:", st.session_state.get("input", ""))
-
-
-
-
-
 import streamlit as st
 import uuid
 import boto3
@@ -137,6 +37,7 @@ text = text_template_write.format(color=color, font_size=font_size, font_style=f
 st.write(text, unsafe_allow_html=True)  
 ##---END---Q&A - Title ###
 
+#  lambda_url="https://nfa5fc7dkn5xxivcgpdnll5ska0czqkr.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda   
 
 ### Changed 9Aug -AutoComplete
 ## Not working -> showing 2 boxes and 2nd box only working on enter 
@@ -161,6 +62,7 @@ if "input" not in st.session_state:
     st.session_state.input = ""
 
     # Orig lambda url :
+#     lambda_url="https://nfa5fc7dkn5xxivcgpdnll5ska0czqkr.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda
 # Define a list of suggestions (FAQs or previously asked questions)
 suggestions = [
     "What is the weather like today?",
@@ -183,21 +85,37 @@ if clear:
     st.session_state.answers = []
     st.session_state.input = ""
 
+# def handle_input():
+#     input = st.session_state.input
+# #         lambda_url = "pop"  # Replace with your endpoint
+#     lambda_url="https://pop.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda
+#     api_url = lambda_url
+#     responses = requests.post(api_url, json={'func': 'generate_response', 'question': input})
+
+#     if responses.status_code == 200:
+#         response_text = responses.text
+#     else:
+#         response_text = "Error: Unable to fetch response."
+
+#     st.session_state.questions.append({"question": input, "id": len(st.session_state.questions)})
+#     st.session_state.answers.append({"answer": response_text, "id": len(st.session_state.answers)})
+#     st.session_state.input = ""
+
+# Lambda Function URL
+LAMBDA_URL = "https://nfa5fc7dkn5xxivcgpdnll5ska0czqkr.lambda-url.us-east-1.on.aws/"
+
 def handle_input():
-    input = st.session_state.input
-#         lambda_url = "pop"  # Replace with your endpoint
-    lambda_url="https://pop.lambda-url.us-east-1.on.aws/" # bp-kb-assist-lambda
-    api_url = lambda_url
-    responses = requests.post(api_url, json={'func': 'generate_response', 'question': input})
-
-    if responses.status_code == 200:
-        response_text = responses.text
+    user_input = st.session_state["input"]
+    
+    # Sending input data to AWS Lambda
+    response = requests.post(LAMBDA_URL, json={"query": user_input})
+    
+    # Handling the response from Lambda
+    if response.status_code == 200:
+        st.write("Lambda Response:", response.json())
     else:
-        response_text = "Error: Unable to fetch response."
+        st.error("Failed to connect to Lambda.")
 
-    st.session_state.questions.append({"question": input, "id": len(st.session_state.questions)})
-    st.session_state.answers.append({"answer": response_text, "id": len(st.session_state.answers)})
-    st.session_state.input = ""
 
 def write_user_message(md):
     col1, col2 = st.columns([1, 12])
@@ -361,18 +279,11 @@ autocomplete_html = f"""
 </style>
 """
 
-# Display the autocomplete HTML and JavaScript in Streamlit
-strr=st.components.v1.html(autocomplete_html, height=300)
-st.text(strr)
-# Hidden input to capture the value from the JavaScript code
-# hidden_input = st.text_input("Hidden Input", key="hidden_input")
+# Display the autocomplete HTML
+st.components.v1.html(autocomplete_html, height=300)
+
+# Hidden input to capture the value
+st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=handle_input)
 
 # Display the selected input value
-# st.write("You entered:", hidden_input)
-
-
-# Display the HTML in the Streamlit app
-# st.markdown(autocomplete_html, unsafe_allow_html=True)
-# Create a hidden input field to capture the final input
-# queries=["abcdd","defg"]
-# st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=handle_input,autocomplete="queries")
+st.write("You entered:", st.session_state.get("input", ""))
