@@ -1,5 +1,192 @@
 import streamlit as st
 import uuid
+import requests
+import warnings
+warnings.filterwarnings('ignore')
+
+# Define the title and header
+st.header("❓ KB Assist Only ChatBot 🔎", divider='blue')
+text_template_write = "<span style='color:{color}; font-size:{font_size}; font-style:{font_style};'>{content}</span>"
+text = text_template_write.format(color="yellow", font_size="17px", font_style="bold", content="[ The Smart Way to Get Answers ]")
+st.write(text, unsafe_allow_html=True)
+
+# Initialize session state variables
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+
+if "answers" not in st.session_state:
+    st.session_state.answers = []
+
+if "input" not in st.session_state:
+    st.session_state.input = ""
+
+# Define a list of suggestions (FAQs or previously asked questions)
+suggestions = [
+    "What is the weather like today?",
+    "How can I reset my password?",
+    "What are the benefits of using Streamlit?",
+    "How do I integrate OpenAI with Streamlit?",
+    "Can you explain the current market trends?"
+]
+
+# Lambda Function URL
+LAMBDA_URL = "https://your-lambda-url.amazonaws.com/"  # Replace with your actual Lambda URL
+
+# Function to handle user input and call AWS Lambda
+def handle_input():
+    user_input = st.session_state["input"]
+    
+    # Sending input data to AWS Lambda
+    response = requests.post(LAMBDA_URL, json={"query": user_input})
+    
+    # Handling the response from Lambda
+    if response.status_code == 200:
+        st.session_state.questions.append({"question": user_input, "id": len(st.session_state.questions)})
+        st.session_state.answers.append({"answer": response.json().get("answer", "No response received"), "id": len(st.session_state.answers)})
+    else:
+        st.error("Failed to connect to Lambda.")
+
+# Clear chat function
+def write_top_bar():
+    col1, col2, col3 = st.columns([2, 10, 3])
+    with col3:
+        clear = st.button("Clear Chat")
+    return clear
+
+clear = write_top_bar()
+
+if clear:
+    st.session_state.questions = []
+    st.session_state.answers = []
+    st.session_state.input = ""
+
+# Display the chat history
+with st.container():
+    for q, a in zip(st.session_state.questions, st.session_state.answers):
+        st.write(f"**User**: {q['question']}")
+        st.write(f"**Bot**: {a['answer']}")
+
+st.markdown("---")
+
+# Autocomplete HTML and JavaScript
+autocomplete_html = f"""
+<div class="search-container">
+    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
+    <ul class="suggestions" id="suggestions-list"></ul>
+</div>
+
+<script>
+    function onInputChange() {{
+        var input = document.getElementById('autocomplete').value.toLowerCase();
+        var suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.innerHTML = '';
+
+        var matchingSuggestions = {suggestions}.filter(function(suggestion) {{
+            return suggestion.toLowerCase().includes(input);
+        }});
+
+        matchingSuggestions.forEach(function(suggestion) {{
+            var listItem = document.createElement('li');
+            listItem.textContent = suggestion;
+            listItem.addEventListener('click', function() {{
+                document.getElementById('autocomplete').value = suggestion;
+                suggestionsList.style.display = 'none';
+                window.parent.document.getElementById('input').value = suggestion;
+                window.parent.document.getElementById('input').dispatchEvent(new Event('input', {{ bubbles: true }}));
+            }});
+            suggestionsList.appendChild(listItem);
+        }});
+
+        if (matchingSuggestions.length > 0) {{
+            suggestionsList.style.display = 'block';
+        }} else {{
+            suggestionsList.style.display = 'none';
+        }}
+    }}
+
+    function onEnterPress() {{
+        var inputField = document.getElementById('autocomplete');
+        window.parent.document.getElementById('input').value = inputField.value;
+        window.parent.document.getElementById('input').dispatchEvent(new Event('input', {{ bubbles: true }}));
+    }}
+</script>
+
+<style>
+    body {{
+        font-family: "Arial", sans-serif;
+        background-color: #f0f0f5;
+    }}
+
+    .search-container {{
+        position: relative;
+        width: 400px;
+        max-width: 90%;
+        margin: 0 auto;
+    }}
+
+    #autocomplete {{
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 18px;
+        border: 2px solid #ddd;
+        border-radius: 30px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }}
+
+    #autocomplete:focus {{
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+    }}
+
+    .suggestions {{
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        scrollbar-width: thin;
+        scrollbar-color: #007bff #f0f0f5;
+    }}
+
+    .suggestions li {{
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s, color 0.3s;
+    }}
+
+    .suggestions li:hover {{
+        background-color: #007bff;
+        color: #fff;
+    }}
+</style>
+"""
+
+# Display the autocomplete HTML
+st.components.v1.html(autocomplete_html, height=300)
+
+# Hidden input to capture the value
+st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=handle_input)
+
+# Display the selected input value
+st.write("You entered:", st.session_state.get("input", ""))
+
+
+
+
+
+
+import streamlit as st
+import uuid
 import boto3
 import bedrock
 import warnings
