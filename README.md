@@ -1,3 +1,18 @@
+DuplicateWidgetID: There are multiple identical st.button widgets with the same generated key.
+
+When a widget is created, it's assigned an internal key based on its structure. Multiple widgets with an identical structure will result in the same internal key, which causes this error.
+
+To fix this error, please pass a unique key argument to st.button.
+
+Traceback:
+File "/home/ec2-user/ServiceSphere_BP_onlychatbot/workdir/app.py", line 128, in <module>
+    clear = write_top_bar()
+            ^^^^^^^^^^^^^^^
+File "/home/ec2-user/ServiceSphere_BP_onlychatbot/workdir/app.py", line 125, in write_top_bar
+    clear = st.button("Clear Chat")
+            ^^^^^^^^^^^^^^^^^^^^^^^
+
+
 import streamlit as st
 import uuid
 import requests
