@@ -1,130 +1,4 @@
 import streamlit as st
-import requests
-import uuid
-
-# Initialize session state
-if "user_id" not in st.session_state:
-    st.session_state["user_id"] = str(uuid.uuid4())
-
-if "questions" not in st.session_state:
-    st.session_state["questions"] = []
-
-if "answers" not in st.session_state:
-    st.session_state["answers"] = []
-
-if "input" not in st.session_state:
-    st.session_state["input"] = ""
-
-LAMBDA_URL = "https://dummy.on.aws/"  # Replace with your actual Lambda URL
-
-def handle_input():
-    user_input = st.session_state.input
-    
-    # Sending input data to AWS Lambda
-    response = requests.post(LAMBDA_URL, json={"query": user_input})
-    
-    # Handling the response from Lambda
-    if response.status_code == 200:
-        response_data = response.json()
-        st.session_state.questions.append({"question": user_input, "id": len(st.session_state.questions)})
-        st.session_state.answers.append({"answer": response_data, "id": len(st.session_state.answers)})
-    else:
-        st.error("Failed to connect to Lambda.")
-
-# Top bar with a clear button
-def write_top_bar():
-    col1, col2, col3 = st.columns([2, 10, 3])
-    with col3:
-        clear = st.button("Clear Chat")
-    return clear
-
-clear = write_top_bar()
-
-if clear:
-    st.session_state.questions = []
-    st.session_state.answers = []
-    st.session_state.input = ""
-
-# Streamlit's input field to catch data from JS
-st.text_input("Streamlit Input", key="input", label_visibility="collapsed", on_change=handle_input)
-
-# Render your chat history
-for q, a in zip(st.session_state.questions, st.session_state.answers):
-    st.write("Q: ", q['question'])
-    st.write("A: ", a['answer'])
-
-# Define a list of suggestions (FAQs or previously asked questions)
-suggestions = [
-    "What is the weather like today?",
-    "How can I reset my password?",
-    "What are the benefits of using Streamlit?",
-    "How do I integrate OpenAI with Streamlit?",
-    "Can you explain the current market trends?"
-]
-
-# Create the HTML and JavaScript code for autocomplete
-autocomplete_html = f"""
-<div class="search-container">
-    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
-    <ul class="suggestions" id="suggestions-list"></ul>
-</div>
-
-<script>
-    function onInputChange() {{
-        var input = document.getElementById('autocomplete').value.toLowerCase();
-        var suggestionsList = document.getElementById('suggestions-list');
-        suggestionsList.innerHTML = '';
-
-        var matchingSuggestions = {suggestions}.filter(function(suggestion) {{
-            return suggestion.toLowerCase().includes(input);
-        }});
-
-        matchingSuggestions.forEach(function(suggestion) {{
-            var listItem = document.createElement('li');
-            listItem.textContent = suggestion;
-            listItem.addEventListener('click', function() {{
-                document.getElementById('autocomplete').value = suggestion;
-                suggestionsList.style.display = 'none';
-                triggerHandleInput(suggestion);
-            }});
-            suggestionsList.appendChild(listItem);
-        }});
-
-        if (matchingSuggestions.length > 0) {{
-            suggestionsList.style.display = 'block';
-        }} else {{
-            suggestionsList.style.display = 'none';
-        }}
-    }}
-
-    function onEnterPress() {{
-        var inputField = document.getElementById('autocomplete');
-        var inputValue = inputField.value;
-        inputField.value = ''; // Clear the input field
-        triggerHandleInput(inputValue);
-    }}
-
-    function triggerHandleInput(value) {{
-        const streamlitInput = window.parent.document.getElementById("streamlit-input");
-        streamlitInput.value = value;
-        streamlitInput.dispatchEvent(new Event('input', {{ bubbles: true }}));
-    }}
-</script>
-"""
-
-# Display the autocomplete HTML in Streamlit
-st.components.v1.html(autocomplete_html, height=300)
-
-
-
-
-
-
-
-
-
-
-import streamlit as st
 import streamlit as st
 import uuid
 import boto3
@@ -163,6 +37,23 @@ text = text_template_write.format(color=color, font_size=font_size, font_style=f
 # Display the text using st.write
 st.write(text, unsafe_allow_html=True)  
 ##---END---Q&A - Title ###
+
+# Lambda Function URL (replace with your actual Lambda URL)
+LAMBDA_URL = "https:dummy/"
+
+def handle_input(user_input):
+    # Sending input data to AWS Lambda
+    response = requests.post(LAMBDA_URL, json={"query": user_input})
+    
+    # Handling the response from Lambda
+    if response.status_code == 200:
+        st.write("Lambda Response:", response.json())
+        st.session_state.questions.append({"question": user_input, "id": len(st.session_state.questions)})
+        st.session_state.answers.append({"answer": response.json(), "id": len(st.session_state.answers)})
+        
+        print(f"User's input: {user_input}")
+    else:
+        st.error("Failed to connect to Lambda.")
 
 
 ### Changed 9Aug -AutoComplete
@@ -253,20 +144,7 @@ with st.container():
 
 st.markdown("---")
 
-# Lambda Function URL (replace with your actual Lambda URL)
-LAMBDA_URL = "dummy.on.aws/"
 
-def handle_input(user_input):
-    # Sending input data to AWS Lambda
-    response = requests.post(LAMBDA_URL, json={"query": user_input})
-    
-    # Handling the response from Lambda
-    if response.status_code == 200:
-        st.write("Lambda Response:", response.json())
-        st.session_state.questions.append({"question": user_input, "id": len(st.session_state.questions)})
-        st.session_state.answers.append({"answer": response.json(), "id": len(st.session_state.answers)})
-    else:
-        st.error("Failed to connect to Lambda.")
 
 # Define a list of suggestions (FAQs or previously asked questions)
 suggestions = [
@@ -300,7 +178,7 @@ autocomplete_html = f"""
             listItem.addEventListener('click', function() {{
                 document.getElementById('autocomplete').value = suggestion;
                 suggestionsList.style.display = 'none';
-                triggerHandleInput(suggestion);
+                window.parent.handle_input(suggestion);
             }});
             suggestionsList.appendChild(listItem);
         }});
@@ -316,13 +194,10 @@ autocomplete_html = f"""
         var inputField = document.getElementById('autocomplete');
         var inputValue = inputField.value;
         inputField.value = ''; // Clear the input field
-        triggerHandleInput(inputValue);
-    }}
-
-    function triggerHandleInput(value) {{
-        window.parent.postMessage({{ 'type': 'input', 'value': value }}, '*');
+        window.parent.handle_input(inputValue);
     }}
 </script>
+
 
 
 
@@ -418,7 +293,7 @@ autocomplete_html = f"""
 st.components.v1.html(autocomplete_html, height=300)
 
 # # JS to Python callback using Streamlit's JS API
-# st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=lambda: handle_input(st.session_state["input"]))
+st.text_input("Hidden Input", key="input", label_visibility="collapsed", on_change=lambda: handle_input(st.session_state["input"]))
 
 # # JavaScript to listen to messages and trigger the Python function
 # st.components.v1.html("""
@@ -432,3 +307,9 @@ st.components.v1.html(autocomplete_html, height=300)
 #     });
 # </script>
 # """, height=0, width=0)
+
+
+
+Uncaught TypeError: window.parent.handle_input is not a function
+    at onEnterPress (VM357 about:srcdoc:33:23)
+    at HTMLInputElement.onkeydown (VM361 about:srcdoc:1:28)
