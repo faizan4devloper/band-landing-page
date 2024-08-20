@@ -1,3 +1,195 @@
+import React, { useState } from "react";
+import { Login } from "./components/Login/Login";
+import { Landing } from "./components/Landing/Landing";
+import EducationAdvisor from "./components/Education/EducationAdvisor";
+import JobAdvisor from "./components/Job/JobAdvisor";
+import HealthAdvisor from "./components/Health/HealthAdvisor";
+import "./App.css";
+
+
+import HclLogo from "./hcl-logo.png";
+
+
+export function App() {
+  const [view, setView] = useState("login");
+  const [advisorType, setAdvisorType] = useState("");
+
+  const handleLogin = () => {
+    setView("landing");
+  };
+
+  const handleEnterMain = (type) => {
+    setAdvisorType(type);
+    setView(type.toLowerCase());
+  };
+
+  const handleGoBack = () => {
+    if (view === "landing") {
+      setView("login");
+    } else {
+      setView("landing");
+    }
+  };
+
+  return (
+    <div className="app">
+                    <img className="hcl-logo" src={HclLogo}/>
+
+      <nav className="breadcrumbs">
+        <ul>
+          <li>
+            <a href="#" onClick={handleGoBack}>
+              Login
+            </a>
+          </li>
+          {view !== "login" && view !== "landing" && (
+            <>
+              <li>
+                <a>{advisorType} Advisor</a>
+              </li>
+            </>
+          )}
+          {view === "landing" && (
+            <li className="home">
+             <a>Home</a>
+            </li>
+          )}
+        </ul>
+
+      </nav>
+      {view === "login" && <Login onLogin={handleLogin} />}
+      {view === "landing" && <Landing onEnterMain={handleEnterMain} />}
+      {view === "education" && <EducationAdvisor advisorType={advisorType} />}
+      {view === "job" && <JobAdvisor />}
+      {view === "health" && <HealthAdvisor />}
+    </div>
+  );
+}
+
+export default App;
+
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
+
+body,
+html {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", Arial, sans-serif;
+  scroll-behavior: smooth;
+  overflow: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+body::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+  
+}
+
+
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  
+}
+
+.hcl-logo{
+  position: relative;
+  top: 8px;
+  left: 84%;
+}
+.job-advisor{
+  display: flex;
+  justify-content: center;
+}
+
+.health-advisor{
+   display: flex;
+  justify-content: center;
+}
+
+.advisor-heading {
+  position: absolute;
+    right: 46%;
+    transform: translateX(50%);
+    margin: 22px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #fff;
+    max-width: 950px;
+    width: 850px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.home-logo{
+  width: 18px;
+  margin-top: 5px;
+}
+
+.home{
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbs {
+  position: absolute;
+  top:-5px;
+  padding: 10px;
+}
+
+.breadcrumbs ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.breadcrumbs ul li {
+  display: inline;
+}
+
+.breadcrumbs ul li:not(:first-child)::before {
+  content: ">";
+  color:#fff;
+  font-size: 20px;
+  margin: 0 5px;
+}
+
+.breadcrumbs ul li a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 5px;
+}
+
+.breadcrumbs ul li a:hover {
+  color: #ccc; 
+}
+
+.breadcrumbs ul li span {
+  color: #777;
+  padding: 5px;
+}
+
+.breadcrumbs ul li.active a {
+  color:red;
+  text-decoration: underline;
+}
+
+.breadcrumbs ul li.active a:hover {
+  color: #1559b3;
+}
+
+
+
+
+
+
+
 User InputChatbot Response"Hi""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Hello""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Can you help with hacking?""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Tell me about Solution A""[Provide information about Solution A]""What is the technical architecture?""[Provide information on the technical architecture of the solution]""Describe the benefits of Solution B""[Provide the benefits of Solution B]""Goodbye""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Can you help with React JS?""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions."
 
 
