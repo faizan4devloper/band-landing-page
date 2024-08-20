@@ -1,4 +1,130 @@
 import streamlit as st
+import requests
+import uuid
+
+# Initialize session state
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+if "questions" not in st.session_state:
+    st.session_state["questions"] = []
+
+if "answers" not in st.session_state:
+    st.session_state["answers"] = []
+
+if "input" not in st.session_state:
+    st.session_state["input"] = ""
+
+LAMBDA_URL = "https://dummy.on.aws/"  # Replace with your actual Lambda URL
+
+def handle_input():
+    user_input = st.session_state.input
+    
+    # Sending input data to AWS Lambda
+    response = requests.post(LAMBDA_URL, json={"query": user_input})
+    
+    # Handling the response from Lambda
+    if response.status_code == 200:
+        response_data = response.json()
+        st.session_state.questions.append({"question": user_input, "id": len(st.session_state.questions)})
+        st.session_state.answers.append({"answer": response_data, "id": len(st.session_state.answers)})
+    else:
+        st.error("Failed to connect to Lambda.")
+
+# Top bar with a clear button
+def write_top_bar():
+    col1, col2, col3 = st.columns([2, 10, 3])
+    with col3:
+        clear = st.button("Clear Chat")
+    return clear
+
+clear = write_top_bar()
+
+if clear:
+    st.session_state.questions = []
+    st.session_state.answers = []
+    st.session_state.input = ""
+
+# Streamlit's input field to catch data from JS
+st.text_input("Streamlit Input", key="input", label_visibility="collapsed", on_change=handle_input)
+
+# Render your chat history
+for q, a in zip(st.session_state.questions, st.session_state.answers):
+    st.write("Q: ", q['question'])
+    st.write("A: ", a['answer'])
+
+# Define a list of suggestions (FAQs or previously asked questions)
+suggestions = [
+    "What is the weather like today?",
+    "How can I reset my password?",
+    "What are the benefits of using Streamlit?",
+    "How do I integrate OpenAI with Streamlit?",
+    "Can you explain the current market trends?"
+]
+
+# Create the HTML and JavaScript code for autocomplete
+autocomplete_html = f"""
+<div class="search-container">
+    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
+    <ul class="suggestions" id="suggestions-list"></ul>
+</div>
+
+<script>
+    function onInputChange() {{
+        var input = document.getElementById('autocomplete').value.toLowerCase();
+        var suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.innerHTML = '';
+
+        var matchingSuggestions = {suggestions}.filter(function(suggestion) {{
+            return suggestion.toLowerCase().includes(input);
+        }});
+
+        matchingSuggestions.forEach(function(suggestion) {{
+            var listItem = document.createElement('li');
+            listItem.textContent = suggestion;
+            listItem.addEventListener('click', function() {{
+                document.getElementById('autocomplete').value = suggestion;
+                suggestionsList.style.display = 'none';
+                triggerHandleInput(suggestion);
+            }});
+            suggestionsList.appendChild(listItem);
+        }});
+
+        if (matchingSuggestions.length > 0) {{
+            suggestionsList.style.display = 'block';
+        }} else {{
+            suggestionsList.style.display = 'none';
+        }}
+    }}
+
+    function onEnterPress() {{
+        var inputField = document.getElementById('autocomplete');
+        var inputValue = inputField.value;
+        inputField.value = ''; // Clear the input field
+        triggerHandleInput(inputValue);
+    }}
+
+    function triggerHandleInput(value) {{
+        const streamlitInput = window.parent.document.getElementById("streamlit-input");
+        streamlitInput.value = value;
+        streamlitInput.dispatchEvent(new Event('input', {{ bubbles: true }}));
+    }}
+</script>
+"""
+
+# Display the autocomplete HTML in Streamlit
+st.components.v1.html(autocomplete_html, height=300)
+
+
+
+
+
+
+
+
+
+
+import streamlit as st
 import streamlit as st
 import uuid
 import boto3
