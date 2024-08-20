@@ -1,3 +1,168 @@
+import streamlit as st
+import uuid
+import requests
+
+# Initialize session state variables
+if "user_id" not in st.session_state:
+    st.session_state["user_id"] = str(uuid.uuid4())
+
+# Define a list of suggestions (FAQs or previously asked questions)
+suggestions = [
+    "What is the weather like today?",
+    "How can I reset my password?",
+    "What are the benefits of using Streamlit?",
+    "How do I integrate OpenAI with Streamlit?",
+    "Can you explain the current market trends?"
+]
+
+# Lambda Function URL (replace with your actual Lambda URL)
+LAMBDA_URL = "https://your-lambda-url"
+
+def handle_input(user_input):
+    # Sending input data to AWS Lambda
+    response = requests.post(LAMBDA_URL, json={"query": user_input})
+    
+    # Handling the response from Lambda
+    if response.status_code == 200:
+        st.write("Lambda Response:", response.json())
+    else:
+        st.error("Failed to connect to Lambda.")
+
+# JavaScript to HTML interaction code
+autocomplete_html = f"""
+<div class="search-container">
+    <input type="text" id="autocomplete" placeholder="Start typing to see suggestions..." oninput="onInputChange()" onkeydown="if (event.key === 'Enter') onEnterPress()">
+    <ul class="suggestions" id="suggestions-list"></ul>
+</div>
+
+<script>
+    function onInputChange() {{
+        var input = document.getElementById('autocomplete').value.toLowerCase();
+        var suggestionsList = document.getElementById('suggestions-list');
+        suggestionsList.innerHTML = '';
+
+        var matchingSuggestions = {suggestions}.filter(function(suggestion) {{
+            return suggestion.toLowerCase().includes(input);
+        }});
+
+        matchingSuggestions.forEach(function(suggestion) {{
+            var listItem = document.createElement('li');
+            listItem.textContent = suggestion;
+            listItem.addEventListener('click', function() {{
+                document.getElementById('autocomplete').value = suggestion;
+                suggestionsList.style.display = 'none';
+                sendInputToStreamlit(suggestion);
+            }});
+            suggestionsList.appendChild(listItem);
+        }});
+
+        if (matchingSuggestions.length > 0) {{
+            suggestionsList.style.display = 'block';
+        }} else {{
+            suggestionsList.style.display = 'none';
+        }}
+    }}
+
+    function onEnterPress() {{
+        var inputField = document.getElementById('autocomplete');
+        var inputValue = inputField.value;
+        sendInputToStreamlit(inputValue);
+    }}
+
+    function sendInputToStreamlit(value) {{
+        fetch('/send_input', {{
+            method: 'POST',
+            headers: {{
+                'Content-Type': 'application/json',
+            }},
+            body: JSON.stringify({{ 'input_value': value }}),
+        }}).then(response => {{
+            if (!response.ok) {{
+                throw new Error('Failed to send input to Streamlit');
+            }}
+            return response.json();
+        }}).then(data => {{
+            console.log('Response from Streamlit:', data);
+            document.getElementById('autocomplete').value = '';  // Clear the input field after submission
+        }}).catch(error => {{
+            console.error('Error:', error);
+        }});
+    }}
+</script>
+
+<style>
+    body {{
+        font-family: "Arial", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f5;
+    }}
+
+    .search-container {{
+        position: relative;
+        width: 400px;
+        max-width: 90%;
+    }}
+
+    #autocomplete {{
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 18px;
+        border: 2px solid #ddd;
+        border-radius: 30px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }}
+
+    #autocomplete:focus {{
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
+    }}
+
+    .suggestions {{
+        list-style: none;
+        padding: 0;
+        margin: 8px 0 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        display: none;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }}
+
+    .suggestions li {{
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 16px;
+    }}
+
+    .suggestions li:hover {{
+        background-color: #007bff;
+        color: #fff;
+    }}
+</style>
+"""
+
+# Display the autocomplete HTML in Streamlit
+st.components.v1.html(autocomplete_html, height=300)
+
+# Process the incoming input from JavaScript
+if "input_value" in st.experimental_get_query_params():
+    input_value = st.experimental_get_query_params()["input_value"]
+    if input_value:
+        handle_input(input_value)
+
+
+
+
+
+
+
 st.experimental_rerunfunctionstreamlit.commands.execution_control.experimental_rerun() -> 'NoReturn'
 Rerun the script immediately.
 
