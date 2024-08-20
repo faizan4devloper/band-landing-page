@@ -1,3 +1,229 @@
+// src/components/ChatBot/ChatBot.js
+import React, { useState } from 'react';
+import styles from './ChatBot.module.css';
+import userIcon from './icons/userIcon.png'; // Add your user icon path
+import botIcon from './icons/botIcon.png'; // Add your bot icon path
+
+const ChatBot = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [chatVisible, setChatVisible] = useState(false);
+
+  const handleSend = () => {
+    if (input.trim()) {
+      setMessages([...messages, { text: input, sender: 'user' }]);
+      setInput('');
+      setLoading(true);
+
+      // Simulate bot response
+      setTimeout(() => {
+        setMessages([...messages, { text: input, sender: 'user' }, { text: 'Bot response...', sender: 'bot' }]);
+        setLoading(false);
+      }, 1000);
+    }
+  };
+
+  return (
+    <div className={`${styles.chatBotContainer} ${chatVisible ? styles.visible : styles.hidden}`}>
+      <div className={styles.chatHeader} onClick={() => setChatVisible(!chatVisible)}>
+        <span>ChatBot</span>
+      </div>
+      <div className={styles.chatBody}>
+        {messages.map((message, index) => (
+          <div key={index} className={`${styles.message} ${message.sender === 'user' ? styles.userMessage : styles.botMessage}`}>
+            <img src={message.sender === 'user' ? userIcon : botIcon} alt={message.sender} className={styles.messageIcon} />
+            <span>{message.text}</span>
+          </div>
+        ))}
+        {loading && <div className={styles.loader}>...</div>}
+      </div>
+      <div className={styles.chatFooter}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button onClick={handleSend}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+export default ChatBot;
+
+
+
+/* src/components/ChatBot/ChatBot.module.css */
+.chatBotContainer {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 300px;
+  max-height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  background-color: #5f1ec1;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.chatBody {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.userMessage {
+  justify-content: flex-end;
+}
+
+.botMessage {
+  justify-content: flex-start;
+}
+
+.messageIcon {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.chatFooter {
+  display: flex;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+.chatFooter input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.chatFooter button {
+  padding: 8px 16px;
+  margin-left: 8px;
+  border: none;
+  border-radius: 4px;
+  background-color: #5f1ec1;
+  color: white;
+  cursor: pointer;
+}
+
+.chatFooter button:hover {
+  background-color: #4a00e0;
+}
+
+.hidden {
+  display: none;
+}
+
+.visible {
+  display: flex;
+  flex-direction: column;
+}
+
+.loader {
+  margin: 20px;
+  text-align: center;
+}
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import ChatBot from './components/ChatBot/ChatBot';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
+
+const MainApp = () => {
+  // Existing code ...
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <ChatBot />
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
