@@ -1,3 +1,134 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import ChatBot from './components/ChatBot/ChatBot';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import styles from './App.module.css';
+
+const MainApp = () => {
+  const [loading, setLoading] = useState(true);
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(false);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const cardsContainerRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollBy({ top: 500, behavior: 'smooth' });
+    }
+  };
+
+  const handleScrollUp = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollBy({ top: -500, behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (cardsContainerRef.current) {
+        setShowScrollDown(cardsContainerRef.current.scrollTop + cardsContainerRef.current.clientHeight < cardsContainerRef.current.scrollHeight);
+        setShowScrollUp(cardsContainerRef.current.scrollTop > 0);
+      }
+    };
+
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.addEventListener('scroll', handleScroll);
+      return () => {
+        cardsContainerRef.current.removeEventListener('scroll', handleScroll);
+      };
+    }
+  }, [cardsContainerRef]);
+
+  const handleClickLeft = () => {
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? cardsData.length - 1 : prevIndex - 1));
+  };
+
+  const handleClickRight = () => {
+    setCurrentIndex((prevIndex) => (prevIndex === cardsData.length - 1 ? 0 : prevIndex + 1));
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <ChatBot />
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
+
+
+
+
 // src/components/ChatBot/ChatBot.js
 import React, { useState } from 'react';
 import styles from './ChatBot.module.css';
