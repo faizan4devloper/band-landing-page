@@ -1,6 +1,233 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp, faComments } from '@fortawesome/free-solid-svg-icons'; // Import the chatbot icon
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
+
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [chatbotOpen, setChatbotOpen] = useState(false); // State to track the chatbot window
+  const cardsContainerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const toggleChatbot = () => {
+    setChatbotOpen(!chatbotOpen); // Toggle the chatbot window
+  };
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          {/* Chatbot Icon */}
+          <div className={styles.chatbotIcon} onClick={toggleChatbot} title="Chat with us">
+            <FontAwesomeIcon icon={faComments} />
+          </div>
+          {/* Chatbot Window */}
+          {chatbotOpen && (
+            <div className={styles.chatbotWindow}>
+              {/* Your chatbot component goes here */}
+              <div className={styles.chatbotHeader}>Chatbot</div>
+              <div className={styles.chatbotContent}>
+                {/* Chatbot content */}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
+
+
+.chatbotIcon {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  z-index: 1001; /* Ensure it stays on top */
+}
+
+.chatbotIcon:hover {
+  background-color: rgba(13, 85, 198, 1);
+}
+
+.chatbotWindow {
+  position: fixed;
+  right: 20px;
+  bottom: 80px;
+  width: 350px;
+  height: 400px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure it stays on top */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chatbotHeader {
+  background-color: #6f36cd;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.chatbotContent {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header/Header';
 import Home from './Home';
