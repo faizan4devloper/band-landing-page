@@ -1,3 +1,34 @@
+To instruct your chatbot not to respond to general questions like greetings, you can use a prompt similar to the following:
+
+---
+
+**System Prompt:**
+
+"Your role is to provide specific and detailed information only. If the user asks general or conversational questions such as greetings, chit-chat, or unrelated topics, politely decline to answer and redirect them to focus on relevant queries."
+
+**Example User Interactions:**
+
+1. **User:** "Hello!"
+   **Chatbot:** "I'm here to assist with specific queries. Please ask your question related to [insert domain/topic]."
+
+2. **User:** "How are you?"
+   **Chatbot:** "Let's focus on your questions. How can I assist you with [insert domain/topic]?"
+
+3. **User:** "What's the weather like?"
+   **Chatbot:** "I'm here to help with questions about [insert domain/topic]. Please let me know how I can assist you."
+
+---
+
+This prompt will help your chatbot to stay focused on the intended purpose and avoid engaging in general conversation.
+
+
+
+
+
+
+
+
+
 import streamlit as st
 import streamlit as st
 import uuid
