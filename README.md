@@ -1,3 +1,203 @@
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faComments, faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import styles from './Chatbot.module.css';
+
+const Chatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleSend = () => {
+    if (inputValue.trim() === '') return;
+
+    const newMessage = { text: inputValue, sender: 'user' };
+    setMessages([...messages, newMessage]);
+    setInputValue('');
+    setLoading(true);
+
+    setTimeout(() => {
+      const botResponse = { text: 'This is a bot response.', sender: 'bot' };
+      setMessages((prevMessages) => [...prevMessages, botResponse]);
+      setLoading(false);
+    }, 1500); // Simulate bot response delay
+  };
+
+  return (
+    <>
+      <div className={styles.chatbotIcon} onClick={toggleChatbot}>
+        <FontAwesomeIcon icon={faComments} />
+      </div>
+      {isOpen && (
+        <div className={styles.chatbotWindow}>
+          <div className={styles.chatHeader}>Chatbot</div>
+          <div className={styles.chatBody}>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`${styles.message} ${message.sender === 'user' ? styles.userMessage : styles.botMessage}`}
+              >
+                <div className={styles.icon}>
+                  {message.sender === 'user' ? '👤' : '🤖'}
+                </div>
+                <div className={styles.messageText}>{message.text}</div>
+              </div>
+            ))}
+            {loading && (
+              <div className={styles.loader}>
+                <FontAwesomeIcon icon={faSpinner} spin />
+              </div>
+            )}
+          </div>
+          <div className={styles.chatInputArea}>
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className={styles.chatInput}
+              placeholder="Type your message..."
+            />
+            <button className={styles.sendButton} onClick={handleSend}>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Chatbot;
+
+
+.chatbotIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #5931d5;
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chatbotIcon:hover {
+  background-color: #4327a8;
+}
+
+.chatbotWindow {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chatHeader {
+  padding: 10px;
+  background-color: #5931d5;
+  color: white;
+  text-align: center;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-weight: bold;
+}
+
+.chatBody {
+  padding: 10px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.icon {
+  margin-right: 10px;
+  font-size: 24px;
+}
+
+.messageText {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-radius: 8px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.userMessage .messageText {
+  background-color: #d4e6ff;
+  align-self: flex-end;
+}
+
+.botMessage .messageText {
+  background-color: #e9e9e9;
+}
+
+.chatInputArea {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.chatInput {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px;
+  font-size: 14px;
+  outline: none;
+}
+
+.sendButton {
+  background-color: #5931d5;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sendButton:hover {
+  background-color: #4327a8;
+}
+
+.loader {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header/Header';
