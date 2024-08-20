@@ -1,3 +1,12 @@
+st.experimental_rerunfunctionstreamlit.commands.execution_control.experimental_rerun() -> 'NoReturn'
+Rerun the script immediately.
+
+When ``st.experimental_rerun()`` is called, the script is halted - no
+more statements will be run, and the script will be queued to re-run
+from the top.
+
+
+
 import streamlit as st
 import uuid
 import requests
