@@ -1,3 +1,13 @@
+User InputChatbot Response"Hi""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Hello""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Can you help with hacking?""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Tell me about Solution A""[Provide information about Solution A]""What is the technical architecture?""[Provide information on the technical architecture of the solution]""Describe the benefits of Solution B""[Provide the benefits of Solution B]""Goodbye""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions.""Can you help with React JS?""I'm here to help with specific solutions-related queries. Please ask your question related to our solutions."
+
+
+
+
+
+
+
+
+
 To instruct your chatbot not to respond to general questions like greetings, you can use a prompt similar to the following:
 
 ---
