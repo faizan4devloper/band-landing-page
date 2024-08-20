@@ -1,189 +1,427 @@
-import React, { useState } from "react";
-import { Login } from "./components/Login/Login";
-import { Landing } from "./components/Landing/Landing";
-import EducationAdvisor from "./components/Education/EducationAdvisor";
-import JobAdvisor from "./components/Job/JobAdvisor";
-import HealthAdvisor from "./components/Health/HealthAdvisor";
-import "./App.css";
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
 
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
 
-import HclLogo from "./hcl-logo.png";
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
 
+    fetchData();
+  }, []);
 
-export function App() {
-  const [view, setView] = useState("login");
-  const [advisorType, setAdvisorType] = useState("");
-
-  const handleLogin = () => {
-    setView("landing");
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleEnterMain = (type) => {
-    setAdvisorType(type);
-    setView(type.toLowerCase());
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
   };
 
-  const handleGoBack = () => {
-    if (view === "landing") {
-      setView("login");
-    } else {
-      setView("landing");
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
     }
   };
 
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
   return (
-    <div className="app">
-                    <img className="hcl-logo" src={HclLogo}/>
-
-      <nav className="breadcrumbs">
-        <ul>
-          <li>
-            <a href="#" onClick={handleGoBack}>
-              Login
-            </a>
-          </li>
-          {view !== "login" && view !== "landing" && (
-            <>
-              <li>
-                <a>{advisorType} Advisor</a>
-              </li>
-            </>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
           )}
-          {view === "landing" && (
-            <li className="home">
-             <a>Home</a>
-            </li>
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
           )}
-        </ul>
-
-      </nav>
-      {view === "login" && <Login onLogin={handleLogin} />}
-      {view === "landing" && <Landing onEnterMain={handleEnterMain} />}
-      {view === "education" && <EducationAdvisor advisorType={advisorType} />}
-      {view === "job" && <JobAdvisor />}
-      {view === "health" && <HealthAdvisor />}
+        </>
+      )}
     </div>
   );
-}
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
 
 export default App;
 
-
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
-
-body,
-html {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  margin: 0;
-  padding: 0;
-  font-family: "Poppins", Arial, sans-serif;
-  scroll-behavior: smooth;
-  overflow: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
+::-webkit-scrollbar {
+  width: 4px;
 }
-body::-webkit-scrollbar {
-  width: 0px;
-  background: transparent;
+
+
+::-webkit-scrollbar-thumb {
+  background: #5f1ec1; 
+  border-radius: 10px;
+}
+
+html, body {
+  font-family: "Poppins", sans-serif;
+
+}
+
+.app {
+  width: 1100px;
+  margin: 0 auto;
   
 }
 
-
-
-.main-container {
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping */
   
 }
 
-.hcl-logo{
+.arrow {
+  cursor: pointer;
   position: relative;
-  top: 8px;
-  left: 84%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
+  transition: transform 0.5s ease, background 0.5s ease;
 }
-.job-advisor{
+
+.arrow:hover {
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
+}
+
+.leftArrow {
+  left: -25px;
+  top: 90px;
+}
+
+.rightArrow {
+  right: -25px;
+  top: 90px;
+}
+
+@media screen and (max-width: 1100px) {
+  .app {
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app {
+    max-width: 100%;
+  }
+}
+
+.viewAllContainer {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-right: 112px;
+}
+
+.solutionHead {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  margin-left: 118px;
+}
+
+.viewAllButton {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 7px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.viewAllButton:hover {
+  transform: translateY(-5px);
+  color: #5f1ec1;
+  background-color: rgba(13, 85, 198, 0.1);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.viewAllButton:hover .icon {
+  transform: translateX(5px);
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 21px;
+  height: 22px;
   display: flex;
   justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.health-advisor{
-   display: flex;
+.scrollDownButton:hover, .scrollUpButton:hover {
+  background-color: rgba(13, 85, 198, 1);
+}
+
+/* Add this to your existing styles */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  height: 100vh; /* Full height */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  z-index: 1000; /* Make sure loader appears above other content */
 }
 
-.advisor-heading {
+.videoContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  opacity: 0;
+  width: 100%;
+  height: 95vh;
+  transform: translateX(-100%); /* Start hidden to the left */
+}
+
+.videoContainer.big {
+  transform: translateX(0); /* Slide in from left */
+  opacity: 1;
+}
+
+.videoContainer.small {
+  transform: translateX(-100%); /* Slide out to the left */
+  opacity: 0; /* Smoothly disappear */
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+.video:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.playPauseButton {
   position: absolute;
-    right: 46%;
-    transform: translateX(50%);
-    margin: 22px;
-    text-align: center;
-    font-size: 1.1rem;
-    color: #fff;
-    max-width: 950px;
-    width: 850px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.home-logo{
-  width: 18px;
-  margin-top: 5px;
-}
-
-.home{
+  bottom: 20px;
+  right: 25px;
+  background-color: rgba(95, 30, 193, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   display: flex;
   align-items: center;
-}
-
-.breadcrumbs {
-  position: absolute;
-  top:-5px;
-  padding: 10px;
-}
-
-.breadcrumbs ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-}
-
-.breadcrumbs ul li {
-  display: inline;
-}
-
-.breadcrumbs ul li:not(:first-child)::before {
-  content: ">";
-  color:#fff;
+  justify-content: center;
   font-size: 20px;
-  margin: 0 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.breadcrumbs ul li a {
-  text-decoration: none;
-  color: #fff;
-  font-weight: bold;
-  font-size: 16px;
-  padding: 5px;
+.playPauseButton:hover {
+  background-color: rgba(95, 30, 193, 1);
+  transform: scale(1.2); /* Added rotation for a dynamic effect */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
 
-.breadcrumbs ul li a:hover {
-  color: #ccc; 
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
 }
 
-.breadcrumbs ul li span {
-  color: #777;
-  padding: 5px;
+.playPauseButton.pulse {
+  animation: pulse 2s infinite;
 }
 
-.breadcrumbs ul li.active a {
-  color:red;
-  text-decoration: underline;
+
+/* Desktop and large screens */
+@media screen and (min-width: 1024px) {
+  .app {
+    width: 1100px;
+    margin: 0 auto;
+  }
+
+  .allCardsPage {
+    padding: 20px;
+    margin-top: 112px;
+    margin-left: 270px;
+    position: fixed;
+  }
+
+  .cardsContainer {
+    gap: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
 }
 
-.breadcrumbs ul li.active a:hover {
-  color: #1559b3;
-}
+/* Tablet screens */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .app {
+    width: 100%;
+    padding: 0 20px;
+  }
 
+  .allCardsPage {
+    margin-left: 220px;
+  }
+
+  .cardsContainer {
+    grid-template-columns: repeat(3, 1fr);
+    
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
 
 
 
