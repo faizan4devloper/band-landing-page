@@ -1,3 +1,176 @@
+def lambda_handler(event, context):
+    
+    print("------------------ NEW event:",type(event),event)
+    data_string = event["body"]
+#     print("event[body]",data_string,type(data_string))
+#     print("\n","Lambda Handler context:",type(context),context)
+#     print("qtext=json.loads(data_string) :",type(qtext),qtext)
+    
+    ### New - Added for React ####
+    print("event[body]",data_string,type(data_string))
+    print("\n","Lambda Handler context:",type(context),context)
+    qtext = json.loads(data_string)
+    print("qtext=json.loads(data_string) :",type(qtext),qtext)
+       
+    qtext=json.loads(data_string)
+    #print(event['body']['question'])
+    #qtext=jsninp['type']
+    #
+    #{'type': 'query_only', 'query': 'How to get visas for my partner and children to live in the UK has context menu'}
+    #
+    print("\n","qtext:=",qtext)
+    print("qtext['type']:=",qtext['type'],"\n","qtext['query']:=",qtext['query'])
+    ##############################
+    
+    # ################################### Query Only ###################################
+    if qtext['type']=='query_only':
+        print("inside query_only()")
+        user_query=qtext['query']
+        collecname = 'mb-ukadvice-webcontext'
+        web_context = context_selection(user_query,collecname)
+        print(web_context)
+        print("Done!,Response 1: Generated from Model , passing to App:")#, prompt_result)
+
+        query_ans = query_ans_func(user_query,web_context,bedrock_client)
+        print(f'Answer to User Question - {query_ans}')
+
+        user_query_ans=json.dumps({"text":query_ans})
+        user_query_ans=json.loads(user_query_ans)
+        print("Returning as resp-text")
+        
+            ######New ###############
+        headers = {
+            'Access-Control-Allow-Origin': '*',  # Replace with your client's origin
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': '*',  # Adjust based on the allowed methods
+        }
+
+        return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({'text':query_ans})
+                }
+            ###### ##################
+#         return {
+#                 'statusCode': 200,
+#                 'body': {'user_query_ans':query_ans}  # Need to change as per React! # 1
+#                 }
+
+
+
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPaperPlane, faUser, faRobot } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import "./ChatWindow.css";
+import { Loader } from "./Loader";
+
+import UploadDoc from "./UploadDoc"
+
+export function ChatWindow({ onChatResponse }) {
+  const [messages, setMessages] = useState([]);
+  const [conversationStarted, setConversationStarted] = useState(false);
+  const [userInput, setUserInput] = useState("Based on my resume, is there a job in current market? Also help me out on how to apply visa for my family");
+      const [loading, setLoading] = useState(false);
+
+
+  const handleSend = async () => {
+    if (userInput.trim()) {
+      const newMessage = { sender: "user", text: userInput };
+      setMessages([...messages, newMessage]);
+      setUserInput("");
+
+      if (!conversationStarted) {
+        setConversationStarted(true);
+      }
+      
+                        setLoading(true);
+
+
+      try {
+        const response = await axios.post("dummy", {
+          type: "both",
+          query: newMessage.text
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log(response);
+        const botMessage = { sender: "bot", text:response.data.user_query_ans };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+        // Pass the response data to the parent component
+        onChatResponse(response.data);
+
+      } catch (error) {
+        console.error("Error during API call:", error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { sender: "bot", text: "Error: Unable to send message" },
+        ]);
+      }
+      finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  return (
+    <div className="chat-window">
+      <div className="chat-content">
+        <h3>Live Conversation</h3>
+        <div className={`chat-messages ${conversationStarted ? 'show' : ''}`}>
+          {messages.map((message, index) => (
+            <div key={index} className={`chat-message ${message.sender}`}>
+              <FontAwesomeIcon icon={message.sender === 'user' ? faUser : faRobot} />
+              {message.text}
+            </div>
+          ))}
+        </div>
+        <div className="chat-input">
+          <input
+            type="text"
+            value={userInput}
+            onChange={(e) => setUserInput(e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && handleSend()}
+            placeholder="Type a message..."
+            disabled={loading}
+          />
+          {loading ? <Loader /> : (
+            <button onClick={handleSend}>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          )}
+        </div>
+        <UploadDoc/>
+      </div>
+    </div>
+  );
+}
+
+export default ChatWindow;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const sendMessage = async () => {
   if (input.trim() === '') return;
 
