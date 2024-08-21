@@ -1,3 +1,110 @@
+import json
+import re
+
+def lambda_handler(event, context):  # Handler
+    print("------------------ NEW event:", type(event), event)
+    
+    # Retrieve and parse the request body
+    data_string = event.get("body", "{}")
+    print("event[body]", data_string, type(data_string))
+    
+    try:
+        qtext = json.loads(data_string)
+    except json.JSONDecodeError as e:
+        print(f"Error decoding JSON: {e}")
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Methods': '*',
+            },
+            'body': json.dumps({'error': 'Invalid JSON format'})
+        }
+    
+    print("qtext=json.loads(data_string):", type(qtext), qtext)
+    print("\nqtext:=", qtext)
+    print("qtext['query']:", qtext.get('query', ''))
+
+    ###### Generate Response Section ########################
+    ################# Generate Response ###############################################
+    if qtext.get('type') == 'query_only':
+        print("Inside query_only() function")
+        question = qtext['query']
+        print("Question Received:", question)
+        
+        # Define your collection and index names
+        collec_name = vector_store_name
+        index_name = index_name_orig
+        print(f"Using Collection= {collec_name} & Index= {index_name} to answer user's Query")
+        
+        # Initialize and run the chain (replace with your actual implementation)
+        chain = bedrock_chain(collec_name, index_name)
+        print("Received response from bedrock_chain() as a QA/Chain:", chain)
+        print(f"Passing question to chain to get response: {question}") 
+        
+        try:
+            resp = chain.run({"question": question})
+            print("Got response from chain.run() in resp:", resp)
+            
+            # Format the response
+            resp = json.dumps({"text": resp})
+            resp = json.loads(resp)
+            
+            print("After Json.loads", resp)
+            
+            result_trimmed = re.sub(r'<q>.*?</q>', '', resp['text'])
+            if len(result_trimmed) < 100:
+                result_trimmed = (resp['text'].replace('<q>', '')).replace('</q>', '')
+            
+            headers = {
+                'Access-Control-Allow-Origin': '*',  # Replace with your client's origin
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Methods': '*',  # Adjust based on the allowed methods
+            }
+            return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': json.dumps({'text': result_trimmed})
+            }
+        except Exception as e:
+            print(f"Error processing the response: {e}")
+            return {
+                'statusCode': 500,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': '*',
+                    'Access-Control-Allow-Methods': '*',
+                },
+                'body': json.dumps({'error': 'Internal Server Error'})
+            }
+    else:
+        return {
+            'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': '*',
+                'Access-Control-Allow-Methods': '*',
+            },
+            'body': json.dumps({'error': 'Unsupported request type'})
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def lambda_handler(event, context):
     
     print("------------------ NEW event:",type(event),event)
