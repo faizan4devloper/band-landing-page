@@ -1,5 +1,129 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { BeatLoader } from 'react-spinners';
+import styles from './ChatbotInput.module.css';
+
+const ChatbotInput = ({ onSendMessage }) => {
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setIsLoading(true);
+      await onSendMessage(message);
+      setMessage('');
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.chatbotInput}>
+      <form onSubmit={handleSubmit} className={styles.inputForm}>
+        <input
+          type="text"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type a message..."
+          className={styles.inputField}
+          disabled={isLoading}
+        />
+        <button type="submit" className={styles.sendButton} disabled={isLoading}>
+          {isLoading ? (
+            <BeatLoader color="#fff" size={8} />
+          ) : (
+            <FontAwesomeIcon icon={faPaperPlane} />
+          )}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default ChatbotInput;
+
+
+.chatbotInput {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-top: 1px solid #ddd;
+}
+
+.inputForm {
+  display: flex;
+  width: 100%;
+}
+
+.inputField {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+}
+
+.sendButton {
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #5f1ec1;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+import React, { useState } from 'react';
+import ChatbotInput from './ChatbotInput';
+// Other imports...
+
+const Chatbot = () => {
+  const [messages, setMessages] = useState([]);
+
+  const handleSendMessage = async (message) => {
+    // Simulate a delay to represent sending message
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    // Add the user message
+    setMessages([...messages, { type: 'user', text: message }]);
+
+    // Add a bot response after a delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: 'This is a bot response.' }]);
+  };
+
+  return (
+    <div className="chatbot">
+      {/* Other parts of the Chatbot */}
+      <ChatbotInput onSendMessage={handleSendMessage} />
+    </div>
+  );
+};
+
+export default Chatbot;
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
 import styles from './Chatbot.module.css';
