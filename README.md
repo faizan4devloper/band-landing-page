@@ -2,6 +2,103 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
+import { BeatLoader } from 'react-spinners'; // Import BeatLoader for the loader
+import styles from './Chatbot.module.css';
+
+const Chatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const sendMessage = () => {
+    if (input.trim() === '') return;
+
+    // Add user message
+    const userMessage = { text: input, sender: 'user' };
+    setMessages([...messages, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    // Simulate bot response
+    setTimeout(() => {
+      const botMessage = { text: 'This is a bot response.', sender: 'bot' };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+      setLoading(false);
+    }, 1000);
+  };
+
+  return (
+    <>
+      <div className={styles.chatbotIcon} onClick={toggleChatbot}>
+        <FontAwesomeIcon icon={faRobot} />
+      </div>
+      
+      {isOpen && (
+        <div className={styles.chatbotContainer}>
+          <div className={styles.chatbotHeader}>
+            <span>Chatbot</span>
+            <button onClick={toggleChatbot} className={styles.closeButton}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+
+          <div className={styles.chatbotMessages}>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={
+                  message.sender === 'user' ? styles.userMessage : styles.botMessage
+                }
+              >
+                <FontAwesomeIcon
+                  icon={message.sender === 'user' ? faUserCircle : faRobot}
+                  className={styles.icon}
+                />
+                <div className={styles.messageText}>{message.text}</div>
+              </div>
+            ))}
+            {loading && <div className={styles.loader}>...</div>}
+          </div>
+
+          <div className={styles.chatbotInput}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message..."
+              disabled={loading} // Disable input when loading
+            />
+            <button onClick={sendMessage} disabled={loading} className={styles.sendButton}>
+              {loading ? (
+                <BeatLoader color="#fff" size={8} />
+              ) : (
+                <FontAwesomeIcon icon={faPaperPlane} />
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Chatbot;
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUserCircle } from '@fortawesome/free-regular-svg-icons';
 import styles from './Chatbot.module.css';
 
 const Chatbot = () => {
