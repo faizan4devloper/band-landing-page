@@ -1,5 +1,194 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faUser, faRobot } from '@fortawesome/free-solid-svg-icons';
+import BeatLoader from 'react-spinners/BeatLoader';
+import styles from './Chatbot.module.css';
+
+const Chatbot = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSend = () => {
+    if (input.trim()) {
+      const userMessage = { text: input, sender: 'user' };
+      setMessages([...messages, userMessage]);
+      setInput('');
+      setLoading(true);
+
+      // Simulate bot response after a delay
+      setTimeout(() => {
+        const botMessage = { text: 'This is a response from the bot.', sender: 'bot' };
+        setMessages(prevMessages => [...prevMessages, botMessage]);
+        setLoading(false);
+      }, 1000);
+    }
+  };
+
+  return (
+    <div className={styles.chatbotContainer}>
+      <div className={styles.chatbotIcon}>Chat</div>
+      <div className={styles.chatWindow}>
+        <div className={styles.messagesContainer}>
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`${styles.message} ${
+                message.sender === 'user' ? styles.userMessage : styles.botMessage
+              }`}
+            >
+              <div className={styles.iconContainer}>
+                <FontAwesomeIcon
+                  icon={message.sender === 'user' ? faUser : faRobot}
+                  className={styles.icon}
+                />
+              </div>
+              <div className={styles.textContainer}>{message.text}</div>
+            </div>
+          ))}
+          {loading && (
+            <div className={`${styles.message} ${styles.botMessage}`}>
+              <div className={styles.iconContainer}>
+                <FontAwesomeIcon icon={faRobot} className={styles.icon} />
+              </div>
+              <div className={styles.loaderContainer}>
+                <BeatLoader color="#5931d5" loading={loading} size={10} margin={2} />
+              </div>
+            </div>
+          )}
+        </div>
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            className={styles.chatInput}
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Type your message..."
+          />
+          <button className={styles.sendButton} onClick={handleSend}>
+            <FontAwesomeIcon icon={faPaperPlane} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chatbot;
+
+
+
+.chatbotContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chatbotIcon {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+
+.messagesContainer {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.userMessage {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.botMessage {
+  flex-direction: row;
+  text-align: left;
+}
+
+.iconContainer {
+  width: 30px;
+  height: 30px;
+  margin: 0 10px;
+}
+
+.icon {
+  font-size: 24px;
+  color: #5f1ec1;
+}
+
+.textContainer {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+}
+
+.userMessage .textContainer {
+  background-color: #5f1ec1;
+  color: white;
+}
+
+.inputContainer {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+}
+
+.chatInput {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.sendButton {
+  background-color: #5f1ec1;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.loaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border-radius: 12px;
+  background-color: #f1f1f1;
+}
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComments, faPaperPlane, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import styles from './Chatbot.module.css';
 
