@@ -1,3 +1,60 @@
+const sendMessage = async () => {
+  if (input.trim() === '') return;
+
+  const userMessage = { text: input, sender: 'user' };
+  setMessages([...messages, userMessage]);
+  setInput('');
+  setLoading(true);
+
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { text: '', sender: 'bot', loading: true },
+  ]);
+
+  try {
+    const response = await axios.post(
+      'YOUR_API_ENDPOINT',  // Replace 'dummy' with your actual endpoint
+      { query: input },  // Adjust the body format as per your Lambda function's expectation
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    const botMessage = { text: response.data.reply, sender: 'bot' };
+
+    setMessages((prevMessages) =>
+      prevMessages.map((msg, index) =>
+        index === prevMessages.length - 1 ? botMessage : msg
+      )
+    );
+  } catch (error) {
+    console.error('Error sending message:', error);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot' },
+    ]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def lambda_handler(event, context):  # Handler
     
     print("------------------ NEW event:",type(event),event)
