@@ -1,3 +1,60 @@
+const sendMessage = async () => {
+  if (input.trim() === '') return;
+
+  // Add user message
+  const userMessage = { text: input, sender: 'user' };
+  setMessages((prevMessages) => [...prevMessages, userMessage]);
+  setInput('');
+  setLoading(true);
+
+  // Add a loading indicator as a bot message before the actual response
+  setMessages((prevMessages) => [
+    ...prevMessages,
+    { text: '', sender: 'bot', loading: true },
+  ]);
+
+  try {
+    // Use Axios to fetch the bot response
+    const response = await axios.post('xyz', { message: input });
+    const botMessage = { text: response.data.message, sender: 'bot' };
+
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages];
+      const lastLoadingMessageIndex = updatedMessages.findIndex(msg => msg.loading);
+
+      if (lastLoadingMessageIndex !== -1) {
+        // Replace the loading message with the bot's response
+        updatedMessages[lastLoadingMessageIndex] = botMessage;
+      }
+
+      return updatedMessages;
+    });
+  } catch (error) {
+    console.error('Error fetching bot response:', error);
+    // Add an error message or fallback response
+    const errorMessage = { text: 'Sorry, there was an error getting a response.', sender: 'bot' };
+
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages];
+      const lastLoadingMessageIndex = updatedMessages.findIndex(msg => msg.loading);
+
+      if (lastLoadingMessageIndex !== -1) {
+        // Replace the loading message with the error message
+        updatedMessages[lastLoadingMessageIndex] = errorMessage;
+      }
+
+      return updatedMessages;
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
