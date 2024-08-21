@@ -1,3 +1,95 @@
+def lambda_handler(event, context):  # Handler
+    
+    print("------------------ NEW event:",type(event),event)
+    
+    data_string = event["body"]
+#     print("event[body]",data_string,type(data_string))
+#     print("\n","Lambda Handler context:",type(context),context)
+#     qtext = json.loads(data_string)
+#     print("qtext=json.loads(data_string) :",type(qtext),qtext)
+    print("event[body]",data_string,type(data_string))
+    #print("\n","Lambda Handler context:",type(context),context)
+    qtext = json.loads(data_string)
+    print("qtext=json.loads(data_string) :",type(qtext),qtext)
+       
+    qtext=json.loads(data_string)
+    #print(event['body']['question'])
+    #qtext=jsninp['type']
+    #
+    #{'type': 'query_only', 'query': 'How to get visas for my partner and children to live in the UK has context menu'}
+    #
+    print("\n","qtext:=",qtext)
+    print("qtext['query']:=",qtext['query'])
+    
+    ###### Generate Response Section ########################
+    
+    ################# Generate Response ###############################################
+    if 'generate_response'=='generate_response':
+        print("Inside generate_response function")
+        question=qtext['query']
+        print("Question Recieved:",question)
+        
+        print("Calling bedrock_chain() , To Declare required items, collection retirver, langchain qa retrival chai etc")        
+        
+        collec_name=vector_store_name
+#         index_name="portal-test-index"
+        index_name=index_name_orig
+        print(f"Using Collection= {collec_name} & Index= {index_name} to answer user's Query")
+        
+        chain=bedrock_chain(collec_name,index_name)
+        
+        print("Recieved response from bedrock_chain() as a qa/Chain:",chain)
+        
+        print("Now we are running the Chain passing the user's questions")
+        
+        print(f"Passing question to chain to get response:{question}") 
+        
+        resp=chain.run({"question": question})
+          
+        print("Got respose from chain.run() in resp:",resp) 
+        
+        print("type: resp",type(resp))
+        
+        print("Before Json.loads",resp)
+        
+        resp=json.dumps({"text":resp})
+        print("json.dumps:",resp)
+        resp=json.loads(resp)
+        print("After Json.loads",resp)
+        
+        print("Returning to resp-text",resp['text'])
+        print("Type of resp[text]:",type(resp['text']))
+#         result_trimmed = re.sub(r'<q>.*?</q>', '', resp['text']) # old
+        # New
+        result_trimmed = re.sub(r'<q>.*?</q>', '', resp['text'])
+        if len(result_trimmed)<100:
+            print("hi")
+            result_trimmed=(resp['text'].replace('<q>','')).replace('</q>','')
+    #result_trimmed=.replace('<q>','')
+        else:
+            result_trimmed
+          ## New --- END  
+        headers = {
+            'Access-Control-Allow-Origin': '*',  # Replace with your client's origin
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': '*',  # Adjust based on the allowed methods
+        }
+        return {
+                'statusCode': 200,
+                'headers': headers,
+                'body': result_trimmed
+                #'body': json.dumps(user_query_ans':query_ans')
+                                   #                 'body': resp
+                }
+###### Generate Answer Section - END #######################
+    #### --- END --- Generate Response Section ##############
+    
+ 
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
