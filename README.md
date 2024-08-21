@@ -2,6 +2,200 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { BeatLoader } from 'react-spinners';
+import styles from './Chatbot.module.css';
+
+const Chatbot = () => {
+  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (message.trim()) {
+      setIsLoading(true);
+      // Add user message
+      setMessages([...messages, { type: 'user', text: message }]);
+      setMessage('');
+
+      // Simulate sending a message
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Add bot response
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { type: 'bot', text: 'This is a bot response.' },
+      ]);
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.chatbot}>
+      <div className={styles.chatHeader}>
+        <h2>Chatbot</h2>
+        <button className={styles.closeButton}>X</button>
+      </div>
+
+      <div className={styles.chatWindow}>
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={
+              msg.type === 'user'
+                ? `${styles.message} ${styles.userMessage}`
+                : `${styles.message} ${styles.botMessage}`
+            }
+          >
+            <div className={styles.icon}>
+              <img
+                src={msg.type === 'user' ? '/path/to/user-icon.png' : '/path/to/bot-icon.png'}
+                alt={msg.type === 'user' ? 'User Icon' : 'Bot Icon'}
+              />
+            </div>
+            <div className={styles.text}>{msg.text}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className={styles.inputSection}>
+        <form onSubmit={handleSendMessage} className={styles.inputForm}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Type a message..."
+            className={styles.inputField}
+            disabled={isLoading}
+          />
+          <button type="submit" className={styles.sendButton} disabled={isLoading}>
+            {isLoading ? (
+              <BeatLoader color="#fff" size={8} />
+            ) : (
+              <FontAwesomeIcon icon={faPaperPlane} />
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Chatbot;
+
+
+.chatbot {
+  width: 400px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #5f1ec1;
+  color: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.chatWindow {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.userMessage {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.botMessage {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+}
+
+.text {
+  max-width: 70%;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 20px;
+}
+
+.userMessage .text {
+  background-color: #5f1ec1;
+  color: #fff;
+}
+
+.inputSection {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background-color: #f1f1f1;
+}
+
+.inputForm {
+  display: flex;
+  align-items: center;
+}
+
+.inputField {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-size: 16px;
+  outline: none;
+}
+
+.sendButton {
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #5f1ec1;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sendButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+
+
+
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { BeatLoader } from 'react-spinners';
 import styles from './ChatbotInput.module.css';
 
 const ChatbotInput = ({ onSendMessage }) => {
