@@ -1,3 +1,35 @@
+Uncaught Error: Objects are not valid as a React child (found: object with keys {errorMessage, errorType, requestId, stackTrace}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (react-dom.development.js:14887:1)
+    at reconcileChildFibers (react-dom.development.js:15828:1)
+    at reconcileChildren (react-dom.development.js:19174:1)
+    at updateHostComponent (react-dom.development.js:19924:1)
+    at beginWork (react-dom.development.js:21618:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27451:1)
+    at performUnitOfWork (react-dom.development.js:26557:1)
+react-dom.development.js:18687 The above error occurred in the <div> component:
+
+    at div
+    at div
+    at div
+    at div
+    at Chatbot (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2481:78)
+    at div
+    at MainApp (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:647:82)
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50985:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48938:5)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import Axios
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
