@@ -1,3 +1,35 @@
+Chatbot.js:57 Error sending message: 
+AxiosError
+code
+: 
+"ERR_BAD_RESPONSE"
+config
+: 
+{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
+message
+: 
+"Request failed with status code 502"
+name
+: 
+"AxiosError"
+request
+: 
+XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
+response
+: 
+{data: {…}, status: 502, statusText: '', headers: AxiosHeaders, config: {…}, …}
+stack
+: 
+"AxiosError: Request failed with status code 502\n    at settle (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:89420:12)\n    at XMLHttpRequest.onloadend (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:88083:66)\n    at Axios.request (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:88573:41)\n    at async sendMessage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2511:24)"
+[[Prototype]]
+: 
+Error
+
+
+
+
+
+
 import json
 import re
 
