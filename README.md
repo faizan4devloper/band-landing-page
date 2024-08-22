@@ -1,3 +1,187 @@
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+//... other imports ...
+
+const Chatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showClearChat, setShowClearChat] = useState(false);
+  
+  // Reference for the messages container
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMessages([{ text: 'Hello! How can I assist you today?', sender: 'bot' }]);
+    }
+  }, [isOpen]);
+
+  // Auto-scroll effect whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const sendMessage = async () => {
+    if (input.trim() === '') return;
+
+    const userMessage = { text: input, sender: 'user' };
+    setMessages([...messages, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: '', sender: 'bot', loading: true },
+    ]);
+
+    try {
+      const response = await axios.post('dummy', // This is Haiku 3 Api
+        { query: input },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const botMessage = { text: response.data.text, sender: 'bot' };
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg, index) =>
+          index === prevMessages.length - 1 ? botMessage : msg
+        )
+      );
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearChat = () => {
+    setMessages([]);
+    setShowClearChat(false);
+  };
+
+  const linkify = (text) => {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlPattern).map((part, index) =>
+      urlPattern.test(part) ? (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
+  };
+
+  return (
+    <>
+      <div className={styles.chatbotIcon} onClick={toggleChatbot}>
+        <FontAwesomeIcon icon={faComments} />
+      </div>
+
+      {isOpen && (
+        <div className={`${styles.chatbotContainer} ${isOpen ? styles.open : ''}`}>
+          <div className={styles.chatbotHeader}>
+            <div className={styles.botProfile}>
+              <img src={BotProfile} className={styles.botImage} />
+              <div className={styles.botInfo}>
+                <div className={styles.botName}>Ninja AI</div>
+                <div className={styles.botStatus}>
+                  Online <span className={styles.greenDot}></span>
+                </div>
+              </div>
+            </div>
+            <div className={styles.headerActions}>
+              <button onClick={() => setShowClearChat(true)} className={styles.clearChatButton} title="Clear Chat">
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </button>
+              <button onClick={toggleChatbot} className={styles.closeButton}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.chatbotMessages}>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={
+                  message.sender === 'user' ? styles.userMessage : styles.botMessage
+                }
+              >
+                <FontAwesomeIcon
+                  icon={message.sender === 'user' ? faUser : faWandSparkles}
+                  className={styles.icon}
+                />
+                <div className={styles.messageText}>
+                  {message.loading ? (
+                    <BeatLoader color="#5f1ec1" size={8} />
+                  ) : (
+                    linkify(message.text)
+                  )}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className={styles.chatbotInput}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              placeholder="Type your message..."
+              disabled={loading}
+            />
+            <button onClick={sendMessage} disabled={loading} className={styles.sendButton}>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showClearChat && (
+        <div className={styles.clearChatOverlay}>
+          <div className={styles.clearChatWindow}>
+            <p>Are you sure you want to clear the chat?</p>
+            <button onClick={handleClearChat} className={styles.confirmButton}>
+              Yes, Clear Chat
+            </button>
+            <button onClick={() => setShowClearChat(false)} className={styles.cancelButton}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Chatbot;
+
+                  
+                  
+                  
                   Online <span className={styles.greenDot}></span>
 /* Add this to your existing styles */
 .greenDot {
