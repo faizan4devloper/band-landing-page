@@ -1,3 +1,196 @@
+.clearChatWindow {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 90%; /* Adjust width to fit within the container */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  margin: 20px auto; /* Center within the container */
+}
+
+.confirmButton {
+  background-color: #5f1ec1;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.cancelButton {
+  background-color: #ddd;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faRobot, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { BeatLoader } from 'react-spinners';
+import styles from './Chatbot.module.css';
+
+const Chatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showClearChatWindow, setShowClearChatWindow] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setMessages([{ text: 'Hello! How can I assist you today?', sender: 'bot' }]);
+    }
+  }, [isOpen]);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const sendMessage = async () => {
+    if (input.trim() === '') return;
+
+    const userMessage = { text: input, sender: 'user' };
+    setMessages([...messages, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: '', sender: 'bot', loading: true },
+    ]);
+
+    try {
+      const response = await axios.post(
+        'YOUR_ACTUAL_ENDPOINT_URL',
+        { query: input },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const botMessage = { text: response.data.text, sender: 'bot' };
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg, index) =>
+          index === prevMessages.length - 1 ? botMessage : msg
+        )
+      );
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot' },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearChat = () => {
+    setMessages([]);
+    setShowClearChatWindow(false);
+  };
+
+  return (
+    <>
+      <div className={styles.chatbotIcon} onClick={toggleChatbot}>
+        <FontAwesomeIcon icon={faRobot} />
+      </div>
+
+      {isOpen && (
+        <div className={styles.chatbotContainer}>
+          <div className={styles.chatbotHeader}>
+            <button onClick={() => setShowClearChatWindow(true)} className={styles.clearChatButton}>
+              Clear Chat
+            </button>
+            <button onClick={toggleChatbot} className={styles.closeButton}>
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+          </div>
+
+          {showClearChatWindow ? (
+            <div className={styles.clearChatWindow}>
+              <p>Are you sure you want to clear the chat?</p>
+              <button className={styles.confirmButton} onClick={clearChat}>
+                Yes, Clear Chat
+              </button>
+              <button className={styles.cancelButton} onClick={() => setShowClearChatWindow(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className={styles.chatbotMessages}>
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={
+                      message.sender === 'user' ? styles.userMessage : styles.botMessage
+                    }
+                  >
+                    <FontAwesomeIcon
+                      icon={message.sender === 'user' ? faUser : faRobot}
+                      className={styles.icon}
+                    />
+                    <div className={styles.messageText}>
+                      {message.loading ? (
+                        <BeatLoader color="#5f1ec1" size={8} />
+                      ) : (
+                        message.text
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className={styles.chatbotInput}>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      sendMessage();
+                    }
+                  }}
+                  placeholder="Type your message..."
+                  disabled={loading}
+                />
+                <button onClick={sendMessage} disabled={loading} className={styles.sendButton}>
+                  <FontAwesomeIcon icon={faPaperPlane} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Chatbot;
+
+
+
+
+
+
+
+
+
+
 .chatbotIcon {
   position: fixed;
   bottom: 20px;
