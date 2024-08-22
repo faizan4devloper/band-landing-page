@@ -1,3 +1,29 @@
+.chatbotContainer.minimized {
+  height: 50px;
+  width: 200px;
+  overflow: hidden;
+}
+
+.minimizeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.greenDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #00FF00;
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+  
+  
   const [isMinimized, setIsMinimized] = useState(false); // New state for minimizing
 const toggleChatbot = () => {
     setIsOpen(!isOpen);
