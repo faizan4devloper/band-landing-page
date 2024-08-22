@@ -1,3 +1,71 @@
+  const [isMinimized, setIsMinimized] = useState(false); // New state for minimizing
+const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+    if (isMinimized) {
+      setIsMinimized(false);
+    }
+  };
+
+  const minimizeChatbot = () => {
+    setIsMinimized(!isMinimized);
+  };
+
+  {isOpen && (
+        <div className={`${styles.chatbotContainer} ${isOpen ? styles.open : ''} ${isMinimized ? styles.minimized : ''}`}>
+          <div className={styles.chatbotHeader}>
+            <div className={styles.botProfile}>
+              <img src={BotProfile} className={styles.botImage} />
+              <div className={styles.botInfo}>
+                <div className={styles.botName}>Ninja AI</div>
+                <div className={styles.botStatus}>Online <span className={styles.greenDot}></span></div>
+              </div>
+            </div>
+            <div className={styles.headerActions}>
+              <button onClick={minimizeChatbot} className={styles.minimizeButton} title="Minimize Chat">
+                <FontAwesomeIcon icon={faMinus} />
+              </button>
+              <button onClick={() => setShowClearChat(true)} className={styles.clearChatButton} title="Clear Chat">
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </button>
+              <button onClick={toggleChatbot} className={styles.closeButton} title="Close Chat">
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
+          </div>
+
+          {!isMinimized && (
+            <>
+              <div className={styles.chatbotMessages}>
+                {messages.map((message, index) => (
+                  <div
+                    key={index}
+                    className={
+                      message.sender === 'user' ? styles.userMessage : styles.botMessage
+                    }
+                  >
+                    <FontAwesomeIcon
+                      icon={message.sender === 'user' ? faUser : faWandSparkles}
+                      className={styles.icon}
+                    />
+                    <div className={styles.messageText}>
+                      {message.loading ? (
+                        <BeatLoader color="#5f1ec1" size={8} />
+                      ) : (
+                        linkify(message.text)
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 //... other imports ...
