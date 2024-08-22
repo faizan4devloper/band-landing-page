@@ -13,8 +13,33 @@ const MainContent = ({ activeTab, content }) => {
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   useEffect(() => {
+    // Start loading when content is passed
     if (content) {
-      setIsLoading(false); // Stop loading when content is available
+      setIsLoading(true);
+
+      // Simulate image loading (replace with actual loading logic if needed)
+      const loadImages = async () => {
+        if (Array.isArray(content) && content.length > 0) {
+          const imagePromises = content.map(
+            (src) =>
+              new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = resolve;
+                img.onerror = reject;
+              })
+          );
+
+          try {
+            await Promise.all(imagePromises);
+          } catch (error) {
+            console.error("Failed to load images", error);
+          }
+        }
+        setIsLoading(false); // Stop loading after images have loaded
+      };
+
+      loadImages();
     }
   }, [content]);
 
@@ -28,10 +53,16 @@ const MainContent = ({ activeTab, content }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            className={`${styles.customThumbContainer} ${
+              currentSlide === index ? styles.selected : ""
+            }`}
             onClick={() => setCurrentSlide(index)}
           >
-            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+            />
           </div>
         ))}
       </div>
@@ -60,25 +91,27 @@ const MainContent = ({ activeTab, content }) => {
 
   const renderContent = (content) => {
     if (isLoading) {
-      return <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />; // Show spinner while loading
-    }
-    
-    if (!content || content.length === 0) {
-      return <div>No images available</div>; // Fallback if no content
+      return <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />;
     }
 
-    if (typeof content === 'string') {
+    if (!content || content.length === 0) {
+      return <div>No images available</div>;
+    }
+
+    if (typeof content === "string") {
       return <div>{content}</div>;
     }
 
-    return content.length > 1 ? renderCarousel(content) : (
-      <img
-        src={content[0]}
-        alt="Single Image"
-        className={maximizedImage === content[0] ? styles.maximized : ""}
-        onClick={() => toggleMaximize(content[0])}
-      />
-    );
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+        />
+      );
   };
 
   const renderImageOrCarousel = (images) => {
@@ -126,9 +159,20 @@ const MainContent = ({ activeTab, content }) => {
     <div className={styles.mainContent}>
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+        <div
+          className={styles.overlay}
+          onClick={() => setMaximizedImage(null)}
+        >
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximized}
+          />
         </div>
       )}
     </div>
