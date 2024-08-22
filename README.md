@@ -1,3 +1,32 @@
+                  Online <span className={styles.greenDot}></span>
+/* Add this to your existing styles */
+.greenDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #28a745; /* Green color */
+  border-radius: 50%;
+  margin-left: 5px;
+}
+
+/* Ensure the botStatus class is updated */
+.botStatus {
+  font-size: 12px;
+  color: #d1e7ff;
+  display: flex;
+  align-items: center;
+}
+
+
+// Auto-scroll effect whenever messages change
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
