@@ -1,3 +1,55 @@
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  background-color: #4caf50; /* Green dot */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.minimizeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+/* Add tooltip styles */
+.clearChatButton[title], .minimizeButton[title] {
+  position: relative;
+}
+
+.clearChatButton[title]:hover::after, .minimizeButton[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  white-space: nowrap;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .chatbotContainer.minimized {
   height: 50px;
   width: 200px;
