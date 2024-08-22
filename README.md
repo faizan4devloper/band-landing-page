@@ -1,14 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Video from "./Video";
+import { ClipLoader } from "react-spinners"; // Import the spinner
 
 const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    if (content) {
+      setIsLoading(false); // Stop loading when content is available
+    }
+  }, [content]);
 
   const toggleMaximize = (imageSrc) => {
     setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
@@ -51,10 +59,14 @@ const MainContent = ({ activeTab, content }) => {
   );
 
   const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <div>No content available</div>;
+    if (isLoading) {
+      return <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />; // Show spinner while loading
     }
     
+    if (!content || content.length === 0) {
+      return <div>No images available</div>; // Fallback if no content
+    }
+
     if (typeof content === 'string') {
       return <div>{content}</div>;
     }
@@ -70,10 +82,6 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <div>No images available</div>;
-    }
-    
     return renderContent(images);
   };
 
