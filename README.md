@@ -1,45 +1,43 @@
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Video from "./Video";
-import { ClipLoader } from "react-spinners"; // Import the spinner
+import { ClipLoader } from "react-spinners";
 
 const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
+  const [imagesAvailable, setImagesAvailable] = useState(false); // Track if images are available
 
   useEffect(() => {
-    // Start loading when content is passed
-    if (content) {
-      setIsLoading(true);
-
-      // Simulate image loading (replace with actual loading logic if needed)
+    if (content && Array.isArray(content) && content.length > 0) {
       const loadImages = async () => {
-        if (Array.isArray(content) && content.length > 0) {
-          const imagePromises = content.map(
-            (src) =>
-              new Promise((resolve, reject) => {
-                const img = new Image();
-                img.src = src;
-                img.onload = resolve;
-                img.onerror = reject;
-              })
-          );
+        const imagePromises = content.map(
+          (src) =>
+            new Promise((resolve, reject) => {
+              const img = new Image();
+              img.src = src;
+              img.onload = resolve;
+              img.onerror = reject;
+            })
+        );
 
-          try {
-            await Promise.all(imagePromises);
-          } catch (error) {
-            console.error("Failed to load images", error);
-          }
+        try {
+          await Promise.all(imagePromises);
+          setImagesAvailable(true); // Images are available
+        } catch (error) {
+          console.error("Failed to load images", error);
         }
         setIsLoading(false); // Stop loading after images have loaded
       };
 
       loadImages();
+    } else {
+      setIsLoading(false); // Stop loading if no images are provided
     }
   }, [content]);
 
@@ -94,12 +92,8 @@ const MainContent = ({ activeTab, content }) => {
       return <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />;
     }
 
-    if (!content || content.length === 0) {
+    if (!imagesAvailable) {
       return <div>No images available</div>;
-    }
-
-    if (typeof content === "string") {
-      return <div>{content}</div>;
     }
 
     return content.length > 1
