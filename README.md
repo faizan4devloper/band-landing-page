@@ -11,34 +11,30 @@ const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [imagesAvailable, setImagesAvailable] = useState(false); // Track if images are available
+  const [imagesAvailable, setImagesAvailable] = useState(false);
 
   useEffect(() => {
-    if (content && Array.isArray(content) && content.length > 0) {
-      const loadImages = async () => {
+    const checkImages = async () => {
+      if (content && Array.isArray(content) && content.length > 0) {
         const imagePromises = content.map(
           (src) =>
-            new Promise((resolve, reject) => {
+            new Promise((resolve) => {
               const img = new Image();
               img.src = src;
-              img.onload = resolve;
-              img.onerror = reject;
+              img.onload = () => resolve(true);
+              img.onerror = () => resolve(false);
             })
         );
 
-        try {
-          await Promise.all(imagePromises);
-          setImagesAvailable(true); // Images are available
-        } catch (error) {
-          console.error("Failed to load images", error);
-        }
-        setIsLoading(false); // Stop loading after images have loaded
-      };
+        const results = await Promise.all(imagePromises);
+        const hasImages = results.some((result) => result === true);
 
-      loadImages();
-    } else {
-      setIsLoading(false); // Stop loading if no images are provided
-    }
+        setImagesAvailable(hasImages);
+      }
+      setIsLoading(false);
+    };
+
+    checkImages();
   }, [content]);
 
   const toggleMaximize = (imageSrc) => {
@@ -87,25 +83,27 @@ const MainContent = ({ activeTab, content }) => {
     </div>
   );
 
-  const renderContent = (content) => {
+  const renderContent = (images) => {
     if (isLoading) {
-      return <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />;
+      return (
+        <div className={styles.loaderContainer}>
+          <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />
+        </div>
+      );
     }
 
     if (!imagesAvailable) {
       return <div>No images available</div>;
     }
 
-    return content.length > 1
-      ? renderCarousel(content)
-      : (
-        <img
-          src={content[0]}
-          alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content[0])}
-        />
-      );
+    return images.length > 1 ? renderCarousel(images) : (
+      <img
+        src={images[0]}
+        alt="Single Image"
+        className={maximizedImage === images[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(images[0])}
+      />
+    );
   };
 
   const renderImageOrCarousel = (images) => {
