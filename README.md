@@ -1,15 +1,22 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Video from "./Video";
+import Loader from "./Loader"; // Import a Loader component
 
 const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
+
+  useEffect(() => {
+    if (content) {
+      setIsLoading(false); // Simulate image/content loading
+    }
+  }, [content]);
 
   const toggleMaximize = (imageSrc) => {
     setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
@@ -21,7 +28,9 @@ const MainContent = ({ activeTab, content }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            className={`${styles.customThumbContainer} ${
+              currentSlide === index ? styles.selected : ""
+            }`}
             onClick={() => setCurrentSlide(index)}
           >
             <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
@@ -53,14 +62,16 @@ const MainContent = ({ activeTab, content }) => {
 
   const renderContent = (content) => {
     if (!content || content.length === 0) {
-      return <div>No content available</div>;
+      return <Loader />; // Display loader instead of "No content available"
     }
-    
-    if (typeof content === 'string') {
+
+    if (typeof content === "string") {
       return <div>{content}</div>;
     }
 
-    return content.length > 1 ? renderCarousel(content) : (
+    return content.length > 1 ? (
+      renderCarousel(content)
+    ) : (
       <img
         src={content[0]}
         alt="Single Image"
@@ -71,11 +82,11 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <div>No images available</div>;
+    if (isLoading) {
+      return <Loader />; // Display loader while loading
     }
-    
-    return renderContent(images);
+
+    return renderContent(images); // Render content if available
   };
 
   if (!content) {
@@ -120,8 +131,16 @@ const MainContent = ({ activeTab, content }) => {
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
         <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximized}
+          />
         </div>
       )}
     </div>
@@ -129,4 +148,3 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
-add loader and etc instead of No images Available
