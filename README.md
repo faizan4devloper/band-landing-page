@@ -1,153 +1,72 @@
-// src/App.js
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Header from './components/Header/Header';
-import Home from './Home';
-import SideBarPage from './components/Sidebar/SideBarPage';
-import AllCardsPage from './components/Cards/AllCardsPage';
-import Chatbot from './components/ChatBot/Chatbot';
-import Footer from './components/Footer/Footer';
-import { getCardsData } from './data';
-import { BeatLoader } from 'react-spinners';
-import styles from './App.module.css';
+// src/components/Footer/Footer.js
+import React from 'react';
+import styles from './Footer.module.css';
 
-const MainApp = () => {
-  const location = useLocation();
-  const [cardsData, setCardsData] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const cardsContainerRef = useRef(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      setCardsData(data);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleClickLeft = () => {
-    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleClickRight = () => {
-    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
-    }
-  };
-
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener('scroll', debounceScroll);
-
-    return () => window.removeEventListener('scroll', debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const showFooter = location.pathname === '/';
-
+const Footer = () => {
   return (
-    <div className={styles.app}>
-      {loading ? (
-        <div className={styles.loader}>
-          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-        </div>
-      ) : (
-        <>
-          <Header />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  cardsData={cardsData}
-                  handleClickLeft={handleClickLeft}
-                  handleClickRight={handleClickRight}
-                  currentIndex={currentIndex}
-                  bigIndex={bigIndex}
-                  toggleSize={toggleSize}
-                  cardsContainerRef={cardsContainerRef}
-                />
-              }
-            />
-            <Route path="/dashboard" element={<SideBarPage />} />
-            <Route
-              path="/all-cards"
-              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-            />
-          </Routes>
-          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-              <FontAwesomeIcon icon={faChevronDown} />
-            </div>
-          )}
-          {showScrollUp && (
-            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-              <FontAwesomeIcon icon={faChevronUp} />
-            </div>
-          )}
-          <Chatbot />
-          {showFooter && <Footer />}
-        </>
-      )}
-    </div>
+    <footer className={styles.footer}>
+      <div className={styles.blogSection}>
+        <h3 className={styles.blogTitle}>Latest Blogs</h3>
+        <ul className={styles.blogList}>
+          <li><a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.blogLink}>Generative AI-powered email EAR (extract, act and respond) on AWS</a></li>
+          <li><a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.blogLink}>LLM cache: Sustainable, fast, cost-effective GenAI app design</a></li>
+          <li><a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.blogLink}>Unlocking the future of recruitment with SmartRecruit</a></li>
+          
+        </ul>
+      </div>
+      <div className={styles.footerInfo}>
+        <p>Copyright © 2024 HCL Technologies Limited</p>
+        <p>Contact: info@yourcompany.com</p>
+      </div>
+    </footer>
   );
 };
 
-const App = () => (
-  <Router>
-    <MainApp />
-  </Router>
-);
+export default Footer;
 
-export default App;
+
+
+
+/* src/components/Footer/Footer.module.css */
+.footer {
+  /*background-color: #f8f8f8;*/
+  background: linear-gradient(to bottom, #14142b 0, #05041e 100%) !important;
+  padding: 20px;
+  text-align: center;
+  color: #fcfcfc;
+  border-top: 1px solid #ddd;
+  margin:30px -88px;
+  margin-bottom: 0px;
+  height: 100%;
+}
+
+.blogSection {
+  margin-bottom: 15px;
+}
+
+.blogTitle {
+  font-size: 18px;
+  color: #5931d5;
+  margin-bottom: 10px;
+}
+
+.blogList {
+  list-style: none;
+  padding: 0;
+}
+
+.blogLink {
+  color: #fcfcfc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.blogLink:hover {
+  color: #5931d5;
+}
+
+.footerInfo {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #888;
+}
