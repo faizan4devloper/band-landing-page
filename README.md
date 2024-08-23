@@ -1,150 +1,432 @@
-import React, { useState, useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-import Loader from "./Loader"; // Import a Loader component
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import Chatbot from './components/ChatBot/Chatbot';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
 
   useEffect(() => {
-    if (content) {
-      setIsLoading(false); // Simulate image/content loading
-    }
-  }, [content]);
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
 
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+    fetchData();
+  }, []);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const renderCarousel = (images) => (
-    <div className={styles.carouselContainer}>
-      <div className={styles.customThumbs}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${styles.customThumbContainer} ${
-              currentSlide === index ? styles.selected : ""
-            }`}
-            onClick={() => setCurrentSlide(index)}
-          >
-            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-          </div>
-        ))}
-      </div>
-      <Carousel
-        showArrows={false}
-        showIndicators={false}
-        showThumbs={false}
-        showStatus={false}
-        selectedItem={currentSlide}
-        onChange={(index) => setCurrentSlide(index)}
-        className={styles.customCarousel}
-      >
-        {images.map((image, index) => (
-          <div key={index}>
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className={maximizedImage === image ? styles.maximized : ""}
-              onClick={() => toggleMaximize(image)}
-            />
-          </div>
-        ))}
-      </Carousel>
-    </div>
-  );
-
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <Loader />; // Display loader instead of "No content available"
-    }
-
-    if (typeof content === "string") {
-      return <div>{content}</div>;
-    }
-
-    return content.length > 1 ? (
-      renderCarousel(content)
-    ) : (
-      <img
-        src={content[0]}
-        alt="Single Image"
-        className={maximizedImage === content[0] ? styles.maximized : ""}
-        onClick={() => toggleMaximize(content[0])}
-      />
-    );
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
   };
 
-  const renderImageOrCarousel = (images) => {
-    if (isLoading) {
-      return <Loader />; // Display loader while loading
-    }
-
-    return renderContent(images); // Render content if available
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
   };
 
-  if (!content) {
-    return <div className={styles.mainContent}>Content not available</div>;
-  }
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
 
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
   };
 
   return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={styles.closeIcon}
-            onClick={() => setMaximizedImage(null)}
-          />
-          <img
-            src={maximizedImage}
-            alt="Maximized view"
-            className={styles.maximized}
-          />
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
         </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot/>
+        </>
       )}
     </div>
   );
 };
 
-export default MainContent;
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
+
+
+
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+
+::-webkit-scrollbar-thumb {
+  background: #5f1ec1; 
+  border-radius: 10px;
+}
+
+html, body {
+  font-family: "Poppins", sans-serif;
+
+}
+
+.app {
+  width: 1100px;
+  margin: 0 auto;
+  
+}
+
+.cardsContainer {
+  gap: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Allow wrapping */
+  
+}
+
+.arrow {
+  cursor: pointer;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  padding: 5px 5px 5px 5px;
+  border-radius: 50px;
+  border: 2px solid rgba(15, 95, 220, 1);
+  color: rgba(15, 95, 220, 1);
+  transition: transform 0.5s ease, background 0.5s ease;
+}
+
+.arrow:hover {
+  background-color: rgba(15, 95, 220, 1);
+  color: white;
+}
+
+.leftArrow {
+  left: -25px;
+  top: 90px;
+}
+
+.rightArrow {
+  right: -25px;
+  top: 90px;
+}
+
+@media screen and (max-width: 1100px) {
+  .app {
+    padding: 0 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .app {
+    max-width: 100%;
+  }
+}
+
+.viewAllContainer {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin-right: 112px;
+}
+
+.solutionHead {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  margin-left: 118px;
+}
+
+.viewAllButton {
+  font-weight: 600;
+  font-size: 14px;
+  color: #808080;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 7px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.viewAllButton:hover {
+  transform: translateY(-5px);
+  color: #5f1ec1;
+  background-color: rgba(13, 85, 198, 0.1);
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+}
+
+.viewAllButton:hover .icon {
+  transform: translateX(5px);
+}
+
+.scrollDownButton,
+.scrollUpButton {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  width: 21px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.scrollDownButton:hover, .scrollUpButton:hover {
+  background-color: rgba(13, 85, 198, 1);
+}
+
+/* Add this to your existing styles */
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Full height */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  z-index: 1000; /* Make sure loader appears above other content */
+}
+
+.videoContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+  opacity: 0;
+  width: 100%;
+  height: 95vh;
+  transform: translateX(-100%); /* Start hidden to the left */
+}
+
+.videoContainer.big {
+  transform: translateX(0); /* Slide in from left */
+  opacity: 1;
+}
+
+.videoContainer.small {
+  transform: translateX(-100%); /* Slide out to the left */
+  opacity: 0; /* Smoothly disappear */
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.5s ease-in-out, filter 0.5s ease-in-out;
+}
+
+.video:hover {
+  transform: scale(1.02);
+  filter: brightness(1.1);
+}
+
+.playPauseButton {
+  position: absolute;
+  bottom: 20px;
+  right: 25px;
+  background-color: rgba(95, 30, 193, 0.8);
+  color: white;
+  border: none;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.playPauseButton:hover {
+  background-color: rgba(95, 30, 193, 1);
+  transform: scale(1.2); /* Added rotation for a dynamic effect */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(95, 30, 193, 0.5);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.playPauseButton.pulse {
+  animation: pulse 2s infinite;
+}
+
+
+/* Desktop and large screens */
+@media screen and (min-width: 1024px) {
+  .app {
+    width: 1100px;
+    margin: 0 auto;
+  }
+
+  .allCardsPage {
+    padding: 20px;
+    margin-top: 112px;
+    margin-left: 270px;
+    position: fixed;
+  }
+
+  .cardsContainer {
+    gap: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+/* Tablet screens */
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .app {
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .allCardsPage {
+    margin-left: 220px;
+  }
+
+  .cardsContainer {
+    grid-template-columns: repeat(3, 1fr);
+    
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
+
+/* code for ChatBot */
+
