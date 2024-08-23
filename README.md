@@ -1,14 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import Video from "./Video";
+import { ClipLoader } from "react-spinners";
 
 const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imagesAvailable, setImagesAvailable] = useState(false);
+
+  useEffect(() => {
+    // Simulate image loading process
+    if (content && content.length > 0) {
+      setImagesAvailable(true);
+    } else {
+      setImagesAvailable(false);
+    }
+
+    // Simulate loading delay
+    const loadingTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // Adjust delay time as needed
+
+    return () => clearTimeout(loadingTimeout);
+  }, [content]);
 
   const toggleMaximize = (imageSrc) => {
     setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
@@ -20,10 +39,16 @@ const MainContent = ({ activeTab, content }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            className={`${styles.customThumbContainer} ${
+              currentSlide === index ? styles.selected : ""
+            }`}
             onClick={() => setCurrentSlide(index)}
           >
-            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+            />
           </div>
         ))}
       </div>
@@ -51,12 +76,16 @@ const MainContent = ({ activeTab, content }) => {
   );
 
   const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <div>No content available</div>;
+    if (isLoading) {
+      return (
+        <div className={styles.loaderContainer}>
+          <ClipLoader color="#5f1ec1" loading={isLoading} size={50} />
+        </div>
+      );
     }
-    
-    if (typeof content === 'string') {
-      return <div>{content}</div>;
+
+    if (!imagesAvailable) {
+      return <div>No images available</div>;
     }
 
     return content.length > 1 ? renderCarousel(content) : (
@@ -70,10 +99,6 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <div>No images available</div>;
-    }
-    
     return renderContent(images);
   };
 
@@ -119,8 +144,16 @@ const MainContent = ({ activeTab, content }) => {
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
         <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximized}
+          />
         </div>
       )}
     </div>
