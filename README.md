@@ -1,208 +1,154 @@
-// HeaderContext.js
-import React, { createContext, useState, useContext } from 'react';
 
-const HeaderContext = createContext();
-
-export const useHeaderContext = () => {
-  return useContext(HeaderContext);
-};
-
-export const HeaderProvider = ({ children }) => {
-  const [headerZIndex, setHeaderZIndex] = useState(1000); // Default zIndex
-
-  return (
-    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
-      {children}
-    </HeaderContext.Provider>
-  );
-};
-
-
-
-// App.js
-import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { HeaderProvider } from './context/HeaderContext'; // Update path accordingly
-import YourRoutes from './YourRoutes'; // Your routing component
-
-function App() {
-  return (
-    <Router>
-      <HeaderProvider>
-        <YourRoutes />
-      </HeaderProvider>
-    </Router>
-  );
-}
-
-export default App;
-
-
-
-// Header.js
-import React, { useEffect, useRef, useState } from 'react';
-import Modal from 'react-modal';
-import { useNavigate } from 'react-router-dom';
-import styles from './Header.module.css';
-import logoImage from './HCLTechLogo.svg';
-import RequestDemoForm from './RequestDemoForm';
-import laserStyles from './LaserCursor.module.css';
-import { useHeaderContext } from '../context/HeaderContext'; // Update path accordingly
-
-const Header = ({ zIndex }) => {
-  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isLaserEnabled, setIsLaserEnabled] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    setHeaderZIndex(zIndex); // Update context with z-index
-  }, [zIndex, setHeaderZIndex]);
-
-  const handleImageClick = () => {
-    navigate('/');
-  };
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', controlHeaderVisibility);
-    return () => {
-      window.removeEventListener('scroll', controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  const handleMouseMove = (event) => {
-    if (isLaserEnabled) {
-      setCursorPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (isLaserEnabled) {
-      document.addEventListener('mousemove', handleMouseMove);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-    }
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [isLaserEnabled]);
-
-  return (
-    <>
-      <header
-        className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}
-        style={{ zIndex: headerZIndex }} // Use zIndex from context
-      >
-        <img
-          src={logoImage}
-          className={styles.logo}
-          alt="HCL Technologies Logo"
-          onClick={handleImageClick}
-        />
-        <button className={styles.demoButton} onClick={openModal}>
-          Request a Demo
-        </button>
-      </header>
-
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} contentLabel="Request Demo Form">
-        <RequestDemoForm />
-      </Modal>
-
-      {isLaserEnabled && (
-        <div
-          className={laserStyles.laserCursor}
-          style={{ top: `${cursorPosition.y}px`, left: `${cursorPosition.x}px` }}
-        />
-      )}
-    </>
-  );
-};
-
-export default Header;
-
-
-
-// SideBarPage.js
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+// src/App.js
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-import { getCardsData } from '../../data';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import Chatbot from './components/ChatBot/Chatbot';
+import Footer from './components/Footer/Footer';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import styles from './App.module.css';
 
-const SideBarPage = () => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
+const MainApp = () => {
   const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getCardsData();
-      const params = new URLSearchParams(location.search);
-      const title = params.get('title');
-      if (title) {
-        setCardTitle(title);
-        const card = data.find((c) => c.title === title);
-        if (card) {
-          setCardContent(card.content);
-        }
-      }
+      setCardsData(data);
+      setLoading(false);
     };
 
     fetchData();
-  }, [location.search]);
+  }, []);
 
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleBackButtonClick = () => {
-    window.history.back();
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
   };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const showFooter = location.pathname === '/';
 
   return (
-    <div className={styles.sideBarPage}>
-      <Header zIndex={0} /> {/* Set zIndex to 0 */}
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
     </div>
   );
 };
 
-export default SideBarPage;
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
 
+export default App;
