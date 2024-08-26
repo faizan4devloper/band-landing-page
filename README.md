@@ -6,7 +6,9 @@ import { faArrowRight, faEnvelopeOpenText, faBolt, faUserTie } from "@fortawesom
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
+      <div className={styles.footerHeadingContainer}>
+        <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
+      </div>
       <div className={styles.cardContainer}>
         <div className={styles.card}>
           <div className={styles.iconContainer}>
@@ -62,14 +64,21 @@ export default Footer;
   overflow: hidden;
 }
 
-.footerHeading {
-  font-size: 28px;
+.footerHeadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 40px;
+}
+
+.footerHeading {
+  font-size: 32px; /* Larger font for more emphasis */
   color: #fff;
-  margin-top: 0px;
   letter-spacing: 2px;
-  border-bottom: 2px solid #fff;
-  padding-bottom: 10px;
+  background: linear-gradient(to right, #6f36cd, #1f77f6); /* Gradient background */
+  padding: 10px 20px; /* Padding for better appearance */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
 }
 
 .cardContainer {
@@ -131,7 +140,10 @@ export default Footer;
   color: #fff;
   text-decoration: none;
   font-weight: bold;
-  transition: color 0.3s ease, transform 0.3s ease;
+  background-color: #ff80bf; /* Added background color */
+  padding: 8px 12px; /* Padding for better button appearance */
+  border-radius: 5px; /* Rounded corners for button */
+  transition: background-color 0.3s ease, transform 0.3s ease, color 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -139,7 +151,8 @@ export default Footer;
 }
 
 .cardLink:hover {
-  color: #ff80bf;
+  background-color: #ff4d94; /* Darker color on hover */
+  color: #fff;
   transform: translateX(5px);
 }
 
