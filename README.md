@@ -1,170 +1,194 @@
-.sideBar {
-  width: 340px;
-  min-width: 340px; /* Prevents shrinking */
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
-}
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
 
-.menuItem {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%; /* Ensure full width */
-  min-width: 300px; /* Prevent shrinking */
-  padding: 10px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  background: none;
-  border: none;
-}
+const Header = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
-.menuItem:not(.active):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
-}
+  const handleImageClick = () => {
+    navigate("/");
+  };
 
-.active {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border-radius: 8px 0 0 8px;
-}
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
 
-.active .iconImg {
-  filter: brightness(0) invert(1);
-}
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
-.iconImg {
-  filter: brightness(0) invert(0);
-}
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      setIsVisible(false);
+    } else {
+      // Scrolling up
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
 
-.label {
-  margin-right: auto;
-  margin-left: 10px;
-  font-size: 12px;
-}
-
-
-
-
-
-
-
-
-/* eslint-disable jsx-a11y/alt-text */
-import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./SideBar.module.css";
-
-// Import individual images for each menu item
-import descriptionImg from "./Icons/Description.svg";
-import solutionFlowImg from "./Icons/SolutionFlow.svg";
-import demoImg from "./Icons/Demo.svg";
-import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
-import benefitsImg from "./Icons/Benefits.svg";
-import industyImg from "./Icons/Industry.svg"
-
-const SideBar = ({ activeTab, handleTabChange }) => {
-  const menuItems = [
-    { id: "description", label: "Description", img: descriptionImg },
-    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
-    { id: "demo", label: "Demo", img: demoImg },
-    {
-      id: "techArchitecture",
-      label: "Technical Architecture",
-      img: techArchitectureImg,
-    },
-    { id: "benefits", label: "Benefits", img: benefitsImg },
-    { id:"adoption", label: "Industry Adoption", img: industyImg  },
-  ];
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
 
   return (
-    <nav className={styles.sideBar}>
-      {menuItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => handleTabChange(item.id)}
-          className={`${styles.menuItem} ${
-            activeTab === item.id ? styles.active : ""
-          }`}
-        >
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
           <img
-            src={item.img}
-            className={`${styles.iconImg} ${styles.hoverEffect}`}
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            style={{ cursor: "pointer" }}
+            title="Navigate to Home"
           />
-          <span className={styles.label}>{item.label}</span>
-          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
-        </button>
-      ))}
-    </nav>
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+        </div>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+    </div>
   );
 };
 
-export default SideBar;
+export default Header;
 
+.navbarWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  background-color: #fff;
+  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
+  padding: 8px 0px;
+  z-index: 0;
+  transition: transform 0.5s ease-in-out;
 
-
-/* SideBar.module.css */
-
-.sideBar {
-  width: 340px;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  border-right: 1px solid rgba(219, 197, 255, 1);
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
+  /*margin-bottom: 30px;*/
+}
+.navbarWrapper.hide {
+  transform: translateY(-100%);
 }
 
-.menuItem {
+.navbarWrapper.show {
+  transform: translateY(0);
+}
+.navbarWrapper .header {
   display: flex;
-  flex-direction: row; /* Make the menu item a row layout */
-  justify-content: space-between; /* Align items with space between */
   align-items: center;
-  width: 100%;
-  padding: 10px;
-  margin: 5px 0px;
-  cursor: pointer;
-  transition: background-color 0.3s; /* Add transition for smoother effect */
-  background: none;
-  border: none;
+  justify-content: space-around;
+  margin: 5px -200px;
+}
+.logo img {
+  max-height: 20px;
 }
 
-.menuItem:not(.active):hover {
-  background-color: rgba(230, 235, 245, 1);
-  border-radius: 8px 0 0 8px;
+.right {
+  display: flex;
+  align-items: center;
 }
 
-.active {
+.button {
+  display: flex;
+  align-items: center;
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   color: white;
-  border-radius: 8px 0 0 8px; /* Add border radius to the left side */
-}
-
-.active .iconImg {
-  filter: brightness(0) invert(1); /* Active color - white */
-}
-
-.iconImg {
-  filter: brightness(0) invert(0); /* Default color - black */
-}
-
-.label {
-  margin-right: auto; /* Push label text to the right */
-  margin-left: 10px; /* Add some space between icon and label */
+  border: none;
+  padding: 8px 8px;
   font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .6s ease;
 }
 
+.button:hover{
+    transform: translate(0, -5px);
+    
+    
 
+}
 
+.content {
+  padding-top: 70px; /* Adjust the value to match the height of your header */
+}
 
+.logo img::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.1s;
+}
+
+.logo img:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 900px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.3s ease-out;
+}
