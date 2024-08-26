@@ -1,4 +1,96 @@
 import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleRight, faBars } from "@fortawesome/free-solid-svg-icons";
+import styles from "./SideBar.module.css";
+
+// Import individual images for each menu item
+import descriptionImg from "./Icons/Description.svg";
+import solutionFlowImg from "./Icons/SolutionFlow.svg";
+import demoImg from "./Icons/Demo.svg";
+import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
+import benefitsImg from "./Icons/Benefits.svg";
+import industyImg from "./Icons/Industry.svg";
+
+const SideBar = ({ activeTab, handleTabChange, isSidebarOpen, toggleSidebar }) => {
+  const menuItems = [
+    { id: "description", label: "Description", img: descriptionImg },
+    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
+    { id: "demo", label: "Demo", img: demoImg },
+    {
+      id: "techArchitecture",
+      label: "Technical Architecture",
+      img: techArchitectureImg,
+    },
+    { id: "benefits", label: "Benefits", img: benefitsImg },
+    { id: "adoption", label: "Industry Adoption", img: industyImg },
+  ];
+
+  return (
+    <nav className={`${styles.sideBar} ${!isSidebarOpen ? styles.hidden : ""}`}>
+      <button className={styles.toggleButton} onClick={toggleSidebar}>
+        <FontAwesomeIcon icon={faBars} />
+      </button>
+      {menuItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => handleTabChange(item.id)}
+          className={`${styles.menuItem} ${
+            activeTab === item.id ? styles.active : ""
+          }`}
+        >
+          <img
+            src={item.img}
+            className={`${styles.iconImg} ${styles.hoverEffect}`}
+          />
+          <span className={styles.label}>{item.label}</span>
+          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
+        </button>
+      ))}
+    </nav>
+  );
+};
+
+export default SideBar;
+
+
+
+.sideBar {
+  width: 340px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-right: 1px solid rgba(219, 197, 255, 1);
+  overflow-y: auto;
+  transition: transform 0.3s ease;
+}
+
+.hidden {
+  transform: translateX(-100%);
+}
+
+.toggleButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: #5931d4;
+}
+
+.menuItem {
+  /* existing styles */
+}
+
+/* Other existing styles */
+
+
+
+
+
+
+
+import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
