@@ -1,100 +1,117 @@
-// src/components/Footer/Footer.js
-import React from 'react';
-import styles from './Footer.module.css';
+import React, { useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import styles from './CaseStudyCards.module.css';
 
-const Footer = () => {
+const CaseStudyCard = React.forwardRef(({ title, link }, ref) => (
+  <div className={styles.card} ref={ref}>
+    <div className={styles.cardTitle}>{title}</div>
+    <a href={link} className={styles.cardLink}>
+      Read the Case Study <FontAwesomeIcon icon={faArrowRight} />
+    </a>
+  </div>
+));
+
+const CaseStudySection = () => {
+  const cardsRef = useRef([]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add(styles.visible);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 } // Adjust this threshold as needed
+    );
+
+    cardsRef.current.forEach((card) => {
+      if (card) {
+        observer.observe(card);
+      }
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const caseStudies = [
+    { title: 'Volkswagen Group connects data across 124 factories', link: 'https://example.com/case-study-1' },
+    { title: 'Bayer Crop Science enables sustainable agriculture for farmers', link: 'https://example.com/case-study-2' },
+    // Add more case studies as needed
+  ];
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.blogSection}>
-        <h3 className={styles.blogTitle}>Latest Blogs</h3>
-        <ul className={styles.blogList}>
-          <li><a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.blogLink}>Generative AI-powered email EAR (extract, act and respond) on AWS</a></li>
-          <li><a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.blogLink}>LLM cache: Sustainable, fast, cost-effective GenAI app design</a></li>
-          <li><a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.blogLink}>Unlocking the future of recruitment with SmartRecruit</a></li>
-          
-        </ul>
-      </div>
-      <div className={styles.footerInfo}>
-        <p>Copyright © 2024 HCL Technologies Limited</p>
-        <p>Contact: info@yourcompany.com</p>
-      </div>
-    </footer>
+    <div className={styles.cardContainer}>
+      {caseStudies.map((study, index) => (
+        <CaseStudyCard
+          key={index}
+          ref={(el) => (cardsRef.current[index] = el)}
+          title={study.title}
+          link={study.link}
+        />
+      ))}
+    </div>
   );
 };
 
-export default Footer;
+export default CaseStudySection;
 
-
-
-
-
-.footer {
-  background: linear-gradient(to bottom, #14142b 0%, #05041e 100%) !important;
-  padding: 20px;
-  text-align: center;
-  color: #fcfcfc;
-  border-top: 1px solid #ddd;
-  margin: 30px -88px;
-  margin-bottom: 0px;
-  height: 100%;
+/* Card Container */
+.cardContainer {
   position: relative;
-  overflow: hidden; /* Ensures that animations don’t overflow */
+  height: 800px; /* Adjust the height as needed */
+  overflow: hidden; /* Hide overflowing cards */
+  padding: 100px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.blogSection {
-  margin-bottom: 15px;
+/* Individual Card */
+.card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom right, #cb34eb, #7acdf1); /* Gradient background */
+  border-radius: 15px;
+  padding: 30px;
+  color: #fff;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(100px); /* Initial stacking effect */
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  pointer-events: none; /* Prevent interaction with hidden cards */
 }
 
-.blogTitle {
-  font-size: 24px;
-  color: #5931d5;
-  margin-bottom: 10px;
-  transition: color 0.3s ease;
+/* Reveal Effect */
+.card.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto; /* Enable interaction once visible */
 }
 
-.blogTitle:hover {
-  color: #fcfcfc; /* Change title color on hover */
+/* Text Styling */
+.cardTitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0;
 }
 
-.blogList {
-  list-style: none;
-  padding: 0;
-  animation: fadeIn 1s ease-out; /* Animation for list items */
-}
-
-.blogLink {
-  color: #fcfcfc;
+.cardLink {
+  display: flex;
+  align-items: center;
   text-decoration: none;
-  transition: color 0.3s ease, transform 0.3s ease; /* Added transform transition */
-  display: inline-block;
+  color: inherit;
+  font-weight: bold;
 }
 
-.blogLink:hover {
-  color: #5931d5;
-  transform: translateY(-3px); /* Lift effect on hover */
-}
-
-.footerInfo {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #888;
-}
-
-.footerInfo p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
-}
-
-.footerInfo p:hover {
-  color: #5931d5; /* Highlight contact info on hover */
-}
-
-/* Keyframes for fading in blog list */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.cardLink svg {
+  margin-left: 10px;
+  font-size: 1.5em;
 }
