@@ -20,7 +20,9 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   const handleMouseMove = (e) => {
-    setLaserPos({ x: e.clientX, y: e.clientY });
+    if (isImageMaximized) {
+      setLaserPos({ x: e.clientX, y: e.clientY });
+    }
   };
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const MainContent = ({ activeTab, content }) => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [isImageMaximized]);
 
   const renderCarousel = (images) => (
     <div className={styles.carouselContainer}>
@@ -172,9 +174,13 @@ const MainContent = ({ activeTab, content }) => {
 export default MainContent;
 
 
+/* Ensure the default cursor is hidden when the laser cursor is enabled */
+.mainContent {
+  cursor: none; /* Hide default cursor */
+}
 
 .laserCursorEnabled .laserCursor {
-  display: block; /* Ensure the laser cursor is visible when enabled */
+  display: block; /* Show the laser cursor */
 }
 
 .laserCursor {
@@ -186,4 +192,12 @@ export default MainContent;
   pointer-events: none;
   display: none; /* Hide cursor by default */
   z-index: 1500;
+}
+
+/* Optional: You can add styles for the maximized image */
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1200;
 }
