@@ -1,47 +1,43 @@
 import React from 'react';
 import styles from './Footer.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faTabletAlt } from "@fortawesome/free-solid-svg-icons"; // Add more icons as needed
+import { faArrowRight, faEnvelopeOpenText, faBolt, faUserTie } from "@fortawesome/free-solid-svg-icons";
 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
+      <div className={styles.footerHeadingContainer}>
+        <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
+      </div>
       <div className={styles.cardContainer}>
         <div className={styles.card}>
           <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faTabletAlt} className={styles.cardIcon} />
+            <FontAwesomeIcon icon={faEnvelopeOpenText} className={styles.cardIcon} />
           </div>
           <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
-          <p className={styles.cardDescription}>
-            Extract, act, and respond on AWS
-          </p>
+          <p className={styles.cardDescription}>Extract, act, and respond on AWS</p>
           <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
           <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faTabletAlt} className={styles.cardIcon} />
+            <FontAwesomeIcon icon={faBolt} className={styles.cardIcon} />
           </div>
           <h3 className={styles.cardTitle}>LLM cache</h3>
-          <p className={styles.cardDescription}>
-            Sustainable, fast, cost-effective GenAI app design
-          </p>
+          <p className={styles.cardDescription}>Sustainable, fast, cost-effective GenAI app design</p>
           <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
           <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faTabletAlt} className={styles.cardIcon} />
+            <FontAwesomeIcon icon={faUserTie} className={styles.cardIcon} />
           </div>
           <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
-          <p className={styles.cardDescription}>
-            Streamlining the recruitment process using AI
-          </p>
+          <p className={styles.cardDescription}>Streamlining the recruitment process using AI</p>
           <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
       </div>
@@ -55,19 +51,26 @@ const Footer = () => {
 
 export default Footer;
 
-
-
 .footer {
   background: linear-gradient(to bottom, #1a1a2e, #16213e);
+  border-top: 0.1px solid rgba(219, 197, 255, 1);
   padding: 40px 20px;
   text-align: center;
   color: #fcfcfc;
+  margin: 30px -88px;
+  margin-bottom: 0px;
+  position: relative;
+  overflow: hidden;
 }
 
 .footerHeading {
   font-size: 28px;
   margin-bottom: 40px;
   color: #fff;
+  margin-top: 0px;
+  letter-spacing: 2px;
+  border-bottom: 0.1px solid #fff;
+  padding-bottom: 10px;
 }
 
 .cardContainer {
@@ -78,57 +81,64 @@ export default Footer;
 }
 
 .card {
-  background: #f4f4f4; /* Light background color for card */
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   border-radius: 12px;
-  padding: 20px;
-  width: 280px; /* Adjusted width */
-  color: #333;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px 15px;
+  width: 240px; /* Increased width for better content fit */
+  color: #fcfcfc;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center align content */
-  text-align: center; /* Center text */
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  justify-content: space-between;
+  text-align: left;
+  position: relative;
 }
 
 .card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
 }
 
 .iconContainer {
-  background-color: #e0e0e0; /* Circle background color */
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
 .cardIcon {
-  font-size: 24px;
-  color: #6f36cd; /* Icon color */
+  font-size: 40px; /* Larger icon size */
+  color: #fff;
 }
 
 .cardTitle {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px; /* Increased font size */
+  font-weight: bold; /* Bold for emphasis */
   margin-bottom: 10px;
+  color: #fff;
+  line-height: 1.4;
 }
 
 .cardDescription {
-  font-size: 16px;
+  font-size: 13px; /* Increased font size for better readability */
+  font-weight: 500; /* Semi-bold for better emphasis */
+  color: #f0f0f0;
+  margin-top: 0px;
   margin-bottom: 20px;
-  color: #666; /* Description color */
 }
 
 .cardLink {
-  color: #6f36cd; /* Link color */
+  margin-top: auto;
+  color: #fff;
   text-decoration: none;
-  font-size: 24px; /* Arrow size */
+  font-weight: bold;
   transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  
+  font-size: 16px; /* Increased font size */
 }
 
 .cardLink:hover {
