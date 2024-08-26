@@ -1,193 +1,109 @@
-const renderCarousel = (images) => (
-  <div className={styles.carouselContainer}>
-    <div className={styles.customThumbs}>
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-          onClick={() => setCurrentSlide(index)}
-        >
-          <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-        </div>
-      ))}
-    </div>
-    <Carousel
-      showArrows={false}
-      showIndicators={false}
-      showThumbs={false}
-      showStatus={false}
-      selectedItem={currentSlide}
-      onChange={(index) => setCurrentSlide(index)}
-      className={styles.customCarousel}
-    >
-      {images.map((image, index) => (
-        <div
-          key={index}
-          onClick={() => toggleMaximize(image)} // Toggle maximization on image click
-        >
-          <img src={image} alt={`Slide ${index + 1}`} />
-        </div>
-      ))}
-    </Carousel>
-  </div>
-);
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
+/* eslint-disable jsx-a11y/alt-text */
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-import BeatLoader from "react-spinners/BeatLoader";
+import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
+import styles from "./SideBar.module.css";
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
+// Import individual images for each menu item
+import descriptionImg from "./Icons/Description.svg";
+import solutionFlowImg from "./Icons/SolutionFlow.svg";
+import demoImg from "./Icons/Demo.svg";
+import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
+import benefitsImg from "./Icons/Benefits.svg";
+import industyImg from "./Icons/Industry.svg"
 
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
-  };
-
-  const renderCarousel = (images) => (
-    <div className={styles.carouselContainer}>
-      <div className={styles.customThumbs}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${styles.customThumbContainer} ${
-              maximizedImage === image ? styles.selected : ""
-            }`}
-            onClick={() => toggleMaximize(image)}
-          >
-            <img
-              src={image}
-              alt={`Thumbnail ${index + 1}`}
-              className={styles.customThumb}
-            />
-          </div>
-        ))}
-      </div>
-      <Carousel
-        showArrows={false}
-        showIndicators={false}
-        showThumbs={false}
-        showStatus={false}
-        className={styles.customCarousel}
-      >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={maximizedImage === image ? styles.maximized : ""}
-            onClick={() => toggleMaximize(image)}
-          >
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className={styles.carouselImage}
-            />
-          </div>
-        ))}
-      </Carousel>
-    </div>
-  );
-
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <BeatLoader color="#5931d4" size={8} />;
-    }
-
-    if (typeof content === "string") {
-      return <div>{content}</div>;
-    }
-
-    return content.length > 1
-      ? renderCarousel(content)
-      : (
-        <img
-          src={content[0]}
-          alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content[0])}
-        />
-      );
-  };
-
-  const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <BeatLoader color="#5931d4" size={8} />;
-    }
-
-    return renderContent(images);
-  };
-
-  if (!content) {
-    return (
-      <div className={styles.mainContent}>Content not available</div>
-    );
-  }
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
-  };
+const SideBar = ({ activeTab, handleTabChange }) => {
+  const menuItems = [
+    { id: "description", label: "Description", img: descriptionImg },
+    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
+    { id: "demo", label: "Demo", img: demoImg },
+    {
+      id: "techArchitecture",
+      label: "Technical Architecture",
+      img: techArchitectureImg,
+    },
+    { id: "benefits", label: "Benefits", img: benefitsImg },
+    { id:"adoption", label: "Industry Adoption", img: industyImg  },
+  ];
 
   return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={styles.closeIcon}
-            onClick={() => setMaximizedImage(null)}
-          />
+    <nav className={styles.sideBar}>
+      {menuItems.map((item) => (
+        <button
+          key={item.id}
+          onClick={() => handleTabChange(item.id)}
+          className={`${styles.menuItem} ${
+            activeTab === item.id ? styles.active : ""
+          }`}
+        >
           <img
-            src={maximizedImage}
-            alt="Maximized view"
-            className={styles.maximizedImage}
+            src={item.img}
+            className={`${styles.iconImg} ${styles.hoverEffect}`}
           />
-        </div>
-      )}
-    </div>
+          <span className={styles.label}>{item.label}</span>
+          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
+        </button>
+      ))}
+    </nav>
   );
 };
 
-export default MainContent;
+export default SideBar;
+
+
+/* SideBar.module.css */
+
+.sideBar {
+  width: 340px;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-right: 1px solid rgba(219, 197, 255, 1);
+  overflow-y: auto; /* Enable vertical scrolling */
+  overscroll-behavior: contain; /* Prevent overscrolling */
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+}
+
+.menuItem {
+  display: flex;
+  flex-direction: row; /* Make the menu item a row layout */
+  justify-content: space-between; /* Align items with space between */
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0px;
+  cursor: pointer;
+  transition: background-color 0.3s; /* Add transition for smoother effect */
+  background: none;
+  border: none;
+}
+
+.menuItem:not(.active):hover {
+  background-color: rgba(230, 235, 245, 1);
+  border-radius: 8px 0 0 8px;
+}
+
+.active {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border-radius: 8px 0 0 8px; /* Add border radius to the left side */
+}
+
+.active .iconImg {
+  filter: brightness(0) invert(1); /* Active color - white */
+}
+
+.iconImg {
+  filter: brightness(0) invert(0); /* Default color - black */
+}
+
+.label {
+  margin-right: auto; /* Push label text to the right */
+  margin-left: 10px; /* Add some space between icon and label */
+  font-size: 12px;
+}
+
+
+
+
