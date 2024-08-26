@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  const [activeCard, setActiveCard] = useState(0); // State to track the active card
+  const [activeCards, setActiveCards] = useState([]); // State to track which cards are active
   const blogCardsRef = useRef([]); // Ref to access all blog cards
 
   const blogs = [
@@ -23,11 +23,14 @@ const Footer = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight;
-      blogCardsRef.current.forEach((card, index) => {
-        if (card.offsetTop < scrollPosition - 100) { // Adjust to change when cards show up
-          setActiveCard(index + 1);
+      const newActiveCards = blogCardsRef.current.map((card, index) => {
+        if (card && card.offsetTop < scrollPosition - 100) {
+          return index;
         }
-      });
+        return null;
+      }).filter(index => index !== null);
+
+      setActiveCards(newActiveCards);
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -48,7 +51,7 @@ const Footer = () => {
           {blogs.map((blog, index) => (
             <div
               key={index}
-              className={`${styles.blogCard} ${index < activeCard ? styles.show : ''}`}
+              className={`${styles.blogCard} ${activeCards.includes(index) ? styles.show : ''}`}
               ref={(el) => (blogCardsRef.current[index] = el)}
               onClick={() => navigateToBlog(blog.link)}
             >
@@ -97,7 +100,6 @@ export default Footer;
   position: relative;
   width: 80%;
   margin: 0 auto;
-  height: 200px; /* Adjust height if necessary */
 }
 
 .blogCard {
@@ -107,12 +109,16 @@ export default Footer;
   margin: 10px 0;
   border-radius: 8px;
   cursor: pointer;
-  transition: transform 0.5s ease, opacity 0.5s ease;
   position: absolute;
   width: 100%;
   opacity: 0;
   transform: translateY(50px);
   transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+}
+
+.blogCard.show {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .blogCard:nth-child(1) {
@@ -125,11 +131,6 @@ export default Footer;
 
 .blogCard:nth-child(3) {
   z-index: 1;
-}
-
-.blogCard.show {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .blogText {
