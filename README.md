@@ -1,137 +1,3 @@
-import React, { useState } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-import BeatLoader from "react-spinners/BeatLoader";
-
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const toggleMaximize = (imageSrc) => {
-    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
-  };
-
-  const renderCarousel = (images) => (
-  <div className={styles.carouselContainer}>
-    <div className={styles.customThumbs}>
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-          onClick={() => setCurrentSlide(index)}
-        >
-          <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
-        </div>
-      ))}
-    </div>
-    <Carousel
-      showArrows={false}
-      showIndicators={false}
-      showThumbs={false}
-      showStatus={false}
-      selectedItem={currentSlide}
-      onChange={(index) => setCurrentSlide(index)}
-      className={styles.customCarousel}
-    >
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={maximizedImage === image ? styles.maximized : ""}
-          onClick={() => toggleMaximize(image)}
-        >
-          <img src={image} alt={`Slide ${index + 1}`} />
-        </div>
-      ))}
-    </Carousel>
-  </div>
-);
-
-
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <BeatLoader color="#5931d4" size={8}/>;
-    }
-    
-    if (typeof content === 'string') {
-      return <div>{content}</div>;
-    }
-
-    return content.length > 1 ? renderCarousel(content) : (
-      <img
-        src={content[0]}
-        alt="Single Image"
-        className={maximizedImage === content[0] ? styles.maximized : ""}
-        onClick={() => toggleMaximize(content[0])}
-      />
-    );
-  };
-
-  const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return <BeatLoader color="#5931d4" size={8}/>;
-    }
-    
-    return renderContent(images);
-  };
-
-  if (!content) {
-    return <div className={styles.mainContent}>Content not available</div>;
-  }
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
-          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
 
 .mainContent {
   display: flex;
@@ -186,13 +52,19 @@ export default MainContent;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: transform 0.3s ease;
+  z-index: 1100;
 }
 
 .maximized {
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: auto;
   margin: auto;
   display: block;
+  transition: transform 0.3s ease;
+    z-index: 1100;
+
 }
 
 .closeIcon {
@@ -211,7 +83,7 @@ export default MainContent;
 
 .overlay {
   position: fixed;
-  top: 25px;
+  top: 0;
   left: 0;
   width: 100%;
   height: 100%;
@@ -219,7 +91,7 @@ export default MainContent;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1100;
   cursor: pointer;
 }
 
@@ -274,4 +146,124 @@ export default MainContent;
 
 .customCarousel {
   flex: 1;
+}
+
+
+/* Header.module.css */
+
+.navbarWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  background-color: #fff;
+  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
+  padding: 8px 0px;
+  z-index: 1000;
+    transition: transform 0.5s ease-in-out;
+
+  /*margin-bottom: 30px;*/
+}
+.navbarWrapper.hide {
+  transform: translateY(-100%);
+}
+
+.navbarWrapper.show {
+  transform: translateY(0);
+}
+.navbarWrapper .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin: 5px -200px;
+}
+.logo img {
+  max-height: 20px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border: none;
+  padding: 8px 8px;
+  font-size: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: .6s ease;
+}
+
+.button:hover{
+    transform: translate(0, -5px);
+    
+    
+
+}
+
+.content {
+  padding-top: 70px; /* Adjust the value to match the height of your header */
+}
+
+.logo img::after {
+  content: attr(title);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.1s;
+}
+
+.logo img:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 30px;
+  max-width: 900px;
+  width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  animation: fadeIn 0.3s ease-out;
 }
