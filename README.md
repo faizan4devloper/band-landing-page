@@ -1,3 +1,47 @@
+const renderCarousel = (images) => (
+  <div className={styles.carouselContainer}>
+    <div className={styles.customThumbs}>
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+          onClick={() => setCurrentSlide(index)}
+        >
+          <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+        </div>
+      ))}
+    </div>
+    <Carousel
+      showArrows={false}
+      showIndicators={false}
+      showThumbs={false}
+      showStatus={false}
+      selectedItem={currentSlide}
+      onChange={(index) => setCurrentSlide(index)}
+      className={styles.customCarousel}
+    >
+      {images.map((image, index) => (
+        <div
+          key={index}
+          onClick={() => toggleMaximize(image)} // Toggle maximization on image click
+        >
+          <img src={image} alt={`Slide ${index + 1}`} />
+        </div>
+      ))}
+    </Carousel>
+  </div>
+);
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
