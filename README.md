@@ -1,30 +1,69 @@
+// HeaderContext.js
+import React, { createContext, useState, useContext } from 'react';
+
+const HeaderContext = createContext();
+
+export const useHeaderContext = () => {
+  return useContext(HeaderContext);
+};
+
+export const HeaderProvider = ({ children }) => {
+  const [headerZIndex, setHeaderZIndex] = useState(1000); // Default zIndex
+
+  return (
+    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
+      {children}
+    </HeaderContext.Provider>
+  );
+};
+
+
+
+// App.js
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { HeaderProvider } from './context/HeaderContext'; // Update path accordingly
+import YourRoutes from './YourRoutes'; // Your routing component
+
+function App() {
+  return (
+    <Router>
+      <HeaderProvider>
+        <YourRoutes />
+      </HeaderProvider>
+    </Router>
+  );
+}
+
+export default App;
+
+
+
 // Header.js
-import React, { useEffect, useRef } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
-import laserStyles from "./LaserCursor.module.css";
-import { useHeaderContext } from "./HeaderContext";
+import React, { useEffect, useRef, useState } from 'react';
+import Modal from 'react-modal';
+import { useNavigate } from 'react-router-dom';
+import styles from './Header.module.css';
+import logoImage from './HCLTechLogo.svg';
+import RequestDemoForm from './RequestDemoForm';
+import laserStyles from './LaserCursor.module.css';
+import { useHeaderContext } from '../context/HeaderContext'; // Update path accordingly
 
 const Header = ({ zIndex }) => {
+  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isLaserEnabled, setIsLaserEnabled] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
-  const laserCursorRef = useRef(null);
-  const { headerZIndex } = useHeaderContext(); // Get z-index from context
 
   useEffect(() => {
-    document.documentElement.style.setProperty('--header-z-index', headerZIndex); // Set CSS variable
-  }, [headerZIndex]);
+    setHeaderZIndex(zIndex); // Update context with z-index
+  }, [zIndex, setHeaderZIndex]);
 
   const handleImageClick = () => {
-    navigate("/");
+    navigate('/');
   };
 
   const openModal = () => {
@@ -45,9 +84,9 @@ const Header = ({ zIndex }) => {
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
+    window.addEventListener('scroll', controlHeaderVisibility);
     return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
+      window.removeEventListener('scroll', controlHeaderVisibility);
     };
   }, [lastScrollY]);
 
@@ -62,12 +101,12 @@ const Header = ({ zIndex }) => {
 
   useEffect(() => {
     if (isLaserEnabled) {
-      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener('mousemove', handleMouseMove);
     } else {
-      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMove);
     }
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener('mousemove', handleMouseMove);
     };
   }, [isLaserEnabled]);
 
@@ -75,7 +114,7 @@ const Header = ({ zIndex }) => {
     <>
       <header
         className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}
-        style={{ zIndex: zIndex || headerZIndex }} // Apply z-index from prop or context
+        style={{ zIndex: headerZIndex }} // Use zIndex from context
       >
         <img
           src={logoImage}
@@ -103,6 +142,7 @@ const Header = ({ zIndex }) => {
 };
 
 export default Header;
+
 
 
 // SideBarPage.js
@@ -149,7 +189,7 @@ const SideBarPage = () => {
 
   return (
     <div className={styles.sideBarPage}>
-      <Header zIndex={0} /> {/* Set header zIndex to 0 */}
+      <Header zIndex={0} /> {/* Set zIndex to 0 */}
       <div className={styles.header2}>
         <button onClick={handleBackButtonClick} className={styles.backButton}>
           <FontAwesomeIcon icon={faArrowLeft} />
@@ -166,18 +206,3 @@ const SideBarPage = () => {
 
 export default SideBarPage;
 
-
-/* Header.module.css */
-.navbarWrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  background-color: #fff;
-  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 8px 0px;
-  z-index: var(--header-z-index, 1000); /* Default z-index */
-  transition: transform 0.5s ease-in-out;
-}
-
-/* Additional styles */
