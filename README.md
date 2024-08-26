@@ -1,49 +1,61 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './Footer.module.css';
 
 const Footer = () => {
+  const [activeCard, setActiveCard] = useState(0); // State to track the active card
+  const blogCardsRef = useRef([]); // Ref to access all blog cards
+
+  const blogs = [
+    {
+      title: 'Generative AI-powered email EAR (extract, act and respond) on AWS',
+      link: 'https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws',
+    },
+    {
+      title: 'LLM cache: Sustainable, fast, cost-effective GenAI app design',
+      link: 'https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design',
+    },
+    {
+      title: 'Unlocking the future of recruitment with SmartRecruit',
+      link: 'https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit',
+    },
+  ];
+
   useEffect(() => {
     const handleScroll = () => {
-      const blogCards = document.querySelectorAll(`.${styles.blogCard}`);
-      blogCards.forEach((card, index) => {
-        const rect = card.getBoundingClientRect();
-        if (rect.top < window.innerHeight - 100) {
-          card.classList.add(styles.scrollVisible);
+      const scrollPosition = window.scrollY + window.innerHeight;
+      blogCardsRef.current.forEach((card, index) => {
+        if (card.offsetTop < scrollPosition - 100) { // Adjust to change when cards show up
+          setActiveCard(index + 1);
         }
       });
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check visibility on initial render
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
+
+  const navigateToBlog = (url) => {
+    window.location.href = url;
+  };
 
   return (
     <footer className={styles.footer}>
       <div className={styles.blogSection}>
         <h3 className={styles.blogTitle}>Latest Blogs</h3>
-        <ul className={styles.blogList}>
-          <li className={styles.blogCard}>
-            <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.blogLink}>
-              Generative AI-powered email EAR (extract, act and respond) on AWS
-            </a>
-          </li>
-          <li className={styles.blogCard}>
-            <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.blogLink}>
-              LLM cache: Sustainable, fast, cost-effective GenAI app design
-            </a>
-          </li>
-          <li className={styles.blogCard}>
-            <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.blogLink}>
-              Unlocking the future of recruitment with SmartRecruit
-            </a>
-          </li>
-        </ul>
-        <div className={styles.learnMoreContainer}>
-          <a href="/blog" className={styles.learnMoreLink}>
-            Learn About Blog
-            <span className={styles.arrowIcon}>→</span>
-          </a>
+        <div className={styles.blogCards}>
+          {blogs.map((blog, index) => (
+            <div
+              key={index}
+              className={`${styles.blogCard} ${index < activeCard ? styles.show : ''}`}
+              ref={(el) => (blogCardsRef.current[index] = el)}
+              onClick={() => navigateToBlog(blog.link)}
+            >
+              <p className={styles.blogText}>{blog.title}</p>
+              <p className={styles.learnMore}>Learn more →</p>
+            </div>
+          ))}
         </div>
       </div>
       <div className={styles.footerInfo}>
@@ -67,12 +79,11 @@ export default Footer;
   margin-bottom: 0px;
   height: 100%;
   position: relative;
-  overflow: hidden; /* Ensures that animations don’t overflow */
+  overflow: hidden;
 }
 
 .blogSection {
   margin-bottom: 15px;
-  position: relative; /* For stacking effect */
 }
 
 .blogTitle {
@@ -82,65 +93,58 @@ export default Footer;
   transition: color 0.3s ease;
 }
 
-.blogTitle:hover {
-  color: #fcfcfc; /* Change title color on hover */
-}
-
-.blogList {
-  list-style: none;
-  padding: 0;
+.blogCards {
   position: relative;
-  height: 100px; /* Adjust height as needed */
+  width: 80%;
+  margin: 0 auto;
+  height: 200px; /* Adjust height if necessary */
 }
 
 .blogCard {
-  background-color: #1e1e2f;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  opacity: 0;
+  background-color: #1e1e38;
+  color: #fcfcfc;
+  padding: 20px;
+  margin: 10px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.5s ease, opacity 0.5s ease;
   position: absolute;
   width: 100%;
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
 }
 
-.blogLink {
-  color: #fcfcfc;
-  text-decoration: none;
-  transition: color 0.3s ease, transform 0.3s ease;
-  display: inline-block;
+.blogCard:nth-child(1) {
+  z-index: 3;
 }
 
-.blogLink:hover {
-  color: #5931d5;
-  transform: translateY(-3px); /* Lift effect on hover */
+.blogCard:nth-child(2) {
+  z-index: 2;
 }
 
-.learnMoreContainer {
-  margin-top: 15px;
+.blogCard:nth-child(3) {
+  z-index: 1;
 }
 
-.learnMoreLink {
-  color: #fcfcfc;
-  text-decoration: none;
+.blogCard.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.blogText {
+  margin-bottom: 8px;
   font-size: 18px;
-  transition: color 0.3s ease, transform 0.3s ease;
-  display: inline-flex;
-  align-items: center;
 }
 
-.learnMoreLink:hover {
+.learnMore {
+  font-size: 14px;
+  color: #888;
+  transition: color 0.3s ease;
+}
+
+.learnMore:hover {
   color: #5931d5;
-}
-
-.arrowIcon {
-  margin-left: 5px;
-  transition: transform 0.3s ease;
-}
-
-.learnMoreLink:hover .arrowIcon {
-  transform: translateX(3px); /* Slight arrow movement on hover */
 }
 
 .footerInfo {
@@ -155,37 +159,5 @@ export default Footer;
 }
 
 .footerInfo p:hover {
-  color: #5931d5; /* Highlight contact info on hover */
-}
-
-/* Keyframes for fading in blog list */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Stacking effect */
-.blogCard:nth-child(1) {
-  z-index: 3;
-  transform: translateY(0px);
-}
-
-.blogCard:nth-child(2) {
-  z-index: 2;
-  transform: translateY(20px);
-}
-
-.blogCard:nth-child(3) {
-  z-index: 1;
-  transform: translateY(40px);
-}
-
-/* Scroll effect */
-.scrollVisible {
-  opacity: 1;
-  transform: translateY(0px);
+  color: #5931d5;
 }
