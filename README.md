@@ -27,48 +27,59 @@ const MainContent = ({ activeTab, content }) => {
     };
   }, []);
 
-const renderCarousel = (images) => (
-  <div className={styles.carouselContainer}>
-    <div className={styles.customThumbs}>
-      {images.map((image, index) => (
-        <div
-          key={index}
-          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-          onClick={() => setCurrentSlide(index)}
-          title="Click to Enlarge"
-        >
-          <img
-            src={image}
-            alt={`Thumbnail ${index + 1}`}
-            className={styles.customThumb}
-            loading="lazy" /* Add lazy loading attribute */
-          />
-        </div>
-      ))}
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+            title="Click to Enlarge"
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => toggleMaximize(image)}
+          >
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              title="Click to Enlarge"
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </Carousel>
     </div>
-    <Carousel
-      showArrows={false}
-      showIndicators={false}
-      showThumbs={false}
-      showStatus={false}
-      selectedItem={currentSlide}
-      onChange={(index) => setCurrentSlide(index)}
-      className={styles.customCarousel}
-    >
-      {images.map((image, index) => (
-        <div
-          key={index}
-          onClick={() => toggleMaximize(image)} // Toggle maximization on image click
-        >
-          <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" /> {/* Add lazy loading attribute */}
-        </div>
-      ))}
-    </Carousel>
-  </div>
-);
+  );
+
   const renderContent = (content) => {
     if (!content || content.length === 0) {
-      return <BeatLoader color="#5931d4" size={8} />;
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
     }
 
     if (typeof content === "string") {
@@ -81,7 +92,7 @@ const renderCarousel = (images) => (
         <img
           src={content[0]}
           alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
+          className={maximizedImage === content[0] ? styles.maximizedImage : ""}
           onClick={() => toggleMaximize(content[0])}
           title="Click To Enlarge"
         />
@@ -176,26 +187,27 @@ export default MainContent;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: calc(100vh - 100px); /* Adjust height as needed */
-  overflow-y: auto; /* Enable vertical scroll */
+  min-height: 300px; /* Ensure minimum height */
+  overflow-y: auto;
 }
 
 /* Custom Scrollbar Styling */
 .mainContent::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px;
 }
 
 .mainContent::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Track background color */
+  background: #f1f1f1;
 }
 
 .mainContent::-webkit-scrollbar-thumb {
-  background-color: #5f1ec1; /* Thumb color */
-  border-radius: 20px; /* Rounded corners */
-  border: 3px solid #f1f1f1; /* Border around the thumb */
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
 }
 
 .mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: #3d1299; /* Thumb color on hover */
+  background-color: #3d1299;
 }
 
 .mainContent ul {
@@ -219,18 +231,6 @@ export default MainContent;
   cursor: pointer;
   transition: transform 0.3s ease;
   z-index: 1100;
-}
-
-.maximized {
-  max-width: 100%;
-  max-height: 100%;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  margin: auto;
-  display: block;
-  transition: transform 0.3s ease;
-  z-index: 1101;
 }
 
 .maximizedImage {
@@ -301,8 +301,8 @@ export default MainContent;
 }
 
 .customThumb {
-  width: 100px; /* Adjust size as needed */
-  height: 100px; /* Adjust size as needed */
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
@@ -319,35 +319,27 @@ export default MainContent;
   cursor: pointer;
 }
 
-
 .imageLoadingContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  min-height: 200px; /* Ensure minimum height */
+  height: 100%;
 }
 
 .imageLoadingCaption {
-  font-size: 12px;
-  font-weight: bold;
-  color: #5931d4;
   margin-bottom: 10px;
-  animation: pulse 2s infinite;
+  color: #000;
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+.laserCursor {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.3);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }
-
-
-
-
