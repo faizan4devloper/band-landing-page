@@ -17,10 +17,10 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
           <p className={styles.cardDescription}>Extract, act, and respond on AWS</p>
           <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            <span className={styles.linkText}>Read The Blog</span>
             <span className={styles.arrowOnly}>
               <FontAwesomeIcon icon={faArrowRight} />
             </span>
-            <span className={styles.linkText}>Read The Blog</span>
           </a>
         </div>
         <div className={styles.card}>
@@ -30,10 +30,10 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>LLM cache</h3>
           <p className={styles.cardDescription}>Sustainable, fast, cost-effective GenAI app design</p>
           <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            <span className={styles.linkText}>Read The Blog</span>
             <span className={styles.arrowOnly}>
               <FontAwesomeIcon icon={faArrowRight} />
             </span>
-            <span className={styles.linkText}>Read The Blog</span>
           </a>
         </div>
         <div className={styles.card}>
@@ -43,10 +43,10 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
           <p className={styles.cardDescription}>Streamlining the recruitment process using AI</p>
           <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            <span className={styles.linkText}>Read The Blog</span>
             <span className={styles.arrowOnly}>
               <FontAwesomeIcon icon={faArrowRight} />
             </span>
-            <span className={styles.linkText}>Read The Blog</span>
           </a>
         </div>
       </div>
@@ -59,6 +59,8 @@ const Footer = () => {
 };
 
 export default Footer;
+
+
 
 /* Existing styles remain unchanged */
 
@@ -73,29 +75,29 @@ export default Footer;
   font-size: 16px;
   overflow: hidden; /* Hide overflow for smooth transition */
   transition: color 0.3s ease;
-  position: relative; /* Position relative for pseudo-elements */
+  position: relative; /* Position relative for controlling internal movements */
 }
 
 .arrowOnly {
   display: inline-block;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease; /* Smooth transition for moving the arrow */
+  transform: translateX(0); /* Initial position of the arrow */
 }
 
 .linkText {
   display: inline-block;
-  margin-left: 5px;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  transform: translateX(-10px);
+  opacity: 0; /* Initially hide the text */
+  margin-right: -100px; /* Start off-screen to the left */
+  transition: opacity 0.3s ease, margin-right 0.3s ease; /* Transition effects */
 }
 
 .cardLink:hover .arrowOnly {
-  transform: translateX(5px);
+  transform: translateX(10px); /* Move arrow to the right on hover */
 }
 
 .cardLink:hover .linkText {
-  opacity: 1;
-  transform: translateX(0);
+  opacity: 1; /* Make text visible */
+  margin-right: 5px; /* Slide text into view */
 }
 
 /* Hover effect remains unchanged */
