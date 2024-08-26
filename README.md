@@ -1,173 +1,127 @@
-import React, { useState, useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-import BeatLoader from "react-spinners/BeatLoader";
+import React, { useState, useEffect, useRef } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import { useHeaderContext } from '../Context/HeaderContext'; // Import context
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
+import laserStyles from "./LaserCursor.module.css";
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+const Header = () => {
+  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isLaserEnabled, setIsLaserEnabled] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
-  const toggleMaximize = (imageSrc) => {
-    const isMaximized = maximizedImage === imageSrc;
-    setMaximizedImage(isMaximized ? null : imageSrc);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+  const laserCursorRef = useRef(null);
+
+  const handleImageClick = () => {
+    navigate("/");
+  };
+  
+  useEffect(() => {
+    setHeaderZIndex(1000); // Set zIndex when component mounts
+  }, [setHeaderZIndex]);
+
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
+
+  const toggleLaserCursor = () => {
+    setIsLaserEnabled((prev) => !prev);
   };
 
   useEffect(() => {
-    if (maximizedImage) {
-      const handleMouseMove = (e) => {
-        setLaserPos({ x: e.clientX, y: e.clientY });
-      };
-      document.addEventListener("mousemove", handleMouseMove);
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-      };
-    }
-  }, [maximizedImage]);
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
 
-  const renderCarousel = (images) => (
-    <div className={styles.carouselContainer}>
-      <div className={styles.customThumbs}>
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
-            onClick={() => setCurrentSlide(index)}
-            title="Click to Enlarge"
-          >
-            <img
-              src={image}
-              alt={`Thumbnail ${index + 1}`}
-              className={styles.customThumb}
-              loading="lazy" /* Add lazy loading attribute */
-            />
-          </div>
-        ))}
-      </div>
-      <Carousel
-        showArrows={false}
-        showIndicators={false}
-        showThumbs={false}
-        showStatus={false}
-        selectedItem={currentSlide}
-        onChange={(index) => setCurrentSlide(index)}
-        className={styles.customCarousel}
-      >
-        {images.map((image, index) => (
-          <div
-            key={index}
-            onClick={() => toggleMaximize(image)} // Toggle maximization on image click
-          >
-            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" /> {/* Add lazy loading attribute */}
-          </div>
-        ))}
-      </Carousel>
-    </div>
-  );
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+    };
 
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <BeatLoader color="#5931d4" size={8} />;
+    if (isLaserEnabled) {
+      document.body.classList.add("laser-enabled");
+      document.body.style.cursor = 'none'; // Force hide default cursor
+      window.addEventListener("mousemove", handleMouseMove);
+    } else {
+      document.body.classList.remove("laser-enabled");
+      document.body.style.cursor = ''; // Reset cursor style
+      window.removeEventListener("mousemove", handleMouseMove);
     }
 
-    if (typeof content === "string") {
-      return <div>{content}</div>;
-    }
-
-    return content.length > 1
-      ? renderCarousel(content)
-      : (
-        <img
-          src={content[0]}
-          alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content[0])}
-          title="Click To Enlarge"
-        />
-      );
-  };
-
-  const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return (
-        <div className={styles.imageLoadingContainer}>
-          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
-          <BeatLoader color="#5931d4" size={8} />
-        </div>
-      );
-    }
-
-    return renderContent(images);
-  };
-
-  if (!content) {
-    return (
-      <div className={styles.mainContent}>Content not available</div>
-    );
-  }
-
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
-  };
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, [isLaserEnabled]);
 
   return (
-    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={styles.closeIcon}
-            onClick={() => setMaximizedImage(null)}
-          />
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
           <img
-            src={maximizedImage}
-            alt="Maximized view"
-            className={styles.maximizedImage}
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            style={{ cursor: "pointer" }}
+            title="Navigate to Home"
           />
         </div>
-      )}
-      {maximizedImage && (
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <button className={styles.button} onClick={toggleLaserCursor}>
+            {isLaserEnabled ? "Disable Laser Cursor" : "Enable Laser Cursor"}
+          </button>
+        </div>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+
+      {isLaserEnabled && (
         <div
-          className={styles.laserCursor}
-          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+          ref={laserCursorRef}
+          className={laserStyles.laserCursor}
+          style={{
+            left: `${cursorPosition.x}px`,
+            top: `${cursorPosition.y}px`,
+            transform: `translate(-50%, -50%)`, // Center the cursor on the pointer
+          }}
         />
       )}
     </div>
   );
 };
 
-export default MainContent;
+export default Header;
+
