@@ -1,191 +1,133 @@
+import React from 'react';
+import styles from './Footer.module.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-import React, { useState, useEffect, useRef } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
-import laserStyles from "./LaserCursor.module.css";
-
-const Header = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isLaserEnabled, setIsLaserEnabled] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-  const laserCursorRef = useRef(null);
-
-  const handleImageClick = () => {
-    navigate("/");
-  };
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  const toggleLaserCursor = () => {
-    setIsLaserEnabled((prev) => !prev);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  useEffect(() => {
-    if (isLaserEnabled) {
-      document.body.classList.add("laser-enabled");
-
-      const laserCursor = laserCursorRef.current;
-      const moveCursor = (e) => {
-        laserCursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
-      };
-
-      document.addEventListener("mousemove", moveCursor);
-
-      return () => {
-        document.body.classList.remove("laser-enabled");
-        document.removeEventListener("mousemove", moveCursor);
-      };
-    }
-  }, [isLaserEnabled]);
-
+const Footer = () => {
   return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            style={{ cursor: "pointer" }}
-            title="Navigate to Home"
-          />
+    <footer className={styles.footer}>
+      <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
+      <div className={styles.cardContainer}>
+        <div className={styles.card}>
+          <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
+          <p>Extract, act, and respond on AWS</p>
+          <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+          </a>
         </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-          <button className={styles.button} onClick={toggleLaserCursor}>
-            {isLaserEnabled ? "Disable Laser Cursor" : "Enable Laser Cursor"}
-          </button>
+        <div className={styles.card}>
+          <h3 className={styles.cardTitle}>LLM cache</h3>
+          <p>Sustainable, fast, cost-effective GenAI app design</p>
+          <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+          </a>
         </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
-
-      {isLaserEnabled && <div ref={laserCursorRef} className={laserStyles.laserCursor}></div>}
-    </div>
+        <div className={styles.card}>
+          <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
+          <p>Streamlining the recruitment process using AI</p>
+          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+          </a>
+        </div>
+      </div>
+      <div className={styles.footerInfo}>
+        <p>Copyright © 2024 HCL Technologies Limited</p>
+        <p>Contact Us: AWSEBUTA@hcltech.com</p>
+      </div>
+    </footer>
   );
 };
 
-export default Header;
+export default Footer;
 
+.footer {
+  background: linear-gradient(to bottom, #1a1a2e, #16213e);
+  border-top: 0.1px solid rgba(219, 197, 255, 1);
+  padding: 40px 20px; /* Increased padding for better spacing */
+  text-align: center;
+  color: #fcfcfc;
+  margin: 30px -88px;
+  margin-bottom: 0px;
+  position: relative;
+  overflow: hidden;
+}
 
+.footerHeading {
+  font-size: 28px; /* Slightly larger font for the heading */
+  margin-bottom: 40px;
+  color: #fff;
+  margin-top: 0px;
+  letter-spacing: 2px;
+  border-bottom: 2px solid #fff;
+  padding-bottom: 10px; /* Increased padding for better visual separation */
+}
 
+.cardContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px; /* Increased gap for better spacing */
+}
 
+.card {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  border-radius: 12px;
+  padding: 20px 15px; /* Adjusted padding for consistency */
+  width: 240px; /* Slightly wider for better content fit */
+  color: #fcfcfc;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column; /* Ensure elements stack vertically */
+  justify-content: space-between; /* Evenly distribute elements */
+  text-align: left; /* Left-align text for better readability */
+}
 
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+}
 
+.cardTitle {
+  font-size: 18px; /* Slightly larger font for better emphasis */
+  margin-bottom: 10px;
+  color: #fff;
+  line-height: 1.4; /* Improved line height for readability */
+}
 
+.card p {
+  font-size: 15px; /* Slightly larger font for better readability */
+  color: #fff;
+  margin-bottom: 20px; /* Space between description and link */
+}
 
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
+.cardLink {
+  margin-top: auto; /* Push the link to the bottom */
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease, transform 0.3s ease;
+  display: inline-flex;
+  align-items: center; /* Align the icon with the text */
+  gap: 5px; /* Space between text and icon */
+}
 
-const Header = () => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
+.cardLink:hover {
+  color: #ff80bf;
+  transform: translateX(5px);
+}
 
-  const handleImageClick = () => {
-    navigate("/");
-  };
+.footerInfo {
+  margin-top: 30px;
+  font-size: 14px;
+  color: #888;
+}
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
+.footerInfo p {
+  margin: 5px 0;
+  transition: color 0.3s ease;
+}
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      // Scrolling down
-      setIsVisible(false);
-    } else {
-      // Scrolling up
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            style={{ cursor: "pointer" }}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-        </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
-    </div>
-  );
-};
-
-export default Header;
+.footerInfo p:hover {
+  color: #ff80bf;
+}
