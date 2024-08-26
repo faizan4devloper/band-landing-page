@@ -1,106 +1,353 @@
-import React from 'react';
-import styles from './Footer.module.css';
+import React, { useState, useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faEnvelopeOpenText, faBolt, faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
 
-const Footer = () => {
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
+
+  const handleMouseMove = (e) => {
+    setLaserPos({ x: e.clientX, y: e.clientY });
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+            title="Click to Enlarge"
+          >
+            <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => toggleMaximize(image)} // Toggle maximization on image click
+          >
+            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge"/>
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8} />;
+    }
+
+    if (typeof content === "string") {
+      return <div>{content}</div>;
+    }
+
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+          title="Click To Enlarge"
+        />
+      );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
+    }
+
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return (
+      <div className={styles.mainContent}>Content not available</div>
+    );
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.footerHeadingContainer}>
-        <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
-      </div>
-      <div className={styles.cardContainer}>
-        <div className={styles.card}>
-          <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faEnvelopeOpenText} className={styles.cardIcon} />
-          </div>
-          <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
-          <p className={styles.cardDescription}>Extract, act, and respond on AWS</p>
-          <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <span className={styles.linkText}>Read The Blog</span>
-            <span className={styles.arrowOnly}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </span>
-          </a>
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximizedImage}
+          />
         </div>
-        <div className={styles.card}>
-          <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faBolt} className={styles.cardIcon} />
-          </div>
-          <h3 className={styles.cardTitle}>LLM cache</h3>
-          <p className={styles.cardDescription}>Sustainable, fast, cost-effective GenAI app design</p>
-          <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <span className={styles.linkText}>Read The Blog</span>
-            <span className={styles.arrowOnly}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </span>
-          </a>
-        </div>
-        <div className={styles.card}>
-          <div className={styles.iconContainer}>
-            <FontAwesomeIcon icon={faUserTie} className={styles.cardIcon} />
-          </div>
-          <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
-          <p className={styles.cardDescription}>Streamlining the recruitment process using AI</p>
-          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <span className={styles.linkText}>Read The Blog</span>
-            <span className={styles.arrowOnly}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </span>
-          </a>
-        </div>
-      </div>
-      <div className={styles.footerInfo}>
-        <p>Copyright © 2024 HCL Technologies Limited</p>
-        <p>Contact Us: AWSEBUTA@hcltech.com</p>
-      </div>
-    </footer>
+      )}
+      <div
+        className={styles.laserCursor}
+        style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+      />
+    </div>
   );
 };
 
-export default Footer;
+export default MainContent;
 
 
 
-/* Existing styles remain unchanged */
 
-.cardLink {
-  margin-top: auto;
-  color: #fff;
-  text-decoration: none;
-  font-weight: bold;
-  display: inline-flex;
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
+}
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track background color */
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1; /* Thumb color */
+  border-radius: 20px; /* Rounded corners */
+  border: 3px solid #f1f1f1; /* Border around the thumb */
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299; /* Thumb color on hover */
+}
+
+.mainContent ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.mainContent ul li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 1100;
+}
+
+.maximized {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  z-index: 1101;
+}
+
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.closeIcon:hover {
+  color: #808080;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 5px;
-  font-size: 16px;
-  overflow: hidden; /* Hide overflow for smooth transition */
-  transition: color 0.3s ease;
-  position: relative; /* Position relative for controlling internal movements */
+  z-index: 1200;
+  cursor: pointer;
 }
 
-.arrowOnly {
-  display: inline-block;
-  transition: transform 0.3s ease; /* Smooth transition for moving the arrow */
-  transform: translateX(0); /* Initial position of the arrow */
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
 }
 
-.linkText {
-  display: inline-block;
-  opacity: 0; /* Initially hide the text */
-  margin-right: -100px; /* Start off-screen to the left */
-  transition: opacity 0.3s ease, margin-right 0.3s ease; /* Transition effects */
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
 }
 
-.cardLink:hover .arrowOnly {
-  transform: translateX(10px); /* Move arrow to the right on hover */
+.carouselContainer {
+  display: flex;
 }
 
-.cardLink:hover .linkText {
-  opacity: 1; /* Make text visible */
-  margin-right: 5px; /* Slide text into view */
+.customThumbs {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Hover effect remains unchanged */
-.cardLink:hover {
-  color: #ff80bf;
+.customThumbContainer {
+  cursor: pointer;
 }
+
+.customThumb {
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
+  cursor: pointer;
+}
+
+
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.imageLoadingCaption {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5931d4;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+
+
+
