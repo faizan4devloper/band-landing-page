@@ -11,16 +11,16 @@ const MainContent = ({ activeTab, content }) => {
   const [maximizedImage, setMaximizedImage] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
-  const [isImageMaximized, setIsImageMaximized] = useState(false);
+  const [isLaserCursorVisible, setIsLaserCursorVisible] = useState(false);
 
   const toggleMaximize = (imageSrc) => {
     const isMaximized = maximizedImage === imageSrc;
     setMaximizedImage(isMaximized ? null : imageSrc);
-    setIsImageMaximized(!isMaximized);
+    setIsLaserCursorVisible(!isMaximized);
   };
 
   const handleMouseMove = (e) => {
-    if (isImageMaximized) {
+    if (isLaserCursorVisible) {
       setLaserPos({ x: e.clientX, y: e.clientY });
     }
   };
@@ -30,7 +30,7 @@ const MainContent = ({ activeTab, content }) => {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [isImageMaximized]);
+  }, [isLaserCursorVisible]);
 
   const renderCarousel = (images) => (
     <div className={styles.carouselContainer}>
@@ -147,7 +147,7 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   return (
-    <div className={`${styles.mainContent} ${isImageMaximized ? styles.laserCursorEnabled : ""}`}>
+    <div className={styles.mainContent}>
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
         <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
@@ -163,10 +163,12 @@ const MainContent = ({ activeTab, content }) => {
           />
         </div>
       )}
-      <div
-        className={styles.laserCursor}
-        style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
-      />
+      {isLaserCursorVisible && (
+        <div
+          className={styles.laserCursor}
+          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+        />
+      )}
     </div>
   );
 };
@@ -174,14 +176,6 @@ const MainContent = ({ activeTab, content }) => {
 export default MainContent;
 
 
-/* Ensure the default cursor is hidden when the laser cursor is enabled */
-.mainContent {
-  cursor: none; /* Hide default cursor */
-}
-
-.laserCursorEnabled .laserCursor {
-  display: block; /* Show the laser cursor */
-}
 
 .laserCursor {
   position: fixed;
@@ -190,14 +184,10 @@ export default MainContent;
   background-color: red; /* Red color for the laser cursor */
   border-radius: 50%; /* Make it a circle */
   pointer-events: none;
-  display: none; /* Hide cursor by default */
   z-index: 1500;
+  display: none; /* Hide cursor by default */
 }
 
-/* Optional: You can add styles for the maximized image */
-.maximizedImage {
-  width: 77%;
-  height: 100%;
-  object-fit: contain;
-  z-index: 1200;
+.laserCursorEnabled .laserCursor {
+  display: block; /* Ensure the laser cursor is visible when enabled */
 }
