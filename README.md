@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
@@ -26,15 +26,9 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   useEffect(() => {
-    const mainContentDiv = document.querySelector(`.${styles.mainContent}`);
-    if (isImageMaximized) {
-      mainContentDiv.addEventListener("mousemove", handleMouseMove);
-    } else {
-      mainContentDiv.removeEventListener("mousemove", handleMouseMove);
-    }
-
+    document.addEventListener("mousemove", handleMouseMove);
     return () => {
-      mainContentDiv.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mousemove", handleMouseMove);
     };
   }, [isImageMaximized]);
 
@@ -52,7 +46,7 @@ const MainContent = ({ activeTab, content }) => {
               src={image}
               alt={`Thumbnail ${index + 1}`}
               className={styles.customThumb}
-              loading="lazy" // Add lazy loading attribute
+              loading="lazy"
             />
           </div>
         ))}
@@ -69,9 +63,9 @@ const MainContent = ({ activeTab, content }) => {
         {images.map((image, index) => (
           <div
             key={index}
-            onClick={() => toggleMaximize(image)} // Toggle maximization on image click
+            onClick={() => toggleMaximize(image)}
           >
-            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" /> {/* Add lazy loading attribute */}
+            <img src={image} alt={`Slide ${index + 1}`} className={styles.noCursor} title="Click to Enlarge" loading="lazy" />
           </div>
         ))}
       </Carousel>
@@ -93,7 +87,7 @@ const MainContent = ({ activeTab, content }) => {
         <img
           src={content[0]}
           alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
+          className={`${styles.noCursor} ${maximizedImage === content[0] ? styles.maximized : ""}`}
           onClick={() => toggleMaximize(content[0])}
           title="Click To Enlarge"
         />
@@ -153,9 +147,7 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   return (
-    <div
-      className={`${styles.mainContent} ${isImageMaximized ? styles.laserCursorEnabled : ""}`}
-    >
+    <div className={`${styles.mainContent} ${isImageMaximized ? styles.laserCursorEnabled : ""}`}>
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
         <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
@@ -182,36 +174,38 @@ const MainContent = ({ activeTab, content }) => {
 export default MainContent;
 
 
+
+
+
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: 0px 20px;
   background-color: #ffffff;
-  cursor: none; /* Hide default cursor */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 100px); /* Adjust height as needed */
-  overflow-y: auto; /* Enable vertical scroll */
+  height: calc(100vh - 100px);
+  overflow-y: auto;
   min-height: 300px;
 }
 
 /* Custom Scrollbar Styling */
 .mainContent::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 12px;
 }
 
 .mainContent::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Track background color */
+  background: #f1f1f1;
 }
 
 .mainContent::-webkit-scrollbar-thumb {
-  background-color: #5f1ec1; /* Thumb color */
-  border-radius: 20px; /* Rounded corners */
-  border: 3px solid #f1f1f1; /* Border around the thumb */
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
 }
 
 .mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: #3d1299; /* Thumb color on hover */
+  background-color: #3d1299;
 }
 
 .mainContent ul {
@@ -227,14 +221,18 @@ export default MainContent;
   margin-bottom: 10px;
 }
 
-.mainContent img {
+img {
   max-width: 90%;
   height: auto;
   display: block;
   margin: 10px auto;
-  cursor: pointer;
+  cursor: none; /* Hide default cursor */
   transition: transform 0.3s ease;
   z-index: 1100;
+}
+
+.noCursor {
+  cursor: none; /* Ensures the default cursor is hidden */
 }
 
 .maximized {
@@ -281,7 +279,7 @@ export default MainContent;
   justify-content: center;
   align-items: center;
   z-index: 1200;
-  cursor: pointer;
+  cursor: none; /* Hide default cursor */
 }
 
 .benefits,
@@ -296,6 +294,12 @@ export default MainContent;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 50px;
+}
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
 }
 
 .carouselContainer {
@@ -315,37 +319,33 @@ export default MainContent;
   height: 80px;
   margin-bottom: 10px;
   cursor: pointer;
-  border: 1px solid transparent;
-  transition: border-color 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.customThumbContainer.selected {
-  border-color: #5f1ec1;
+.selected {
+  border: 2px solid #5931d4;
 }
 
 .customThumb {
-  max-width: 100%;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.customCarousel {
-  width: calc(100% - 100px);
-}
-
-.laserCursorEnabled .laserCursor {
-  display: block; /* Ensure the laser cursor is visible when enabled */
+.customCarousel .carousel .slide {
+  background: none;
 }
 
 .laserCursor {
-  position: fixed;
-  width: 20px; /* Adjust size as needed */
-  height: 20px; /* Adjust size as needed */
-  background-color: red; /* Red color for the laser cursor */
-  border-radius: 50%; /* Make it a circle */
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
   pointer-events: none;
-  display: none; /* Hide cursor by default */
+  transform: translate(-50%, -50%);
   z-index: 1500;
+}
+
+.laserCursorEnabled {
+  cursor: none;
 }
