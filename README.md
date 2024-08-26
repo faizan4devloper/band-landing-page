@@ -32,21 +32,6 @@ const MainContent = ({ activeTab, content }) => {
     };
   }, [isImageMaximized]);
 
-  useEffect(() => {
-    // Handle window resize to hide laser cursor
-    const handleResize = () => {
-      if (window.innerWidth <= 768) { // Adjust this value based on your screen size
-        setIsImageMaximized(false);
-        setMaximizedImage(null);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   const renderCarousel = (images) => (
     <div className={styles.carouselContainer}>
       <div className={styles.customThumbs}>
@@ -178,12 +163,10 @@ const MainContent = ({ activeTab, content }) => {
           />
         </div>
       )}
-      {isImageMaximized && (
-        <div
-          className={styles.laserCursor}
-          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
-        />
-      )}
+      <div
+        className={styles.laserCursor}
+        style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+      />
     </div>
   );
 };
@@ -191,8 +174,198 @@ const MainContent = ({ activeTab, content }) => {
 export default MainContent;
 
 
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+   cursor: none; /* Hide default cursor */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
+  min-height: 300px;
+}
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track background color */
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1; /* Thumb color */
+  border-radius: 20px; /* Rounded corners */
+  border: 3px solid #f1f1f1; /* Border around the thumb */
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299; /* Thumb color on hover */
+}
+
+.mainContent ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  padding-left: 20px;
+}
+
+.mainContent ul li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 1100;
+}
+
+.maximized {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  z-index: 1200;
+}
+
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+    z-index: 1200;
+
+}
+
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.closeIcon:hover {
+  color: #808080;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+  cursor: pointer;
+}
+
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+}
+
+.customThumbContainer {
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
+  cursor: pointer;
+}
+
+
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 340px;
+  min-width: 610px;
+}
+
+.imageLoadingCaption {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5931d4;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+
+
 .laserCursorEnabled .laserCursor {
-  display: block; /* Show the laser cursor when enabled */
+  display: block; /* Ensure the laser cursor is visible when enabled */
 }
 
 .laserCursor {
@@ -204,11 +377,4 @@ export default MainContent;
   pointer-events: none;
   display: none; /* Hide cursor by default */
   z-index: 1500;
-}
-
-/* Optional: Hide laser cursor when window is resized below certain width */
-@media (max-width: 768px) {
-  .laserCursorEnabled .laserCursor {
-    display: none;
-  }
 }
