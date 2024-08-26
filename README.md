@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './Footer.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faEnvelopeOpenText, faBolt, faUserTie } from "@fortawesome/free-solid-svg-icons";
 
 const Footer = () => {
   return (
@@ -9,24 +9,33 @@ const Footer = () => {
       <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
       <div className={styles.cardContainer}>
         <div className={styles.card}>
+          <div className={styles.iconContainer}>
+            <FontAwesomeIcon icon={faEnvelopeOpenText} className={styles.cardIcon} />
+          </div>
           <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
-          <p>Extract, act, and respond on AWS</p>
+          <p className={styles.cardDescription}>Extract, act, and respond on AWS</p>
           <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
+          <div className={styles.iconContainer}>
+            <FontAwesomeIcon icon={faBolt} className={styles.cardIcon} />
+          </div>
           <h3 className={styles.cardTitle}>LLM cache</h3>
-          <p>Sustainable, fast, cost-effective GenAI app design</p>
+          <p className={styles.cardDescription}>Sustainable, fast, cost-effective GenAI app design</p>
           <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
+          <div className={styles.iconContainer}>
+            <FontAwesomeIcon icon={faUserTie} className={styles.cardIcon} />
+          </div>
           <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
-          <p>Streamlining the recruitment process using AI</p>
+          <p className={styles.cardDescription}>Streamlining the recruitment process using AI</p>
           <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            Read The Blog <FontAwesomeIcon icon={faArrowRight}/>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
       </div>
@@ -40,10 +49,11 @@ const Footer = () => {
 
 export default Footer;
 
+
 .footer {
   background: linear-gradient(to bottom, #1a1a2e, #16213e);
   border-top: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 40px 20px; /* Increased padding for better spacing */
+  padding: 40px 20px;
   text-align: center;
   color: #fcfcfc;
   margin: 30px -88px;
@@ -53,34 +63,35 @@ export default Footer;
 }
 
 .footerHeading {
-  font-size: 28px; /* Slightly larger font for the heading */
+  font-size: 28px;
   margin-bottom: 40px;
   color: #fff;
   margin-top: 0px;
   letter-spacing: 2px;
   border-bottom: 2px solid #fff;
-  padding-bottom: 10px; /* Increased padding for better visual separation */
+  padding-bottom: 10px;
 }
 
 .cardContainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; /* Increased gap for better spacing */
+  gap: 30px;
 }
 
 .card {
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   border-radius: 12px;
-  padding: 20px 15px; /* Adjusted padding for consistency */
-  width: 240px; /* Slightly wider for better content fit */
+  padding: 20px 15px;
+  width: 260px; /* Increased width for better content fit */
   color: #fcfcfc;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
-  flex-direction: column; /* Ensure elements stack vertically */
-  justify-content: space-between; /* Evenly distribute elements */
-  text-align: left; /* Left-align text for better readability */
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: left;
+  position: relative;
 }
 
 .card:hover {
@@ -88,28 +99,43 @@ export default Footer;
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
 }
 
-.cardTitle {
-  font-size: 18px; /* Slightly larger font for better emphasis */
-  margin-bottom: 10px;
-  color: #fff;
-  line-height: 1.4; /* Improved line height for readability */
+.iconContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-.card p {
-  font-size: 15px; /* Slightly larger font for better readability */
+.cardIcon {
+  font-size: 40px; /* Larger icon size */
   color: #fff;
-  margin-bottom: 20px; /* Space between description and link */
+}
+
+.cardTitle {
+  font-size: 20px; /* Increased font size */
+  font-weight: bold; /* Bold for emphasis */
+  margin-bottom: 10px;
+  color: #fff;
+  line-height: 1.4;
+}
+
+.cardDescription {
+  font-size: 16px; /* Increased font size for better readability */
+  font-weight: 500; /* Semi-bold for better emphasis */
+  color: #f0f0f0;
+  margin-bottom: 20px;
 }
 
 .cardLink {
-  margin-top: auto; /* Push the link to the bottom */
+  margin-top: auto;
   color: #fff;
   text-decoration: none;
   font-weight: bold;
   transition: color 0.3s ease, transform 0.3s ease;
   display: inline-flex;
-  align-items: center; /* Align the icon with the text */
-  gap: 5px; /* Space between text and icon */
+  align-items: center;
+  gap: 5px;
+  font-size: 16px; /* Increased font size */
 }
 
 .cardLink:hover {
