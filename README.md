@@ -1,18 +1,117 @@
+// src/components/CaseStudyCards/CaseStudyCards.js
+import React, { useState, useEffect } from 'react';
+import styles from './CaseStudyCards.module.css';
+import { FaArrowRight } from 'react-icons/fa';
+
+const caseStudies = [
+  {
+    title: 'Case Study 1',
+    link: 'https://example.com/case-study-1',
+  },
+  {
+    title: 'Case Study 2',
+    link: 'https://example.com/case-study-2',
+  },
+  {
+    title: 'Case Study 3',
+    link: 'https://example.com/case-study-3',
+  },
+  // Add more case studies here
+];
+
+const CaseStudyCards = () => {
+  const [revealIndex, setRevealIndex] = useState(0);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const revealPosition = window.innerHeight / 1.5;
+    if (scrollPosition > revealPosition) {
+      setRevealIndex((prev) => Math.min(prev + 1, caseStudies.length));
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <div className={styles.caseStudyContainer}>
+      {caseStudies.map((caseStudy, index) => (
+        <div
+          key={index}
+          className={`${styles.caseStudyCard} ${index <= revealIndex ? styles.revealed : ''}`}
+        >
+          <h3 className={styles.caseStudyTitle}>{caseStudy.title}</h3>
+          <a href={caseStudy.link} className={styles.caseStudyLink}>
+            Read the Case Study <FaArrowRight className={styles.arrowIcon} />
+          </a>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default CaseStudyCards;
+
+
+
+/* src/components/CaseStudyCards/CaseStudyCards.module.css */
+.caseStudyContainer {
+  margin-bottom: 15px;
+}
+
+.caseStudyCard {
+  background-color: #14142b;
+  color: #fcfcfc;
+  padding: 20px;
+  margin: 10px 0;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.6s ease-in-out;
+}
+
+.caseStudyCard.revealed {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.caseStudyTitle {
+  font-size: 18px;
+  color: #5931d5;
+  margin-bottom: 10px;
+}
+
+.caseStudyLink {
+  color: #fcfcfc;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.caseStudyLink:hover {
+  color: #5931d5;
+}
+
+.arrowIcon {
+  margin-left: 8px;
+}
+
+
 // src/components/Footer/Footer.js
 import React from 'react';
 import styles from './Footer.module.css';
+import CaseStudyCards from '../CaseStudyCards/CaseStudyCards';
 
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <div className={styles.blogSection}>
-        <h3 className={styles.blogTitle}>Latest Blogs</h3>
-        <ul className={styles.blogList}>
-          <li><a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.blogLink}>Generative AI-powered email EAR (extract, act and respond) on AWS</a></li>
-          <li><a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.blogLink}>LLM cache: Sustainable, fast, cost-effective GenAI app design</a></li>
-          <li><a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.blogLink}>Unlocking the future of recruitment with SmartRecruit</a></li>
-          
-        </ul>
+      <div className={styles.caseStudySection}>
+        <CaseStudyCards />
       </div>
       <div className={styles.footerInfo}>
         <p>Copyright © 2024 HCL Technologies Limited</p>
@@ -25,9 +124,9 @@ const Footer = () => {
 export default Footer;
 
 
-
+/* src/components/Footer/Footer.module.css */
 .footer {
-  background: linear-gradient(to bottom, #14142b 0%, #05041e 100%) !important;
+  background: linear-gradient(to bottom, #14142b 0, #05041e 100%) !important;
   padding: 20px;
   text-align: center;
   color: #fcfcfc;
@@ -35,64 +134,14 @@ export default Footer;
   margin: 30px -88px;
   margin-bottom: 0px;
   height: 100%;
-  position: relative;
-  overflow: hidden; /* Ensures that animations don’t overflow */
 }
 
-.blogSection {
+.caseStudySection {
   margin-bottom: 15px;
-}
-
-.blogTitle {
-  font-size: 24px;
-  color: #5931d5;
-  margin-bottom: 10px;
-  transition: color 0.3s ease;
-}
-
-.blogTitle:hover {
-  color: #fcfcfc; /* Change title color on hover */
-}
-
-.blogList {
-  list-style: none;
-  padding: 0;
-  animation: fadeIn 1s ease-out; /* Animation for list items */
-}
-
-.blogLink {
-  color: #fcfcfc;
-  text-decoration: none;
-  transition: color 0.3s ease, transform 0.3s ease; /* Added transform transition */
-  display: inline-block;
-}
-
-.blogLink:hover {
-  color: #5931d5;
-  transform: translateY(-3px); /* Lift effect on hover */
 }
 
 .footerInfo {
   margin-top: 20px;
   font-size: 14px;
   color: #888;
-}
-
-.footerInfo p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
-}
-
-.footerInfo p:hover {
-  color: #5931d5; /* Highlight contact info on hover */
-}
-
-/* Keyframes for fading in blog list */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
