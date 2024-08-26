@@ -1,164 +1,277 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styles from './Footer.module.css';
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
 
-const Footer = () => {
-  const [activeCards, setActiveCards] = useState([]); // State to track which cards are active
-  const blogCardsRef = useRef([]); // Ref to access all blog cards
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const blogs = [
-    {
-      title: 'Generative AI-powered email EAR (extract, act and respond) on AWS',
-      link: 'https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws',
-    },
-    {
-      title: 'LLM cache: Sustainable, fast, cost-effective GenAI app design',
-      link: 'https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design',
-    },
-    {
-      title: 'Unlocking the future of recruitment with SmartRecruit',
-      link: 'https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit',
-    },
-  ];
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight;
-      const newActiveCards = blogCardsRef.current.map((card, index) => {
-        if (card && card.offsetTop < scrollPosition - 100) {
-          return index;
-        }
-        return null;
-      }).filter(index => index !== null);
+  const renderCarousel = (images) => (
+  <div className={styles.carouselContainer}>
+    <div className={styles.customThumbs}>
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+          onClick={() => setCurrentSlide(index)}
+        >
+          <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+        </div>
+      ))}
+    </div>
+    <Carousel
+      showArrows={false}
+      showIndicators={false}
+      showThumbs={false}
+      showStatus={false}
+      selectedItem={currentSlide}
+      onChange={(index) => setCurrentSlide(index)}
+      className={styles.customCarousel}
+    >
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={maximizedImage === image ? styles.maximized : ""}
+          onClick={() => toggleMaximize(image)}
+        >
+          <img src={image} alt={`Slide ${index + 1}`} />
+        </div>
+      ))}
+    </Carousel>
+  </div>
+);
 
-      setActiveCards(newActiveCards);
-    };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8}/>;
+    }
+    
+    if (typeof content === 'string') {
+      return <div>{content}</div>;
+    }
 
-  const navigateToBlog = (url) => {
-    window.location.href = url;
+    return content.length > 1 ? renderCarousel(content) : (
+      <img
+        src={content[0]}
+        alt="Single Image"
+        className={maximizedImage === content[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(content[0])}
+      />
+    );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return <BeatLoader color="#5931d4" size={8}/>;
+    }
+    
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return <div className={styles.mainContent}>Content not available</div>;
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
   };
 
   return (
-    <footer className={styles.footer}>
-      <div className={styles.blogSection}>
-        <h3 className={styles.blogTitle}>Latest Blogs</h3>
-        <div className={styles.blogCards}>
-          {blogs.map((blog, index) => (
-            <div
-              key={index}
-              className={`${styles.blogCard} ${activeCards.includes(index) ? styles.show : ''}`}
-              ref={(el) => (blogCardsRef.current[index] = el)}
-              onClick={() => navigateToBlog(blog.link)}
-            >
-              <p className={styles.blogText}>{blog.title}</p>
-              <p className={styles.learnMore}>Learn more →</p>
-            </div>
-          ))}
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
         </div>
-      </div>
-      <div className={styles.footerInfo}>
-        <p>Copyright © 2024 HCL Technologies Limited</p>
-        <p>Contact: info@yourcompany.com</p>
-      </div>
-    </footer>
+      )}
+    </div>
   );
 };
 
-export default Footer;
+export default MainContent;
 
 
-.footer {
-  background: linear-gradient(to bottom, #14142b 0%, #05041e 100%) !important;
-  padding: 20px;
-  text-align: center;
-  color: #fcfcfc;
-  border-top: 1px solid #ddd;
-  margin: 30px -88px;
-  margin-bottom: 0px;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
 
-.blogSection {
-  margin-bottom: 15px;
-}
 
-.blogTitle {
-  font-size: 24px;
-  color: #5931d5;
-  margin-bottom: 10px;
-  transition: color 0.3s ease;
-}
-
-.blogCards {
-  position: relative;
-  width: 80%;
-  margin: 0 auto;
-}
-
-.blogCard {
-  background-color: #1e1e38;
-  color: #fcfcfc;
-  padding: 20px;
-  margin: 10px 0;
-  border-radius: 8px;
-  cursor: pointer;
-  position: absolute;
+.mainContent {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  opacity: 0;
-  transform: translateY(50px);
-  transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px); /* Adjust height as needed */
+  overflow-y: auto; /* Enable vertical scroll */
 }
 
-.blogCard.show {
-  opacity: 1;
-  transform: translateY(0);
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
 }
 
-.blogCard:nth-child(1) {
-  z-index: 3;
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track background color */
 }
 
-.blogCard:nth-child(2) {
-  z-index: 2;
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1; /* Thumb color */
+  border-radius: 20px; /* Rounded corners */
+  border: 3px solid #f1f1f1; /* Border around the thumb */
 }
 
-.blogCard:nth-child(3) {
-  z-index: 1;
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299; /* Thumb color on hover */
 }
 
-.blogText {
-  margin-bottom: 8px;
-  font-size: 18px;
+.mainContent ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  padding-left: 20px;
 }
 
-.learnMore {
-  font-size: 14px;
-  color: #888;
-  transition: color 0.3s ease;
+.mainContent ul li {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #000;
+  margin-bottom: 10px;
 }
 
-.learnMore:hover {
-  color: #5931d5;
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 20px auto;
+  /*margin-right:10px;*/
+  margin-top: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.3s ease;
 }
 
-.footerInfo {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #888;
+.maximized {
+  max-width: 80%;
+  max-height: 80%;
+  margin: auto;
+  display: block;
 }
 
-.footerInfo p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
+.closeIcon {
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  font-size: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1001;
 }
 
-.footerInfo p:hover {
-  color: #5931d5;
+.closeIcon:hover {
+  color: #808080;
+}
+
+.overlay {
+  position: fixed;
+  top: 25px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+}
+
+.customThumbContainer {
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 100px; /* Adjust size as needed */
+  height: 100px; /* Adjust size as needed */
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
 }
