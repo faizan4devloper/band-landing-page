@@ -1,255 +1,210 @@
-import React from 'react';
-import styles from './Footer.module.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
 
-const Footer = () => {
+const Header = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate("/");
+  };
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      // Scrolling down
+      setIsVisible(false);
+    } else {
+      // Scrolling up
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
+
   return (
-    <footer className={styles.footer}>
-      <h2 className={styles.footerHeading}>Explore Our Blogs</h2>
-      <div className={styles.cardContainer}>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
-          <p>Extract, act, and respond on AWS</p>
-          <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            style={{ cursor: "pointer" }}
+            title="Navigate to Home"
+          />
         </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>LLM cache</h3>
-          <p>Sustainable, fast, cost-effective GenAI app design</p>
-          <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
         </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Unlocking the future of recruitment</h3>
-          <p>With SmartRecruit</p>
-          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
-        </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Unlocking the future of recruitment</h3>
-          <p>With SmartRecruit</p>
-          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
-        </div>
-      </div>
-      <div className={styles.footerInfo}>
-        <p>Copyright © 2024 HCL Technologies Limited</p>
-        <p>Contact: info@yourcompany.com</p>
-      </div>
-    </footer>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+    </div>
   );
 };
 
-export default Footer;
+export default Header;
 
 
-
-
-.footer {
-  background: linear-gradient(to bottom, #1a1a2e, #16213e);
-  border-top: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 20px;
-  text-align: center;
-  color: #fcfcfc;
-  margin: 30px -88px;
-  margin-bottom: 0px;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.footerHeading {
-  font-size: 24px;
-  margin-bottom: 30px;
-  color: #ffe6fa;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); /* Adds depth to the heading */
-}
-
-.cardContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px 0;
-}
-
-.card {
-  background: linear-gradient(135deg, #6a0572, #af4261);
-  border-radius: 12px;
-  padding: 20px;
-  width: 220px;
-  color: #fcfcfc;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
-}
-
-.cardTitle {
-  font-size: 20px;
-  margin-bottom: 15px;
-  color: #ffe6fa;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.card p {
-  font-size: 16px;
-  color: #f3f3f3;
-}
-
-.cardLink {
-  display: block;
-  margin-top: 20px;
-  color: #ffe6fa;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.cardLink:hover {
-  color: #ff80bf;
-  transform: translateX(5px);
-}
-
-.footerInfo {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #888;
-}
-
-.footerInfo p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
-}
-
-.footerInfo p:hover {
-  color: #ff80bf;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-import React from 'react';
-import styles from './Footer.module.css';
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
+
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const toggleMaximize = (imageSrc) => {
+    setMaximizedImage(maximizedImage === imageSrc ? null : imageSrc);
+  };
+
+  const renderCarousel = (images) => (
+  <div className={styles.carouselContainer}>
+    <div className={styles.customThumbs}>
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+          onClick={() => setCurrentSlide(index)}
+        >
+          <img src={image} alt={`Thumbnail ${index + 1}`} className={styles.customThumb} />
+        </div>
+      ))}
+    </div>
+    <Carousel
+      showArrows={false}
+      showIndicators={false}
+      showThumbs={false}
+      showStatus={false}
+      selectedItem={currentSlide}
+      onChange={(index) => setCurrentSlide(index)}
+      className={styles.customCarousel}
+    >
+      {images.map((image, index) => (
+        <div
+          key={index}
+          className={maximizedImage === image ? styles.maximized : ""}
+          onClick={() => toggleMaximize(image)}
+        >
+          <img src={image} alt={`Slide ${index + 1}`} />
+        </div>
+      ))}
+    </Carousel>
+  </div>
+);
 
 
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8}/>;
+    }
+    
+    if (typeof content === 'string') {
+      return <div>{content}</div>;
+    }
 
-const Footer = () => {
+    return content.length > 1 ? renderCarousel(content) : (
+      <img
+        src={content[0]}
+        alt="Single Image"
+        className={maximizedImage === content[0] ? styles.maximized : ""}
+        onClick={() => toggleMaximize(content[0])}
+      />
+    );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return <BeatLoader color="#5931d4" size={8}/>;
+    }
+    
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return <div className={styles.mainContent}>Content not available</div>;
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
+
   return (
-    <footer className={styles.footer}>
-      <div className={styles.cardContainer}>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
-          <p>Extract, act, and respond on AWS</p>
-          <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
+    <div className={styles.mainContent}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon icon={faTimes} className={styles.closeIcon} onClick={() => setMaximizedImage(null)} />
+          <img src={maximizedImage} alt="Maximized view" className={styles.maximized} />
         </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>LLM cache</h3>
-          <p>Sustainable, fast, cost-effective GenAI app design</p>
-          <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
-        </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Unlocking the future of recruitment</h3>
-          <p>With SmartRecruit</p>
-          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
-        </div>
-        <div className={styles.card}>
-          <h3 className={styles.cardTitle}>Unlocking the future of recruitment</h3>
-          <p>With SmartRecruit</p>
-          <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" className={styles.cardLink}>Visit Blogs <FontAwesomeIcon icon={faArrowRight}/></a>
-        </div>
-      </div>
-      <div className={styles.footerInfo}>
-        <p>Copyright © 2024 HCL Technologies Limited</p>
-        <p>Contact: info@yourcompany.com</p>
-      </div>
-    </footer>
+      )}
+    </div>
   );
 };
 
-export default Footer;
-
-.footer {
-  /*background: linear-gradient(to bottom, #14142b 0%, #05041e 100%) !important;*/
-  border-top: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 20px;
-  text-align: center;
-  color: #fcfcfc;
-  margin: 30px -88px;
-  margin-bottom: 0px;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.cardContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
-  padding: 20px 0;
-}
-
-.card {
-  background: linear-gradient(135deg, #f3ec78, #af4261);
-  border-radius: 12px;
-  padding: 20px;
-  width: 220px;
-  color: #fcfcfc;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
-}
-
-.cardTitle {
-  font-size: 18px;
-  margin-bottom: 10px;
-  color: #ffffff;
-}
-
-.cardLink {
-  display: block;
-  margin-top: 160px;
-  color: #f9f9f9;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.cardLink:hover {
-  color: #ffffff;
-  transform: translateX(5px);
-}
-
-.footerInfo {
-  margin-top: 20px;
-  font-size: 14px;
-  color: #888;
-}
-
-.footerInfo p {
-  margin: 5px 0;
-  transition: color 0.3s ease;
-}
-
-.footerInfo p:hover {
-  color: #5931d5; /* Highlight contact info on hover */
-}
-
+export default MainContent;
