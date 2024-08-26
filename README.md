@@ -1,10 +1,12 @@
-import { FaArrowRight } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import styles from './CaseStudyCards.module.css';
 
 const CaseStudyCard = ({ title, link }) => (
-  <div className="card">
-    <div className="card-title">{title}</div>
+  <div className={styles.card}>
+    <div className={styles.cardTitle}>{title}</div>
     <a href={link} className="card-link">
-      Read the Case Study <FaArrowRight />
+      Read the Case Study <FontAwesomeIcon icon={faArrowRight}/>
     </a>
   </div>
 );
@@ -17,7 +19,7 @@ const CaseStudySection = () => {
   ];
 
   return (
-    <div className="card-container">
+    <div className={styles.cardContainer}>
       {caseStudies.map((study, index) => (
         <CaseStudyCard key={index} title={study.title} link={study.link} />
       ))}
@@ -27,9 +29,8 @@ const CaseStudySection = () => {
 
 export default CaseStudySection;
 
-
 /* Card Container */
-.card-container {
+.cardContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,7 +61,7 @@ export default CaseStudySection;
 }
 
 /* Text Styling */
-.card-title {
+.cardTitle {
   font-size: 1.5em;
   font-weight: bold;
   margin: 0;
