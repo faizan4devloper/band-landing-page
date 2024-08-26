@@ -17,8 +17,7 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>Generative AI-powered email EAR</h3>
           <p className={styles.cardDescription}>Extract, act, and respond on AWS</p>
           <a href="https://www.hcltech.com/blogs/generative-ai-powered-email-ear-on-aws" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
-            <span className={styles.cardLinkText}>Read The Blog</span>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
@@ -28,8 +27,7 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>LLM cache</h3>
           <p className={styles.cardDescription}>Sustainable, fast, cost-effective GenAI app design</p>
           <a href="https://www.hcltech.com/blogs/llm-cache-sustainable-fast-cost-effective-genai-app-design" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
-            <span className={styles.cardLinkText}>Read The Blog</span>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
         <div className={styles.card}>
@@ -39,8 +37,7 @@ const Footer = () => {
           <h3 className={styles.cardTitle}>Future of recruitment with Smart Recruit</h3>
           <p className={styles.cardDescription}>Streamlining the recruitment process using AI</p>
           <a href="https://www.hcltech.com/blogs/unlocking-the-future-of-recruitment-with-smartrecruit" target="_blank" rel="noopener noreferrer" className={styles.cardLink}>
-            <FontAwesomeIcon icon={faArrowRight} />
-            <span className={styles.cardLinkText}>Read The Blog</span>
+            Read The Blog <FontAwesomeIcon icon={faArrowRight} />
           </a>
         </div>
       </div>
@@ -53,6 +50,7 @@ const Footer = () => {
 };
 
 export default Footer;
+
 
 .footer {
   background: linear-gradient(to bottom, #1a1a2e, #16213e);
@@ -87,10 +85,10 @@ export default Footer;
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   border-radius: 12px;
   padding: 20px 15px;
-  width: 240px;
+  width: 240px; /* Increased width for better content fit */
   color: #fcfcfc;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -101,7 +99,6 @@ export default Footer;
 .card:hover {
   transform: translateY(-10px);
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(90deg, #ff6ec7 0%, #ffa500 100%); /* Different bg color on hover */
 }
 
 .iconContainer {
@@ -112,21 +109,21 @@ export default Footer;
 }
 
 .cardIcon {
-  font-size: 40px;
+  font-size: 40px; /* Larger icon size */
   color: #fff;
 }
 
 .cardTitle {
-  font-size: 18px;
-  font-weight: bold;
+  font-size: 18px; /* Increased font size */
+  font-weight: bold; /* Bold for emphasis */
   margin-bottom: 10px;
   color: #fff;
   line-height: 1.4;
 }
 
 .cardDescription {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 13px; /* Increased font size for better readability */
+  font-weight: 500; /* Semi-bold for better emphasis */
   color: #f0f0f0;
   margin-top: 0px;
   margin-bottom: 20px;
@@ -137,24 +134,17 @@ export default Footer;
   color: #fff;
   text-decoration: none;
   font-weight: bold;
-  transition: color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 16px;
-  opacity: 0; /* Initially hidden */
+  
+  font-size: 16px; /* Increased font size */
 }
 
-.card:hover .cardLink {
-  opacity: 1; /* Show on hover */
-}
-
-.cardLinkText {
-  display: none; /* Hidden by default */
-}
-
-.card:hover .cardLinkText {
-  display: inline; /* Show text on hover */
+.cardLink:hover {
+  color: #ff80bf;
+  transform: translateX(5px);
 }
 
 .footerInfo {
