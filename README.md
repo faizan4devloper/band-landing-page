@@ -1,3 +1,123 @@
+import React, { useState, useEffect, useRef } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
+import laserStyles from "./LaserCursor.module.css";
+
+const Header = () => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isLaserEnabled, setIsLaserEnabled] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+  const headerRef = useRef(null);
+
+  const handleImageClick = () => {
+    navigate("/");
+  };
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
+
+  const toggleLaserCursor = () => {
+    setIsLaserEnabled((prev) => !prev);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
+
+  useEffect(() => {
+    if (isLaserEnabled) {
+      headerRef.current.classList.add("laser-enabled");
+
+      const laserCursor = document.createElement("div");
+      laserCursor.classList.add(laserStyles.laserCursor);
+      headerRef.current.appendChild(laserCursor);
+
+      const moveCursor = (e) => {
+        const rect = headerRef.current.getBoundingClientRect();
+        laserCursor.style.transform = `translate(${e.clientX - rect.left}px, ${e.clientY - rect.top}px)`;
+      };
+
+      headerRef.current.addEventListener("mousemove", moveCursor);
+
+      return () => {
+        headerRef.current.classList.remove("laser-enabled");
+        headerRef.current.removeEventListener("mousemove", moveCursor);
+        laserCursor.remove();
+      };
+    }
+  }, [isLaserEnabled]);
+
+  return (
+    <div
+      ref={headerRef}
+      className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}
+    >
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            style={{ cursor: "pointer" }}
+            title="Navigate to Home"
+          />
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <button className={styles.button} onClick={toggleLaserCursor}>
+            {isLaserEnabled ? "Disable Laser Cursor" : "Enable Laser Cursor"}
+          </button>
+        </div>
+      </nav>
+      <div className={styles.border}></div>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Request for Live Demo!"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <RequestDemoForm closeModal={closeModal} />
+      </Modal>
+    </div>
+  );
+};
+
+export default Header;
+
+
+
+
+
+
+
+
+
 /* LaserCursor.module.css */
 .laserCursor {
   cursor: none;
