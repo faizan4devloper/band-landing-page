@@ -26,9 +26,15 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   useEffect(() => {
-    document.addEventListener("mousemove", handleMouseMove);
+    const mainContentDiv = document.querySelector(`.${styles.mainContent}`);
+    if (isImageMaximized) {
+      mainContentDiv.addEventListener("mousemove", handleMouseMove);
+    } else {
+      mainContentDiv.removeEventListener("mousemove", handleMouseMove);
+    }
+
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
+      mainContentDiv.removeEventListener("mousemove", handleMouseMove);
     };
   }, [isImageMaximized]);
 
@@ -46,7 +52,7 @@ const MainContent = ({ activeTab, content }) => {
               src={image}
               alt={`Thumbnail ${index + 1}`}
               className={styles.customThumb}
-              loading="lazy" /* Add lazy loading attribute */
+              loading="lazy" // Add lazy loading attribute
             />
           </div>
         ))}
@@ -147,7 +153,9 @@ const MainContent = ({ activeTab, content }) => {
   };
 
   return (
-    <div className={`${styles.mainContent} ${isImageMaximized ? styles.laserCursorEnabled : ""}`}>
+    <div
+      className={`${styles.mainContent} ${isImageMaximized ? styles.laserCursorEnabled : ""}`}
+    >
       {contentMap[activeTab] || <div>Content not available</div>}
       {maximizedImage && (
         <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
@@ -174,14 +182,13 @@ const MainContent = ({ activeTab, content }) => {
 export default MainContent;
 
 
-
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: 0px 20px;
   background-color: #ffffff;
-   cursor: none; /* Hide default cursor */
+  cursor: none; /* Hide default cursor */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: calc(100vh - 100px); /* Adjust height as needed */
   overflow-y: auto; /* Enable vertical scroll */
@@ -246,8 +253,7 @@ export default MainContent;
   width: 77%;
   height: 100%;
   object-fit: contain;
-    z-index: 1200;
-
+  z-index: 1200;
 }
 
 .closeIcon {
@@ -292,12 +298,6 @@ export default MainContent;
   margin-bottom: 50px;
 }
 
-.highlight {
-  font-style: italic;
-  color: #5f1ec1;
-  font-weight: bold;
-}
-
 .carouselContainer {
   display: flex;
 }
@@ -305,64 +305,35 @@ export default MainContent;
 .customThumbs {
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
 }
 
 .customThumbContainer {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
   cursor: pointer;
+  border: 1px solid transparent;
+  transition: border-color 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.customThumb {
-  width: 100px; /* Adjust size as needed */
-  height: 100px; /* Adjust size as needed */
-  object-fit: cover;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-}
-
-.customThumb:hover,
-.selected .customThumb {
+.customThumbContainer.selected {
   border-color: #5f1ec1;
 }
 
+.customThumb {
+  max-width: 100%;
+  max-height: 100%;
+}
+
 .customCarousel {
-  flex: 1;
-  cursor: pointer;
+  width: calc(100% - 100px);
 }
-
-
-.imageLoadingContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  min-height: 340px;
-  min-width: 610px;
-}
-
-.imageLoadingCaption {
-  font-size: 12px;
-  font-weight: bold;
-  color: #5931d4;
-  margin-bottom: 10px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-
-
 
 .laserCursorEnabled .laserCursor {
   display: block; /* Ensure the laser cursor is visible when enabled */
