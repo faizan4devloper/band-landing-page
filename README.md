@@ -1,5 +1,264 @@
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
+
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentContentSection, setCurrentContentSection] = useState("description"); // Track the current section
+  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+
+  const contentMap = {
+    description: content.description || [],
+    solutionFlow: content.solutionFlow || [],
+    techArchitecture: content.techArchitecture || [],
+    benefits: content.benefits || [],
+    adoption: content.adoption || [],
+  };
+
+  const allImages = Object.values(contentMap).flat(); // Flatten all content images into a single array
+
+  // Determine the current section based on the maximized image
+  useEffect(() => {
+    if (maximizedImage) {
+      for (const [section, images] of Object.entries(contentMap)) {
+        if (images.includes(maximizedImage)) {
+          setCurrentContentSection(section);
+          setCurrentSlide(images.indexOf(maximizedImage)); // Set current slide based on image
+          break;
+        }
+      }
+    }
+  }, [maximizedImage]);
+
+  const toggleMaximize = (imageSrc) => {
+    const isMaximized = maximizedImage === imageSrc;
+    setMaximizedImage(isMaximized ? null : imageSrc);
+  };
+
+  // Handle next and previous navigation within maximized view
+  const handleNext = () => {
+    const images = contentMap[currentContentSection];
+    const nextIndex = (currentSlide + 1) % images.length;
+    setMaximizedImage(images[nextIndex]);
+    setCurrentSlide(nextIndex);
+  };
+
+  const handlePrev = () => {
+    const images = contentMap[currentContentSection];
+    const prevIndex = (currentSlide - 1 + images.length) % images.length;
+    setMaximizedImage(images[prevIndex]);
+    setCurrentSlide(prevIndex);
+  };
+
+  useEffect(() => {
+    if (maximizedImage) {
+      const handleMouseMove = (e) => {
+        setLaserPos({ x: e.clientX, y: e.clientY });
+      };
+      document.addEventListener("mousemove", handleMouseMove);
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
+  }, [maximizedImage]);
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+            title="Click to Enlarge"
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => toggleMaximize(image)}
+          >
+            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8} />;
+    }
+
+    if (typeof content === "string") {
+      return <div>{content}</div>;
+    }
+
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+          title="Click To Enlarge"
+        />
+      );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
+    }
+
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return (
+      <div className={styles.mainContent}>Content not available</div>
+    );
+  }
+
+  const sectionContent = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
+      {sectionContent[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay}>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximizedImage}
+          />
+          <button onClick={handlePrev} className={styles.navButton}>Previous</button>
+          <button onClick={handleNext} className={styles.navButton}>Next</button>
+        </div>
+      )}
+      {maximizedImage && (
+        <div
+          className={styles.laserCursor}
+          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+
+
+.navButton {
+  position: absolute;
+  top: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1300;
+  transform: translateY(-50%);
+}
+
+.navButton:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.navButton:first-of-type {
+  left: 10px;
+}
+
+.navButton:last-of-type {
+  right: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
