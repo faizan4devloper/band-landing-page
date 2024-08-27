@@ -1,3 +1,55 @@
+/// Renders either the images, a processing message with loader if applicable, or nothing if no images are available
+const renderImageOrCarousel = (images) => {
+  if (!images || images.length === 0) {
+    return null; // Return nothing if no images are available
+  }
+
+  // Show processing message and loader if images are being loaded or processed
+  if (images.length > 0 && images.some((image) => !image)) {
+    return (
+      <div className={styles.imageLoadingContainer}>
+        <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+        <BeatLoader color="#5931d4" size={8} />
+      </div>
+    );
+  }
+
+  return renderContent(images);
+};
+
+
+
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.imageLoadingCaption {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /// Renders either the images or a message if no images are available
 const renderImageOrCarousel = (images) => {
   if (!images || images.length === 0) {
