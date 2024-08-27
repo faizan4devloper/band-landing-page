@@ -1,3 +1,64 @@
+/* Laser Cursor Styling */
+.laserCursorEnabled .laserCursor {
+  display: block;
+}
+
+.laserCursorEnabled * {
+  cursor: none !important; /* Hide the default cursor */
+}
+
+.laserCursor {
+  position: fixed;
+  width: 15px; /* Adjust size to resemble a laser pointer */
+  height: 15px; /* Adjust size to resemble a laser pointer */
+  background-color: #ff0000; /* Red color for the laser cursor */
+  border-radius: 50%; /* Make it a circle */
+  pointer-events: none;
+  z-index: 1500;
+  
+  /* Shadow and glow effect */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+  animation: pulseLaser 1.5s infinite;
+}
+
+/* Optional laser tail effect */
+.laserCursor::after {
+  content: '';
+  position: absolute;
+  width: 30px; /* Length of the tail */
+  height: 2px; /* Thickness of the tail */
+  background-color: rgba(255, 0, 0, 0.8); /* Tail color with some transparency */
+  top: 50%; /* Center vertically */
+  left: -30px; /* Position the tail to the left of the cursor */
+  transform: translateY(-50%);
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+/* Pulse animation to mimic the laser pointer effect */
+@keyframes pulseLaser {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 1), 0 0 30px rgba(255, 0, 0, 0.8);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+  }
+}
+
+
+
+
+
+
+
+
+
+
 // JavaScript to handle laser cursor movement
 document.addEventListener('mousemove', function (e) {
   const laserCursor = document.querySelector('.laserCursor');
