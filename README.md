@@ -1,97 +1,3 @@
-/// Renders either the images, a processing message with loader if applicable, or nothing if no images are available
-const renderImageOrCarousel = (images) => {
-  if (!images || images.length === 0) {
-    return null; // Return nothing if no images are available
-  }
-
-  // Show processing message and loader if images are being loaded or processed
-  if (images.length > 0 && images.some((image) => !image)) {
-    return (
-      <div className={styles.imageLoadingContainer}>
-        <p className={styles.imageLoadingCaption}>Processing, please wait</p>
-        <BeatLoader color="#5931d4" size={8} />
-      </div>
-    );
-  }
-
-  return renderContent(images);
-};
-
-
-
-.imageLoadingContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
-  padding: 20px;
-  background-color: #f7f7f7;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-}
-
-.imageLoadingCaption {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 10px;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/// Renders either the images or a message if no images are available
-const renderImageOrCarousel = (images) => {
-  if (!images || images.length === 0) {
-    return (
-      <div className={styles.noImageContainer}>
-        <p className={styles.noImageMessage}>No images available for this section.</p>
-      </div>
-    );
-  }
-
-  return renderContent(images);
-};
-
-
-
-.noImageContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  text-align: center;
-  padding: 20px;
-  background-color: #f7f7f7; /* Light grey background */
-  border-radius: 8px;
-  border: 1px solid #e0e0e0; /* Subtle border */
-}
-
-.noImageMessage {
-  font-size: 1.2rem;
-  color: #666; /* Slightly muted text color */
-  font-weight: 500;
-  margin: 0;
-}
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
@@ -203,7 +109,7 @@ const MainContent = ({ activeTab, content }) => {
     return renderContent(images);
   };
 
-  /// Returns early if content is not available
+  /// Returns early if content is not available       
   if (!content) {
     return (
       <div className={styles.mainContent}>Content not available</div>
@@ -273,3 +179,227 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
+
+
+
+/* Main content styling */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  min-height: 300px;
+}
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299;
+}
+
+/* Image styling before maximization */
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  transition: transform 0.3s ease;
+  z-index: 1100;
+  cursor: pointer;
+}
+
+/* Image styling after maximization */
+.maximized,
+.maximizedImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: none; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
+
+/* Ensures the cursor is hidden over the maximized image */
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+  cursor: none !important; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
+
+/* General cursor hiding for maximized images and overlays */
+.maximized,
+.maximizedImage,
+.overlay {
+  cursor: none;
+}
+
+/* Close icon styling */
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 110px;
+  font-size: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.closeIcon:hover {
+  color: #808080;
+}
+
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+}
+
+/* Section styling */
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+/* Carousel and thumb styling */
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+}
+
+.customThumbContainer {
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Image loading container */
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 340px;
+  min-width: 610px;
+}
+
+.imageLoadingCaption {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5931d4;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Laser cursor enabled */
+.laserCursorEnabled {
+  display: block;
+  cursor: none !important;
+}
+
+.laserCursor {
+  position: fixed;
+  width: 10px; /* Adjust size to resemble a laser pointer */
+  height: 10px; /* Adjust size to resemble a laser pointer */
+  background-color: #ff0000; /* Red color for the laser cursor */
+  border-radius: 50%; /* Make it a circle */
+  pointer-events: none;
+  z-index: 1500;
+  
+  /* Shadow and glow effect */
+box-shadow: 4px 3px 20px rgba(255, 0, 0, 54.8), 0 0 11px rgba(255, 0, 0, 202.6);
+animation: pulseLaser 1.5s infinite;
+}
+
+.laserCursor::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px; /* Adjust the size of the white center */
+  height: 4px; /* Adjust the size of the white center */
+  background-color: #ffffff; /* White color for the center */
+  border-radius: 50%; /* Make it a circle */
+}
+
+
