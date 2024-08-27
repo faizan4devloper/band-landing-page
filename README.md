@@ -1,4 +1,337 @@
 import React, { useState, useEffect } from "react";
+import { Carousel as ResponsiveCarousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
+
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+
+  const toggleMaximize = (imageSrc) => {
+    const isMaximized = maximizedImage === imageSrc;
+    setMaximizedImage(isMaximized ? null : imageSrc);
+  };
+
+  useEffect(() => {
+    if (maximizedImage) {
+      const handleMouseMove = (e) => {
+        setLaserPos({ x: e.clientX, y: e.clientY });
+      };
+      document.addEventListener("mousemove", handleMouseMove);
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
+  }, [maximizedImage]);
+
+  const CarouselNavButton = ({ direction, onClick }) => (
+    <button className={`${styles.carouselNavButton} ${direction}`} onClick={onClick}>
+      <FontAwesomeIcon icon={direction === 'prev' ? faChevronLeft : faChevronRight} />
+    </button>
+  );
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <ResponsiveCarousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div key={index}>
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className={maximizedImage === image ? styles.maximizedImage : ""}
+              onClick={() => toggleMaximize(image)}
+              title="Click to Enlarge"
+            />
+          </div>
+        ))}
+      </ResponsiveCarousel>
+      <CarouselNavButton direction="prev" onClick={() => setCurrentSlide((prev) => (prev > 0 ? prev - 1 : images.length - 1))} />
+      <CarouselNavButton direction="next" onClick={() => setCurrentSlide((prev) => (prev < images.length - 1 ? prev + 1 : 0))} />
+    </div>
+  );
+
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8} />;
+    }
+
+    if (typeof content === "string") {
+      return <div>{content}</div>;
+    }
+
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+          title="Click To Enlarge"
+        />
+      );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
+    }
+
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return (
+      <div className={styles.mainContent}>Content not available</div>
+    );
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximizedImage}
+          />
+        </div>
+      )}
+      {maximizedImage && (
+        <div
+          className={styles.laserCursor}
+          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  min-height: 300px;
+}
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299;
+}
+
+/* Image styling before maximization */
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  z-index: 1100;
+}
+
+/* Image styling after maximization */
+.maximized,
+.maximizedImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: none; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
+
+/* General cursor hiding for maximized images and overlays */
+.maximized,
+.maximizedImage,
+.overlay {
+  cursor: none;
+}
+
+/* Close icon styling */
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.closeIcon:hover {
+  color: #808080;
+}
+
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+}
+
+/* Carousel container */
+.carouselContainer {
+  position: relative;
+}
+
+/* Carousel navigation buttons */
+.carouselNavButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  border: none;
+  color: #ffffff;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 1200;
+}
+
+.carouselNavButton.prev {
+  left: 10px;
+}
+
+.carouselNavButton.next {
+  right: 10px;
+}
+
+/* Section styling */
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Highlight text styling */
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+/* Laser cursor styling */
+.laserCursorEnabled .laserCursor {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #ff0000 0%, transparent 80%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
 import styles from "./MainContent.module.css";
