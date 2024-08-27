@@ -1,3 +1,122 @@
+// JavaScript to handle laser cursor movement
+document.addEventListener('mousemove', function (e) {
+  const laserCursor = document.querySelector('.laserCursor');
+  if (laserCursor) {
+    laserCursor.style.left = `${e.pageX}px`;
+    laserCursor.style.top = `${e.pageY}px`;
+  }
+});
+
+// Function to handle image maximization
+function maximizeImage(image) {
+  const overlay = document.createElement('div');
+  overlay.classList.add('overlay');
+
+  const clonedImage = image.cloneNode(true);
+  clonedImage.classList.add('maximizedImage');
+
+  const closeIcon = document.createElement('div');
+  closeIcon.classList.add('closeIcon');
+  closeIcon.textContent = '✕';
+
+  overlay.appendChild(clonedImage);
+  overlay.appendChild(closeIcon);
+  document.body.appendChild(overlay);
+
+  // Hide default cursor and enable laser cursor
+  document.body.classList.add('laserCursorEnabled');
+
+  // Close maximized image on click of close icon or overlay
+  closeIcon.addEventListener('click', () => closeMaximizedImage(overlay));
+  overlay.addEventListener('click', () => closeMaximizedImage(overlay));
+}
+
+function closeMaximizedImage(overlay) {
+  overlay.remove();
+  // Restore the default cursor
+  document.body.classList.remove('laserCursorEnabled');
+}
+
+// Add event listeners to all images in .mainContent
+document.querySelectorAll('.mainContent img').forEach(img => {
+  img.addEventListener('click', function () {
+    maximizeImage(this);
+  });
+});
+
+
+
+
+
+/* Main content styling */
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer; /* Cursor pointer for images in .mainContent */
+  transition: transform 0.3s ease;
+  z-index: 1100;
+}
+
+/* Hide the cursor for maximized images and overlay */
+.maximizedImage, .overlay {
+  cursor: none; /* Ensure the default cursor is hidden */
+}
+
+/* Laser cursor styling */
+.laserCursorEnabled .laserCursor {
+  display: block;
+}
+
+.laserCursorEnabled * {
+  cursor: none !important; /* Force hide the default cursor */
+}
+
+.laserCursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1500;
+}
+
+/* Close icon styling */
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+}
+
+
+
+
+
+
+
+
+
+
+
 /* Main content styling */
 .mainContent {
   display: flex;
