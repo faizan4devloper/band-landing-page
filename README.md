@@ -183,187 +183,225 @@ export default MainContent;
 
 
 
+/* Main content styling */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  min-height: 300px;
+}
 
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px;
+}
 
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
 
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
+}
 
-import React, { useState, useEffect } from "react";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import Video from "./Video";
-import BeatLoader from "react-spinners/BeatLoader";
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299;
+}
 
-const MainContent = ({ activeTab, content }) => {
-  const [maximizedImage, setMaximizedImage] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+/* Image styling before maximization */
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  transition: transform 0.3s ease;
+  z-index: 1100;
+  cursor: pointer;
+}
 
-  // Toggles the maximization of the image when clicked
-  const toggleMaximize = (imageSrc) => {
-    const isMaximized = maximizedImage === imageSrc;
-    setMaximizedImage(isMaximized ? null : imageSrc);
-  };
+/* Image styling after maximization */
+.maximized,
+.maximizedImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: none; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
 
-  // Adds a mousemove event listener to track the cursor position when an image is maximized
-  useEffect(() => {
-    if (maximizedImage) {
-      const handleMouseMove = (e) => {
-        setLaserPos({ x: e.clientX, y: e.clientY });
-      };
-      document.addEventListener("mousemove", handleMouseMove);
-      return () => {
-        document.removeEventListener("mousemove", handleMouseMove);
-      };
-    }
-  }, [maximizedImage]);
+/* Ensures the cursor is hidden over the maximized image */
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+  cursor: none !important; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
 
-  // Renders a carousel with custom thumbnails
-  const renderCarousel = (images) => (
-    <div className={styles.carouselOverlayContainer}>
-      <Carousel
-        showArrows={true}
-        showIndicators={false}
-        showThumbs={false}
-        showStatus={false}
-        selectedItem={currentSlide}
-        onChange={(index) => setCurrentSlide(index)}
-        className={styles.customCarousel}
-      >
-        {images.map((image, index) => (
-          <div key={index} onClick={() => toggleMaximize(image)}>
-            <img
-              src={image}
-              alt={`Slide ${index + 1}`}
-              className={styles.carouselImage}
-              title="Click to Enlarge"
-              loading="lazy"
-            />
-          </div>
-        ))}
-      </Carousel>
-      <button
-        className={`${styles.carouselOverlayNavButton} ${styles.prev}`}
-        onClick={() => setCurrentSlide((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
-      >
-        &lt;
-      </button>
-      <button
-        className={`${styles.carouselOverlayNavButton} ${styles.next}`}
-        onClick={() => setCurrentSlide((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
-      >
-        &gt;
-      </button>
-    </div>
-  );
+/* General cursor hiding for maximized images and overlays */
+.maximized,
+.maximizedImage,
+.overlay {
+  cursor: none;
+}
 
-  // Renders either a single image or a carousel based on the content provided
-  const renderContent = (content) => {
-    if (!content || content.length === 0) {
-      return <BeatLoader color="#5931d4" size={8} />;
-    }
+/* Close icon styling */
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 110px;
+  font-size: 18px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
 
-    if (typeof content === "string") {
-      return <div>{content}</div>;
-    }
+.closeIcon:hover {
+  color: #808080;
+}
 
-    return content.length > 1
-      ? renderCarousel(content)
-      : (
-        <img
-          src={content[0]}
-          alt="Single Image"
-          className={maximizedImage === content[0] ? styles.maximized : ""}
-          onClick={() => toggleMaximize(content[0])}
-          title="Click To Enlarge"
-        />
-      );
-  };
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+}
 
-  // Renders either the images or a loader while content is being fetched
-  const renderImageOrCarousel = (images) => {
-    if (!images || images.length === 0) {
-      return (
-        <div className={styles.imageLoadingContainer}>
-          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
-          <BeatLoader color="#5931d4" size={8} />
-        </div>
-      );
-    }
+/* Section styling */
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
 
-    return renderContent(images);
-  };
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
 
-  // Returns early if content is not available       
-  if (!content) {
-    return (
-      <div className={styles.mainContent}>Content not available</div>
-    );
+/* Carousel and thumb styling */
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+}
+
+.customThumbContainer {
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Image loading container */
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 340px;
+  min-width: 610px;
+}
+
+.imageLoadingCaption {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5931d4;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
   }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 
-  // Maps the activeTab to the corresponding content section
-  const contentMap = {
-    description: (
-      <div className={styles.description}>
-        {renderImageOrCarousel(content.description)}
-      </div>
-    ),
-    solutionFlow: (
-      <div className={styles.solution}>
-        {renderImageOrCarousel(content.solutionFlow)}
-      </div>
-    ),
-    demo: (
-      <div className={styles.demo}>
-        <Video src={content.demo} />
-      </div>
-    ),
-    techArchitecture: (
-      <div className={styles.architecture}>
-        {renderImageOrCarousel(content.techArchitecture)}
-      </div>
-    ),
-    benefits: (
-      <div className={styles.benefits}>
-        {renderImageOrCarousel(content.benefits)}
-      </div>
-    ),
-    adoption: (
-      <div className={styles.adoption}>
-        {renderImageOrCarousel(content.adoption)}
-      </div>
-    ),
-  };
+/* Laser cursor enabled */
+.laserCursorEnabled {
+  display: block;
+  cursor: none !important;
+}
 
-  return (
-    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
-      {contentMap[activeTab] || <div>Content not available</div>}
-      {maximizedImage && (
-        <div className={styles.overlay} onClick={() => setMaximizedImage(null)}>
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={styles.closeIcon}
-            onClick={() => setMaximizedImage(null)}
-          />
-          {renderCarousel(content[activeTab])} {/* Show carousel in overlay */}
-        </div>
-      )}
-      {maximizedImage && (
-        <div
-          className={styles.laserCursor}
-          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
-        />
-      )}
-    </div>
-  );
-};
+.laserCursor {
+  position: fixed;
+  width: 10px; /* Adjust size to resemble a laser pointer */
+  height: 10px; /* Adjust size to resemble a laser pointer */
+  background-color: #ff0000; /* Red color for the laser cursor */
+  border-radius: 50%; /* Make it a circle */
+  pointer-events: none;
+  z-index: 1500;
+  
+  /* Shadow and glow effect */
+box-shadow: 4px 3px 20px rgba(255, 0, 0, 54.8), 0 0 11px rgba(255, 0, 0, 202.6);
+animation: pulseLaser 1.5s infinite;
+}
 
-export default MainContent;
-
-
-
+.laserCursor::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4px; /* Adjust the size of the white center */
+  height: 4px; /* Adjust the size of the white center */
+  background-color: #ffffff; /* White color for the center */
+  border-radius: 50%; /* Make it a circle */
+}
 
 
 /* Overlay styling */
