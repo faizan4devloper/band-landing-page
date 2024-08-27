@@ -1,3 +1,45 @@
+/// Renders either the images or a message if no images are available
+const renderImageOrCarousel = (images) => {
+  if (!images || images.length === 0) {
+    return (
+      <div className={styles.noImageContainer}>
+        <p className={styles.noImageMessage}>No images available for this section.</p>
+      </div>
+    );
+  }
+
+  return renderContent(images);
+};
+
+
+
+.noImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+  background-color: #f7f7f7; /* Light grey background */
+  border-radius: 8px;
+  border: 1px solid #e0e0e0; /* Subtle border */
+}
+
+.noImageMessage {
+  font-size: 1.2rem;
+  color: #666; /* Slightly muted text color */
+  font-weight: 500;
+  margin: 0;
+}
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
