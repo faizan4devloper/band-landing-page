@@ -1,3 +1,222 @@
+/* Main content styling */
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+  min-height: 300px;
+}
+
+/* Custom Scrollbar Styling */
+.mainContent::-webkit-scrollbar {
+  width: 12px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #5f1ec1;
+  border-radius: 20px;
+  border: 3px solid #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #3d1299;
+}
+
+/* Image styling before maximization */
+.mainContent img {
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 10px auto;
+  cursor: pointer; /* Pointer cursor before maximization */
+  transition: transform 0.3s ease;
+  z-index: 1100;
+}
+
+/* Image styling after maximization */
+.maximized,
+.maximizedImage {
+  max-width: 100%;
+  max-height: 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+  transition: transform 0.3s ease;
+  cursor: none; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
+
+/* Ensures the cursor is hidden over the maximized image */
+.maximizedImage {
+  width: 77%;
+  height: 100%;
+  object-fit: contain;
+  cursor: none; /* Hide default cursor after maximization */
+  z-index: 1200;
+}
+
+/* General cursor hiding for maximized images and overlays */
+.maximized,
+.maximizedImage,
+.overlay {
+  cursor: none;
+}
+
+/* Close icon styling */
+.closeIcon {
+  position: absolute;
+  top: 10px;
+  right: 100px;
+  font-size: 25px;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 1300;
+}
+
+.closeIcon:hover {
+  color: #808080;
+}
+
+/* Overlay styling */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+}
+
+/* Section styling */
+.benefits,
+.description,
+.demo,
+.architecture,
+.adoption,
+.solution {
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.highlight {
+  font-style: italic;
+  color: #5f1ec1;
+  font-weight: bold;
+}
+
+/* Carousel and thumb styling */
+.carouselContainer {
+  display: flex;
+}
+
+.customThumbs {
+  display: flex;
+  flex-direction: column;
+}
+
+.customThumbContainer {
+  cursor: pointer;
+}
+
+.customThumb {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+
+.customThumb:hover,
+.selected .customThumb {
+  border-color: #5f1ec1;
+}
+
+.customCarousel {
+  flex: 1;
+  cursor: pointer;
+}
+
+/* Image loading container */
+.imageLoadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 340px;
+  min-width: 610px;
+}
+
+.imageLoadingCaption {
+  font-size: 12px;
+  font-weight: bold;
+  color: #5931d4;
+  margin-bottom: 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Laser cursor enabled */
+.laserCursorEnabled {
+  display: block;
+}
+
+/* Laser cursor styling */
+.laserCursor {
+  position: fixed;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1500;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .mainContent {
   display: flex;
   flex-direction: column;
