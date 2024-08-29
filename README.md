@@ -1,4 +1,4 @@
-
+const assetKey = card.title.replace(/[\s\W]+/g, '');
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
