@@ -1,295 +1,204 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
+import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
+import { faTimes, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
 
-const S3_VIDEO_URL = "https://aiml-convai.s3.amazonaws.com/portal-bg-video/BgVideos.webM";
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+  const [currentSlide, setCurrentSlide] = useState(0)
 
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
+  // Create a unified list of all images across sections
+  const allImages = [
+    ...(content.description || []),
+    ...(content.solutionFlow || []),
+    ...(content.techArchitecture || []),
+    ...(content.benefits || []),
+    ...(content.adoption || []),
+  ];
 
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
-
-      if (videoPosition <= triggerPoint && videoState !== "big") {
-        setVideoState("big");
-        if (!isPlaying) {
-          videoRef.current.play().catch(error => {
-            console.error("Error during video playback:", error);
-          });
-          setIsPlaying(true);
-        }
-      } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
-        setVideoState("small");
-        if (isPlaying) {
-          videoRef.current.pause();
-          setIsPlaying(false);
-        }
-      }
-    }
-  };
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-  };
-
-  const handleDebouncedScroll = debounce(handleScroll, 100);
-
-  const togglePlayPause = () => {
-    const videoElement = videoRef.current;
-    if (videoElement) {
-      try {
-        if (isPlaying) {
-          videoElement.pause();
-        } else {
-          videoElement.play().catch(error => {
-            console.error("Error during video playback:", error);
-          });
-        }
-        setIsPlaying(!isPlaying);
-      } catch (error) {
-        console.error("Error during video playback:", error);
-      }
-    } else {
-      console.error("Video element is not available or not properly referenced.");
+  const toggleMaximize = (imageSrc) => {
+    const index = allImages.indexOf(imageSrc);
+    if (index !== -1) {
+      setCurrentImageIndex(index);
+      setMaximizedImage(imageSrc);
     }
   };
 
   useEffect(() => {
-    window.addEventListener("scroll", handleDebouncedScroll);
+    if (maximizedImage) {
+      const handleMouseMove = (e) => {
+        setLaserPos({ x: e.clientX, y: e.clientY });
+      };
+      document.addEventListener("mousemove", handleMouseMove);
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+      };
+    }
+  }, [maximizedImage]);
 
-    return () => {
-      window.removeEventListener("scroll", handleDebouncedScroll);
-    };
-  }, [handleDebouncedScroll]);
+  // Function to handle next image in maximized mode
+  const handleNextImage = () => {
+    const nextIndex = (currentImageIndex + 1) % allImages.length;
+    setCurrentImageIndex(nextIndex);
+    setMaximizedImage(allImages[nextIndex]);
+  };
 
-  return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
-        <video
-          className={styles.video}
-          src={S3_VIDEO_URL}
-          muted
-          loop
-          ref={videoRef}
-          playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-          onCanPlay={() => videoRef.current.play()} // Ensure video plays when it can
-        />
-        <button
-          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
-          onClick={togglePlayPause}
-        >
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
-        </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
+  // Function to handle previous image in maximized mode
+  const handlePrevImage = () => {
+    const prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
+    setCurrentImageIndex(prevIndex);
+    setMaximizedImage(allImages[prevIndex]);
+  };
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+            title="Click to Enlarge"
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+              loading="lazy"
             />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
+          </div>
+        ))}
       </div>
-    </>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => toggleMaximize(image)}
+          >
+            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" />
+          </div>
+        ))}
+      </Carousel>
+    </div>
   );
-};
 
-export default Home;
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
-import styles from "./App.module.css";
-import { Link } from "react-router-dom";
-
-// Replace the local video import with your S3 URL
-const S3_VIDEO_URL = "https://aiml-convai.s3.amazonaws.com/portal-bg-video/BgVideos.webM";
-
-const Home = ({
-  cardsData,
-  handleClickLeft,
-  handleClickRight,
-  currentIndex,
-  bigIndex,
-  toggleSize,
-  cardsContainerRef,
-  handleMouseEnter,
-}) => {
-  const [videoState, setVideoState] = useState("hidden");
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const handleScroll = () => {
-    if (videoRef.current) {
-      const videoPosition = videoRef.current.getBoundingClientRect().top;
-      const triggerPoint = window.innerHeight / 2;
-
-      if (videoPosition <= triggerPoint && videoState !== "big") {
-        setVideoState("big");
-        if (!isPlaying) {
-          videoRef.current.play();
-          setIsPlaying(true);
-        }
-      } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
-        setVideoState("small");
-        if (isPlaying) {
-          videoRef.current.pause();
-          setIsPlaying(false);
-        }
-      }
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8} />;
     }
+
+    if (typeof content === "string") {
+      return <div>{content}</div>;
+    }
+
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+          title="Click To Enlarge"
+        />
+      );
   };
 
-  const debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
+    }
+
+    return renderContent(images);
   };
 
-  const handleDebouncedScroll = debounce(handleScroll, 100);
-
-  
-const togglePlayPause = () => {
-  const videoElement = videoRef.current;
-  if (videoElement) {
-    try {
-      if (isPlaying) {
-        videoElement.pause();
-      } else {
-        videoElement.play();
-      }
-      setIsPlaying(!isPlaying);
-    } catch (error) {
-      console.error("Error during video playback:", error);
-      // Optionally, handle error or notify users
-    }
-  } else {
-    console.error("Video element is not available or not properly referenced.");
+  if (!content) {
+    return (
+      <div className={styles.mainContent}>Content not available</div>
+    );
   }
-};
 
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleDebouncedScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleDebouncedScroll);
-    };
-  }, [handleDebouncedScroll]);
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
 
   return (
-    <>
-      <MyCarousel />
-      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
-        <video
-          className={styles.video}
-          src={S3_VIDEO_URL}
-          muted
-          loop
-          ref={videoRef}
-          playsInline
-          onClick={togglePlayPause} // Allow play/pause by clicking on video
-        />
-        <button
-          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
-          onClick={togglePlayPause}
-        >
-          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
-        </button>
-      </div>
-      <div
-        className={styles.cardsContainer}
-        ref={cardsContainerRef}
-        onMouseEnter={handleMouseEnter}
-      >
-        <div className={styles.viewAllContainer}>
-          <Link to="/all-cards" className={styles.viewAllButton}>
-            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
-          </Link>
+    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay}>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximizedImage}
+          />
+          <div className={styles.navigationButtons}>
+            <FontAwesomeIcon icon={faChevronLeft} onClick={handlePrevImage} className={styles.navButton} title="Prev"/>
+            <FontAwesomeIcon icon={faChevronRight} onClick={handleNextImage} className={styles.navButton} title="Next"/>
+          </div>
         </div>
-        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
-          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
-        </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
-        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
-          <FontAwesomeIcon icon={faArrowRight} title="Next" />
-        </span>
-      </div>
-    </>
+      )}
+      {maximizedImage && (
+        <div
+          className={styles.laserCursor}
+          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+        />
+      )}
+    </div>
   );
 };
 
-export default Home;
-
-The play() request was interrupted because the media was removed from the document. https://goo.gl/LdLk22
- 
+export default MainContent;
