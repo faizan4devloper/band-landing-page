@@ -1,3 +1,29 @@
+// Function to handle next image in maximized mode
+const handleNextImage = () => {
+  if (currentImageIndex < allImages.length - 1) {
+    const nextIndex = currentImageIndex + 1;
+    setCurrentImageIndex(nextIndex);
+    setMaximizedImage(allImages[nextIndex]);
+  } else {
+    // Optional: Cycle back to the first image
+    // const firstIndex = 0;
+    // setCurrentImageIndex(firstIndex);
+    // setMaximizedImage(allImages[firstIndex]);
+
+    // Or simply stay on the last image without doing anything
+    // setCurrentImageIndex(currentImageIndex);
+    // setMaximizedImage(allImages[currentImageIndex]);
+  }
+};
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // Import carousel styles
