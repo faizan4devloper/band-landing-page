@@ -1,121 +1,258 @@
-// src/components/Sidebar/SideBarPage.js
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-import { getCardsData } from '../../data';
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
 
-const SideBarPage = () => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
-  const location = useLocation();
-  const { setHeaderZIndex } = useHeaderContext(); // Use context
+import React, { useState } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MyCarousel.module.css";
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      const params = new URLSearchParams(location.search);
-      const title = params.get('title');
-      if (title) {
-        setCardTitle(title);
-        const card = data.find((c) => c.title === title);
-        if (card) {
-          setCardContent(card.content);
-        }
-      }
-    };
+import imgCarousel from "./carousel1.jpg";
+import imgCarousel3 from "./Slide1.JPG";
+import imgCarousel4 from "./Slide2.JPG";
+import imgCarousel5 from "./carousel5.jpg";
+import imgCarousel6 from "./Slide3.JPG";
 
-    fetchData();
-  }, [location.search]);
+const MyCarousel = () => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  
+  const CarouselHead = "GenAI Deployable Assets";
 
-  useEffect(() => {
-    setHeaderZIndex(0); // Set zIndex to 0 for this page
-    return () => setHeaderZIndex(1000); // Reset zIndex on unmount
-  }, [setHeaderZIndex]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
+  const handleMouseEnter = () => {
+    setIsHovered(true);
   };
 
-  const handleBackButtonClick = () => {
-    window.history.back();
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const handleIndicatorClick = (index) => {
+    setSelectedIndex(index);
+  };
+
+  const renderIndicator = (index) => {
+    const indicatorClasses = `${styles.dot} ${index === selectedIndex ? styles.selected : ""}`;
+    const tooltipText = "Our Hackathon Wins 🏆";
+
+    return (
+      <li
+        className={`${indicatorClasses} ${index === 1 ? styles.tooltipContainer : ""}`}
+        onClick={() => handleIndicatorClick(index)}
+        tabIndex={0}
+        key={index}
+        style={{ background: index === selectedIndex ? '#6f36cd' : '#ccc' }}
+      >
+        {index === 1 && <span className={styles.tooltip}>{tooltipText}</span>}
+      </li>
+    );
   };
 
   return (
-    <div className={styles.sideBarPage}>
-      <Header />
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
+    <div className={styles.carouselContainer}>
+      <Carousel
+        selectedItem={selectedIndex}
+        onChange={handleIndicatorClick}
+        showArrows={false}
+        showThumbs={false}
+        showIndicators={false}
+        infiniteLoop={true}
+        autoPlay={!isHovered}
+        showStatus={false}
+        interval={2000}
+        stopOnHover={false}
+        className={styles.customIndicator}
+      >
+        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <img src={imgCarousel} className={styles.carouselImage} alt="Slide 1" />
+          <div className={styles.carouselOverlay}></div>
+          <div className={styles.carouselCaption}>
+            <h2>AWS<span>{CarouselHead}</span></h2>
+          </div>
+        </div>
+        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <img src={imgCarousel6} className={styles.carouselImage6} alt="Slide 2" />
+          <div className={styles.carouselOverlay6}></div>
+        </div>
+        
+        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <img src={imgCarousel3} className={styles.carouselImage} alt="Slide 4" />
+          <div className={styles.carouselOverlay6}></div>
+        </div>
+        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <img src={imgCarousel4} className={styles.carouselImage} alt="Slide 5" />
+          <div className={styles.carouselOverlay6}></div>
+          ]
+        </div>
+        <div className={styles.carouselItem} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+          <img src={imgCarousel5} className={styles.carouselImage} alt="Slide 6" />
+          <div className={styles.carouselOverlay}></div>
+          <div className={styles.carouselCaption}>
+            <h2>AWS EBU<span>{CarouselHead}</span></h2>
+          </div>
+        </div>
+      </Carousel>
+      <ul className={styles.indicatorsContainer}>
+        {[...Array(6)].map((_, index) => renderIndicator(index))}
+      </ul>
     </div>
   );
 };
 
-export default SideBarPage;
+export default MyCarousel;
 
 
-.sideBarPage {
-  /*display: flex;*/
-  position: fixed;
-  margin-top: 70px;
-  margin-left: 45px;
-  /* margin-top: 25px; */
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
+.carouselContainer {
+  width: 100%;
+  margin: 90px 0px 50px 0px;
 }
 
-.header2 {
-  display: flex;
-  align-items: center;
-}
-.cardTitle {
-  font-size: 18px;
-  color: rgba(23, 23, 25, 1);
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-family: "Poppins", sans-serif;
-}
-.contentWrapper {
-  display: flex;
-  /*margin-top: 15px;*/
-  flex: 1;
-}
-.backButtonContainer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-.backButton {
-  background-color: rgba(230, 235, 245, 1);
-  padding: 7px;
-  margin-left: 20px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  width: 32px;
-  font-size: 14px;
-  border: none;
+.carouselItem {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 280px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  width: 85%;
+  border-radius: 10px;
   cursor: pointer;
-  margin-right: 10px;
 }
 
-.backButton:hover {
-  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+.carouselImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
+.carouselImage6 {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  object-position: center;
+}
+
+.carouselOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);
+  border-radius: 6px;
+}
+/*.carouselOverlay6 {*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  width: 100%;*/
+/*  height: 100%;*/
+/*  background: linear-gradient(90deg, #6f36cd 0%, rgba(31, 119, 246, 0.73) 100%);*/
+/*  border-radius: 6px;*/
+/*}*/
+
+.carouselCaption {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  z-index: 1;
+}
+
+.carouselCaption h2 {
+  display: flex;
+  font-weight: 600;
+  font-size: 38px;
+  margin: 0;
+  padding: 15px;
+  color: #fff;
+}
+
+.carouselCaption span {
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  border-left: 3px solid rgba(255, 255, 255, 1);
+  padding: 18px 10px;
+  margin-left: 15px;
+  color: #fff;
+}
+
+.carousel .slide {
+  min-width: 100%;
+  margin: 0;
+  height: 352px !important;
+  position: relative;
+  text-align: center;
+  overflow: hidden;
+}
+
+
+/* Custom Indicator Styles */
+.indicatorsContainer {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.dot {
+  width: 22px; /* 10px*/
+  height: 3px;
+  /*border-radius: 50%;*/
+  display: inline-block;
+  margin: 0 5px;
+  cursor: pointer;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.15);
+ /*box-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 3px 6px rgba(0,0,0,0.2); */
+ 
+ 
+  
+}
+
+.dot.selected {
+  background: #6f36cd !important; /* Purple color for selected dot */
+}
+
+
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip {
+  visibility: hidden;
+  width: 120px;
+  background-color: #6f36cd;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  font-size: 8px;
+  z-index: 1;
+  top: 300%; /* Position above the dot */
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltipContainer:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 80%; /* At the bottom of the tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #6f36cd transparent transparent transparent;
+}
