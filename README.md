@@ -1,3 +1,35 @@
+const data = {
+  solutionFlow: assets[`${assetKey}solutionFlow`] || null,
+  techArchitecture: assets[`${assetKey}techArchitecture`] || null,
+  description: assets[`${assetKey}description`] || null,
+  benefits: assets[`${assetKey}benefits`] || null,
+  adoption: assets[`${assetKey}adoption`] || null,
+  demo: assets[`${assetKey}demo`] || null,  // Ensure this key exists
+};
+
+
+
+
+return {
+  ...card,
+  imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg',
+  content: {
+    ...card.content,
+    solutionFlow: data.solutionFlow,
+    demo: data.demo || 'defaultVideoPath.mp4',  // Default if video not available
+    techArchitecture: data.techArchitecture,
+    description: data.description,
+    benefits: data.benefits,
+    adoption: data.adoption,
+  },
+};
+
+
+
+
+
+
+
 
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
