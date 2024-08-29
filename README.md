@@ -1,3 +1,6 @@
+"AIForcedemo": ["xyz/AIForceDemo.mp4"]
+
+
 const assetKey = card.title.replace(/[\s\W]+/g, '');
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
