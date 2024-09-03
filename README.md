@@ -4,7 +4,7 @@ import styles from "./Cards.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
+const Card = ({ imageUrl, title, description, isBig, toggleSize, tags, hasData }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
@@ -31,37 +31,41 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
           <div className={styles.cardContent}>
             <h3>{title}</h3>
             <p>{description}</p>
-            <Link
-              to={{
-                pathname: "/dashboard",
-                search: `?title=${encodeURIComponent(title)}`,
-              }}
-              className={styles.readMoreLink}
-            >
-              <span
-                className={`${styles.arrow} ${styles.rightArrow} ${
-                  isHovered ? styles.hovered : ""
-                }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
+            {hasData ? (
+              <Link
+                to={{
+                  pathname: "/dashboard",
+                  search: `?title=${encodeURIComponent(title)}`,
+                }}
+                className={styles.readMoreLink}
               >
                 <span
-                  style={{
-                    fontSize: isHovered ? "0.8em" : "1em",
-                  }}
+                  className={`${styles.arrow} ${styles.rightArrow} ${
+                    isHovered ? styles.hovered : ""
+                  }`}
+                  onMouseEnter={() => setIsHovered(true)}
+                  onMouseLeave={() => setIsHovered(false)}
                 >
-                  {isHovered && "Read More "}
+                  <span
+                    style={{
+                      fontSize: isHovered ? "0.8em" : "1em",
+                    }}
+                  >
+                    {isHovered && "Read More "}
+                  </span>
+                  <span
+                    style={{
+                      marginLeft: isHovered ? "5px" : "0",
+                      fontSize: isHovered ? "1.3em" : "1em",
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faArrowRight} />
+                  </span>
                 </span>
-                <span
-                  style={{
-                    marginLeft: isHovered ? "5px" : "0",
-                    fontSize: isHovered ? "1.3em" : "1em",
-                  }}
-                >
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </span>
-            </Link>
+              </Link>
+            ) : (
+              <div className={styles.noDataMessage}>No Data Available</div>
+            )}
           </div>
         )}
       </div>
@@ -70,6 +74,8 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
 };
 
 export default Card;
+
+
 
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
@@ -108,7 +114,17 @@ async function mapAssets(card) {
     adoption: assets[`${assetKey}adoption`] || null,
     demo: assets[`${assetKey}demo`] || null,
   };
-  
+
+  // Determine if data is available for the card
+  const hasData = !!(
+    data.solutionFlow ||
+    data.techArchitecture ||
+    data.description ||
+    data.benefits ||
+    data.adoption ||
+    data.demo
+  );
+
   console.log(`Data for ${card.title}:`, data);
 
   return {
@@ -117,12 +133,13 @@ async function mapAssets(card) {
     content: {
       ...card.content,
       solutionFlow: data.solutionFlow,
-      demo: data.demo || null,
+      demo: data.demo,
       techArchitecture: data.techArchitecture,
       description: data.description,
       benefits: data.benefits,
       adoption: data.adoption,
     },
+    hasData, // Add hasData property
   };
 }
 
@@ -151,3 +168,5 @@ export async function getCardsData() {
 
   return cardsData;
 }
+
+export default getCardsData;
