@@ -1,9 +1,3 @@
-"AIForcedemo": ["xyz/AIForceDemo.mp4"]
-
-
-
-
-
 
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
@@ -84,14 +78,4 @@ export async function getCardsData() {
   ]);
 
   return cardsData;
-}
-
-
-
-{
-  "imageUrl": "AIForce",
-  "title": "AI Force",
-  "description": "HCLTech developed AI Platform for Engineering Lifecycle Transformation",
-  "industry": "All",
-  "businessFunction": "SDLC"
 }
