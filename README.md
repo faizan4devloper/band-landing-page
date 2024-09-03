@@ -1,3 +1,24 @@
+<div className={`${styles.videoContainer} ${styles[videoState]}`}>
+  <video
+    className={styles.video}
+    src={S3_VIDEO_URL}
+    loop
+    ref={videoRef}
+    playsInline
+    onClick={togglePlayPause} // Allow play/pause by clicking on video
+    onCanPlay={() => videoRef.current.play()} // Ensure video plays when it can
+  />
+  <button
+    className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
+    onClick={togglePlayPause}
+  >
+    <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+  </button>
+</div>
+
+
+
+
 import React, { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
