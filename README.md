@@ -1,3 +1,49 @@
+{
+  "imageUrl": "ResponsibleGen",
+  "title": "Responsible Gen AI with Llama-13 B",
+  "description": "Responsible Gen AI solution: Secure LLM deployment, enable guardrails, and generate feedback summaries for ethical AI assistance.",
+  "industry": "BFSI",
+  "businessFunction": "Responsible AI"
+}
+
+{
+  "imageUrl": "PredictiveAsset",
+  "title": "Predictive Asset Maintenance​(PAM)​",
+  "description": "Gen AI-powered predictive asset maintenance: Anticipate issues, generate 360-degree asset view, and optimize operations based on data insights.",
+  "industry": "ENU"
+}
+
+{
+  "imageUrl": "GraphData",
+  "title": "Graph data Interpretation using Gen AI",
+  "description": "Gen AI-powered graph data interpreter: Extracts entities, dependencies, and generates relationship summaries from complex graph data.",
+  "industry": "BFSI",
+  "businessFunction": "SDLC"
+}
+
+
+{
+  "imageUrl": "APICase",
+  "title": "API based Test Case Generation",
+  "description": "Gen AI-powered API test case generator: Accelerates test case creation, boosts accuracy, coverage, and team productivity.",
+  "industry": "All",
+  "businessFunction": "SDLC"
+}
+
+
+{
+  "imageUrl": "AAIG",
+  "title": "AAIG-API Analyzer & Insight Generator",
+  "description": "Gen AI-powered API Analyzer: Automated API specification analysis, dependency mapping, and documentation generation for enhanced visibility.",
+  "industry": "BFSI",
+  "businessFunction": "SDLC"
+}
+
+
+
+
+
+
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
 import CaseIntelligence from './CardsData/CaseIntelligence.json';
