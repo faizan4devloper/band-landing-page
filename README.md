@@ -34,6 +34,284 @@ async function mapAssets(card) {
 
   // Get the card title without spaces
   const cardTitle = card.title.replace(/\s+/g, '');
+  console.log(`Checking card: ${card.title} - Formatted title: ${cardTitle}`);
+
+  // Check if the card is in the noDataCards list
+  const isNoDataCard = noDataCards.includes(cardTitle);
+  console.log(`Is "${cardTitle}" in noDataCards? ${isNoDataCard}`);
+
+  // Access the data for the specific asset
+  const data = {
+    solutionFlow: assets[`${cardTitle}solutionFlow`] || null,
+    techArchitecture: assets[`${cardTitle}techArchitecture`] || null,
+    description: assets[`${cardTitle}description`] || null,
+    benefits: assets[`${cardTitle}benefits`] || null,
+    adoption: assets[`${cardTitle}adoption`] || null,
+    demo: assets[`${cardTitle}demo`] || null,
+  };
+
+  // Determine if data is available for the card
+  const hasData = !!(
+    data.solutionFlow ||
+    data.techArchitecture ||
+    data.description ||
+    data.benefits ||
+    data.adoption ||
+    data.demo
+  );
+  console.log(`Has data for "${cardTitle}"? ${hasData}`);
+
+  // If it's a no-data card, override the data and set hasData to false
+  if (isNoDataCard) {
+    console.log(`Card "${cardTitle}" is a no-data card. Setting "No Data Available".`);
+    return {
+      ...card,
+      imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+      content: {
+        solutionFlow: null,
+        demo: null,
+        techArchitecture: null,
+        description: "No Data Available",
+        benefits: null,
+        adoption: null,
+      },
+      hasData: false, // Explicitly set hasData to false for noDataCards
+    };
+  }
+
+  console.log(`Card "${cardTitle}" has data.`);
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow,
+      demo: data.demo,
+      techArchitecture: data.techArchitecture,
+      description: data.description,
+      benefits: data.benefits,
+      adoption: data.adoption,
+    },
+    hasData, // Add hasData property based on actual data availability
+  };
+}
+
+// Mapping cards data asynchronously
+export async function getCardsData() {
+  const cardsData = await Promise.all([
+    mapAssets(IntelligentAssist),
+    mapAssets(EmailEAR),
+    mapAssets(CaseIntelligence),
+    mapAssets(SmartRecruit),
+    mapAssets(ClaimAssist),
+    mapAssets(AssistantEV),
+    mapAssets(AutoWiseCompanion),
+    mapAssets(CitizenAdvisor),
+    mapAssets(FinCompetitor),
+    mapAssets(SignatureExtraction),
+    mapAssets(AiForce),
+    mapAssets(ApiCase),
+    mapAssets(AmsSupport),
+    mapAssets(CodeGreat),
+    mapAssets(AaigApi),
+    mapAssets(ResponsibleGen),
+    mapAssets(GraphData),
+    mapAssets(PredictiveAsset),
+  ]);
+
+  return cardsData;
+}
+
+export default getCardsData;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import ClaimAssist from './CardsData/ClaimAssist.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+
+import { images, fetchAssets } from './AssetImports';
+
+// Titles of cards that should display "No Data Available"
+const noDataCards = [
+  "ResponsibleGenAIwithLlama-13B",
+  "PredictiveAssetMaintenance​(PAM)​",
+  "GraphdatainterpretationusingGenAI",
+  "APIbasedTestCaseGeneration",
+  "AAIG-APIAnalyzer&InsightGenerator"
+];
+
+// Function to map assets for a specific card
+async function mapAssets(card) {
+  const assets = await fetchAssets();
+
+  // Get the card title without spaces
+  const cardTitle = card.title.replace(/\s+/g, '');
+  console.log(`Checking card: ${card.title} - Formatted title: ${cardTitle}`);
+
+  // Check if the card is in the noDataCards list
+  const isNoDataCard = noDataCards.includes(cardTitle);
+  console.log(`Is "${cardTitle}" in noDataCards? ${isNoDataCard}`);
+
+  // Access the data for the specific asset
+  const data = {
+    solutionFlow: assets[`${cardTitle}solutionFlow`] || null,
+    techArchitecture: assets[`${cardTitle}techArchitecture`] || null,
+    description: assets[`${cardTitle}description`] || null,
+    benefits: assets[`${cardTitle}benefits`] || null,
+    adoption: assets[`${cardTitle}adoption`] || null,
+    demo: assets[`${cardTitle}demo`] || null,
+  };
+
+  // Determine if data is available for the card
+  const hasData = !!(
+    data.solutionFlow ||
+    data.techArchitecture ||
+    data.description ||
+    data.benefits ||
+    data.adoption ||
+    data.demo
+  );
+  console.log(`Has data for "${cardTitle}"? ${hasData}`);
+
+  // If it's a no-data card, override the data and set hasData to false
+  if (isNoDataCard) {
+    console.log(`Card "${cardTitle}" is a no-data card. Setting "No Data Available".`);
+    return {
+      ...card,
+      imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+      content: {
+        solutionFlow: null,
+        demo: null,
+        techArchitecture: null,
+        description: "No Data Available",
+        benefits: null,
+        adoption: null,
+      },
+      hasData: false, // Explicitly set hasData to false for noDataCards
+    };
+  }
+
+  console.log(`Card "${cardTitle}" has data.`);
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow,
+      demo: data.demo,
+      techArchitecture: data.techArchitecture,
+      description: data.description,
+      benefits: data.benefits,
+      adoption: data.adoption,
+    },
+    hasData, // Add hasData property based on actual data availability
+  };
+}
+
+// Mapping cards data asynchronously
+export async function getCardsData() {
+  const cardsData = await Promise.all([
+    mapAssets(IntelligentAssist),
+    mapAssets(EmailEAR),
+    mapAssets(CaseIntelligence),
+    mapAssets(SmartRecruit),
+    mapAssets(ClaimAssist),
+    mapAssets(AssistantEV),
+    mapAssets(AutoWiseCompanion),
+    mapAssets(CitizenAdvisor),
+    mapAssets(FinCompetitor),
+    mapAssets(SignatureExtraction),
+    mapAssets(AiForce),
+    mapAssets(ApiCase),
+    mapAssets(AmsSupport),
+    mapAssets(CodeGreat),
+    mapAssets(AaigApi),
+    mapAssets(ResponsibleGen),
+    mapAssets(GraphData),
+    mapAssets(PredictiveAsset),
+  ]);
+
+  return cardsData;
+}
+
+export default getCardsData;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import ClaimAssist from './CardsData/ClaimAssist.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+
+import { images, fetchAssets } from './AssetImports';
+
+// Titles of cards that should display "No Data Available"
+const noDataCards = [
+  "ResponsibleGenAIwithLlama-13B",
+  "PredictiveAssetMaintenance​(PAM)​",
+  "GraphdatainterpretationusingGenAI",
+  "APIbasedTestCaseGeneration",
+  "AAIG-APIAnalyzer&InsightGenerator"
+];
+
+// Function to map assets for a specific card
+async function mapAssets(card) {
+  const assets = await fetchAssets();
+
+  // Get the card title without spaces
+  const cardTitle = card.title.replace(/\s+/g, '');
 
   // Check if the card is in the noDataCards list
   const isNoDataCard = noDataCards.includes(cardTitle);
