@@ -1,4 +1,316 @@
 
+// src/App.js
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import Chatbot from './components/ChatBot/Chatbot';
+import Footer from './components/Footer/Footer';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import { HeaderProvider } from './components/Context/HeaderContext'; // Import HeaderProvider
+import styles from './App.module.css';
+
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const cardsContainerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const showFooter = location.pathname === '/';
+
+  return (
+    <HeaderProvider>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
+    </div>
+    </HeaderProvider>
+  );
+};
+
+const App = () => (
+  <Router>
+    <MainApp />
+  </Router>
+);
+
+export default App;
+
+
+
+
+
+
+import React, { useState, useEffect, useRef } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faArrowLeft, faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import MyCarousel from "./components/Carousel/MyCarousel";
+import Cards from "./components/Cards/Cards";
+import styles from "./App.module.css";
+import { Link } from "react-router-dom";
+
+const S3_VIDEO_URL = "https://aiml-convai.s3.amazonaws.com/portal-bg-video/BgVideos.webM";
+
+const Home = ({
+  cardsData,
+  handleClickLeft,
+  handleClickRight,
+  currentIndex,
+  bigIndex,
+  toggleSize,
+  cardsContainerRef,
+  handleMouseEnter,
+}) => {
+  const [videoState, setVideoState] = useState("hidden");
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
+
+  const handleScroll = () => {
+    if (videoRef.current) {
+      const videoPosition = videoRef.current.getBoundingClientRect().top;
+      const triggerPoint = window.innerHeight / 2;
+
+      if (videoPosition <= triggerPoint && videoState !== "big") {
+        setVideoState("big");
+        if (!isPlaying) {
+          videoRef.current.play().catch(error => {
+            console.error("Error during video playback:", error);
+          });
+          setIsPlaying(true);
+        }
+      } else if (videoPosition > triggerPoint + 100 && videoState !== "small") {
+        setVideoState("small");
+        if (isPlaying) {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        }
+      }
+    }
+  };
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  };
+
+  const handleDebouncedScroll = debounce(handleScroll, 100);
+
+  const togglePlayPause = () => {
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      try {
+        if (isPlaying) {
+          videoElement.pause();
+        } else {
+          videoElement.play().catch(error => {
+            console.error("Error during video playback:", error);
+          });
+        }
+        setIsPlaying(!isPlaying);
+      } catch (error) {
+        console.error("Error during video playback:", error);
+      }
+    } else {
+      console.error("Video element is not available or not properly referenced.");
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleDebouncedScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleDebouncedScroll);
+    };
+  }, [handleDebouncedScroll]);
+
+  return (
+    <>
+      <MyCarousel />
+      <div className={`${styles.videoContainer} ${styles[videoState]}`}>
+        <video
+          className={styles.video}
+          src={S3_VIDEO_URL}
+          loop
+          ref={videoRef}
+          playsInline
+          onClick={togglePlayPause} // Allow play/pause by clicking on video
+          onCanPlay={() => videoRef.current.play()} // Ensure video plays when it can
+        />
+        <button
+          className={`${styles.playPauseButton} ${!isPlaying ? "pulse" : ""}`}
+          onClick={togglePlayPause}
+        >
+          <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
+        </button>
+      </div>
+      <div
+        className={styles.cardsContainer}
+        ref={cardsContainerRef}
+        onMouseEnter={handleMouseEnter}
+      >
+        <div className={styles.viewAllContainer}>
+          <Link to="/all-cards" className={styles.viewAllButton}>
+            View All Solutions <FontAwesomeIcon icon={faArrowRight} className={styles.icon} />
+          </Link>
+        </div>
+        <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
+          <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
+        </span>
+        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+          const actualIndex = currentIndex + index;
+          return (
+            <Cards
+              key={index}
+              imageUrl={card.imageUrl}
+              title={card.title}
+              description={card.description}
+              isBig={actualIndex === bigIndex}
+              toggleSize={() => toggleSize(actualIndex)}
+            />
+          );
+        })}
+        <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
+          <FontAwesomeIcon icon={faArrowRight} title="Next" />
+        </span>
+      </div>
+    </>
+  );
+};
+
+export default Home;
+
+
+
+
+
+
+
+
+
+
 ::-webkit-scrollbar {
   width: 4px;
 }
