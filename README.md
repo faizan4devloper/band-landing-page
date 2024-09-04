@@ -6,7 +6,7 @@ import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
 const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -15,7 +15,7 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
   // Merge tags into a single string separated by "/"
   const mergedTags = tags && tags.length > 1 ? tags.join(" / ") : tags?.[0];
 
-  // List of titles where the popup should be shown instead of navigating
+  // List of titles where the tooltip should be shown instead of navigating
   const noReadMoreTitles = [
     "AAIG-API Analyzer & Insight Generator",
     "Responsible Gen AI with Llama-13 B",
@@ -29,7 +29,8 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
   const handleReadMoreClick = (e) => {
     if (noReadMoreTitles.includes(title)) {
       e.preventDefault(); // Prevent navigation
-      setShowPopup(true); // Show the pop-up
+      setShowTooltip(true); // Show the tooltip
+      setTimeout(() => setShowTooltip(false), 3000); // Hide after 3 seconds
     }
   };
 
@@ -82,15 +83,11 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
                 </span>
               </span>
             </Link>
-          </div>
-        )}
-        {showPopup && (
-          <div className={styles.cardPopup} onClick={(e) => e.stopPropagation()}>
-            <h2>No Data Available</h2>
-            <p>Solution Coming Soon!</p>
-            <button className={styles.closeButton} onClick={() => setShowPopup(false)}>
-              Close
-            </button>
+            {showTooltip && (
+              <div className={styles.tooltip}>
+                No Data Available<br />Solution Coming Soon!
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -101,47 +98,30 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
 export default Card;
 
 
-
-/* Styles for the pop-up within the card */
-.cardPopup {
+/* Styles for the tooltip */
+.tooltip {
   position: absolute;
-  top: 50%;
+  bottom: 110%; /* Adjust this value to move the tooltip above the "Read More" link */
   left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  width: 80%; /* Adjust width to fit within the card */
-  z-index: 10; /* Ensure the pop-up appears above other content */
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Close button inside the pop-up */
-.closeButton {
-  background-color: #007bff;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
   color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  white-space: nowrap;
+  font-size: 0.9em;
+  z-index: 10;
+  opacity: 0;
+  animation: fadeInTooltip 0.3s forwards;
 }
 
-.closeButton:hover {
-  background-color: #0056b3;
-}
-
-/* Fade-in animation for the pop-up */
-@keyframes fadeIn {
+@keyframes fadeInTooltip {
   from {
     opacity: 0;
-    transform: translate(-50%, -45%);
+    transform: translateX(-50%) translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%) translateY(0);
   }
 }
