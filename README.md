@@ -23,7 +23,7 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
     "Predictive Asset Maintenance​(PAM)",
     "API based Test Case Generation",
     "SOP Assistance",
-    "AMS Support Automation"
+    "AMS Support Automation",
   ];
 
   const handleReadMoreClick = (e) => {
@@ -84,18 +84,16 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
             </Link>
           </div>
         )}
-      </div>
-      {showPopup && (
-        <div className={styles.popupOverlay} onClick={() => setShowPopup(false)}>
-          <div className={styles.popupContent} onClick={(e) => e.stopPropagation()}>
+        {showPopup && (
+          <div className={styles.cardPopup} onClick={(e) => e.stopPropagation()}>
             <h2>No Data Available</h2>
             <p>Solution Coming Soon!</p>
             <button className={styles.closeButton} onClick={() => setShowPopup(false)}>
               Close
             </button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -104,44 +102,20 @@ export default Card;
 
 
 
-
-/* Styles for the pop-up overlay */
-.popupOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Styles for the pop-up content */
-.popupContent {
-  background-color: #fff;
+/* Styles for the pop-up within the card */
+.cardPopup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
-  width: 300px;
-  position: relative;
-}
-
-/* Title inside the pop-up */
-.popupContent h2 {
-  margin-bottom: 15px;
-  font-size: 1.5em;
-  color: #333;
-}
-
-/* Message inside the pop-up */
-.popupContent p {
-  margin-bottom: 20px;
-  font-size: 1.2em;
-  color: #666;
+  width: 80%; /* Adjust width to fit within the card */
+  z-index: 10; /* Ensure the pop-up appears above other content */
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 /* Close button inside the pop-up */
@@ -153,8 +127,21 @@ export default Card;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
+  margin-top: 10px;
 }
 
 .closeButton:hover {
   background-color: #0056b3;
+}
+
+/* Fade-in animation for the pop-up */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
