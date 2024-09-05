@@ -32,7 +32,7 @@ const Home = ({
       if (videoPosition <= triggerPoint && videoState !== "big") {
         setVideoState("big");
         if (!isPlaying) {
-          videoRef.current.play().catch(error => {
+          videoRef.current.play().catch((error) => {
             console.error("Error during video playback:", error);
           });
           setIsPlaying(true);
@@ -64,7 +64,7 @@ const Home = ({
         if (isPlaying) {
           videoElement.pause();
         } else {
-          videoElement.play().catch(error => {
+          videoElement.play().catch((error) => {
             console.error("Error during video playback:", error);
           });
         }
@@ -79,9 +79,8 @@ const Home = ({
 
   const toggleMute = () => {
     if (videoRef.current) {
-      const isCurrentlyMuted = videoRef.current.muted;
-      videoRef.current.muted = !isCurrentlyMuted; // Toggle mute/unmute
-      setIsMuted(!isCurrentlyMuted);
+      videoRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
     }
   };
 
@@ -108,23 +107,6 @@ const Home = ({
     }
   }, []);
 
-  useEffect(() => {
-    // Handle unmuting video when user interacts
-    const handleUserInteraction = () => {
-      if (isMuted) {
-        toggleMute(); // Toggle mute/unmute on interaction
-      }
-    };
-
-    // Add event listener for user interaction
-    document.addEventListener('click', handleUserInteraction);
-
-    // Cleanup the event listener when component unmounts
-    return () => {
-      document.removeEventListener('click', handleUserInteraction);
-    };
-  }, [isMuted]);
-
   return (
     <>
       <MyCarousel />
@@ -135,7 +117,7 @@ const Home = ({
           loop
           ref={videoRef}
           playsInline
-          muted={isMuted} // Video starts muted, then unmutes after user interaction
+          muted={isMuted} // Video starts muted, then unmutes after clicking the sound icon
           onClick={togglePlayPause} // Allow play/pause by clicking on video
         />
         <button
@@ -145,12 +127,13 @@ const Home = ({
           <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
         </button>
 
-        {/* Volume Controller */}
+        {/* Mute/Unmute Controller */}
         <div className={styles.volumeControl}>
           <FontAwesomeIcon
-            icon={isMuted ? faVolumeMute : faVolumeUp} // Change icon based on mute state
+            icon={isMuted ? faVolumeMute : faVolumeUp}
             className={styles.volumeIcon}
-            onClick={toggleMute} // Toggle mute/unmute on click
+            onClick={toggleMute}
+            title={isMuted ? "Unmute" : "Mute"}
           />
           <input
             type="range"
