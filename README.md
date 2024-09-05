@@ -130,9 +130,9 @@ const Home = ({
         {/* Mute/Unmute Controller */}
         <div className={styles.volumeControl}>
           <FontAwesomeIcon
-            icon={isMuted ? faVolumeMute : faVolumeUp}
+            icon={isMuted ? faVolumeMute : faVolumeUp} // Toggle between mute/unmute icons
             className={styles.volumeIcon}
-            onClick={toggleMute}
+            onClick={toggleMute} // Toggle mute/unmute on click
             title={isMuted ? "Unmute" : "Mute"}
           />
           <input
