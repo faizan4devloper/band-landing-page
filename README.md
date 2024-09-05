@@ -21,7 +21,7 @@ const Home = ({
   const [videoState, setVideoState] = useState("hidden");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true); // Start video as muted
-  const [volume, setVolume] = useState(0.2); // Set default volume to 20%
+  const [volume, setVolume] = useState(0.2); // Default volume
   const videoRef = useRef(null);
 
   const handleScroll = () => {
@@ -60,20 +60,14 @@ const Home = ({
   const togglePlayPause = () => {
     const videoElement = videoRef.current;
     if (videoElement) {
-      try {
-        if (isPlaying) {
-          videoElement.pause();
-        } else {
-          videoElement.play().catch((error) => {
-            console.error("Error during video playback:", error);
-          });
-        }
-        setIsPlaying(!isPlaying);
-      } catch (error) {
-        console.error("Error during video playback:", error);
+      if (isPlaying) {
+        videoElement.pause();
+      } else {
+        videoElement.play().catch((error) => {
+          console.error("Error during video playback:", error);
+        });
       }
-    } else {
-      console.error("Video element is not available or not properly referenced.");
+      setIsPlaying(!isPlaying);
     }
   };
 
@@ -87,8 +81,16 @@ const Home = ({
   const handleVolumeChange = (event) => {
     const newVolume = event.target.value;
     setVolume(newVolume);
+
     if (videoRef.current) {
       videoRef.current.volume = newVolume;
+      if (newVolume > 0) {
+        videoRef.current.muted = false;
+        setIsMuted(false);
+      } else {
+        videoRef.current.muted = true;
+        setIsMuted(true);
+      }
     }
   };
 
@@ -103,9 +105,9 @@ const Home = ({
   useEffect(() => {
     // Set default volume when the component mounts
     if (videoRef.current) {
-      videoRef.current.volume = 0.2; // Set the default volume to 20%
+      videoRef.current.volume = volume;
     }
-  }, []);
+  }, [volume]);
 
   return (
     <>
@@ -117,7 +119,7 @@ const Home = ({
           loop
           ref={videoRef}
           playsInline
-          muted={isMuted} // Video starts muted, then unmutes after clicking the sound icon
+          muted={isMuted} // Control video mute/unmute state
           onClick={togglePlayPause} // Allow play/pause by clicking on video
         />
         <button
@@ -127,12 +129,12 @@ const Home = ({
           <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
         </button>
 
-        {/* Mute/Unmute Controller */}
+        {/* Volume Control */}
         <div className={styles.volumeControl}>
           <FontAwesomeIcon
-            icon={isMuted ? faVolumeMute : faVolumeUp} // Toggle between mute/unmute icons
+            icon={isMuted || volume === "0" ? faVolumeMute : faVolumeUp} // Toggle icon based on mute state or volume level
             className={styles.volumeIcon}
-            onClick={toggleMute} // Toggle mute/unmute on click
+            onClick={toggleMute} // Mute/unmute on icon click
             title={isMuted ? "Unmute" : "Mute"}
           />
           <input
@@ -141,7 +143,7 @@ const Home = ({
             max="1"
             step="0.01"
             value={volume}
-            onChange={handleVolumeChange}
+            onChange={handleVolumeChange} // Change volume on slider change
             className={styles.volumeSlider}
           />
         </div>
