@@ -1,1 +1,1 @@
-Hi sir Suma's code hard to modify and manipulate her wroted all thing in one file i dont understand correct my words
+Hi, the code written by Suma is hard to modify and manipulate because she has put everything in a single file, and I’m having difficulty understanding it.
