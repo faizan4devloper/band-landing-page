@@ -66,7 +66,7 @@ const handleClaimTypeChange = (e) => {
     <div className="hero">
       <div className="hero-content">
         <div className="claim-info">
-          <h1>iAssure Claim.</h1>
+          <h1>Claim Assist.</h1>
           <p>
            Empower your claim process to minimize Claim Denial and maximize reimbursements.
           </p>
@@ -122,4 +122,135 @@ const handleClaimTypeChange = (e) => {
       </div>
     </div>
   );
+}
+
+
+
+
+.hero {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+}
+ 
+.hero-content {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  padding: 20px;
+}
+ 
+.claim-info {
+  flex: 1;
+  margin: 20px;
+}
+ 
+.claim-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
+  color: black;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adding shadow for better depth */
+  transition: background-color 0.3s, transform 0.3s;
+}
+ 
+.claim-form h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    color-stop(-19.51%, #7abef7),
+    color-stop(36.51%, #4080f5),
+    to(#572ac2)
+  );
+  background: -webkit-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: -o-linear-gradient(
+    left,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  background: linear-gradient(
+    90deg,
+    #7abef7 -19.51%,
+    #4080f5 36.51%,
+    #572ac2 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+  text-transform: inherit !important;
+}
+ 
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+ 
+.form-group label {
+  display: block;
+  margin-bottom: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #3d3d3d; /* Matching with hero section */
+}
+ 
+.form-group input[type="radio"] {
+  margin-right: 10px;
+}
+ 
+.form-group select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #6f36cd; /* Matching with hero section */
+  border-radius: 5px;
+}
+.radio-btn{
+  display: flex;
+  justify-content: center; 
+}
+ 
+button[type="submit"],
+button[type="button"] {
+  padding: 10px 20px;
+  background-color: #27ae60;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+  border-radius: 5px;
+}
+ 
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  background-color: #2ecc71;
+  transform: scale(1.1);
+}
+ 
+button[type="submit"]:focus,
+button[type="button"]:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
 }
