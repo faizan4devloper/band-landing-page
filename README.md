@@ -1,6 +1,7 @@
 import React from "react";
-import "./LandingPage.css";  // Create a separate CSS file for animations and styling
+import "./LandingPage.css";  // Custom CSS for the page
 import { Link } from "react-router-dom";
+import { FaFileAlt } from "react-icons/fa";  // Importing an icon from FontAwesome
 
 export const LandingPage = () => {
   return (
@@ -8,17 +9,15 @@ export const LandingPage = () => {
       <div className="welcome-container">
         <h1 className="welcome-text animate-fade-in">Welcome to Claim Assist</h1>
         <p className="welcome-subtext animate-slide-in">
-          Your journey to a seamless claim experience starts here.
+          Get started with your claim process easily and efficiently.
         </p>
-        <div className="cta-buttons">
-          <Link to="/NewClaimPage" className="btn animate-pop">Start a New Claim</Link>
-          <Link to="/summary" className="btn-secondary animate-pop">View Summary</Link>
-        </div>
+        <Link to="/NewClaimPage" className="btn animate-bounce">
+          <FaFileAlt className="btn-icon" /> Start Your Claim
+        </Link>
       </div>
     </div>
   );
 };
-
 
 
 
@@ -37,39 +36,49 @@ export const LandingPage = () => {
 
 .welcome-text {
   font-size: 2.5rem;
-  animation: fade-in 2s ease-out;
+  animation: fade-in 1.5s ease-in-out;
 }
 
 .welcome-subtext {
   font-size: 1.2rem;
   margin-top: 10px;
-  animation: slide-in 2.5s ease-out;
-}
-
-.cta-buttons {
-  margin-top: 20px;
-}
-
-.btn, .btn-secondary {
-  padding: 10px 20px;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: transform 0.3s ease;
+  animation: slide-in 1.8s ease-in-out;
 }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
   background-color: #6a11cb;
   color: white;
+  padding: 12px 24px;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+  text-decoration: none;
 }
 
-.btn-secondary {
-  background-color: #2575fc;
-  color: white;
-}
-
-.btn:hover, .btn-secondary:hover {
+.btn:hover {
   transform: scale(1.05);
+}
+
+.btn-icon {
+  margin-right: 10px;
+  font-size: 1.5rem;
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 /* Animations */
@@ -92,46 +101,3 @@ export const LandingPage = () => {
     opacity: 1;
   }
 }
-
-@keyframes pop {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 1.5s ease-in-out;
-}
-
-.animate-slide-in {
-  animation: slide-in 1.8s ease-in-out;
-}
-
-.animate-pop {
-  animation: pop 0.5s ease-in-out;
-}
-
-
-
-
-import { LandingPage } from "./components/Landing/LandingPage";  // Add the path to your LandingPage
-
-function App() {
-  return (
-    <BrowserRouter>
-      <Header />
-      <FilesProvider>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />  {/* Set LandingPage as the default route */}
-          <Route path="/NewClaimPage" element={<NewClaimPage />} />
-          <Route path="/summary" element={<SummaryView />} />
-        </Routes>
-      </FilesProvider>
-    </BrowserRouter>
-  );
-}
-
-export default App;
