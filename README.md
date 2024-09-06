@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import ReactDOM from "react-dom/client";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Document, Page } from "react-pdf";
 import Select from "react-select";
-// import  NewClaimPage  from "./NewClaimPage"
 import "./Hero.css";
 
 export function Hero({ onDocumentSelect }) {
@@ -12,18 +10,15 @@ export function Hero({ onDocumentSelect }) {
   const [documents, setDocuments] = useState([]);
   const [selectedDocUrl, setSelectedDocUrl] = useState("");
 
-const handleClaimTypeChange = (e) => {
+  const handleClaimTypeChange = (e) => {
     setClaimType(e.target.value);
     if (e.target.value === "new") {
       navigate("./NewClaimPage"); 
     }
-  }
-  
-  // Mock function to fetch documents
+  };
+
   const fetchDocuments = () => {
-    // This could be replaced with an actual API call
-    return new Promise((resolve, reject) => {
-      // Simulating an API call with setTimeout
+    return new Promise((resolve) => {
       setTimeout(() => {
         const mockDocuments = [
           {
@@ -40,7 +35,7 @@ const handleClaimTypeChange = (e) => {
           },
         ];
         resolve(mockDocuments);
-      }, 1000); // Simulating a 1 second delay
+      }, 1000);
     });
   };
 
@@ -50,31 +45,27 @@ const handleClaimTypeChange = (e) => {
     });
   }, []);
 
-  // const handleDocumentSelect = (event) => {
-  //   const selectedUrl = event.target.value;
-  //   const selectedDoc = documents.find((doc) => doc.url === selectedUrl);
-  //   setSelectedDocUrl(selectedDoc.url);
-  //   onDocumentSelect(selectedDoc);
-  // };
   const handleDocumentSelect = (selected) => {
     const selectedDoc = documents.find(doc => doc.name === selected.value);
     setSelectedDocUrl(selectedDoc.url);
     onDocumentSelect(selectedDoc);
-  }  
+  };
 
   return (
     <div className="hero">
+      <div className="hero-background-animation"></div>
       <div className="hero-content">
         <div className="claim-info">
           <h1>Claim Assist.</h1>
           <p>
-           Empower your claim process to minimize Claim Denial and maximize reimbursements.
+            Empower your claim process to minimize claim denial and maximize reimbursements.
           </p>
+          <button className="cta-button">Start a New Claim</button>
         </div>
-        <div className="claim-form">
+
+        <div className="claim-form card">
+          <h2>Submit Your Claim</h2>
           <form>
-            <h2>Submit Your Claim</h2>
-            
             <div className="form-group">
               <label>Type of Claim:</label>
               <div className="radio-btn">
@@ -83,10 +74,7 @@ const handleClaimTypeChange = (e) => {
                     type="radio"
                     value="new"
                     checked={claimType === "new"}
-                    // onChange={(e) => setClaimType(e.target.value)}
-                    // onClick={()=> navigate('/new-claim')}
-                    onChange={handleClaimTypeChange} 
-
+                    onChange={handleClaimTypeChange}
                   />
                   New
                 </label>
@@ -101,15 +89,17 @@ const handleClaimTypeChange = (e) => {
                 </label>
               </div>
             </div>
+
             {claimType === "existing" && (
               <div className="form-group">
                 <label>Select Existing Claim</label>
                 <Select 
-      options={documents.map(doc => ({value: doc.name, label: doc.name}))}
-      onChange={handleDocumentSelect}
-    />
+                  options={documents.map(doc => ({ value: doc.name, label: doc.name }))}
+                  onChange={handleDocumentSelect}
+                />
               </div>
             )}
+
             {selectedDocUrl && (
               <div className="pdf-container">
                 <Document file={selectedDocUrl}>
@@ -129,128 +119,110 @@ const handleClaimTypeChange = (e) => {
 
 .hero {
   background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  position: relative;
+  color: white;
   padding: 20px;
+  overflow: hidden;
 }
- 
+
+.hero-background-animation {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1), rgba(0,0,0,0.1));
+  animation: gradient-animation 15s ease infinite;
+  z-index: -1;
+}
+
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 .hero-content {
   display: flex;
   justify-content: space-between;
   width: 100%;
   max-width: 1200px;
-  background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 10px;
   padding: 20px;
 }
- 
+
 .claim-info {
   flex: 1;
-  margin: 20px;
+  margin-right: 20px;
 }
- 
+
+.claim-info h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.claim-info p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}
+
+.cta-button {
+  padding: 10px 30px;
+  background-color: #ff6f61;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #ff8a75;
+}
+
 .claim-form {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  color: black;
-  border-radius: 10px;
+  background-color: white;
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adding shadow for better depth */
-  transition: background-color 0.3s, transform 0.3s;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: black;
 }
- 
+
+.card {
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
 .claim-form h2 {
+  font-size: 1.5rem;
   margin-bottom: 20px;
-  font-weight: 600;
-  background: -webkit-gradient(
-    linear,
-    left top,
-    right top,
-    color-stop(-19.51%, #7abef7),
-    color-stop(36.51%, #4080f5),
-    to(#572ac2)
-  );
-  background: -webkit-linear-gradient(
-    left,
-    #7abef7 -19.51%,
-    #4080f5 36.51%,
-    #572ac2 100%
-  );
-  background: -o-linear-gradient(
-    left,
-    #7abef7 -19.51%,
-    #4080f5 36.51%,
-    #572ac2 100%
-  );
-  background: linear-gradient(
-    90deg,
-    #7abef7 -19.51%,
-    #4080f5 36.51%,
-    #572ac2 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent;
-  text-transform: inherit !important;
+  text-align: center;
 }
- 
+
 .form-group {
   margin-bottom: 20px;
-  width: 100%;
 }
- 
-.form-group label {
-  display: block;
-  margin-bottom: 10px;
-  text-align: center;
-  font-weight: 600;
-  color: #3d3d3d; /* Matching with hero section */
-}
- 
-.form-group input[type="radio"] {
-  margin-right: 10px;
-}
- 
-.form-group select {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  border: 1px solid #6f36cd; /* Matching with hero section */
-  border-radius: 5px;
-}
-.radio-btn{
+
+.radio-btn {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
+  gap: 15px;
 }
- 
-button[type="submit"],
-button[type="button"] {
-  padding: 10px 20px;
-  background-color: #27ae60;
-  border: none;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+
+.pdf-container {
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  padding: 10px;
   border-radius: 5px;
-}
- 
-button[type="submit"]:hover,
-button[type="button"]:hover {
-  background-color: #2ecc71;
-  transform: scale(1.1);
-}
- 
-button[type="submit"]:focus,
-button[type="button"]:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(39, 174, 96, 0.5);
 }
