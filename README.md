@@ -28,7 +28,7 @@ const RequestDemoForm = ({ closeModal }) => {
 
     try {
       // Send the form data to the Lambda function through the API Gateway
-      await axios.post('https://75x831r7ea.execute-api.us-east-1.amazonaws.com/v1', {
+      await axios.post('XYZ', {
         ...formData,
         solution: selectedSolution ? selectedSolution.label : ''
       });
