@@ -172,7 +172,7 @@ const FeedbackForm = ({ closeModal, formType }) => {
     e.preventDefault();
 
     try {
-      await axios.post('https://75x831r7ea.execute-api.us-east-1.amazonaws.com/v1', {
+      await axios.post('xyz', {
         ...formData,
         rating,
         solution: selectedSolution ? selectedSolution.label : ''
