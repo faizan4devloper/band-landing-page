@@ -1,3 +1,43 @@
+// FeedbackForm.js
+import React, { useState } from 'react';
+import styles from './FeedbackForm.module.css';
+
+const FeedbackForm = ({ closeModal }) => {
+  const [feedback, setFeedback] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle feedback submission here, e.g., send to an API.
+    console.log("Feedback submitted:", feedback);
+    closeModal();
+  };
+
+  return (
+    <div className={styles.feedbackForm}>
+      <h2>Submit Your Feedback</h2>
+      <form onSubmit={handleSubmit}>
+        <textarea
+          value={feedback}
+          onChange={(e) => setFeedback(e.target.value)}
+          placeholder="Enter your feedback here..."
+          required
+        />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default FeedbackForm;
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
