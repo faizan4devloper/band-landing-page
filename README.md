@@ -1,25 +1,36 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import './Breadcrumbs.css'; // Custom CSS for styling
+import React, { useState } from "react";
+import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-const Breadcrumbs = () => {
-  const location = useLocation();
-  const pathnames = location.pathname.split('/').filter(x => x);
+import { Header } from "./components/Landing/Header";
+import { Hero } from "./components/Landing/Hero";
+import { LandingPage } from "./components/Landing/LandingPage"; // Import LandingPage
+import { NewClaimPage } from "./NewClaimPage";
+import { SummaryView } from "./SummaryView";
+import { FilesProvider } from "./FilesContext";
+import Breadcrumbs from "./components/Breadcrumbs/Breadcrumbs"; // Import Breadcrumbs
+
+function App() {
+  const [selectedDocument, setSelectedDocument] = useState(null);
+
+  const handleDocumentSelect = (document) => {
+    setSelectedDocument(document);
+  };
 
   return (
-    <nav className="breadcrumbs">
-      <Link to="/">Home</Link>
-      {pathnames.map((pathname, index) => {
-        const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-        return (
-          <span key={to}>
-            <span className="breadcrumb-separator">/</span>
-            <Link to={to}>{pathname.charAt(0).toUpperCase() + pathname.slice(1)}</Link>
-          </span>
-        );
-      })}
-    </nav>
+    <BrowserRouter>
+      <Header />
+      <FilesProvider>
+        <Breadcrumbs /> {/* Include Breadcrumbs component */}
+        <Routes>
+          <Route path="/" element={<LandingPage />} />  {/* LandingPage as the default route */}
+          <Route path="/hero" element={<Hero onDocumentSelect={handleDocumentSelect} />} />  {/* Hero page */}
+          <Route path="/NewClaimPage" element={<NewClaimPage />} />
+          <Route path="/summary" element={<SummaryView />} />
+        </Routes>
+      </FilesProvider>
+    </BrowserRouter>
   );
-};
+}
 
-export default Breadcrumbs;
+export default App;
