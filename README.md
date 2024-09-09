@@ -9,6 +9,249 @@ const FeedbackForm = ({ closeModal }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedSolution, setSelectedSolution] = useState(null);
   const [rating, setRating] = useState(0);
+  const [activeReview, setActiveReview] = useState('solution'); // Track which section is active
+  const [formData, setFormData] = useState({
+    userName: '',
+    email: '',
+    feedback: ''
+  });
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleStarClick = (newRating) => {
+    setRating(newRating);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.post('YOUR_API_ENDPOINT', {
+        ...formData,
+        rating,
+        solution: selectedSolution ? selectedSolution.label : ''
+      });
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    }
+  };
+
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: "4px",
+      width: "91%",
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+      cursor: "pointer",
+      backgroundColor: "#fff",
+      boxShadow: "none"
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
+      color: state.isSelected ? "#fff" : "#555"
+    })
+  };
+
+  return (
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={closeModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.feedbackHead}>Provide Your Feedback</h2>
+
+      <div className={styles.toggleButtons}>
+        <button
+          className={activeReview === 'solution' ? styles.activeButton : styles.inactiveButton}
+          onClick={() => setActiveReview('solution')}
+        >
+          Solution Review
+        </button>
+        <button
+          className={activeReview === 'portal' ? styles.activeButton : styles.inactiveButton}
+          onClick={() => setActiveReview('portal')}
+        >
+          Portal Review
+        </button>
+      </div>
+
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          {activeReview === 'solution' && (
+            <div>
+              <div className={styles.formGroup}>
+                <label>*User Name</label>
+                <input
+                  type="text"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>*Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Select Solution</label>
+                <div className={styles.customSelect}>
+                  <Select
+                    styles={customStyles}
+                    value={selectedSolution}
+                    onChange={setSelectedSolution}
+                    options={[
+                      { value: "solution1", label: "Solution 1" },
+                      { value: "solution2", label: "Solution 2" }
+                    ]}
+                  />
+                </div>
+              </div>
+              <div className={styles.formGroup}>
+                <label>Feedback</label>
+                <textarea
+                  name="feedback"
+                  value={formData.feedback}
+                  onChange={handleInputChange}
+                  rows="4"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {activeReview === 'portal' && (
+            <div>
+              <div className={styles.formGroup}>
+                <label>*User Name</label>
+                <input
+                  type="text"
+                  name="userName"
+                  value={formData.userName}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>*Email Address</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <label>Select Portal</label>
+                <div className={styles.customSelect}>
+                  <Select
+                    styles={customStyles}
+                    value={selectedSolution}
+                    onChange={setSelectedSolution}
+                    options={[
+                      { value: "portal1", label: "Portal 1" },
+                      { value: "portal2", label: "Portal 2" }
+                    ]}
+                  />
+                </div>
+              </div>
+              <div className={styles.formGroup}>
+                <label>Feedback</label>
+                <textarea
+                  name="feedback"
+                  value={formData.feedback}
+                  onChange={handleInputChange}
+                  rows="4"
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          <div className={styles.ratingGroup}>
+            <label>Rate Us</label>
+            <div className={styles.starRating}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FontAwesomeIcon
+                  key={star}
+                  icon={faStar}
+                  className={star <= rating ? styles.activeStar : styles.inactiveStar}
+                  onClick={() => handleStarClick(star)}
+                />
+              ))}
+            </div>
+          </div>
+          <button type="submit" className={styles.submitButton}>Submit</button>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you for your feedback!
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default FeedbackForm;
+
+
+
+.toggleButtons {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 20px;
+}
+
+.activeButton {
+  background-color: #5f1ec1;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.inactiveButton {
+  background-color: #f1f1f1;
+  color: #333;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+
+
+
+
+
+
+
+import React, { useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStar, faTimes } from "@fortawesome/free-solid-svg-icons";
+import styles from "./FeedbackForm.module.css";
+
+const FeedbackForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+  const [rating, setRating] = useState(0);
   const [formData, setFormData] = useState({
     userName: '',
     email: '',
