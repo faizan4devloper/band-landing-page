@@ -1,3 +1,142 @@
+// this is my lambda code
+import json
+import boto3
+from botocore.exceptions import ClientError
+
+# Initialize the DynamoDB and SNS clients
+dynamodb = boto3.resource('dynamodb')
+sns = boto3.client('sns')
+
+# Replace 'RequestDemoSubmissions' with your actual table name
+table = dynamodb.Table('RequestDemoSubmissions')
+
+# Replace 'your-sns-topic-arn' with your actual SNS topic ARN
+sns_topic_arn = 'arn:aws:sns:us-east-1:040504913362:Portalalerts'
+
+def lambda_handler(event, context):
+    try:
+        # Extract the form data from the event object
+        print("Event",event)
+        form_data = json.loads(event['body'])
+        #form_data = event #loca testing
+        typee=form_data['typee']
+        print(typee)
+        if typee=="demo":
+            response=demoform(form_data)
+            return response
+        else:
+            response=fbform(form_data)
+            return response
+    except ClientError as e:
+        print('DynamoDB error:', e)
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            'body': json.dumps({'message': 'Error saving form data to DynamoDB'})
+        }
+    except Exception as e:
+        print('Error processing form:', e)
+        # Return an error response
+        return {
+            'statusCode': 500,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
+            'body': json.dumps({'message': 'Error submitting form'})
+        }
+def demoform(form_data):
+    userName = form_data['userName']
+    email = form_data['email']
+    solution = form_data['solution']
+    domain = form_data['domain']
+    customerName = form_data['customerName']
+    details = form_data['details']
+    typee=form_data['typee']
+
+    # Save the form data to DynamoDB
+    response = table.put_item(
+        Item={
+            'email': email,  # Primary Key
+            'userName': userName,
+            'solution': solution,
+            'domain': domain,
+            'customerName': customerName,
+            'details': details,
+            'typee':typee
+        }
+    )
+
+    # Publish an SNS message
+    sns_message = f"New form submission:\n\nName: {userName}\nEmail: {email}\nSolution: {solution}\nDomain: {domain}\nCustomer Name: {customerName}\nDetails: {details}"
+    sns_response = sns.publish(
+        TopicArn=sns_topic_arn,
+        Message=sns_message,
+        Subject='New Form Submission'
+    )
+
+    # Return a successful response
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        'body': json.dumps({'message': 'Form submitted and saved to DynamoDB successfully'})
+    }
+    
+def fbform(form_data):
+    print("hi fbform")
+    userName = form_data['userName']
+    email = form_data['email']
+    solution = form_data['solution']
+    feedback = form_data['feedback']
+    typee=form_data['typee']
+    rateus = form_data['rateus']
+
+    # Save the form data to DynamoDB
+    response = table.put_item(
+        Item={
+            'email': email,  # Primary Key
+            'userName': userName,
+            'solution': solution,
+            'feedback': feedback,
+            'typee': typee,
+            'rateus': rateus
+        }
+    )
+
+    # Publish an SNS message
+    sns_message = f"New form submission:\n\nName: {userName}\nEmail: {email}\nSolution: {solution}\nfeedback: {feedback}"
+    sns_response = sns.publish(
+        TopicArn=sns_topic_arn,
+        Message=sns_message,
+        Subject='New Form Submission'
+    )
+
+    # Return a successful response
+    print("hi before return")
+    #return ("hi returned")
+        
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': '*',  # Allow CORS for all origins
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        'body': json.dumps({'message': 'Form submitted and saved to DynamoDB successfully'})
+    }
+
+
+// this is my react code
 import React, { useState } from "react";
 import axios from "axios";
 import Select from "react-select";
