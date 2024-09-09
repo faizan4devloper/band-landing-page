@@ -1,391 +1,312 @@
-.feedbackForm {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+import React, { useState } from "react";
+import axios from "axios";
+import Select from "react-select";
+import styles from "./RequestDemoForm.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-.feedbackForm h2 {
-  margin: 0;
-  font-size: 24px;
-}
+const RequestDemoForm = ({ closeModal }) => {
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedSolution, setSelectedSolution] = useState(null);
+  const [formData, setFormData] = useState({
+    userName: '',
+    email: '',
+    domain: '',
+    customerName: '',
+    details: ''
+  });
 
-.feedbackForm textarea {
-  width: 100%;
-  height: 150px;
-  padding: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  resize: none;
-}
-
-.feedbackForm button {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: .6s ease;
-}
-
-.feedbackForm button:hover {
-  transform: translate(0, -5px);
-}
-
-
-
-
-
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
-import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
-
-const Header = () => {
-  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-
-  const handleImageClick = () => {
-    navigate("/");
-  };
-  
-  useEffect(() => {
-    setHeaderZIndex(1000); // Set zIndex when component mounts
-  }, [setHeaderZIndex]);
-
-
-  const openModal = () => {
-    setModalIsOpen(true);
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const openFeedbackModal = () => {
-    setFeedbackModalIsOpen(true);
-  };
-
-  const closeFeedbackModal = () => {
-    setFeedbackModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-          <button className={styles.button} onClick={openFeedbackModal}>
-            Submit Feedback
-          </button>
-        </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
-
-      <Modal
-        isOpen={feedbackModalIsOpen}
-        onRequestClose={closeFeedbackModal}
-        contentLabel="Submit Feedback"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <FeedbackForm closeModal={closeFeedbackModal} />
-      </Modal>
-    </div>
-  );
-};
-
-export default Header;
-
-
-
-
-
-// FeedbackForm.js
-import React, { useState } from 'react';
-import styles from './FeedbackForm.module.css';
-
-const FeedbackForm = ({ closeModal }) => {
-  const [feedback, setFeedback] = useState("");
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle feedback submission here, e.g., send to an API.
-    console.log("Feedback submitted:", feedback);
+
+    try {
+      // Send the form data to the Lambda function through the API Gateway
+      await axios.post('https://75x831r7ea.execute-api.us-east-1.amazonaws.com/v1', {
+        ...formData,
+        solution: selectedSolution ? selectedSolution.label : ''
+      });
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      // Handle error case
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsSubmitted(false); // Reset submission state
     closeModal();
   };
 
-  return (
-    <div className={styles.feedbackForm}>
-      <h2>Submit Your Feedback</h2>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-          placeholder="Enter your feedback here..."
-          required
-        />
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-  );
-};
-
-export default FeedbackForm;
-
-
-
-
-
-
-
-
-
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
-
-const Header = () => {
-  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  
-
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-
-  const handleImageClick = () => {
-    navigate("/");
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      borderRadius: "4px",
+      width: "91%", // Control width
+      border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc",
+      cursor: "pointer",
+      backgroundColor: "#fff",
+      color: "#555",
+      boxShadow: "none", // Remove the default box-shadow
+      "&:hover": {
+        border: state.isFocused ? "1px solid #5f1ec1" : "1px solid #ccc"
+      }
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isSelected ? "#5f1ec1" : state.isFocused ? "#eee" : "#fff",
+      color: state.isSelected ? "#fff" : "#555",
+      fontSize: "12px", // Option font size
+      cursor: "pointer",
+      "&:hover": {
+        backgroundColor: state.isSelected ? "#5f1ec1" : "#f0f0f0" // Change hover background color
+      }
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      fontSize: "12px", // Placeholder font size
+      color: "#999" // Placeholder color
+    }),
+    menu: (provided) => ({
+      ...provided,
+      width: "91%",
+       // Limit the height of the menu to 150px
+      overflowY: "auto", // Enable vertical scrolling when necessary
+      zIndex: 2 // Ensure it is above other elements
+    }),
+    menuList: (provided) => ({
+      ...provided,
+      maxHeight: "150px",
+      padding: 0 // Remove padding to avoid additional scrolling issues
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      fontSize: "12px",
+      color: "#555" // Single value color
+    })
   };
-  
-  useEffect(() => {
-    setHeaderZIndex(1000); // Set zIndex when component mounts
-  }, [setHeaderZIndex]);
-
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
 
   return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
+    <div className={styles.formContainer}>
+      <button className={styles.closeButton} onClick={handleCloseModal}>
+        <FontAwesomeIcon icon={faTimes} />
+      </button>
+      <h2 className={styles.demoHead}>Request for a Live Demo</h2>
+      {!isSubmitted ? (
+        <form onSubmit={handleSubmit}>
+          <div className={styles.formGroup}>
+            <label>*User Name</label>
+            <input
+              type="text"
+              name="userName"
+              value={formData.userName}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>*Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>GenAI Solution Name</label>
+            <div className={styles.customSelect}>
+              <Select
+                styles={customStyles}
+                value={selectedSolution}
+                onChange={setSelectedSolution}
+                options={[
+                  { value: "option1", label: "Intelligent Assist" },
+                  { value: "option2", label: "Email EAR" },
+                  { value: "option3", label: "Case Intelligence" },
+                  { value: "option4", label: "Smart Recruit" },
+                  { value: "option5", label: "iAssure Claim" },
+                  { value: "option6", label: "Assistant For EVs" },
+                  { value: "option7", label: "AutoWise Companion" },
+                  { value: "option8", label: "Citizen Advisor" },
+                  { value: "option9", label: "Fin Competitor Summary Gen" },
+                  { value: "option10", label: "Signature Extraction & Verification" },
+                  { value: "option11", label: "AI Force" },
+                  { value: "option12", label: "API based Test Case Generation" },
+                  { value: "option13", label: "AMS Support Automation" },
+                  { value: "option14", label: "SOP Assistance" },
+                  { value: "option15", label: "Code GReat" },
+                  { value: "option16", label: "AAIG-API Analyzer & Insight Generator" },
+                  { value: "option17", label: "Responsible Gen AI with Llama-13 B" },
+                  { value: "option18", label: "Graph data Interpretation using Gen AI" },
+                  { value: "option19", label: "Predictive Asset Maintenance​(PAM)​" },
+                ]}
+              />
+            </div>
+          </div>
+          <div className={styles.formGroup}>
+            <label>Domain</label>
+            <input
+              type="text"
+              name="domain"
+              value={formData.domain}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Customer Name</label>
+            <input
+              type="text"
+              name="customerName"
+              value={formData.customerName}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+          <div className={styles.formGroup}>
+            <label>More Details</label>
+            <textarea
+              name="details"
+              placeholder="Enter your business details and scope of this demo in your use case."
+              rows="4"
+              value={formData.details}
+              onChange={handleInputChange}
+              required
+            ></textarea>
+          </div>
+          <button type="submit" className={styles.submitButton}>
+            Submit
           </button>
-        </div>
-      </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
+        </form>
+      ) : (
+        <p className={styles.successMessage}>
+          Thank you! Your request for a live demo has been submitted successfully.
+        </p>
+      )}
     </div>
   );
 };
 
-export default Header;
+export default RequestDemoForm;
 
-.navbarWrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  min-width: 100%;
-  background-color: #fff;
-  /*background: linear-gradient(to bottom, #1a1a2e, #16213e);*/
-
-  border-bottom: 0.1px solid rgba(219, 197, 255, 1);
-  padding: 8px 0px;
-  transition: transform 0.5s ease-in-out;
-
-  /*margin-bottom: 30px;*/
-}
-.navbarWrapper.hide {
-  transform: translateY(-100%);
-}
-
-.navbarWrapper.show {
-  transform: translateY(0);
-}
-.navbarWrapper .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin: 5px -200px;
-}
-.logo img {
-  max-height: 20px;
-  cursor: pointer;
-}
-
-.right {
-  display: flex;
-  align-items: center;
-}
-
-.button {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  color: white;
-  border: none;
-  padding: 8px 8px;
-  font-size: 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: .6s ease;
-}
-
-.button:hover{
-    transform: translate(0, -5px);
-    
-    
-
-}
-
-.content {
-  padding-top: 70px; /* Adjust the value to match the height of your header */
-}
-
-.logo img::after {
-  content: attr(title);
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #333;
-  color: #fff;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s, visibility 0.1s;
-}
-
-.logo img:hover::after {
-  opacity: 1;
-  visibility: visible;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  transform: translate(-50%, -50%);
-  background: #fff;
+.formContainer {
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  padding: 20px;
-  margin-top: 30px;
-  max-width: 900px;
-  width: 90%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  animation: fadeIn 0.3s ease-out;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
+  max-height: 80vh; /* Set a max-height for the form container */
+  z-index: 1000;
 }
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
-  animation: fadeIn 0.3s ease-out;
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: -10px;
+  font-size: 18px;
 }
+
+.formGroup {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #999999; /* Light gray */
+  opacity: 1;
+}
+
+input, textarea {
+  width: 90%;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
+
+input:focus, textarea:focus {
+  border-color: #5f1ec1;
+  outline: none;
+}
+
+.submitButton {
+  background-color: #5f1ec1;
+  margin-top: 0px;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  width: 78%; /* Make the button take the full width */
+}
+
+.closeButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #aaa;
+}
+
+.closeButton:hover {
+  color: #555;
+}
+
+.successMessage {
+  text-align: center;
+  color: #5f1ec1;
+  font-size: 16px;
+}
+
+/* Custom scrollbar styling for the form container */
+/*.formContainer::-webkit-scrollbar {*/
+/*  width: 6px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-track {*/
+/*  background: #f1f1f1;*/
+/*  border-radius: 8px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-thumb {*/
+/*  background: #5f1ec1;*/
+/*  border-radius: 8px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-thumb:hover {*/
+/*  background: #555;*/
+/*}*/
+
+/* Custom scrollbar styling for the react-select menu */
