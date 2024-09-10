@@ -1,3 +1,4 @@
+
 /* Default Light Theme */
 :root {
   --sidebar-bg: #ffffff;
@@ -10,6 +11,8 @@
 
 /* Dark Theme */
 [data-theme="dark"] {
+  --primary-color: #9d66f5;
+  --secondary-color: #c1a1f2;
   --sidebar-bg: #2c2c2c;
   --sidebar-border: rgba(50, 50, 50, 1);
   --menu-item-bg-hover: rgba(60, 60, 60, 1);
@@ -26,7 +29,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background-color: var(--sidebar-bg);
+  /*background-color: var(--sidebar-bg);*/
   border-right: 1px solid var(--sidebar-border);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -55,7 +58,7 @@
 }
 
 .active {
-  background: var(--menu-item-active-bg);
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: var(--menu-item-active-color);
   border-radius: 8px 0 0 8px;
 }
