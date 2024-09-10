@@ -1,92 +1,271 @@
-/* Default Light Theme */
-:root {
-  --sidebar-bg: #ffffff;
-  --sidebar-border: rgba(219, 197, 255, 1);
-  --menu-item-bg-hover: rgba(230, 235, 245, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  --menu-item-active-color: white;
-  --icon-img-filter: brightness(0) invert(0);
-  --text-color: #000000;
-  --button-bg: rgba(230, 235, 245, 1);
-  --button-hover-color: rgba(95, 30, 193, 1);
-  --card-title-color: rgba(23, 23, 25, 1);
-  --header-bg: #ffffff;
-}
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
+import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
+import feedbackImg from './feedback10.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --sidebar-bg: #2c2c2c;
-  --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(70, 70, 70, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
-  --menu-item-active-color: #ffffff;
-  --icon-img-filter: brightness(0) invert(1);
-  --text-color: #ffffff;
-  --button-bg: #3a3a3a; /* Dark theme button background */
-  --button-hover-color: #9d66f5; /* Dark theme button hover color */
-  --card-title-color: #ffffff; /* Dark theme card title color */
-  --header-bg: #2c2c2c;
-}
+const Header = ({ theme, setTheme }) => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
-/* Sidebar Page Styling */
-.sideBarPage {
-  position: fixed;
-  margin-top: 70px;
-  margin-left: 45px;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
-  background-color: var(--header-bg);
-}
+  const handleImageClick = () => {
+    navigate("/");
+  };
+  
+  useEffect(() => {
+    // Any additional setup can be added here
+  }, []);
 
-/* Header Styling */
-.header2 {
-  display: flex;
-  align-items: center;
-  color: var(--text-color); /* Text color based on theme */
-}
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
 
-/* Card Title Styling */
-.cardTitle {
-  font-size: 18px;
-  color: var(--card-title-color); /* Card title color based on theme */
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-family: "Poppins", sans-serif;
-}
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
-/* Content Wrapper Styling */
-.contentWrapper {
-  display: flex;
-  flex: 1;
-}
+  const openFeedbackModal = () => {
+    setFeedbackModalIsOpen(true);
+  };
 
-/* Back Button Container Styling */
-.backButtonContainer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
+  const closeFeedbackModal = () => {
+    setFeedbackModalIsOpen(false);
+  };
 
-/* Back Button Styling */
-.backButton {
-  background-color: var(--button-bg); /* Button background based on theme */
-  padding: 7px;
-  margin-left: 20px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  width: 32px;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  margin-right: 10px;
-  color: var(--text-color); /* Text color based on theme */
-}
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
 
-.backButton:hover {
-  color: var(--button-hover-color); /* Change button color on hover based on theme */
-}
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
+
+  const handleThemeToggle = () => {
+    if (typeof setTheme === 'function') {
+      setTheme(theme === 'light' ? 'dark' : 'light');
+    } else {
+      console.error('setTheme is not a function');
+    }
+  };
+
+  return (
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            title="Navigate to Home"
+          />
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
+          <button
+            className={styles.themeToggleButton}
+            onClick={handleThemeToggle}
+            title="Toggle Theme"
+          >
+            <FontAwesomeIcon
+              icon={theme === 'light' ? faMoon : faSun}
+              className={styles.themeIcon}
+            />
+            <span className={styles.themeText}>
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </span>
+          </button>
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
+            <RequestDemoForm closeModal={closeModal} />
+          </Modal>
+          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
+            <FeedbackForm closeModal={closeFeedbackModal} />
+          </Modal>
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Header;
+
+
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import Chatbot from './components/ChatBot/Chatbot';
+import Footer from './components/Footer/Footer';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import { HeaderProvider } from './components/Context/HeaderContext';
+import styles from './App.module.css';
+
+const MainApp = () => {
+  const location = useLocation();
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light'); // State for theme
+  const cardsContainerRef = useRef(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      setCardsData(data);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
+    }
+  };
+
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const showFooter = location.pathname === '/';
+
+  return (
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header theme={theme} setTheme={setTheme} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
+    </div>
+  );
+};
+
+const App = () => (
+  <Router>
+    <HeaderProvider>
+    <MainApp />
+    </HeaderProvider>
+  </Router>
+);
+
+export default App;
