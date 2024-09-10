@@ -1,4 +1,3 @@
-
 /* Default Light Theme */
 :root {
   --sidebar-bg: #ffffff;
@@ -7,6 +6,7 @@
   --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   --menu-item-active-color: white;
   --icon-img-filter: brightness(0) invert(0);
+  --text-color: #000000; /* Default text color */
 }
 
 /* Dark Theme */
@@ -15,10 +15,11 @@
   --secondary-color: #c1a1f2;
   --sidebar-bg: #2c2c2c;
   --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(60, 60, 60, 1);
+  --menu-item-bg-hover: rgba(70, 70, 70, 1); /* Adjusted hover color */
   --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
   --menu-item-active-color: #ffffff;
   --icon-img-filter: brightness(0) invert(1);
+  --text-color: #ffffff; /* Dark theme text color */
 }
 
 /* Sidebar Styling */
@@ -29,7 +30,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /*background-color: var(--sidebar-bg);*/
+  background-color: var(--sidebar-bg);
   border-right: 1px solid var(--sidebar-border);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -50,6 +51,7 @@
   transition: background-color 0.3s;
   background: none;
   border: none;
+  color: var(--text-color); /* Apply text color */
 }
 
 .menuItem:not(.active):hover {
@@ -70,6 +72,8 @@
 .iconImg {
   filter: var(--icon-img-filter);
 }
+
+/* Adjust any other necessary styles to match the dark theme */
 
 .label {
   margin-right: auto;
