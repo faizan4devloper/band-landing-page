@@ -1,8 +1,43 @@
+/* Default Light Theme */
+:root {
+  --chatbot-background: white;
+  --chatbot-header-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --chatbot-message-user: #d1e7ff;
+  --chatbot-message-bot: #f1f1f1;
+  --chatbot-button-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --chatbot-text-color: #333;
+  --chatbot-message-link: #3f1ec2;
+  --clear-chat-overlay-background: rgba(0, 0, 0, 0.5);
+  --clear-chat-window-background: white;
+  --confirm-button-background: #d9534f;
+  --cancel-button-background: #5f1ec1;
+  --bot-status-color: #d1e7ff;
+  --online-dot-color: #4caf50;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --chatbot-background: #333;
+  --chatbot-header-background: linear-gradient(90deg, #3b3b3b 0%, #1f1f1f 100%);
+  --chatbot-message-user: #444;
+  --chatbot-message-bot: #555;
+  --chatbot-button-background: linear-gradient(90deg, #3b3b3b 0%, #1f1f1f 100%);
+  --chatbot-text-color: #ccc;
+  --chatbot-message-link: #9a9a9a;
+  --clear-chat-overlay-background: rgba(0, 0, 0, 0.8);
+  --clear-chat-window-background: #444;
+  --confirm-button-background: #c62828;
+  --cancel-button-background: #1a237e;
+  --bot-status-color: #555;
+  --online-dot-color: #4caf50;
+}
+
 .chatbotIcon {
   position: fixed;
   bottom: 20px;
   right: 20px;
-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  background: var(--chatbot-button-background);
+  color: var(--chatbot-text-color);
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
@@ -20,12 +55,12 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
 }
 
 .chatbotContainer {
- position: fixed;
+  position: fixed;
   bottom: 80px;
   right: 20px;
   width: 320px;
   height: 420px;
-  background-color: white;
+  background-color: var(--chatbot-background);
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -45,7 +80,8 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  background: var(--chatbot-header-background);
+  color: var(--chatbot-text-color);
   padding: 10px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -56,12 +92,13 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
   font-weight: bold;
 }
 
-.closeButton, .clearChatButton {
+.closeButton, .clearChatButton, .minimizeButton {
   background: none;
   border: none;
-  color: white;
+  color: var(--chatbot-text-color);
   font-size: 16px;
   cursor: pointer;
+  margin-left: 5px;
 }
 
 .chatbotMessages {
@@ -105,24 +142,24 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
 
 .messageText {
   max-width: 75%;
-  background-color: #f1f1f1;
+  background-color: var(--chatbot-message-bot);
   padding: 10px;
   font-size: 12px;
   border-radius: 10px;
-  color: #333;
+  color: var(--chatbot-text-color);
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
 .messageText a {
-  color: #3f1ec2;
+  color: var(--chatbot-message-link);
   text-decoration: none;
   font-size: 10px;
   margin-bottom: 5px;
 }
 
 .userMessage .messageText {
-  background-color: #d1e7ff;
+  background-color: var(--chatbot-message-user);
 }
 
 .chatbotInput {
@@ -140,7 +177,8 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
 }
 
 .chatbotInput button {
-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  background: var(--chatbot-button-background);
+  color: var(--chatbot-text-color);
   border: none;
   padding: 10px;
   border-radius: 4px;
@@ -154,7 +192,7 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--clear-chat-overlay-background);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,14 +204,15 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
   bottom: 130px; /* Adjust based on available space */
   left: 0;
   right: 0;
-  background: white;
+  background: var(--clear-chat-window-background);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
+
 .confirmButton {
-  background-color: #d9534f;
+  background-color: var(--confirm-button-background);
   color: white;
   padding: 8px 18px;
   border: none;
@@ -183,17 +222,13 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
 }
 
 .cancelButton {
-  background-color: #5f1ec1;
+  background-color: var(--cancel-button-background);
   color: white;
   padding: 8px 18px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
-
-
-
-/* ... previous styles ... */
 
 .botProfile {
   display: flex;
@@ -212,42 +247,9 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
   flex-direction: column;
 }
 
-
-
 .botStatus {
   font-size: 12px;
-  color: #d1e7ff;
-}
-
-/* Rest of the styles */
-.headerActions {
-  display: flex;
-  align-items: center;
-}
-
-.closeButton, .clearChatButton {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-/* Add this to your existing styles */
-.greenDot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  background-color: #28a745; /* Green color */
-  border-radius: 50%;
-  margin-right: 4px;
-}
-
-/* Ensure the botStatus class is updated */
-.botStatus {
-  font-size: 12px;
-  color: #d1e7ff;
+  color: var(--bot-status-color);
   display: flex;
   align-items: center;
 }
@@ -255,211 +257,8 @@ background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
 .onlineDot {
   width: 8px;
   height: 8px;
-  background-color: #4caf50; /* Green dot */
+  background-color: var(--online-dot-color);
   border-radius: 50%;
   display: inline-block;
   margin-right: 5px;
 }
-
-.minimizeButton {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-/* Add tooltip styles */
-.clearChatButton[title], .minimizeButton[title] {
-  position: relative;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
-import Header from './components/Header/Header';
-import Home from './Home';
-import SideBarPage from './components/Sidebar/SideBarPage';
-import AllCardsPage from './components/Cards/AllCardsPage';
-import Chatbot from './components/ChatBot/Chatbot';
-import Footer from './components/Footer/Footer';
-import { getCardsData } from './data';
-import { BeatLoader } from 'react-spinners';
-import { HeaderProvider } from './components/Context/HeaderContext';
-import styles from './App.module.css';
-
-const MainApp = () => {
-  const location = useLocation();
-  const [cardsData, setCardsData] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-  const cardsContainerRef = useRef(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      setCardsData(data);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleClickLeft = () => {
-    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleClickRight = () => {
-    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
-    }
-  };
-
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener('scroll', debounceScroll);
-
-    return () => window.removeEventListener('scroll', debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const showFooter = location.pathname === '/';
-
-  return (
-    <HeaderProvider>
-      <div className={styles.app}>
-        {loading ? (
-          <div className={styles.loader}>
-            <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-          </div>
-        ) : (
-          <>
-            <Header theme={theme} setTheme={setTheme} />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    cardsData={cardsData}
-                    handleClickLeft={handleClickLeft}
-                    handleClickRight={handleClickRight}
-                    currentIndex={currentIndex}
-                    bigIndex={bigIndex}
-                    toggleSize={toggleSize}
-                    cardsContainerRef={cardsContainerRef}
-                  />
-                }
-              />
-              <Route path="/dashboard" element={<SideBarPage />} />
-              <Route
-                path="/all-cards"
-                element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-              />
-            </Routes>
-            {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-              <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-                <FontAwesomeIcon icon={faChevronDown} />
-              </div>
-            )}
-            {showScrollUp && (
-              <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-                <FontAwesomeIcon icon={faChevronUp} />
-              </div>
-            )}
-            <Chatbot />
-            {showFooter && <Footer />}
-            <button
-              className={styles.themeToggleButton}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            >
-              <FontAwesomeIcon
-                icon={theme === 'light' ? faMoon : faSun}
-                className={styles.themeIcon}
-              />
-              <span className={styles.themeText}>
-                {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-              </span>
-            </button>
-          </>
-        )}
-      </div>
-    </HeaderProvider>
-  );
-};
-
-const App = () => (
-  <Router>
-    <MainApp />
-  </Router>
-);
-
-export default App;
