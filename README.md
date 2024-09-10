@@ -111,7 +111,7 @@ const MainApp = () => {
           </div>
         ) : (
           <>
-            <Header />
+            <Header theme={theme} setTheme={setTheme} />
             <Routes>
               <Route
                 path="/"
@@ -145,14 +145,6 @@ const MainApp = () => {
             )}
             <Chatbot />
             {showFooter && <Footer />}
-            <button className={styles.themeToggleButton} onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-              <FontAwesomeIcon icon={theme === 'light' ? faMoon : faSun}
-              className={styles.themeIcon}
-              />
-              <span className={styles.themeText}>
-                {theme === 'light' ? 'Dark' : 'Light'} Mode
-              </span>
-            </button>
           </>
         )}
       </div>
@@ -170,7 +162,6 @@ export default App;
 
 
 
-
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
@@ -181,8 +172,10 @@ import RequestDemoForm from "./RequestDemoForm";
 import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
 
 import feedbackImg from './feedback10.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
-const Header = () => {
+const Header = ({ theme, setTheme }) => {
   const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
@@ -197,7 +190,6 @@ const Header = () => {
   useEffect(() => {
     setHeaderZIndex(1000); // Set zIndex when component mounts
   }, [setHeaderZIndex]);
-
 
   const openModal = () => {
     setModalIsOpen(true);
@@ -246,30 +238,28 @@ const Header = () => {
           <button className={styles.button} onClick={openModal}>
             Request For Live Demo
           </button>
-  <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
+          <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
+          <button
+            className={styles.themeToggleButton}
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            title="Toggle Theme"
+          >
+            <FontAwesomeIcon
+              icon={theme === 'light' ? faMoon : faSun}
+              className={styles.themeIcon}
+            />
+            <span className={styles.themeText}>
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </span>
+          </button>
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
+            <RequestDemoForm closeModal={closeModal} />
+          </Modal>
+          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
+            <FeedbackForm closeModal={closeFeedbackModal} />
+          </Modal>
         </div>
       </nav>
-      <div className={styles.border}></div>
-
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        contentLabel="Request for Live Demo!"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <RequestDemoForm closeModal={closeModal} />
-      </Modal>
-
-      <Modal
-        isOpen={feedbackModalIsOpen}
-        onRequestClose={closeFeedbackModal}
-        contentLabel="Submit Feedback"
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-      >
-        <FeedbackForm closeModal={closeFeedbackModal} />
-      </Modal>
     </div>
   );
 };
