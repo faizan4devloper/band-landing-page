@@ -1,224 +1,293 @@
-.card {
-  width: 160px;
-  overflow: hidden;
-  height: 160px;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
+.chatbotIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  padding: 10px;
+  border-radius: 50%;
   cursor: pointer;
-  position: relative;
-  margin-bottom: 15px;
-  /*margin-top: 15px;*/
-  transition: transform 0.6s ease;
-  box-shadow: 0px 3px 4px #5c5555;
-
+  z-index: 1000;
+  animation: float 3s ease-in-out infinite;
 }
 
-.card:hover{
-  transform: translate(0, -10px);
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.big {
-  width: 190px;
-  height: 190px;
-  z-index: 0;
-  transform: scale(1.1);
-}
-
-.cardTitle {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 12px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* Set a fixed height */
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-  border-radius: 12px;
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transition: opacity 0.3s ease;
-  text-align: center;
-}
-
-.cardContent {
-  position: absolute;
-  font-family: "Poppins", sans-serif;
-  font-size: 10px;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 140px;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%),
-    linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-  border-radius: 12px;
-    backdrop-filter: blur(10px); /* Adjust the blur radius as needed */
-  color: white;
-  padding: 18px;
-  box-sizing: border-box;
-  transform: translateY(100%);
-  transition: transform 0.3s ease, background 0.3s ease; /* Adjusted transition timing */
-}
-
-.cardContent p{
-  backdrop-filter: none;
-  font-size: 10px;
-}
-
-.cardContent h3{
-  color:#eeecec;
-}
-
-.cardContent.slide-up {
-  transform: translateY(0);
-}
-
-.cardContent::before {
-  content: "";
-  position: absolute;
-  padding-top: 0px;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to top, #6f36cd, #1f77f6);
-  transition: top 0.3s ease;
-  border-radius: 12px;
-  z-index: -1;
-}
-.arrow {
- cursor: pointer;
-    position: absolute;
-    display: flex;
-    bottom: 10px;
-    right: 10px;
-    font-size: 14px;
-    width: 16px;
-    height: 16px;
-    padding: 5px 5px 5px 5px;
-    border-radius: 50px;
-    border: 2px solid rgba(255, 255, 255, 1);
-    color: rgba(255, 255, 255, 1);
-    overflow: hidden;
-    transition: width 0.3s ease, background 0.5s ease, color 0.5s ease;
-}
-
-.arrow:hover {
-  width: 80px; /* Increase width on hover */
-  align-items: center;
-  font-size: 10px;
-  background-color: rgba(
-    255,
-    255,
-    255,
-    1
-  ); /* Change background color on hover */
-  color: rgba(15, 95, 220, 1); /* Change text color on hover */
-}
-
-.arrow.hovered {
-  width: 65px;
-}
-.card:hover .cardContent::before {
-  top: 0;
-}
-.readMore {
-  left: 10px;
-}
-.card:hover .cardContent::before {
-  background: linear-gradient(0deg, #6f36cd 0%, #1f77f6 100%);
-}
-
-.big .cardContent {
-  transform: translateY(0);
-  padding-top:0px;
-}
-
-
-.tagsContainer {
+.chatbotContainer {
+ position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 420px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-wrap: wrap;
-  padding: 5px;
-  position: absolute;
-  top: -15px;
-  left: -6px;
-  z-index: 10;
-  margin-top: 10px;
+  flex-direction: column;
+  z-index: 1001;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.tag {
-  /*border-radius: 3px;*/
-  padding: 3px 6px;
-  margin-right: 5px;
-  font-size: 10px;
-  color: #FFF;
-  background-color: #6f36cd; 
+.chatbotContainer.open {
+  opacity: 1;
+  transform: scale(1);
 }
 
-.noDataMessage {
-  color: #ff4d4d; /* Red color for emphasis */
-  /*font-size: 1em;*/
+.chatbotHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  padding: 10px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.chatbotTitle {
+  font-size: 16px;
   font-weight: bold;
-  /*margin-top: 10px;*/
-  text-align: center;
-  padding: 5px;
-  border-radius: 5px;
-  background-color: #ffe6e6; /* Light red background */
 }
 
-
-/* Styles for the pop-up within the card */
-.cardPopup {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, #000000 100%), linear-gradient(0deg, rgba(23, 23, 25, 0.3), rgba(23, 23, 25, 0.3));
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-  width: 80%; /* Adjust width to fit within the card */
-  z-index: 10; /* Ensure the pop-up appears above other content */
-  animation: fadeIn 0.3s ease-in-out;
-  color:#fff;
-}
-.cardPopup{
-  font-size: 12px;
-}
-
-/* Close button inside the pop-up */
-.closeButton {
-background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-color: white;
+.closeButton, .clearChatButton {
+  background: none;
   border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 1em;
-  margin-top: 10px;
 }
 
-.closeButton:hover {
-  background-color: #0056b3;
+.chatbotMessages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.5s ease;
 }
 
-/* Fade-in animation for the pop-up */
-@keyframes fadeIn {
+@keyframes slideIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -45%);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateY(0);
   }
 }
+
+.userMessage, .botMessage {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.userMessage {
+  justify-content: flex-end;
+}
+
+.botMessage {
+  justify-content: flex-start;
+}
+
+.icon {
+  margin: 0 8px;
+  font-size: 15px;
+}
+
+.messageText {
+  max-width: 75%;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  color: #333;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.messageText a {
+  color: #3f1ec2;
+  text-decoration: none;
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+
+.userMessage .messageText {
+  background-color: #d1e7ff;
+}
+
+.chatbotInput {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+}
+
+.chatbotInput input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.chatbotInput button {
+background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.clearChatOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+}
+
+.clearChatWindow {
+  position: absolute;
+  bottom: 130px; /* Adjust based on available space */
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+.confirmButton {
+  background-color: #d9534f;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.cancelButton {
+  background-color: #5f1ec1;
+  color: white;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+/* ... previous styles ... */
+
+.botProfile {
+  display: flex;
+  align-items: center;
+}
+
+.botImage {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.botInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.botStatus {
+  font-size: 12px;
+  color: #d1e7ff;
+}
+
+/* Rest of the styles */
+.headerActions {
+  display: flex;
+  align-items: center;
+}
+
+.closeButton, .clearChatButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+/* Add this to your existing styles */
+.greenDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #28a745; /* Green color */
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+/* Ensure the botStatus class is updated */
+.botStatus {
+  font-size: 12px;
+  color: #d1e7ff;
+  display: flex;
+  align-items: center;
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  background-color: #4caf50; /* Green dot */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.minimizeButton {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+/* Add tooltip styles */
+.clearChatButton[title], .minimizeButton[title] {
+  position: relative;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 import React, { useState, useEffect, useRef } from 'react';
