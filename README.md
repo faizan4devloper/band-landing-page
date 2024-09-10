@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header/Header';
 import Home from './Home';
 import SideBarPage from './components/Sidebar/SideBarPage';
@@ -11,23 +11,23 @@ import Footer from './components/Footer/Footer';
 import { getCardsData } from './data';
 import { BeatLoader } from 'react-spinners';
 import { HeaderProvider } from './components/Context/HeaderContext';
-import { NewHeaderProvider } from './components/Context/NewHeaderContext';
+import { NewHeaderProvider } from './components/Context/NewHeaderContext'; // Import NewHeaderProvider
 import { ThemeProvider } from './components/Context/ThemeContext'; // Import ThemeProvider
 
 import styles from './App.module.css';
 
 const MainApp = () => {
   const location = useLocation();
-  const [cardsData, setCardsData] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light'); // State for theme
-  const cardsContainerRef = useRef(null);
+  const [cardsData, setCardsData] = React.useState([]);
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [bigIndex, setBigIndex] = React.useState(null);
+  const [showScrollDown, setShowScrollDown] = React.useState(true);
+  const [showScrollUp, setShowScrollUp] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
+  const cardsContainerRef = React.useRef(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchData = async () => {
       const data = await getCardsData();
       setCardsData(data);
@@ -37,7 +37,7 @@ const MainApp = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
@@ -74,7 +74,7 @@ const MainApp = () => {
     setShowScrollUp(false);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
         setShowScrollUp(true);
@@ -106,58 +106,62 @@ const MainApp = () => {
   const showFooter = location.pathname === '/';
 
   return (
-    <HeaderProvider>
-      <div className={styles.app}>
-        {loading ? (
-          <div className={styles.loader}>
-            <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-          </div>
-        ) : (
-          <>
-            <Header theme={theme} setTheme={setTheme} />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    cardsData={cardsData}
-                    handleClickLeft={handleClickLeft}
-                    handleClickRight={handleClickRight}
-                    currentIndex={currentIndex}
-                    bigIndex={bigIndex}
-                    toggleSize={toggleSize}
-                    cardsContainerRef={cardsContainerRef}
-                  />
-                }
-              />
-              <Route path="/dashboard" element={<SideBarPage />} />
-              <Route
-                path="/all-cards"
-                element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-              />
-            </Routes>
-            {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-              <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-                <FontAwesomeIcon icon={faChevronDown} />
-              </div>
-            )}
-            {showScrollUp && (
-              <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-                <FontAwesomeIcon icon={faChevronUp} />
-              </div>
-            )}
-            <Chatbot />
-            {showFooter && <Footer />}
-          </>
-        )}
-      </div>
-    </HeaderProvider>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header theme={theme} setTheme={setTheme} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
+    </div>
   );
 };
 
 const App = () => (
   <Router>
-    <MainApp />
+    <ThemeProvider>
+      <NewHeaderProvider>
+        <HeaderProvider>
+          <MainApp />
+        </HeaderProvider>
+      </NewHeaderProvider>
+    </ThemeProvider>
   </Router>
 );
 
