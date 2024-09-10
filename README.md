@@ -1,126 +1,7 @@
-Header.js:80 Uncaught 
-TypeError: setTheme is not a function
-    at onClick (Header.js:80:1)
-    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
-    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
-    at invokeGuardedCallback (react-dom.development.js:4277:1)
-    at invokeGuardedCallbackAndCatchFirstError (react-dom.development.js:4291:1)
-    at executeDispatch (react-dom.development.js:9041:1)
-    at processDispatchQueueItemsInOrder (react-dom.development.js:9073:1)
-    at processDispatchQueue (react-dom.development.js:9086:1)
-    at dispatchEventsForPlugins (react-dom.development.js:9097:1)
-    at react-dom.development.js:9288:1
-
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
-import logoImage from "./HCLTechLogo.svg";
-import RequestDemoForm from "./RequestDemoForm";
-import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
-
-import feedbackImg from './feedback10.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
-
-const Header = ({ theme, setTheme }) => {
-  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
-
-  const handleImageClick = () => {
-    navigate("/");
-  };
-  
-  useEffect(() => {
-    setHeaderZIndex(1000); // Set zIndex when component mounts
-  }, [setHeaderZIndex]);
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const openFeedbackModal = () => {
-    setFeedbackModalIsOpen(true);
-  };
-
-  const closeFeedbackModal = () => {
-    setFeedbackModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={logoImage}
-            alt=""
-            onClick={handleImageClick}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-          <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
-          <button
-            className={styles.themeToggleButton}
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            title="Toggle Theme"
-          >
-            <FontAwesomeIcon
-              icon={theme === 'light' ? faMoon : faSun}
-              className={styles.themeIcon}
-            />
-            <span className={styles.themeText}>
-              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-            </span>
-          </button>
-          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
-            <RequestDemoForm closeModal={closeModal} />
-          </Modal>
-          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
-            <FeedbackForm closeModal={closeFeedbackModal} />
-          </Modal>
-        </div>
-      </nav>
-    </div>
-  );
-};
-
-export default Header;
-
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header/Header';
 import Home from './Home';
 import SideBarPage from './components/Sidebar/SideBarPage';
@@ -129,7 +10,6 @@ import Chatbot from './components/ChatBot/Chatbot';
 import Footer from './components/Footer/Footer';
 import { getCardsData } from './data';
 import { BeatLoader } from 'react-spinners';
-import { HeaderProvider } from './components/Context/HeaderContext';
 import styles from './App.module.css';
 
 const MainApp = () => {
@@ -222,52 +102,50 @@ const MainApp = () => {
   const showFooter = location.pathname === '/';
 
   return (
-    <HeaderProvider>
-      <div className={styles.app}>
-        {loading ? (
-          <div className={styles.loader}>
-            <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-          </div>
-        ) : (
-          <>
-            <Header theme={theme} setTheme={setTheme} />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    cardsData={cardsData}
-                    handleClickLeft={handleClickLeft}
-                    handleClickRight={handleClickRight}
-                    currentIndex={currentIndex}
-                    bigIndex={bigIndex}
-                    toggleSize={toggleSize}
-                    cardsContainerRef={cardsContainerRef}
-                  />
-                }
-              />
-              <Route path="/dashboard" element={<SideBarPage />} />
-              <Route
-                path="/all-cards"
-                element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-              />
-            </Routes>
-            {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-              <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-                <FontAwesomeIcon icon={faChevronDown} />
-              </div>
-            )}
-            {showScrollUp && (
-              <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-                <FontAwesomeIcon icon={faChevronUp} />
-              </div>
-            )}
-            <Chatbot />
-            {showFooter && <Footer />}
-          </>
-        )}
-      </div>
-    </HeaderProvider>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header theme={theme} setTheme={setTheme} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
+    </div>
   );
 };
 
@@ -278,3 +156,113 @@ const App = () => (
 );
 
 export default App;
+
+
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
+import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
+import feedbackImg from './feedback10.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+
+const Header = ({ theme, setTheme }) => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate("/");
+  };
+  
+  useEffect(() => {
+    // Any additional setup can be added here
+  }, []);
+
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
+
+  const openFeedbackModal = () => {
+    setFeedbackModalIsOpen(true);
+  };
+
+  const closeFeedbackModal = () => {
+    setFeedbackModalIsOpen(false);
+  };
+
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
+
+  const handleThemeToggle = () => {
+    if (typeof setTheme === 'function') {
+      setTheme(theme === 'light' ? 'dark' : 'light');
+    } else {
+      console.error('setTheme is not a function');
+    }
+  };
+
+  return (
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            title="Navigate to Home"
+          />
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
+          <button
+            className={styles.themeToggleButton}
+            onClick={handleThemeToggle}
+            title="Toggle Theme"
+          >
+            <FontAwesomeIcon
+              icon={theme === 'light' ? faMoon : faSun}
+              className={styles.themeIcon}
+            />
+            <span className={styles.themeText}>
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </span>
+          </button>
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
+            <RequestDemoForm closeModal={closeModal} />
+          </Modal>
+          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
+            <FeedbackForm closeModal={closeFeedbackModal} />
+          </Modal>
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Header;
