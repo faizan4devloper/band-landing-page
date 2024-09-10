@@ -1,36 +1,12 @@
-/* Default Light Theme */
-:root {
-  --primary-color: #5f1ec1;
-  --secondary-color: rgba(15, 95, 220, 1);
-  --background-color: #ffffff;
-  --text-color: #808080;
-  --scrollbar-color: rgba(15, 95, 220, 1);
-  --scrollbar-background: #dcdcdc;
-  --button-background-color: rgba(13, 85, 198, 0.1);
-  --button-hover-color: #5f1ec1;
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --background-color: #1a1a2e;
-  --text-color: #ffffff;
-  --scrollbar-color: #5f1ec1;
-  --scrollbar-background: #333333;
-  --button-background-color: rgba(95, 30, 193, 0.8);
-  --button-hover-color: #c1a1f2;
-}
-
-/* .allCardsPage Styles */
 .allCardsPage {
   padding: 20px;
   margin-top: 112px;
   margin-left: 270px; /* Make space for the sidebar */
   position: fixed;
+  
 }
 
-/* .backButton Styles */
+
 .backButton {
   background-color: rgba(230, 235, 245, 1);
   padding: 7px;
@@ -44,30 +20,36 @@
   position: fixed;
   left: 156px;
   top: 68px;
-  color: var(--text-color);
-  background-color: var(--button-background-color);
+}
+
+.backIcon {
+  font-size: 12px;
 }
 
 .backButton:hover {
-  color: var(--button-hover-color); /* Change button color on hover */
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
 }
 
-/* .allCardsContainer Styles */
 .allCardsContainer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   padding: 10px 15px;
-  background-color: var(--background-color);
-  border-left: 4px solid var(--primary-color);
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 770px;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  /*background: linear-gradient(to bottom, #1a1a2e, #16213e);*/
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: calc(100vh - 100px);
   overflow-y: auto;
 
   /* Beautiful scrollbar customization */
   scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-color) var(--scrollbar-background); /* Adjust scrollbar colors as needed */
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; /* Adjust scrollbar colors as needed */
 }
 
 .allCardsContainer > div {
@@ -82,22 +64,19 @@
   padding-bottom: 50px !important;
 }
 
-/* .catalogsHeading Styles */
 .catalogsHeading {
   font-size: 18px; /* Adjust font size as needed */
   margin: 0 10px; /* Adjust spacing from the back button */
   position: fixed;
   top: 82px; /* Adjust vertical position */
   left: 190px; /* Adjust horizontal position */
-  color: var(--text-color);
 }
 
-/* .noResultsContainer Styles */
 .noResultsContainer {
   grid-column: span 4;
   text-align: center;
   padding: 40px;
-  background-color: var(--background-color); /* Lighter background for contrast */
+  background-color: #f4f4f4; /* Lighter background for contrast */
   border: 2px dashed #ddd; /* Dashed border to highlight the section */
   border-radius: 8px; /* Rounded corners for a modern look */
   color: #666; /* Slightly darker text color for better readability */
@@ -113,7 +92,7 @@
 
 .noResults {
   font-size: 24px; /* Larger font size for emphasis */
-  color: var(--text-color); /* Darker text color for contrast */
+  color: #333; /* Darker text color for contrast */
   margin: 0;
 }
 
@@ -124,7 +103,7 @@
 }
 
 .noResults a {
-  color: var(--primary-color); /* Blue color for links */
+  color: #007bff; /* Blue color for links */
   text-decoration: none; /* Remove underline */
   font-weight: bold; /* Bold text for visibility */
 }
@@ -132,3 +111,5 @@
 .noResults a:hover {
   text-decoration: underline; /* Underline on hover for better UX */
 }
+
+
