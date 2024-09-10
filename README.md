@@ -1,13 +1,49 @@
+/* Default Light Theme */
+:root {
+  --background-color: #ffffff;
+  --background-gradient: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #5f1ec1;
+  --scrollbar-thumb-hover: #3d1299;
+  --border-color: rgba(95, 30, 193, 0.8);
+  --image-border: transparent;
+  --section-background: #f9f9f9;
+  --section-border: rgba(95, 30, 193, 0.8);
+  --highlight-color: #5f1ec1;
+  --laser-cursor-color: #ff0000;
+  --laser-cursor-shadow: 4px 3px 20px rgba(255, 0, 0, 54.8), 0 0 11px rgba(255, 0, 0, 202.6);
+  --nav-button-color: #ffffff;
+  --nav-button-hover: #808080;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --background-color: #1a1a2e;
+  --background-gradient: linear-gradient(to bottom, #1a1a2e, #16213e);
+  --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --scrollbar-track: #333333;
+  --scrollbar-thumb: #9d66f5;
+  --scrollbar-thumb-hover: #c1a1f2;
+  --border-color: rgba(95, 30, 193, 0.8);
+  --image-border: transparent;
+  --section-background: #333;
+  --section-border: rgba(95, 30, 193, 0.8);
+  --highlight-color: #9d66f5;
+  --laser-cursor-color: #ff0000;
+  --laser-cursor-shadow: 4px 3px 20px rgba(255, 0, 0, 54.8), 0 0 11px rgba(255, 0, 0, 202.6);
+  --nav-button-color: #ffffff;
+  --nav-button-hover: #808080;
+}
+
 /* Main content styling */
 .mainContent {
   display: flex;
   flex-direction: column;
   width: 100%;
   padding: 0px 20px;
-  background-color: #ffffff;
-  /*background: linear-gradient(to bottom, #1a1a2e, #16213e);*/
-
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--background-color);
+  box-shadow: var(--box-shadow);
   height: calc(100vh - 100px);
   overflow-y: auto;
   min-height: 300px;
@@ -19,17 +55,17 @@
 }
 
 .mainContent::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--scrollbar-track);
 }
 
 .mainContent::-webkit-scrollbar-thumb {
-  background-color: #5f1ec1;
+  background-color: var(--scrollbar-thumb);
   border-radius: 20px;
-  border: 3px solid #f1f1f1;
+  border: 3px solid var(--scrollbar-track);
 }
 
 .mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: #3d1299;
+  background-color: var(--scrollbar-thumb-hover);
 }
 
 /* Image styling before maximization */
@@ -80,13 +116,13 @@
   top: 10px;
   right: 125px;
   font-size: 18px;
-  color: #ffffff;
+  color: var(--nav-button-color);
   cursor: pointer;
   z-index: 1300;
 }
 
 .closeIcon:hover {
-  color: #808080;
+  color: var(--nav-button-hover);
 }
 
 /* Overlay styling */
@@ -111,16 +147,16 @@
 .adoption,
 .solution {
   padding: 10px 15px;
-  background-color: #f9f9f9;
-  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  background-color: var(--section-background);
+  border-left: 4px solid var(--section-border);
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--box-shadow);
   margin-bottom: 50px;
 }
 
 .highlight {
   font-style: italic;
-  color: #5f1ec1;
+  color: var(--highlight-color);
   font-weight: bold;
 }
 
@@ -143,13 +179,13 @@
   height: 100px;
   object-fit: cover;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
+  border: 2px solid var(--image-border);
   transition: border-color 0.3s;
 }
 
 .customThumb:hover,
 .selected .customThumb {
-  border-color: #5f1ec1;
+  border-color: var(--highlight-color);
 }
 
 .customCarousel {
@@ -171,7 +207,7 @@
 .imageLoadingCaption {
   font-size: 12px;
   font-weight: bold;
-  color: #5931d4;
+  color: var(--highlight-color);
   margin-bottom: 10px;
   animation: pulse 2s infinite;
 }
@@ -198,14 +234,12 @@
   position: fixed;
   width: 10px; /* Adjust size to resemble a laser pointer */
   height: 10px; /* Adjust size to resemble a laser pointer */
-  background-color: #ff0000; /* Red color for the laser cursor */
+  background-color: var(--laser-cursor-color); /* Red color for the laser cursor */
   border-radius: 50%; /* Make it a circle */
   pointer-events: none;
   z-index: 1500;
-  
-  /* Shadow and glow effect */
-box-shadow: 4px 3px 20px rgba(255, 0, 0, 54.8), 0 0 11px rgba(255, 0, 0, 202.6);
-animation: pulseLaser 1.5s infinite;
+  box-shadow: var(--laser-cursor-shadow);
+  animation: pulseLaser 1.5s infinite;
 }
 
 .laserCursor::before {
@@ -220,20 +254,19 @@ animation: pulseLaser 1.5s infinite;
   border-radius: 50%; /* Make it a circle */
 }
 
-
 /* Navigation button styling */
 .navButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   font-size: 24px;
-  color: #ffffff;
+  color: var(--nav-button-color);
   cursor: pointer;
   z-index: 1300;
 }
 
 .navButton:hover {
-  color: #808080;
+  color: var(--nav-button-hover);
 }
 
 .navButton:first-child {
