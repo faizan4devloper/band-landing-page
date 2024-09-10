@@ -1,33 +1,47 @@
+/* Define default light theme styles */
+:root {
+  --card-title-light: rgba(23, 23, 25, 1);
+  --back-button-light-bg: rgba(230, 235, 245, 1);
+  --back-button-light-hover: rgba(95, 30, 193, 1);
+}
+
+/* Define dark theme styles */
+[data-theme='dark'] {
+  --card-title-light: rgba(255, 255, 255, 1);
+  --back-button-light-bg: rgba(60, 60, 60, 1);
+  --back-button-light-hover: rgba(200, 200, 200, 1);
+}
+
 .sideBarPage {
-  /*display: flex;*/
+  /* existing styles */
   position: fixed;
   margin-top: 70px;
   margin-left: 45px;
-  /* margin-top: 25px; */
   flex-direction: column;
   min-height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
-  
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
 }
 
 .header2 {
   display: flex;
   align-items: center;
 }
+
 .cardTitle {
   font-size: 18px;
-  color: rgba(23, 23, 25, 1);
+  color: var(--card-title-light); /* Use variable for color */
   font-weight: 600;
   margin-bottom: 10px;
   font-family: "Poppins", sans-serif;
 }
+
 .contentWrapper {
   display: flex;
-  /*margin-top: 15px;*/
   flex: 1;
 }
+
 .backButtonContainer {
   display: flex;
   align-items: center;
@@ -35,7 +49,7 @@
 }
 
 .backButton {
-  background-color: rgba(230, 235, 245, 1);
+  background-color: var(--back-button-light-bg); /* Use variable for background color */
   padding: 7px;
   margin-left: 20px;
   margin-bottom: 10px;
@@ -48,5 +62,5 @@
 }
 
 .backButton:hover {
-  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+  color: var(--back-button-light-hover); /* Use variable for hover color */
 }
