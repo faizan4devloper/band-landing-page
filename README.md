@@ -1,5 +1,25 @@
 import React, { createContext, useState, useContext } from 'react';
 
+// Create Context
+const HeaderContext = createContext();
+
+// Create Provider Component
+export const HeaderProvider = ({ children }) => {
+  const [headerZIndex, setHeaderZIndex] = useState(1000);
+
+  return (
+    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
+      {children}
+    </HeaderContext.Provider>
+  );
+};
+
+// Custom Hook to Use Header Context
+export const useHeaderContext = () => useContext(HeaderContext);
+
+
+import React, { createContext, useState, useContext } from 'react';
+
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
