@@ -1,6 +1,6 @@
-
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { useTheme } from '../components/Context/ThemeProvider'; // Import your ThemeProvider context
 import styles from "./AllCardsPage.module.css";
 import Card from "./Cards";
 import CategorySidebar from "./CategorySidebar";
@@ -12,6 +12,7 @@ import BusinessSVG from "./CardsImages/business.svg";
 import NoResultsImage from "./CardsImages/thinking-face-svgrepo-com.svg";
 
 const AllCardsPage = ({ cardsData }) => {
+  const { theme } = useTheme(); // Get the current theme
   const [bigIndex, setBigIndex] = useState(null);
   const [filteredCards, setFilteredCards] = useState(cardsData);
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,7 +77,7 @@ const AllCardsPage = ({ cardsData }) => {
     if (activeItems["Industry"]?.includes(card.industry) && card.industry !== "All") {
       tags.push(card.industry);
     }
-    if (activeItems["Business Function"]?.includes(card.businessFunction) & card.businessFunction !== "All") {
+    if (activeItems["Business Function"]?.includes(card.businessFunction) && card.businessFunction !== "All") {
       tags.push(card.businessFunction);
     }
     return tags;
@@ -92,7 +93,7 @@ const AllCardsPage = ({ cardsData }) => {
   const lastRowStartIndex = getLastRowStartIndex();
 
   return (
-    <div className={styles.allCardsPage}>
+    <div className={`${styles.allCardsPage} ${theme === 'dark' ? styles.darkTheme : ''}`}>
       <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
       <button onClick={handleBackButtonClick} className={styles.backButton}>
         <FontAwesomeIcon icon={faArrowLeft} />
@@ -130,3 +131,28 @@ const AllCardsPage = ({ cardsData }) => {
 };
 
 export default AllCardsPage;
+
+
+
+/* AllCardsPage.module.css */
+.allCardsPage {
+  --background-color: #fff; /* Default light theme background */
+  --text-color: #000; /* Default light theme text color */
+}
+
+.darkTheme .allCardsPage {
+  --background-color: #333; /* Dark theme background */
+  --text-color: #fff; /* Dark theme text color */
+}
+
+.allCardsPage {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  /* other styles */
+}
+
+.backButton {
+  /* styles */
+}
+
+/* Define other styles for light and dark themes */
