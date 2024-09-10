@@ -1,4 +1,3 @@
-
 /* Default Light Theme */
 :root {
   --sidebar-bg: #ffffff;
@@ -7,7 +6,8 @@
   --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
   --menu-item-active-color: white;
   --icon-img-filter: brightness(0) invert(0);
-  --text-color: #000000; /* Default text color */
+  --icon-img-filter-active: brightness(0) invert(1); /* White for active icon */
+  --text-color: #000000;
   --new-text-color: #000000;
 }
 
@@ -17,24 +17,23 @@
   --secondary-color: #c1a1f2;
   --sidebar-bg: #2c2c2c;
   --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(70, 70, 70, 1); /* Adjusted hover color */
+  --menu-item-bg-hover: rgba(70, 70, 70, 1);
   --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
   --menu-item-active-color: #ffffff;
-  --icon-img-filter: brightness(0) invert(1);
-  --text-color: #ffffff; /* Dark theme text color */
-    --new-text-color: #ffffff;
-
+  --icon-img-filter: brightness(0) invert(1); /* Invert for dark theme */
+  --icon-img-filter-active: brightness(1); /* Normal brightness for active icon in dark theme */
+  --text-color: #ffffff;
+  --new-text-color: #ffffff;
 }
 
 /* Sidebar Styling */
 .sideBar {
   width: 320px;
-  min-width: 230px; /* Prevents shrinking */
+  min-width: 230px;
   padding-left: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /*background-color: var(--sidebar-bg);*/
   border-right: 1px solid var(--sidebar-border);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -47,15 +46,15 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 100%; /* Ensure full width */
-  min-width: 200px; /* Prevent shrinking */
+  width: 100%;
+  min-width: 200px;
   padding: 10px;
   margin: 5px 0;
   cursor: pointer;
   transition: background-color 0.3s;
   background: none;
   border: none;
-  color: var(--new-text-color); /* Apply text color */
+  color: var(--new-text-color);
 }
 
 .menuItem:not(.active):hover {
@@ -64,13 +63,13 @@
 }
 
 .active {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: var(--menu-item-active-bg);
   color: var(--menu-item-active-color);
   border-radius: 8px 0 0 8px;
 }
 
 .active .iconImg {
-  filter: var(--icon-img-filter);
+  filter: var(--icon-img-filter-active); /* Use active filter */
 }
 
 .iconImg {
@@ -78,7 +77,6 @@
 }
 
 /* Adjust any other necessary styles to match the dark theme */
-
 .label {
   margin-right: auto;
   margin-left: 10px;
