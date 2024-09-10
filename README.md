@@ -1,82 +1,116 @@
-/* Default Light Theme */
-:root {
-  --sidebar-bg: #ffffff;
-  --sidebar-border: rgba(219, 197, 255, 1);
-  --menu-item-bg-hover: rgba(230, 235, 245, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  --menu-item-active-color: white;
-  --icon-img-filter: brightness(0) invert(0);
-  --text-color: #000000; /* Default text color */
-}
+Header.js:80 Uncaught 
+TypeError: setTheme is not a function
+    at onClick (Header.js:80:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at invokeGuardedCallbackAndCatchFirstError (react-dom.development.js:4291:1)
+    at executeDispatch (react-dom.development.js:9041:1)
+    at processDispatchQueueItemsInOrder (react-dom.development.js:9073:1)
+    at processDispatchQueue (react-dom.development.js:9086:1)
+    at dispatchEventsForPlugins (react-dom.development.js:9097:1)
+    at react-dom.development.js:9288:1
 
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --sidebar-bg: #2c2c2c;
-  --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(70, 70, 70, 1); /* Adjusted hover color */
-  --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
-  --menu-item-active-color: #ffffff;
-  --icon-img-filter: brightness(0) invert(1);
-  --text-color: #ffffff; /* Dark theme text color */
-}
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import { useHeaderContext } from '../Context/HeaderContext'; // Import context
+import logoImage from "./HCLTechLogo.svg";
+import RequestDemoForm from "./RequestDemoForm";
+import FeedbackForm from "./FeedbackForm"; // Import FeedbackForm
 
-/* Sidebar Styling */
-.sideBar {
-  width: 320px;
-  min-width: 230px; /* Prevents shrinking */
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  background-color: var(--sidebar-bg);
-  border-right: 1px solid var(--sidebar-border);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
-}
+import feedbackImg from './feedback10.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
-/* Menu Item Styling */
-.menuItem {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%; /* Ensure full width */
-  min-width: 200px; /* Prevent shrinking */
-  padding: 10px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  background: none;
-  border: none;
-  color: var(--text-color); /* Apply text color */
-}
+const Header = ({ theme, setTheme }) => {
+  const { headerZIndex, setHeaderZIndex } = useHeaderContext(); // Use context
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false); // Feedback modal state
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
-.menuItem:not(.active):hover {
-  background-color: var(--menu-item-bg-hover);
-  border-radius: 8px 0 0 8px;
-}
+  const handleImageClick = () => {
+    navigate("/");
+  };
+  
+  useEffect(() => {
+    setHeaderZIndex(1000); // Set zIndex when component mounts
+  }, [setHeaderZIndex]);
 
-.active {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--menu-item-active-color);
-  border-radius: 8px 0 0 8px;
-}
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
 
-.active .iconImg {
-  filter: var(--icon-img-filter);
-}
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
-.iconImg {
-  filter: var(--icon-img-filter);
-}
+  const openFeedbackModal = () => {
+    setFeedbackModalIsOpen(true);
+  };
 
-/* Adjust any other necessary styles to match the dark theme */
+  const closeFeedbackModal = () => {
+    setFeedbackModalIsOpen(false);
+  };
 
-.label {
-  margin-right: auto;
-  margin-left: 10px;
-  font-size: 12px;
-}
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
+
+  return (
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={logoImage}
+            alt=""
+            onClick={handleImageClick}
+            title="Navigate to Home"
+          />
+        </div>
+        <div className={styles.right}>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <img src={feedbackImg} className={`${styles.feedbackImage} ${styles.whiteImage}`} alt="feedback" onClick={openFeedbackModal} title="Provide Feedback"/>          
+          <button
+            className={styles.themeToggleButton}
+            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            title="Toggle Theme"
+          >
+            <FontAwesomeIcon
+              icon={theme === 'light' ? faMoon : faSun}
+              className={styles.themeIcon}
+            />
+            <span className={styles.themeText}>
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+            </span>
+          </button>
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
+            <RequestDemoForm closeModal={closeModal} />
+          </Modal>
+          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
+            <FeedbackForm closeModal={closeFeedbackModal} />
+          </Modal>
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default Header;
