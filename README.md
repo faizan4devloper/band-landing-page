@@ -1,3 +1,8 @@
+ERROR in ./src/App.js 232:35-52
+export 'NewHeaderProvider' (imported as 'NewHeaderProvider') was not found in './components/Context/NewHeaderProvider' (possible exports: HeaderProvider, useHeaderContext)
+
+
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,8 +16,8 @@ import Footer from './components/Footer/Footer';
 import { getCardsData } from './data';
 import { BeatLoader } from 'react-spinners';
 import { HeaderProvider } from './components/Context/HeaderContext';
-import { NewHeaderProvider } from './components/Context/NewHeaderContext'; // Import NewHeaderProvider
-import { ThemeProvider } from './components/Context/ThemeContext'; // Import ThemeProvider
+import { NewHeaderProvider } from './components/Context/NewHeaderProvider'; // Import NewHeaderProvider
+import { ThemeProvider } from './components/Context/ThemeProvider'; // Import ThemeProvider
 
 import styles from './App.module.css';
 
