@@ -1,226 +1,52 @@
-// MainApp.js
-import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Header from './components/Header/Header';
-import Home from './Home';
-import SideBarPage from './components/Sidebar/SideBarPage';
-import AllCardsPage from './components/Cards/AllCardsPage';
-import Chatbot from './components/ChatBot/Chatbot';
-import Footer from './components/Footer/Footer';
-import { getCardsData } from './data';
-import { BeatLoader } from 'react-spinners';
-import styles from './App.module.css';
+.sideBarPage {
+  /*display: flex;*/
+  position: fixed;
+  margin-top: 70px;
+  margin-left: 45px;
+  /* margin-top: 25px; */
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+  overscroll-behavior: contain; /* Prevent overscrolling */
+  scroll-behavior: smooth; /* Enable smooth scrolling */
+  
+}
 
-const MainApp = () => {
-  const location = useLocation();
-  const [cardsData, setCardsData] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [bigIndex, setBigIndex] = useState(null);
-  const [showScrollDown, setShowScrollDown] = useState(true);
-  const [showScrollUp, setShowScrollUp] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light'); // State for theme
-  const cardsContainerRef = useRef(null);
+.header2 {
+  display: flex;
+  align-items: center;
+}
+.cardTitle {
+  font-size: 18px;
+  color: rgba(23, 23, 25, 1);
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+}
+.contentWrapper {
+  display: flex;
+  /*margin-top: 15px;*/
+  flex: 1;
+}
+.backButtonContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      setCardsData(data);
-      setLoading(false);
-    };
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 7px;
+  margin-left: 20px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  width: 32px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleSize = (index) => {
-    setBigIndex(index === bigIndex ? null : index);
-  };
-
-  const handleClickLeft = () => {
-    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleClickRight = () => {
-    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
-    setCurrentIndex(newCurrentIndex);
-  };
-
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
-    }
-  };
-
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener('scroll', debounceScroll);
-
-    return () => window.removeEventListener('scroll', debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const showFooter = location.pathname === '/';
-
-  return (
-    <div className={styles.app}>
-      {loading ? (
-        <div className={styles.loader}>
-          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-        </div>
-      ) : (
-        <>
-          <Header theme={theme} setTheme={setTheme} />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  cardsData={cardsData}
-                  handleClickLeft={handleClickLeft}
-                  handleClickRight={handleClickRight}
-                  currentIndex={currentIndex}
-                  bigIndex={bigIndex}
-                  toggleSize={toggleSize}
-                  cardsContainerRef={cardsContainerRef}
-                />
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={<SideBarPage theme={theme} setTheme={setTheme} />}
-            />
-            <Route
-              path="/all-cards"
-              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-            />
-          </Routes>
-          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-              <FontAwesomeIcon icon={faChevronDown} />
-            </div>
-          )}
-          {showScrollUp && (
-            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-              <FontAwesomeIcon icon={faChevronUp} />
-            </div>
-          )}
-          <Chatbot />
-          {showFooter && <Footer />}
-        </>
-      )}
-    </div>
-  );
-};
-
-const App = () => (
-  <Router>
-    <HeaderProvider>
-      <MainApp />
-    </HeaderProvider>
-  </Router>
-);
-
-export default App;
-
-
-
-
-
-// SideBarPage.js
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-
-const SideBarPage = ({ theme, setTheme }) => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
-  const location = useLocation();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = [{ title: 'Sample Title', content: 'Sample Content' }];
-      const params = new URLSearchParams(location.search);
-      const title = params.get('title');
-      if (title) {
-        setCardTitle(title);
-        const card = data.find((c) => c.title === title);
-        if (card) {
-          setCardContent(card.content);
-        }
-      }
-    };
-
-    fetchData();
-  }, [location.search]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-  };
-
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
-  return (
-    <div className={styles.sideBarPage}>
-      <Header theme={theme} setTheme={setTheme} />
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          &lt; Back
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
-    </div>
-  );
-};
-
-export default SideBarPage;
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
