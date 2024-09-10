@@ -1,3 +1,34 @@
+/* Light theme */
+:root {
+  --sidebar-bg-light: rgba(255, 255, 255, 1);
+  --sidebar-border-light: rgba(219, 197, 255, 1);
+  --selected-filter-bg-light: rgba(230, 235, 245, 1);
+  --selected-filter-color-light: #6f36cd;
+  --category-header-bg-light: rgba(230, 235, 245, 1);
+  --dropdown-bg-light: rgba(250, 250, 250, 1);
+  --dropdown-item-hover-light: rgba(220, 220, 220, 1);
+  --active-category-bg-light: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --active-item-bg-light: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --svg-icon-color-light: #6f36cd;
+  --side-head-color-light: #808080;
+}
+
+/* Dark theme */
+[data-theme='dark'] {
+  --sidebar-bg-dark: rgba(30, 30, 30, 1);
+  --sidebar-border-dark: rgba(60, 60, 60, 1);
+  --selected-filter-bg-dark: rgba(50, 50, 50, 1);
+  --selected-filter-color-dark: #bada55; /* Adjust as needed */
+  --category-header-bg-dark: rgba(50, 50, 50, 1);
+  --dropdown-bg-dark: rgba(40, 40, 40, 1);
+  --dropdown-item-hover-dark: rgba(70, 70, 70, 1);
+  --active-category-bg-dark: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --active-item-bg-dark: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  --svg-icon-color-dark: #bada55; /* Adjust as needed */
+  --side-head-color-dark: #b0b0b0;
+}
+
+
 .sidebar {
   position: fixed;
   top: 140px;
