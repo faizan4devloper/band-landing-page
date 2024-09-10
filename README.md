@@ -1,5 +1,6 @@
+// MainApp.js
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import Header from './components/Header/Header';
@@ -10,7 +11,6 @@ import Chatbot from './components/ChatBot/Chatbot';
 import Footer from './components/Footer/Footer';
 import { getCardsData } from './data';
 import { BeatLoader } from 'react-spinners';
-import { HeaderProvider } from './components/Context/HeaderContext';
 import styles from './App.module.css';
 
 const MainApp = () => {
@@ -126,7 +126,10 @@ const MainApp = () => {
                 />
               }
             />
-            <Route path="/dashboard" element={<SideBarPage />} />
+            <Route
+              path="/dashboard"
+              element={<SideBarPage theme={theme} setTheme={setTheme} />}
+            />
             <Route
               path="/all-cards"
               element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
@@ -153,9 +156,71 @@ const MainApp = () => {
 const App = () => (
   <Router>
     <HeaderProvider>
-    <MainApp />
+      <MainApp />
     </HeaderProvider>
   </Router>
 );
 
 export default App;
+
+
+
+
+
+// SideBarPage.js
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import Header from '../Header/Header';
+import SideBar from './SideBar';
+import MainContent from './MainContent';
+import styles from './SideBarPage.module.css';
+
+const SideBarPage = ({ theme, setTheme }) => {
+  const [activeTab, setActiveTab] = useState('description');
+  const [cardContent, setCardContent] = useState({});
+  const [cardTitle, setCardTitle] = useState('');
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = [{ title: 'Sample Title', content: 'Sample Content' }];
+      const params = new URLSearchParams(location.search);
+      const title = params.get('title');
+      if (title) {
+        setCardTitle(title);
+        const card = data.find((c) => c.title === title);
+        if (card) {
+          setCardContent(card.content);
+        }
+      }
+    };
+
+    fetchData();
+  }, [location.search]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  return (
+    <div className={styles.sideBarPage}>
+      <Header theme={theme} setTheme={setTheme} />
+      <div className={styles.header2}>
+        <button onClick={handleBackButtonClick} className={styles.backButton}>
+          &lt; Back
+        </button>
+        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
+      </div>
+      <div className={styles.contentWrapper}>
+        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
+        <MainContent activeTab={activeTab} content={cardContent} />
+      </div>
+    </div>
+  );
+};
+
+export default SideBarPage;
