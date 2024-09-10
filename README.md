@@ -1,255 +1,115 @@
-/* Default Light Theme */
-:root {
-  --primary-color: #5f1ec1;
-  --secondary-color: rgba(15, 95, 220, 1);
-  --background-color: #ffffff;
-  --text-color: #808080;
-  --scrollbar-color: rgba(15, 95, 220, 1);
-  --scrollbar-background: #dcdcdc;
-  --button-background-color: rgba(13, 85, 198, 0.1);
-  --button-hover-color: #5f1ec1;
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --background-color: #1a1a2e;
-  --text-color: #ffffff;
-  --scrollbar-color: #5f1ec1;
-  --scrollbar-background: #333333;
-  --button-background-color: rgba(95, 30, 193, 0.8);
-  --button-hover-color: #c1a1f2;
-}
-
-/* Chatbot Styles */
-.chatbotIcon {
+.allCardsPage {
+  padding: 20px;
+  margin-top: 112px;
+  margin-left: 270px; /* Make space for the sidebar */
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--text-color);
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1000;
-  animation: float 3s ease-in-out infinite;
+  
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
 
-.chatbotContainer {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 420px;
-  background-color: var(--background-color);
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  z-index: 1001;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.chatbotContainer.open {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.chatbotHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--text-color);
-  padding: 10px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.chatbotTitle {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.closeButton, .clearChatButton, .minimizeButton {
-  background: none;
-  border: none;
-  color: var(--text-color);
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.chatbotMessages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  animation: slideIn 0.5s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.userMessage, .botMessage {
-  display: flex;
-  align-items: center;
+.backButton {
+  background-color: rgba(230, 235, 245, 1);
+  padding: 7px;
   margin-bottom: 10px;
-}
-
-.userMessage {
-  justify-content: flex-end;
-}
-
-.botMessage {
-  justify-content: flex-start;
-}
-
-.icon {
-  margin: 0 8px;
-  font-size: 15px;
-}
-
-.messageText {
-  max-width: 75%;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  color: #333;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-}
-
-.messageText a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-size: 10px;
-  margin-bottom: 5px;
-}
-
-.userMessage .messageText {
-  background-color: #d1e7ff;
-}
-
-.chatbotInput {
-  display: flex;
-  border-top: 1px solid #ddd;
-  padding: 10px;
-}
-
-.chatbotInput input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
   border-radius: 4px;
-  outline: none;
-}
-
-.chatbotInput button {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--text-color);
+  width: 32px;
+  font-size: 14px;
   border: none;
-  padding: 10px;
-  border-radius: 4px;
-  margin-left: 10px;
   cursor: pointer;
+  margin-top: 10px;
+  position: fixed;
+  left: 156px;
+  top: 68px;
 }
 
-.clearChatOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+.backIcon {
+  font-size: 12px;
+}
+
+.backButton:hover {
+  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+}
+
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 15px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 770px;
+  padding: 0px 20px;
+  background-color: #ffffff;
+  /*background: linear-gradient(to bottom, #1a1a2e, #16213e);*/
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+
+  /* Beautiful scrollbar customization */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; /* Adjust scrollbar colors as needed */
+}
+
+.allCardsContainer > div {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1002;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  box-sizing: border-box;
 }
 
-.clearChatWindow {
-  position: absolute;
-  bottom: 130px; /* Adjust based on available space */
-  left: 0;
-  right: 0;
-  background: var(--background-color);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+.lastRowCard {
+  padding-bottom: 50px !important;
+}
+
+.catalogsHeading {
+  font-size: 18px; /* Adjust font size as needed */
+  margin: 0 10px; /* Adjust spacing from the back button */
+  position: fixed;
+  top: 82px; /* Adjust vertical position */
+  left: 190px; /* Adjust horizontal position */
+}
+
+.noResultsContainer {
+  grid-column: span 4;
   text-align: center;
+  padding: 40px;
+  background-color: #f4f4f4; /* Lighter background for contrast */
+  border: 2px dashed #ddd; /* Dashed border to highlight the section */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  color: #666; /* Slightly darker text color for better readability */
+  font-size: 16px; /* Adjust font size for balance */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
 }
 
-.confirmButton {
-  background-color: #d9534f;
-  color: var(--text-color);
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
+.noResultsImage {
+  width: 100px; /* Slightly larger image */
+  height: auto;
+  margin-bottom: 20px; /* Space between image and text */
 }
 
-.cancelButton {
-  background-color: var(--primary-color);
-  color: var(--text-color);
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.noResults {
+  font-size: 24px; /* Larger font size for emphasis */
+  color: #333; /* Darker text color for contrast */
+  margin: 0;
 }
 
-.botProfile {
-  display: flex;
-  align-items: center;
+.noResults p {
+  font-size: 18px; /* Slightly larger font size for additional message */
+  color: #555; /* A softer color for additional message text */
+  margin: 10px 0 0;
 }
 
-.botImage {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 10px;
+.noResults a {
+  color: #007bff; /* Blue color for links */
+  text-decoration: none; /* Remove underline */
+  font-weight: bold; /* Bold text for visibility */
 }
 
-.botInfo {
-  display: flex;
-  flex-direction: column;
+.noResults a:hover {
+  text-decoration: underline; /* Underline on hover for better UX */
 }
 
-.botStatus {
-  font-size: 12px;
-  color: var(--text-color);
-  display: flex;
-  align-items: center;
-}
 
-.onlineDot {
-  width: 8px;
-  height: 8px;
-  background-color: #4caf50; /* Green dot */
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-}
