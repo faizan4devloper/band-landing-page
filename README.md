@@ -1,66 +1,151 @@
-/* Define default light theme styles */
-:root {
-  --card-title-light: rgba(23, 23, 25, 1);
-  --back-button-light-bg: rgba(230, 235, 245, 1);
-  --back-button-light-hover: rgba(95, 30, 193, 1);
-}
-
-/* Define dark theme styles */
-[data-theme='dark'] {
-  --card-title-light: rgba(255, 255, 255, 1);
-  --back-button-light-bg: rgba(60, 60, 60, 1);
-  --back-button-light-hover: rgba(200, 200, 200, 1);
-}
-
-.sideBarPage {
-  /* existing styles */
+.sidebar {
   position: fixed;
-  margin-top: 70px;
-  margin-left: 45px;
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
+  top: 140px;
+  left: 135px;
+  width: 200px;
+  height: calc(100% - 150px);
+  border-right: 1px solid rgba(219, 197, 255, 1);
+  padding: 0 20px;
+  padding-right: 0px;
 }
 
-.header2 {
+.selectedFilters {
+  margin-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.selectedFilter {
   display: flex;
   align-items: center;
-}
-
-.cardTitle {
-  font-size: 18px;
-  color: var(--card-title-light); /* Use variable for color */
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-family: "Poppins", sans-serif;
-}
-
-.contentWrapper {
-  display: flex;
-  flex: 1;
-}
-
-.backButtonContainer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
-.backButton {
-  background-color: var(--back-button-light-bg); /* Use variable for background color */
-  padding: 7px;
-  margin-left: 20px;
-  margin-bottom: 10px;
+  background-color: rgba(230, 235, 245, 1);
   border-radius: 4px;
-  width: 32px;
-  font-size: 14px;
-  border: none;
-  cursor: pointer;
-  margin-right: 10px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #6f36cd;
 }
 
-.backButton:hover {
-  color: var(--back-button-light-hover); /* Use variable for hover color */
+.removeIcon {
+  margin-left: 5px;
+  cursor: pointer;
+  color: #6f36cd;
+}
+
+.removeIcon:hover {
+  color: #d9534f; /* Adjust the color on hover */
+}
+
+.category {
+  margin-bottom: 20px;
+}
+
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 10px 15px;
+  border-radius: 8px 0 0 8px;
+  background-color: rgba(230, 235, 245, 1);
+}
+
+.categoryHeader img {
+  margin-right: 8px;
+}
+
+.chevronIcon {
+  margin-left: auto;
+}
+
+.dropdown {
+  padding: 10px;
+  background-color: rgba(250, 250, 250, 1);
+  border-radius: 4px;
+  margin-top: 10px;
+  max-height: 150px; 
+  overflow-y: auto; 
+  
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; 
+}
+
+/*.dropdown::-webkit-scrollbar-thumb{*/
+/*  border-radius: 5px;*/
+/*}*/
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.checkbox {
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+}
+
+.itemText {
+  margin-left: 5px;
+}
+
+.dropdownItem:hover {
+  background-color: rgba(220, 220, 220, 1);
+  border-radius: 4px;
+  color: #5F1EC1;
+}
+
+.categoryHeader:not(.activeCategory):hover {
+  background-color: rgba(230, 235, 245, 1);
+  border-radius: 8px 0 0 8px;
+}
+
+.activeCategory {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border-radius: 8px 0 0 8px;
+}
+
+.activeItem {
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  color: white;
+  border-radius: 4px;
+}
+
+.svgIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.svgIcon:hover {
+  fill: #5F1EC1;
+}
+
+.activeIcon {
+  filter: brightness(0) invert(1);
+}
+
+
+.sideHead {
+  font-size: 14px;
+  font-weight: 500;
+  margin-top: 0;
+  color: #808080;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.sideHead::after {
+  content: '';
+  display: block;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
