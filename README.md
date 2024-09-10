@@ -1,11 +1,17 @@
+/* Base styles for light theme */
 .allCardsPage {
   padding: 20px;
   margin-top: 112px;
   margin-left: 270px; /* Make space for the sidebar */
   position: fixed;
-  
+  background-color: #ffffff; /* Light theme background color */
+  color: #000000; /* Light theme text color */
 }
 
+.darkTheme .allCardsPage {
+  background-color: #333333; /* Dark theme background color */
+  color: #ffffff; /* Dark theme text color */
+}
 
 .backButton {
   background-color: rgba(230, 235, 245, 1);
@@ -22,6 +28,10 @@
   top: 68px;
 }
 
+.darkTheme .backButton {
+  background-color: rgba(50, 50, 50, 1); /* Dark theme button background */
+}
+
 .backIcon {
   font-size: 12px;
 }
@@ -34,22 +44,23 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   padding: 10px 15px;
-  background-color: #f9f9f9;
+  background-color: #f9f9f9; /* Light theme container background */
   border-left: 4px solid rgba(95, 30, 193, 0.8);
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 770px;
   padding: 0px 20px;
-  background-color: #ffffff;
-  /*background: linear-gradient(to bottom, #1a1a2e, #16213e);*/
-
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: calc(100vh - 100px);
   overflow-y: auto;
 
   /* Beautiful scrollbar customization */
   scrollbar-width: thin;
   scrollbar-color: rgba(95, 30, 193, 0.8) transparent; /* Adjust scrollbar colors as needed */
+}
+
+.darkTheme .allCardsContainer {
+  background-color: #444444; /* Dark theme container background */
+  border-left: 4px solid rgba(95, 30, 193, 0.5); /* Darker border color */
 }
 
 .allCardsContainer > div {
@@ -72,6 +83,10 @@
   left: 190px; /* Adjust horizontal position */
 }
 
+.darkTheme .catalogsHeading {
+  color: #ffffff; /* Dark theme text color */
+}
+
 .noResultsContainer {
   grid-column: span 4;
   text-align: center;
@@ -82,6 +97,12 @@
   color: #666; /* Slightly darker text color for better readability */
   font-size: 16px; /* Adjust font size for balance */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.darkTheme .noResultsContainer {
+  background-color: #555555; /* Darker background for no results */
+  border: 2px dashed #888; /* Darker dashed border */
+  color: #dddddd; /* Lighter text color for contrast */
 }
 
 .noResultsImage {
@@ -96,10 +117,18 @@
   margin: 0;
 }
 
+.darkTheme .noResults {
+  color: #eeeeee; /* Light text color for dark theme */
+}
+
 .noResults p {
   font-size: 18px; /* Slightly larger font size for additional message */
   color: #555; /* A softer color for additional message text */
   margin: 10px 0 0;
+}
+
+.darkTheme .noResults p {
+  color: #cccccc; /* Light text color for additional message in dark theme */
 }
 
 .noResults a {
@@ -112,4 +141,6 @@
   text-decoration: underline; /* Underline on hover for better UX */
 }
 
-
+.darkTheme .noResults a {
+  color: #66aaff; /* Lighter blue color for dark theme links */
+}
