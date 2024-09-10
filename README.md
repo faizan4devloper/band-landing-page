@@ -1,262 +1,271 @@
-/* eslint-disable jsx-a11y/alt-text */
-import React from "react";
+
+import React, { useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import styles from "./AllCardsPage.module.css";
+import Card from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./SideBar.module.css";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import IndustrySVG from "./CardsImages/industry.svg";
+import BusinessSVG from "./CardsImages/business.svg";
+import NoResultsImage from "./CardsImages/thinking-face-svgrepo-com.svg";
 
-// Import individual images for each menu item
-import descriptionImg from "./Icons/Description.svg";
-import solutionFlowImg from "./Icons/SolutionFlow.svg";
-import demoImg from "./Icons/Demo.svg";
-import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
-import benefitsImg from "./Icons/Benefits.svg";
-import industyImg from "./Icons/Industry.svg"
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeItems, setActiveItems] = useState({}); // For keeping track of active filters
+  const cardsContainerRef = useRef(null);
 
-const SideBar = ({ activeTab, handleTabChange }) => {
-  const menuItems = [
-    { id: "description", label: "Description", img: descriptionImg },
-    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
-    { id: "demo", label: "Demo Video", img: demoImg },
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleFilterChange = (updatedActiveItems) => {
+    setActiveItems(updatedActiveItems);
+
+    const industryFilters = updatedActiveItems["Industry"] || [];
+    const businessFunctionFilters = updatedActiveItems["Business Function"] || [];
+
+    const filtered = cardsData.filter((card) => {
+      const matchesIndustry =
+      industryFilters.length === 0 ||
+      industryFilters.includes("All") || // If "All" is selected, show all cards for Industry
+      industryFilters.includes(card.industry);
+
+    const matchesBusinessFunction =
+      businessFunctionFilters.length === 0 ||
+      businessFunctionFilters.includes("All") || // If "All" is selected, show all cards for Business Function
+      businessFunctionFilters.includes(card.businessFunction);
+
+    return matchesIndustry && matchesBusinessFunction;
+    });
+
+    setFilteredCards(filtered);
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = cardsData.filter(card =>
+      card.title.toLowerCase().includes(query.toLowerCase()) ||
+      card.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCards(filtered);
+  };
+
+  const categories = [
     {
-      id: "techArchitecture",
-      label: "Technical Architecture",
-      img: techArchitectureImg,
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["All", "LSH", "BFSI", "ENU", "Automotive", "GOVT"],
     },
-    { id: "benefits", label: "Benefits", img: benefitsImg },
-    { id:"adoption", label: "Industry Adoption", img: industyImg  },
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
+    },
   ];
 
+  const generateTags = (card) => {
+    const tags = [];
+    if (activeItems["Industry"]?.includes(card.industry) && card.industry !== "All") {
+      tags.push(card.industry);
+    }
+    if (activeItems["Business Function"]?.includes(card.businessFunction) & card.businessFunction !== "All") {
+      tags.push(card.businessFunction);
+    }
+    return tags;
+  };
+
+  const getLastRowStartIndex = () => {
+    const totalCards = filteredCards.length;
+    const cardsPerRow = 4;
+    const remainder = totalCards % cardsPerRow;
+    return remainder === 0 ? totalCards - cardsPerRow : totalCards - remainder;
+  };
+
+  const lastRowStartIndex = getLastRowStartIndex();
+
   return (
-    <nav className={styles.sideBar}>
-      {menuItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => handleTabChange(item.id)}
-          className={`${styles.menuItem} ${
-            activeTab === item.id ? styles.active : ""
-          }`}
-        >
-          <img
-            src={item.img}
-            className={`${styles.iconImg} ${styles.hoverEffect}`}
-          />
-          <span className={styles.label}>{item.label}</span>
-          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
-        </button>
-      ))}
-    </nav>
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>GenAI Solution Catalog</h4>
+      <SearchBar query={searchQuery} onQueryChange={handleSearch} />
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card, index) => (
+              <div
+                key={index}
+                className={index >= lastRowStartIndex ? styles.lastRowCard : ""}
+              >
+                <Card
+                  imageUrl={card.imageUrl}
+                  title={card.title}
+                  description={card.description}
+                  isBig={index === bigIndex}
+                  toggleSize={() => toggleSize(index)}
+                  tags={generateTags(card)} // Pass tags here
+                />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noResultsContainer}>
+              <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
+              <p className={styles.noResults}>No solutions found.</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default SideBar;
+export default AllCardsPage;
+
 
 
 /* Default Light Theme */
 :root {
-  --sidebar-bg: #ffffff;
-  --sidebar-border: rgba(219, 197, 255, 1);
-  --menu-item-bg-hover: rgba(230, 235, 245, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  --menu-item-active-color: white;
-  --icon-img-filter: brightness(0) invert(0);
-  --text-color: #000000; /* Default text color */
+  --primary-color: #5f1ec1;
+  --secondary-color: rgba(15, 95, 220, 1);
+  --background-color: #ffffff;
+  --text-color: #808080;
+  --scrollbar-color: rgba(15, 95, 220, 1);
+  --scrollbar-background: #dcdcdc;
+  --button-background-color: rgba(13, 85, 198, 0.1);
+  --button-hover-color: #5f1ec1;
 }
 
 /* Dark Theme */
 [data-theme="dark"] {
   --primary-color: #9d66f5;
   --secondary-color: #c1a1f2;
-  --sidebar-bg: #2c2c2c;
-  --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(70, 70, 70, 1); /* Adjusted hover color */
-  --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
-  --menu-item-active-color: #ffffff;
-  --icon-img-filter: brightness(0) invert(1);
-  --text-color: #ffffff; /* Dark theme text color */
+  --background-color: #1a1a2e;
+  --text-color: #ffffff;
+  --scrollbar-color: #5f1ec1;
+  --scrollbar-background: #333333;
+  --button-background-color: rgba(95, 30, 193, 0.8);
+  --button-hover-color: #c1a1f2;
 }
 
-/* Sidebar Styling */
-.sideBar {
-  width: 320px;
-  min-width: 230px; /* Prevents shrinking */
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  /*background-color: var(--sidebar-bg);*/
-  border-right: 1px solid var(--sidebar-border);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
-}
-
-/* Menu Item Styling */
-.menuItem {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%; /* Ensure full width */
-  min-width: 200px; /* Prevent shrinking */
-  padding: 10px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  background: none;
-  border: none;
-  color: var(--text-color); /* Apply text color */
-}
-
-.menuItem:not(.active):hover {
-  background-color: var(--menu-item-bg-hover);
-  border-radius: 8px 0 0 8px;
-}
-
-.active {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--menu-item-active-color);
-  border-radius: 8px 0 0 8px;
-}
-
-.active .iconImg {
-  filter: var(--icon-img-filter);
-}
-
-.iconImg {
-  filter: var(--icon-img-filter);
-}
-
-/* Adjust any other necessary styles to match the dark theme */
-
-.label {
-  margin-right: auto;
-  margin-left: 10px;
-  font-size: 12px;
-}
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-import { getCardsData } from '../../data';
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
-
-const SideBarPage = ({ theme, setTheme }) => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
-  const location = useLocation();
-  const { setHeaderZIndex } = useHeaderContext(); // Use context
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      const params = new URLSearchParams(location.search);
-      const title = params.get('title');
-      if (title) {
-        setCardTitle(title);
-        const card = data.find((c) => c.title === title);
-        if (card) {
-          setCardContent(card.content);
-        }
-      }
-    };
-
-    fetchData();
-  }, [location.search]);
-
-  useEffect(() => {
-    if (setHeaderZIndex) { // Check if setHeaderZIndex is defined
-      setHeaderZIndex(0); // Set zIndex to 0 for this page
-      return () => setHeaderZIndex(1000); // Reset zIndex on unmount
-    }
-  }, [setHeaderZIndex]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
-  };
-
-  const handleBackButtonClick = () => {
-    window.history.back();
-  };
-
-  return (
-    <div className={styles.sideBarPage}>
-      <Header theme={theme} setTheme={setTheme} /> {/* Pass theme and setTheme */}
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
-    </div>
-  );
-};
-
-export default SideBarPage;
-
-
-.sideBarPage {
-  /*display: flex;*/
+/* .allCardsPage Styles */
+.allCardsPage {
+  padding: 20px;
+  margin-top: 112px;
+  margin-left: 270px; /* Make space for the sidebar */
   position: fixed;
-  margin-top: 70px;
-  margin-left: 45px;
-  /* margin-top: 25px; */
-  flex-direction: column;
-  min-height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  overscroll-behavior: contain; /* Prevent overscrolling */
-  scroll-behavior: smooth; /* Enable smooth scrolling */
-  
 }
 
-.header2 {
-  display: flex;
-  align-items: center;
-}
-.cardTitle {
-  font-size: 18px;
-  color: rgba(23, 23, 25, 1);
-  font-weight: 600;
-  margin-bottom: 10px;
-  font-family: "Poppins", sans-serif;
-}
-.contentWrapper {
-  display: flex;
-  /*margin-top: 15px;*/
-  flex: 1;
-}
-.backButtonContainer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-}
-
+/* .backButton Styles */
 .backButton {
   background-color: rgba(230, 235, 245, 1);
   padding: 7px;
-  margin-left: 20px;
   margin-bottom: 10px;
   border-radius: 4px;
   width: 32px;
   font-size: 14px;
   border: none;
   cursor: pointer;
-  margin-right: 10px;
+  margin-top: 10px;
+  position: fixed;
+  left: 156px;
+  top: 68px;
+  color: var(--text-color);
+  background-color: var(--button-background-color);
 }
 
 .backButton:hover {
-  color: rgba(95, 30, 193, 1); /* Change button color on hover */
+  color: var(--button-hover-color); /* Change button color on hover */
 }
+
+/* .allCardsContainer Styles */
+.allCardsContainer {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 15px;
+  background-color: var(--background-color);
+  border-left: 4px solid var(--primary-color);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 770px;
+  height: calc(100vh - 100px);
+  overflow-y: auto;
+
+  /* Beautiful scrollbar customization */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-background); /* Adjust scrollbar colors as needed */
+}
+
+.allCardsContainer > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px; /* Optional: Add some padding for spacing */
+  box-sizing: border-box;
+}
+
+.lastRowCard {
+  padding-bottom: 50px !important;
+}
+
+/* .catalogsHeading Styles */
+.catalogsHeading {
+  font-size: 18px; /* Adjust font size as needed */
+  margin: 0 10px; /* Adjust spacing from the back button */
+  position: fixed;
+  top: 82px; /* Adjust vertical position */
+  left: 190px; /* Adjust horizontal position */
+  color: var(--text-color);
+}
+
+/* .noResultsContainer Styles */
+.noResultsContainer {
+  grid-column: span 4;
+  text-align: center;
+  padding: 40px;
+  background-color: var(--background-color); /* Lighter background for contrast */
+  border: 2px dashed #ddd; /* Dashed border to highlight the section */
+  border-radius: 8px; /* Rounded corners for a modern look */
+  color: #666; /* Slightly darker text color for better readability */
+  font-size: 16px; /* Adjust font size for balance */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+}
+
+.noResultsImage {
+  width: 100px; /* Slightly larger image */
+  height: auto;
+  margin-bottom: 20px; /* Space between image and text */
+}
+
+.noResults {
+  font-size: 24px; /* Larger font size for emphasis */
+  color: var(--text-color); /* Darker text color for contrast */
+  margin: 0;
+}
+
+.noResults p {
+  font-size: 18px; /* Slightly larger font size for additional message */
+  color: #555; /* A softer color for additional message text */
+  margin: 10px 0 0;
+}
+
+.noResults a {
+  color: var(--primary-color); /* Blue color for links */
+  text-decoration: none; /* Remove underline */
+  font-weight: bold; /* Bold text for visibility */
+}
+
+.noResults a:hover {
+  text-decoration: underline; /* Underline on hover for better UX */
+}
+
+
