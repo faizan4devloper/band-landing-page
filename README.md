@@ -4,9 +4,16 @@
   left: 135px;
   width: 200px;
   height: calc(100% - 150px);
-  border-right: 1px solid rgba(219, 197, 255, 1);
+  border-right: 1px solid var(--sidebar-border-light); /* Default light theme border */
+  background-color: var(--sidebar-bg-light); /* Default light theme background */
   padding: 0 20px;
   padding-right: 0px;
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .sidebar {
+  background-color: var(--sidebar-bg-dark);
+  border-right: 1px solid var(--sidebar-border-dark);
 }
 
 .selectedFilters {
@@ -19,17 +26,28 @@
 .selectedFilter {
   display: flex;
   align-items: center;
-  background-color: rgba(230, 235, 245, 1);
+  background-color: var(--selected-filter-bg-light); /* Default light theme background */
   border-radius: 4px;
   padding: 5px 10px;
   font-size: 12px;
-  color: #6f36cd;
+  color: var(--selected-filter-color-light); /* Default light theme color */
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .selectedFilter {
+  background-color: var(--selected-filter-bg-dark);
+  color: var(--selected-filter-color-dark);
 }
 
 .removeIcon {
   margin-left: 5px;
   cursor: pointer;
-  color: #6f36cd;
+  color: var(--selected-filter-color-light); /* Default light theme color */
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .removeIcon {
+  color: var(--selected-filter-color-dark);
 }
 
 .removeIcon:hover {
@@ -47,32 +65,30 @@
   font-size: 12px;
   padding: 10px 15px;
   border-radius: 8px 0 0 8px;
-  background-color: rgba(230, 235, 245, 1);
+  background-color: var(--category-header-bg-light); /* Default light theme background */
 }
 
-.categoryHeader img {
-  margin-right: 8px;
-}
-
-.chevronIcon {
-  margin-left: auto;
+/* Dark theme styles */
+[data-theme='dark'] .categoryHeader {
+  background-color: var(--category-header-bg-dark);
 }
 
 .dropdown {
   padding: 10px;
-  background-color: rgba(250, 250, 250, 1);
+  background-color: var(--dropdown-bg-light); /* Default light theme background */
   border-radius: 4px;
   margin-top: 10px;
-  max-height: 150px; 
-  overflow-y: auto; 
+  max-height: 150px;
+  overflow-y: auto;
   
   scrollbar-width: thin;
-  scrollbar-color: rgba(95, 30, 193, 0.8) transparent; 
+  scrollbar-color: rgba(95, 30, 193, 0.8) transparent;
 }
 
-/*.dropdown::-webkit-scrollbar-thumb{*/
-/*  border-radius: 5px;*/
-/*}*/
+/* Dark theme styles */
+[data-theme='dark'] .dropdown {
+  background-color: var(--dropdown-bg-dark);
+}
 
 .dropdownItem {
   display: flex;
@@ -93,31 +109,57 @@
 }
 
 .dropdownItem:hover {
-  background-color: rgba(220, 220, 220, 1);
+  background-color: var(--dropdown-item-hover-light); /* Default light theme hover */
   border-radius: 4px;
   color: #5F1EC1;
 }
 
+/* Dark theme styles */
+[data-theme='dark'] .dropdownItem:hover {
+  background-color: var(--dropdown-item-hover-dark);
+}
+
 .categoryHeader:not(.activeCategory):hover {
-  background-color: rgba(230, 235, 245, 1);
+  background-color: var(--category-header-bg-light); /* Default light theme hover */
   border-radius: 8px 0 0 8px;
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .categoryHeader:not(.activeCategory):hover {
+  background-color: var(--category-header-bg-dark);
 }
 
 .activeCategory {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  background: var(--active-category-bg-light); /* Default light theme background */
   color: white;
   border-radius: 8px 0 0 8px;
 }
 
+/* Dark theme styles */
+[data-theme='dark'] .activeCategory {
+  background: var(--active-category-bg-dark);
+}
+
 .activeItem {
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  background: var(--active-item-bg-light); /* Default light theme background */
   color: white;
   border-radius: 4px;
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .activeItem {
+  background: var(--active-item-bg-dark);
 }
 
 .svgIcon {
   width: 16px;
   height: 16px;
+  fill: var(--svg-icon-color-light); /* Default light theme color */
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .svgIcon {
+  fill: var(--svg-icon-color-dark);
 }
 
 .svgIcon:hover {
@@ -128,12 +170,11 @@
   filter: brightness(0) invert(1);
 }
 
-
 .sideHead {
   font-size: 14px;
   font-weight: 500;
   margin-top: 0;
-  color: #808080;
+  color: var(--side-head-color-light); /* Default light theme color */
   position: relative;
   display: inline-block;
   padding-bottom: 5px;
@@ -144,8 +185,17 @@
   display: block;
   width: 200px;
   height: 2px;
-  background: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
+  background: var(--active-item-bg-light); /* Default light theme gradient */
   position: absolute;
   bottom: 0;
   left: 0;
+}
+
+/* Dark theme styles */
+[data-theme='dark'] .sideHead {
+  color: var(--side-head-color-dark);
+}
+
+[data-theme='dark'] .sideHead::after {
+  background: var(--active-item-bg-dark);
 }
