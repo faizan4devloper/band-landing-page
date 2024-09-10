@@ -2,7 +2,7 @@
 :root {
   --sidebar-bg-light: rgba(255, 255, 255, 1);
   --sidebar-border-light: rgba(219, 197, 255, 1);
-  --selected-filter-bg-light: rgba(230, 235, 245, 1);
+  --selected-filters-bg-light: rgba(230, 235, 245, 1);
   --selected-filter-color-light: #6f36cd;
   --category-header-bg-light: rgba(230, 235, 245, 1);
   --dropdown-bg-light: rgba(250, 250, 250, 1);
@@ -17,7 +17,7 @@
 [data-theme='dark'] {
   --sidebar-bg-dark: rgba(30, 30, 30, 1);
   --sidebar-border-dark: rgba(60, 60, 60, 1);
-  --selected-filter-bg-dark: rgba(50, 50, 50, 1);
+  --selected-filters-bg-dark: rgba(50, 50, 50, 1);
   --selected-filter-color-dark: #bada55; /* Adjust as needed */
   --category-header-bg-dark: rgba(50, 50, 50, 1);
   --dropdown-bg-dark: rgba(40, 40, 40, 1);
@@ -27,7 +27,6 @@
   --svg-icon-color-dark: #bada55; /* Adjust as needed */
   --side-head-color-dark: #b0b0b0;
 }
-
 
 .sidebar {
   position: fixed;
@@ -57,7 +56,7 @@
 .selectedFilter {
   display: flex;
   align-items: center;
-  background-color: var(--selected-filter-bg-light); /* Default light theme background */
+  background-color: var(--selected-filters-bg-light); /* Default light theme background */
   border-radius: 4px;
   padding: 5px 10px;
   font-size: 12px;
@@ -66,7 +65,7 @@
 
 /* Dark theme styles */
 [data-theme='dark'] .selectedFilter {
-  background-color: var(--selected-filter-bg-dark);
+  background-color: var(--selected-filters-bg-dark);
   color: var(--selected-filter-color-dark);
 }
 
