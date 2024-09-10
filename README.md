@@ -1,173 +1,132 @@
-ERROR in ./src/App.js 232:35-52
-export 'NewHeaderProvider' (imported as 'NewHeaderProvider') was not found in './components/Context/NewHeaderProvider' (possible exports: HeaderProvider, useHeaderContext)
 
+import React, { useState, useRef } from "react";
+import { Link } from "react-router-dom";
+import styles from "./AllCardsPage.module.css";
+import Card from "./Cards";
+import CategorySidebar from "./CategorySidebar";
+import SearchBar from "./SearchBar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import IndustrySVG from "./CardsImages/industry.svg";
+import BusinessSVG from "./CardsImages/business.svg";
+import NoResultsImage from "./CardsImages/thinking-face-svgrepo-com.svg";
 
+const AllCardsPage = ({ cardsData }) => {
+  const [bigIndex, setBigIndex] = useState(null);
+  const [filteredCards, setFilteredCards] = useState(cardsData);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeItems, setActiveItems] = useState({}); // For keeping track of active filters
+  const cardsContainerRef = useRef(null);
 
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Header from './components/Header/Header';
-import Home from './Home';
-import SideBarPage from './components/Sidebar/SideBarPage';
-import AllCardsPage from './components/Cards/AllCardsPage';
-import Chatbot from './components/ChatBot/Chatbot';
-import Footer from './components/Footer/Footer';
-import { getCardsData } from './data';
-import { BeatLoader } from 'react-spinners';
-import { HeaderProvider } from './components/Context/HeaderContext';
-import { NewHeaderProvider } from './components/Context/NewHeaderProvider'; // Import NewHeaderProvider
-import { ThemeProvider } from './components/Context/ThemeProvider'; // Import ThemeProvider
-
-import styles from './App.module.css';
-
-const MainApp = () => {
-  const location = useLocation();
-  const [cardsData, setCardsData] = React.useState([]);
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [bigIndex, setBigIndex] = React.useState(null);
-  const [showScrollDown, setShowScrollDown] = React.useState(true);
-  const [showScrollUp, setShowScrollUp] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
-  const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'light');
-  const cardsContainerRef = React.useRef(null);
-
-  React.useEffect(() => {
-    const fetchData = async () => {
-      const data = await getCardsData();
-      setCardsData(data);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  React.useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
 
   const toggleSize = (index) => {
     setBigIndex(index === bigIndex ? null : index);
   };
 
-  const handleClickLeft = () => {
-    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
-    setCurrentIndex(newCurrentIndex);
+  const handleFilterChange = (updatedActiveItems) => {
+    setActiveItems(updatedActiveItems);
+
+    const industryFilters = updatedActiveItems["Industry"] || [];
+    const businessFunctionFilters = updatedActiveItems["Business Function"] || [];
+
+    const filtered = cardsData.filter((card) => {
+      const matchesIndustry =
+      industryFilters.length === 0 ||
+      industryFilters.includes("All") || // If "All" is selected, show all cards for Industry
+      industryFilters.includes(card.industry);
+
+    const matchesBusinessFunction =
+      businessFunctionFilters.length === 0 ||
+      businessFunctionFilters.includes("All") || // If "All" is selected, show all cards for Business Function
+      businessFunctionFilters.includes(card.businessFunction);
+
+    return matchesIndustry && matchesBusinessFunction;
+    });
+
+    setFilteredCards(filtered);
   };
 
-  const handleClickRight = () => {
-    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
-    setBigIndex(newBigIndex);
-    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
-    setCurrentIndex(newCurrentIndex);
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    const filtered = cardsData.filter(card =>
+      card.title.toLowerCase().includes(query.toLowerCase()) ||
+      card.description.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredCards(filtered);
   };
 
-  const handleScrollDown = () => {
-    if (cardsContainerRef.current) {
-      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
-      setShowScrollDown(false);
-      setShowScrollUp(true);
+  const categories = [
+    {
+      name: "Industry",
+      svgIcon: IndustrySVG,
+      items: ["All", "LSH", "BFSI", "ENU", "Automotive", "GOVT"],
+    },
+    {
+      name: "Business Function",
+      svgIcon: BusinessSVG,
+      items: ["All", "SDLC", "HR", "Customer Support", "Finance", "Customer Experience"],
+    },
+  ];
+
+  const generateTags = (card) => {
+    const tags = [];
+    if (activeItems["Industry"]?.includes(card.industry) && card.industry !== "All") {
+      tags.push(card.industry);
     }
+    if (activeItems["Business Function"]?.includes(card.businessFunction) & card.businessFunction !== "All") {
+      tags.push(card.businessFunction);
+    }
+    return tags;
   };
 
-  const handleScrollUp = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowScrollDown(true);
-    setShowScrollUp(false);
+  const getLastRowStartIndex = () => {
+    const totalCards = filteredCards.length;
+    const cardsPerRow = 4;
+    const remainder = totalCards % cardsPerRow;
+    return remainder === 0 ? totalCards - cardsPerRow : totalCards - remainder;
   };
 
-  React.useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollUp(true);
-        setShowScrollDown(false);
-      } else {
-        setShowScrollUp(false);
-        setShowScrollDown(true);
-      }
-    };
-
-    const debounceScroll = debounce(handleScroll, 100);
-    window.addEventListener('scroll', debounceScroll);
-
-    return () => window.removeEventListener('scroll', debounceScroll);
-  }, []);
-
-  const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout);
-        func(...args);
-      };
-      clearTimeout(timeout);
-      timeout = setTimeout(later, wait);
-    };
-  };
-
-  const showFooter = location.pathname === '/';
+  const lastRowStartIndex = getLastRowStartIndex();
 
   return (
-    <div className={styles.app}>
-      {loading ? (
-        <div className={styles.loader}>
-          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
-        </div>
-      ) : (
-        <>
-          <Header theme={theme} setTheme={setTheme} />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  cardsData={cardsData}
-                  handleClickLeft={handleClickLeft}
-                  handleClickRight={handleClickRight}
-                  currentIndex={currentIndex}
-                  bigIndex={bigIndex}
-                  toggleSize={toggleSize}
-                  cardsContainerRef={cardsContainerRef}
+    <div className={styles.allCardsPage}>
+      <CategorySidebar categories={categories} onFilterChange={handleFilterChange} />
+      <button onClick={handleBackButtonClick} className={styles.backButton}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h4 className={styles.catalogsHeading}>GenAI Solution Catalog</h4>
+      <SearchBar query={searchQuery} onQueryChange={handleSearch} />
+      <div className={styles.mainContainerCards}>
+        <div className={styles.allCardsContainer} ref={cardsContainerRef}>
+          {filteredCards.length > 0 ? (
+            filteredCards.map((card, index) => (
+              <div
+                key={index}
+                className={index >= lastRowStartIndex ? styles.lastRowCard : ""}
+              >
+                <Card
+                  imageUrl={card.imageUrl}
+                  title={card.title}
+                  description={card.description}
+                  isBig={index === bigIndex}
+                  toggleSize={() => toggleSize(index)}
+                  tags={generateTags(card)} // Pass tags here
                 />
-              }
-            />
-            <Route path="/dashboard" element={<SideBarPage />} />
-            <Route
-              path="/all-cards"
-              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-            />
-          </Routes>
-          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-              <FontAwesomeIcon icon={faChevronDown} />
+              </div>
+            ))
+          ) : (
+            <div className={styles.noResultsContainer}>
+              <img src={NoResultsImage} alt="No results" className={styles.noResultsImage} />
+              <p className={styles.noResults}>No solutions found.</p>
             </div>
           )}
-          {showScrollUp && (
-            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-              <FontAwesomeIcon icon={faChevronUp} />
-            </div>
-          )}
-          <Chatbot />
-          {showFooter && <Footer />}
-        </>
-      )}
+        </div>
+      </div>
     </div>
   );
 };
 
-const App = () => (
-  <Router>
-    <ThemeProvider>
-      <NewHeaderProvider>
-        <HeaderProvider>
-          <MainApp />
-        </HeaderProvider>
-      </NewHeaderProvider>
-    </ThemeProvider>
-  </Router>
-);
-
-export default App;
+export default AllCardsPage;
