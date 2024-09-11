@@ -1,109 +1,112 @@
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
-import styles from "./Header.module.css";
-import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
-import darkLogo from "./HCLTechLogoWhite.svg"; // White logo for dark theme
-import RequestDemoForm from "./RequestDemoForm";
-import FeedbackForm from "./FeedbackForm";
-import feedbackImg from './feedback10.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+.formContainer {
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-left: 4px solid rgba(95, 30, 193, 0.8);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
+  max-height: 80vh; /* Set a max-height for the form container */
+  z-index: 1000;
+}
 
-const Header = ({ theme, setTheme }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
+.demoHead {
+  color: #5f1ec1;
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: -10px;
+  font-size: 18px;
+}
 
-  const handleImageClick = () => {
-    navigate("/");
-  };
+.formGroup {
+  margin-bottom: 10px;
+  position: relative;
+}
 
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #000;
+  font-size: 12px;
+  transition: color 0.3s;
+}
 
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
+input::placeholder, textarea::placeholder {
+  color: #999999; /* Light gray */
+  opacity: 1;
+}
 
-  const openFeedbackModal = () => {
-    setFeedbackModalIsOpen(true);
-  };
+input, textarea {
+  width: 90%;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  border-bottom: 1px solid #ccc; /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
 
-  const closeFeedbackModal = () => {
-    setFeedbackModalIsOpen(false);
-  };
+input:focus, textarea:focus {
+  border-color: #5f1ec1;
+  outline: none;
+}
 
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
+.submitButton {
+  background-color: #5f1ec1;
+  margin-top: 0px;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  width: 78%; /* Make the button take the full width */
+}
 
-  useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
+.closeButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: #aaa;
+}
 
-  const handleThemeToggle = () => {
-    if (typeof setTheme === 'function') {
-      setTheme(theme === 'light' ? 'dark' : 'light');
-    } else {
-      console.error('setTheme is not a function');
-    }
-  };
+.closeButton:hover {
+  color: #555;
+}
 
-  return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={theme === 'light' ? lightLogo : darkLogo} // Conditional logo rendering based on theme
-            alt="HCLTech Logo"
-            onClick={handleImageClick}
-            title="Navigate to Home"
-          />
-        </div>
-        
-        <div className={styles.right}>
-          <div
-            className={`${styles.themeToggleButton} ${theme === 'light' ? styles.light : styles.dark}`}
-            onClick={handleThemeToggle}
-            title="Toggle Theme"
-          >
-            <div className={styles.toggleCircle}></div>
-            <FontAwesomeIcon icon={faSun} className={`${styles.toggleIcon} ${styles.sunIcon}`} />
-            <FontAwesomeIcon icon={faMoon} className={`${styles.toggleIcon} ${styles.moonIcon}`} />
-          </div>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-          <img
-            src={feedbackImg}
-            className={`${styles.feedbackImage} ${styles.whiteImage}`}
-            alt="feedback"
-            onClick={openFeedbackModal}
-            title="Provide Feedback"
-          />
-          
-          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
-            <RequestDemoForm closeModal={closeModal} />
-          </Modal>
-          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
-            <FeedbackForm closeModal={closeFeedbackModal} />
-          </Modal>
-        </div>
-      </nav>
-    </div>
-  );
-};
+.successMessage {
+  text-align: center;
+  color: #5f1ec1;
+  font-size: 16px;
+}
 
-export default Header;
+/* Custom scrollbar styling for the form container */
+/*.formContainer::-webkit-scrollbar {*/
+/*  width: 6px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-track {*/
+/*  background: #f1f1f1;*/
+/*  border-radius: 8px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-thumb {*/
+/*  background: #5f1ec1;*/
+/*  border-radius: 8px;*/
+/*}*/
+
+/*.formContainer::-webkit-scrollbar-thumb:hover {*/
+/*  background: #555;*/
+/*}*/
+
+/* Custom scrollbar styling for the react-select menu */
