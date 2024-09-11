@@ -1,33 +1,34 @@
 /* Base light theme */
 :root {
-  --primary-color: #5f1ec1;
-  --background-color: #f9f9f9;
-  --border-color: rgba(95, 30, 193, 0.8);
-  --text-color: #000;
-  --placeholder-color: #999999;
-  --button-bg-color: #5f1ec1;
-  --button-text-color: #fff;
-  --input-border-color: #ccc;
-  --input-focus-border-color: #5f1ec1;
+  --light-primary-color: #5f1ec1;
+  --light-background-color: #f9f9f9;
+  --light-border-color: rgba(95, 30, 193, 0.8);
+  --light-text-color: #000;
+  --light-placeholder-color: #999999;
+  --light-button-bg-color: #5f1ec1;
+  --light-button-text-color: #fff;
+  --light-input-border-color: #ccc;
+  --light-input-focus-border-color: #5f1ec1;
 }
 
 /* Dark theme overrides */
 [data-theme="dark"] {
-  --primary-color: #d6bcfa;
-  --background-color: #1a1a1a;
-  --border-color: rgba(214, 188, 250, 0.8);
-  --text-color: #fff;
-  --placeholder-color: #777;
-  --button-bg-color: #d6bcfa;
-  --button-text-color: #1a1a1a;
-  --input-border-color: #444;
-  --input-focus-border-color: #d6bcfa;
+  --dark-primary-color: #d6bcfa;
+  --dark-background-color: #1a1a1a;
+  --dark-border-color: rgba(214, 188, 250, 0.8);
+  --dark-text-color: #fff;
+  --dark-placeholder-color: #777;
+  --dark-button-bg-color: #d6bcfa;
+  --dark-button-text-color: #1a1a1a;
+  --dark-input-border-color: #444;
+  --dark-input-focus-border-color: #d6bcfa;
 }
-
 .formContainer {
   padding: 30px;
-  background-color: var(--background-color);
-  border-left: 4px solid var(--border-color);
+  background-color: var(--light-background-color);
+  background-color: var(--dark-background-color); /* Fallback for dark */
+  border-left: 4px solid var(--light-border-color);
+  border-left: 4px solid var(--dark-border-color); /* Fallback for dark */
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
@@ -39,7 +40,8 @@
 }
 
 .demoHead {
-  color: var(--primary-color);
+  color: var(--light-primary-color);
+  color: var(--dark-primary-color); /* Fallback for dark */
   margin-bottom: 10px;
   text-align: center;
   margin-top: -10px;
@@ -55,13 +57,15 @@ label {
   display: block;
   margin-bottom: 5px;
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--light-text-color);
+  color: var(--dark-text-color); /* Fallback for dark */
   font-size: 12px;
   transition: color 0.3s;
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--placeholder-color); /* Light gray */
+  color: var(--light-placeholder-color); /* Light theme placeholder */
+  color: var(--dark-placeholder-color); /* Dark theme placeholder */
   opacity: 1;
 }
 
@@ -70,7 +74,8 @@ input, textarea {
   padding: 5px;
   border: none;
   background-color: transparent;
-  border-bottom: 1px solid var(--input-border-color); /* Only bottom border */
+  border-bottom: 1px solid var(--light-input-border-color); /* Light theme */
+  border-bottom: 1px solid var(--dark-input-border-color); /* Dark theme */
   border-radius: 0;
   font-size: 12px;
   transition: border-color 0.3s;
@@ -78,21 +83,24 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  border-color: var(--input-focus-border-color);
+  border-color: var(--light-input-focus-border-color); /* Light theme */
+  border-color: var(--dark-input-focus-border-color); /* Dark theme */
   outline: none;
 }
 
 .submitButton {
-  background-color: var(--button-bg-color);
+  background-color: var(--light-button-bg-color); /* Light theme */
+  background-color: var(--dark-button-bg-color); /* Dark theme */
   margin-top: 0px;
-  color: var(--button-text-color);
+  color: var(--light-button-text-color); /* Light theme */
+  color: var(--dark-button-text-color); /* Dark theme */
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   margin-top: 10px;
-  width: 78%; /* Make the button take the full width */
+  width: 78%;
 }
 
 .closeButton {
@@ -112,6 +120,7 @@ input:focus, textarea:focus {
 
 .successMessage {
   text-align: center;
-  color: var(--primary-color);
+  color: var(--light-primary-color); /* Light theme */
+  color: var(--dark-primary-color); /* Dark theme */
   font-size: 16px;
 }
