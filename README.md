@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import styles from "./Header.module.css";
-import logoImage from "./HCLTechLogo.svg";
+import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
+import darkLogo from "./HCLTechLogoWhite.svg"; // White logo for dark theme
 import RequestDemoForm from "./RequestDemoForm";
 import FeedbackForm from "./FeedbackForm";
 import feedbackImg from './feedback10.svg';
@@ -65,8 +66,8 @@ const Header = ({ theme, setTheme }) => {
       <nav className={styles.header}>
         <div className={styles.logo}>
           <img
-            src={logoImage}
-            alt=""
+            src={theme === 'light' ? lightLogo : darkLogo} // Conditional logo rendering based on theme
+            alt="HCLTech Logo"
             onClick={handleImageClick}
             title="Navigate to Home"
           />
