@@ -1,81 +1,108 @@
-/* Light and Dark Theme Variables */
+/* Base light theme */
 :root {
-  --bg-color-light: #f9f9f9;
-  --bg-color-dark: #2b2b2b;
-  
-  --text-color-light: #000;
-  --text-color-dark: #fff;
-  
-  --border-color-light: rgba(95, 30, 193, 0.8);
-  --border-color-dark: rgba(255, 255, 255, 0.8);
-  
-  --input-border-light: #ccc;
-  --input-border-dark: #888;
-  
-  --input-focus-light: #5f1ec1;
-  --input-focus-dark: #d4a1ff;
-  
-  --placeholder-light: #999;
-  --placeholder-dark: #aaa;
-  
-  --button-bg-light: #5f1ec1;
-  --button-bg-dark: #9d66ff;
-  
-  --scrollbar-bg-light: #f1f1f1;
-  --scrollbar-bg-dark: #4a4a4a;
-  
-  --scrollbar-thumb-light: #5f1ec1;
-  --scrollbar-thumb-dark: #d4a1ff;
+  --primary-color: #5f1ec1;
+  --background-color: #f9f9f9;
+  --border-color: rgba(95, 30, 193, 0.8);
+  --text-color: #000;
+  --placeholder-color: #999999;
+  --button-bg-color: #5f1ec1;
+  --button-text-color: #fff;
+  --input-border-color: #ccc;
+  --input-focus-border-color: #5f1ec1;
 }
 
-/* Theme-specific styles */
-[data-theme="light"] .formContainer {
-  background-color: var(--bg-color-light);
-  color: var(--text-color-light);
-  border-left-color: var(--border-color-light);
+/* Dark theme overrides */
+[data-theme="dark"] {
+  --primary-color: #d6bcfa;
+  --background-color: #1a1a1a;
+  --border-color: rgba(214, 188, 250, 0.8);
+  --text-color: #fff;
+  --placeholder-color: #777;
+  --button-bg-color: #d6bcfa;
+  --button-text-color: #1a1a1a;
+  --input-border-color: #444;
+  --input-focus-border-color: #d6bcfa;
 }
 
-[data-theme="dark"] .formContainer {
-  background-color: var(--bg-color-dark);
-  color: var(--text-color-dark);
-  border-left-color: var(--border-color-dark);
+.formContainer {
+  padding: 30px;
+  background-color: var(--background-color);
+  border-left: 4px solid var(--border-color);
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  max-width: 450px;
+  margin: 0 auto;
+  animation: slideIn 0.5s ease-out;
+  max-height: 80vh;
+  z-index: 1000;
 }
 
-[data-theme="light"] input, [data-theme="light"] textarea {
-  border-bottom: 1px solid var(--input-border-light);
-  color: var(--text-color-light);
+.demoHead {
+  color: var(--primary-color);
+  margin-bottom: 10px;
+  text-align: center;
+  margin-top: -10px;
+  font-size: 18px;
 }
 
-[data-theme="dark"] input, [data-theme="dark"] textarea {
-  border-bottom: 1px solid var(--input-border-dark);
-  color: var(--text-color-dark);
+.formGroup {
+  margin-bottom: 10px;
+  position: relative;
 }
 
-input:focus, textarea:focus {
-  border-color: var(--input-focus-light);
-}
-
-[data-theme="dark"] input:focus, [data-theme="dark"] textarea:focus {
-  border-color: var(--input-focus-dark);
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 12px;
+  transition: color 0.3s;
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--placeholder-light);
+  color: var(--placeholder-color); /* Light gray */
+  opacity: 1;
 }
 
-[data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder {
-  color: var(--placeholder-dark);
+input, textarea {
+  width: 90%;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  border-bottom: 1px solid var(--input-border-color); /* Only bottom border */
+  border-radius: 0;
+  font-size: 12px;
+  transition: border-color 0.3s;
+  font-family: "Poppins", sans-serif; /* Apply Google Font */
+}
+
+input:focus, textarea:focus {
+  border-color: var(--input-focus-border-color);
+  outline: none;
 }
 
 .submitButton {
-  background-color: var(--button-bg-light);
-}
-
-[data-theme="dark"] .submitButton {
-  background-color: var(--button-bg-dark);
+  background-color: var(--button-bg-color);
+  margin-top: 0px;
+  color: var(--button-text-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 10px;
+  width: 78%; /* Make the button take the full width */
 }
 
 .closeButton {
+  position: absolute;
+  top: 25px;
+  right: 25px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
   color: #aaa;
 }
 
@@ -83,27 +110,8 @@ input::placeholder, textarea::placeholder {
   color: #555;
 }
 
-/* Custom scrollbar styling for form container */
-.formContainer::-webkit-scrollbar {
-  width: 6px;
-}
-
-[data-theme="light"] .formContainer::-webkit-scrollbar-track {
-  background: var(--scrollbar-bg-light);
-}
-
-[data-theme="dark"] .formContainer::-webkit-scrollbar-track {
-  background: var(--scrollbar-bg-dark);
-}
-
-[data-theme="light"] .formContainer::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-light);
-}
-
-[data-theme="dark"] .formContainer::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb-dark);
-}
-
-.formContainer::-webkit-scrollbar-thumb:hover {
-  background: #555;
+.successMessage {
+  text-align: center;
+  color: var(--primary-color);
+  font-size: 16px;
 }
