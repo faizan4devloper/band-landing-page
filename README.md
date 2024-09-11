@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import Header from './components/Header/Header';
-import Home from './Home';
-import SideBarPage from './components/Sidebar/SideBarPage';
-import AllCardsPage from './components/Cards/AllCardsPage';
-import Chatbot from './components/ChatBot/Chatbot';
-import Footer from './components/Footer/Footer';
-import { getCardsData } from './data';
 import { BeatLoader } from 'react-spinners';
 import { HeaderProvider } from './components/Context/HeaderContext';
 import styles from './App.module.css';
+
+// Lazy load components
+const Header = lazy(() => import('./components/Header/Header'));
+const Home = lazy(() => import('./Home'));
+const SideBarPage = lazy(() => import('./components/Sidebar/SideBarPage'));
+const AllCardsPage = lazy(() => import('./components/Cards/AllCardsPage'));
+const Chatbot = lazy(() => import('./components/ChatBot/Chatbot'));
+const Footer = lazy(() => import('./components/Footer/Footer'));
 
 const MainApp = () => {
   const location = useLocation();
@@ -110,43 +111,45 @@ const MainApp = () => {
         </div>
       ) : (
         <>
-          <Header theme={theme} setTheme={setTheme} />
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Home
-                  cardsData={cardsData}
-                  handleClickLeft={handleClickLeft}
-                  handleClickRight={handleClickRight}
-                  currentIndex={currentIndex}
-                  bigIndex={bigIndex}
-                  toggleSize={toggleSize}
-                  cardsContainerRef={cardsContainerRef}
-                />
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={<SideBarPage theme={theme} setTheme={setTheme} />}
-            />
-            <Route
-              path="/all-cards"
-              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
-            />
-          </Routes>
-          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
-            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
-              <FontAwesomeIcon icon={faChevronDown} />
-            </div>
-          )}
-          {showScrollUp && (
-            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
-              <FontAwesomeIcon icon={faChevronUp} />
-            </div>
-          )}
-          <Chatbot />
-          {showFooter && <Footer />}
+          <Suspense fallback={<div className={styles.loader}><BeatLoader color="#5931d5" loading={true} size={15} margin={2} /></div>}>
+            <Header theme={theme} setTheme={setTheme} />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <Home
+                    cardsData={cardsData}
+                    handleClickLeft={handleClickLeft}
+                    handleClickRight={handleClickRight}
+                    currentIndex={currentIndex}
+                    bigIndex={bigIndex}
+                    toggleSize={toggleSize}
+                    cardsContainerRef={cardsContainerRef}
+                  />
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={<SideBarPage theme={theme} setTheme={setTheme} />}
+              />
+              <Route
+                path="/all-cards"
+                element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+              />
+            </Routes>
+            {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+              <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+                <FontAwesomeIcon icon={faChevronDown} />
+              </div>
+            )}
+            {showScrollUp && (
+              <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+                <FontAwesomeIcon icon={faChevronUp} />
+              </div>
+            )}
+            <Chatbot />
+            {showFooter && <Footer />}
+          </Suspense>
         </>
       )}
     </div>
