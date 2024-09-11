@@ -1,82 +1,81 @@
-.formContainer {
-  padding: 30px;
-  background-color: #f9f9f9;
-  border-left: 4px solid rgba(95, 30, 193, 0.8);
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
-  max-height: 80vh; /* Set a max-height for the form container */
-  z-index: 1000;
+/* Light and Dark Theme Variables */
+:root {
+  --bg-color-light: #f9f9f9;
+  --bg-color-dark: #2b2b2b;
+  
+  --text-color-light: #000;
+  --text-color-dark: #fff;
+  
+  --border-color-light: rgba(95, 30, 193, 0.8);
+  --border-color-dark: rgba(255, 255, 255, 0.8);
+  
+  --input-border-light: #ccc;
+  --input-border-dark: #888;
+  
+  --input-focus-light: #5f1ec1;
+  --input-focus-dark: #d4a1ff;
+  
+  --placeholder-light: #999;
+  --placeholder-dark: #aaa;
+  
+  --button-bg-light: #5f1ec1;
+  --button-bg-dark: #9d66ff;
+  
+  --scrollbar-bg-light: #f1f1f1;
+  --scrollbar-bg-dark: #4a4a4a;
+  
+  --scrollbar-thumb-light: #5f1ec1;
+  --scrollbar-thumb-dark: #d4a1ff;
 }
 
-.demoHead {
-  color: #5f1ec1;
-  margin-bottom: 10px;
-  text-align: center;
-  margin-top: -10px;
-  font-size: 18px;
+/* Theme-specific styles */
+[data-theme="light"] .formContainer {
+  background-color: var(--bg-color-light);
+  color: var(--text-color-light);
+  border-left-color: var(--border-color-light);
 }
 
-.formGroup {
-  margin-bottom: 10px;
-  position: relative;
+[data-theme="dark"] .formContainer {
+  background-color: var(--bg-color-dark);
+  color: var(--text-color-dark);
+  border-left-color: var(--border-color-dark);
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: #000;
-  font-size: 12px;
-  transition: color 0.3s;
+[data-theme="light"] input, [data-theme="light"] textarea {
+  border-bottom: 1px solid var(--input-border-light);
+  color: var(--text-color-light);
 }
 
-input::placeholder, textarea::placeholder {
-  color: #999999; /* Light gray */
-  opacity: 1;
-}
-
-input, textarea {
-  width: 90%;
-  padding: 5px;
-  border: none;
-  background-color: transparent;
-  border-bottom: 1px solid #ccc; /* Only bottom border */
-  border-radius: 0;
-  font-size: 12px;
-  transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
+[data-theme="dark"] input, [data-theme="dark"] textarea {
+  border-bottom: 1px solid var(--input-border-dark);
+  color: var(--text-color-dark);
 }
 
 input:focus, textarea:focus {
-  border-color: #5f1ec1;
-  outline: none;
+  border-color: var(--input-focus-light);
+}
+
+[data-theme="dark"] input:focus, [data-theme="dark"] textarea:focus {
+  border-color: var(--input-focus-dark);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--placeholder-light);
+}
+
+[data-theme="dark"] input::placeholder, [data-theme="dark"] textarea::placeholder {
+  color: var(--placeholder-dark);
 }
 
 .submitButton {
-  background-color: #5f1ec1;
-  margin-top: 0px;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-  width: 78%; /* Make the button take the full width */
+  background-color: var(--button-bg-light);
+}
+
+[data-theme="dark"] .submitButton {
+  background-color: var(--button-bg-dark);
 }
 
 .closeButton {
-  position: absolute;
-  top: 25px;
-  right: 25px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
   color: #aaa;
 }
 
@@ -84,29 +83,27 @@ input:focus, textarea:focus {
   color: #555;
 }
 
-.successMessage {
-  text-align: center;
-  color: #5f1ec1;
-  font-size: 16px;
+/* Custom scrollbar styling for form container */
+.formContainer::-webkit-scrollbar {
+  width: 6px;
 }
 
-/* Custom scrollbar styling for the form container */
-/*.formContainer::-webkit-scrollbar {*/
-/*  width: 6px;*/
-/*}*/
+[data-theme="light"] .formContainer::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg-light);
+}
 
-/*.formContainer::-webkit-scrollbar-track {*/
-/*  background: #f1f1f1;*/
-/*  border-radius: 8px;*/
-/*}*/
+[data-theme="dark"] .formContainer::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg-dark);
+}
 
-/*.formContainer::-webkit-scrollbar-thumb {*/
-/*  background: #5f1ec1;*/
-/*  border-radius: 8px;*/
-/*}*/
+[data-theme="light"] .formContainer::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-light);
+}
 
-/*.formContainer::-webkit-scrollbar-thumb:hover {*/
-/*  background: #555;*/
-/*}*/
+[data-theme="dark"] .formContainer::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-dark);
+}
 
-/* Custom scrollbar styling for the react-select menu */
+.formContainer::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
