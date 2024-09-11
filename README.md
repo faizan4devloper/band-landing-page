@@ -1,3 +1,23 @@
+// src/context/HeaderContext.js
+import React, { createContext, useContext, useState } from 'react';
+
+const HeaderContext = createContext();
+
+export const useHeaderContext = () => {
+  return useContext(HeaderContext);
+};
+
+export const HeaderProvider = ({ children }) => {
+  const [headerZIndex, setHeaderZIndex] = useState(1000); // Default zIndex
+
+  return (
+    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
+      {children}
+    </HeaderContext.Provider>
+  );
+};
+
+
 import React from 'react';
 import { useHeaderContext } from '../Context/HeaderContext'; // Import context
 import styles from "./Header.module.css";
