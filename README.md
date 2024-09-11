@@ -1,7 +1,5 @@
-
-import React, { useState, useEffect } from "react";
-import Modal from "react-modal";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useHeaderContext } from '../Context/HeaderContext'; // Import context
 import styles from "./Header.module.css";
 import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
 import darkLogo from "./HCLTechLogoWhite.png"; // White logo for dark theme
@@ -12,10 +10,12 @@ import SunIcon from './sun.svg'; // Import your SVGs
 import MoonIcon from './moon.svg'; // Import your SVGs
 
 const Header = ({ theme, setTheme }) => {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
+  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(true);
+  const [lastScrollY, setLastScrollY] = React.useState(0);
+  const { headerZIndex } = useHeaderContext(); // Use context
+
   const navigate = useNavigate();
 
   const handleImageClick = () => {
@@ -47,7 +47,7 @@ const Header = ({ theme, setTheme }) => {
     setLastScrollY(window.scrollY);
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     window.addEventListener("scroll", controlHeaderVisibility);
     return () => {
       window.removeEventListener("scroll", controlHeaderVisibility);
@@ -63,22 +63,21 @@ const Header = ({ theme, setTheme }) => {
   };
 
   return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
       <nav className={styles.header}>
         <div className={styles.logo}>
           <img
-            src={theme === 'light' ? lightLogo : darkLogo} // Conditional logo rendering based on theme
+            src={theme === 'light' ? lightLogo : darkLogo}
             alt="HCLTech Logo"
             onClick={handleImageClick}
             title="Navigate to Home"
           />
         </div>
-        
         <div className={styles.right}>
           <div
             className={`${styles.themeToggleButton} ${theme === 'light' ? styles.light : styles.dark}`}
             onClick={handleThemeToggle}
-            title={theme === 'light' ? "Switch to Dark Theme" : "Switch to Light Theme"} // Tooltip on the button only
+            title={theme === 'light' ? "Switch to Dark Theme" : "Switch to Light Theme"}
           >
             <div className={styles.toggleCircle}></div>
             <img
@@ -102,7 +101,6 @@ const Header = ({ theme, setTheme }) => {
             onClick={openFeedbackModal}
             title="Provide Feedback"
           />
-          
           <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
             <RequestDemoForm closeModal={closeModal} />
           </Modal>
@@ -187,3 +185,21 @@ const SideBarPage = ({ theme, setTheme }) => {
 };
 
 export default SideBarPage;
+
+
+
+import React, { createContext, useContext, useState } from 'react';
+
+const HeaderContext = createContext();
+
+export const HeaderProvider = ({ children }) => {
+  const [headerZIndex, setHeaderZIndex] = useState(1000);
+
+  return (
+    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
+      {children}
+    </HeaderContext.Provider>
+  );
+};
+
+export const useHeaderContext = () => useContext(HeaderContext);
