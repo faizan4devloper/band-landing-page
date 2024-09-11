@@ -1,84 +1,256 @@
+
 /* Default Light Theme */
 :root {
-  --sidebar-bg: #ffffff;
-  --sidebar-border: rgba(219, 197, 255, 1);
-  --menu-item-bg-hover: rgba(230, 235, 245, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #6f36cd 0%, #1f77f6 100%);
-  --menu-item-active-color: white;
-  --icon-img-filter: brightness(0) invert(0);
-  --icon-img-filter-active: brightness(0) invert(1); /* White for active icon */
-  --text-color: #000000;
-  --new-text-color: #000000;
+  --primary-color: #5f1ec1;
+  --secondary-color: rgba(15, 95, 220, 1);
+  --background-color: #ffffff;
+  --text-color: #fff;
+  --scrollbar-color: rgba(15, 95, 220, 1);
+  --scrollbar-background: #dcdcdc;
+  --button-background-color: rgba(13, 85, 198, 0.1);
+  --button-hover-color: #5f1ec1;
 }
 
 /* Dark Theme */
 [data-theme="dark"] {
   --primary-color: #9d66f5;
   --secondary-color: #c1a1f2;
-  --sidebar-bg: #2c2c2c;
-  --sidebar-border: rgba(50, 50, 50, 1);
-  --menu-item-bg-hover: rgba(70, 70, 70, 1);
-  --menu-item-active-bg: linear-gradient(90deg, #3a2d7f 0%, #2d5d8f 100%);
-  --menu-item-active-color: #ffffff;
-  --icon-img-filter: brightness(0) invert(1); /* Invert for dark theme */
-  --icon-img-filter-active: brightness(1); /* Normal brightness for active icon in dark theme */
+  --background-color: #1a1a2e;
   --text-color: #ffffff;
-  --new-text-color: #ffffff;
+  --scrollbar-color: #5f1ec1;
+  --scrollbar-background: #333333;
+  --button-background-color: rgba(95, 30, 193, 0.8);
+  --button-hover-color: #c1a1f2;
 }
 
-/* Sidebar Styling */
-.sideBar {
+/* Chatbot Styles */
+.chatbotIcon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-color);
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.chatbotContainer {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
   width: 320px;
-  min-width: 230px;
-  padding-left: 20px;
+  height: 420px;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  border-right: 1px solid var(--sidebar-border);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scroll-behavior: smooth;
+  z-index: 1001;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Menu Item Styling */
-.menuItem {
+.chatbotContainer.open {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.chatbotHeader {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  min-width: 200px;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-color);
   padding: 10px;
-  margin: 5px 0;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.chatbotTitle {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.closeButton, .clearChatButton, .minimizeButton {
   background: none;
   border: none;
-  color: var(--new-text-color);
+  color: var(--text-color);
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 5px;
 }
 
-.menuItem:not(.active):hover {
-  background-color: var(--menu-item-bg-hover);
-  border-radius: 8px 0 0 8px;
+.chatbotMessages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.5s ease;
 }
 
-.active {
-  background: var(--menu-item-active-bg);
-  color: var(--menu-item-active-color);
-  border-radius: 8px 0 0 8px;
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.active .iconImg {
-  filter: var(--icon-img-filter-active); /* Use active filter */
+.userMessage, .botMessage {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.iconImg {
-  filter: var(--icon-img-filter);
+.userMessage {
+  justify-content: flex-end;
 }
 
-/* Adjust any other necessary styles to match the dark theme */
-.label {
-  margin-right: auto;
-  margin-left: 10px;
+.botMessage {
+  justify-content: flex-start;
+}
+
+.icon {
+  margin: 0 8px;
+  font-size: 15px;
+}
+
+.messageText {
+  max-width: 75%;
+  background-color: #f1f1f1;
+  padding: 10px;
   font-size: 12px;
+  border-radius: 10px;
+  color: #333;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.messageText a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-size: 10px;
+  margin-bottom: 5px;
+}
+
+.userMessage .messageText {
+  background-color: #d1e7ff;
+}
+
+.chatbotInput {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+}
+
+.chatbotInput input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.chatbotInput button {
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--text-color);
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.clearChatOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1002;
+}
+
+.clearChatWindow {
+  position: absolute;
+  bottom: 130px; /* Adjust based on available space */
+  left: 0;
+  right: 0;
+  background: var(--background-color);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.confirmButton {
+  background-color: #d9534f;
+  color: var(--text-color);
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.cancelButton {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.botProfile {
+  display: flex;
+  align-items: center;
+}
+
+.botImage {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.botInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.botStatus {
+  font-size: 12px;
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+}
+
+.onlineDot {
+  width: 8px;
+  height: 8px;
+  background-color: #4caf50; /* Green dot */
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 5px;
 }
