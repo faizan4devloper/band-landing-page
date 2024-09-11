@@ -27,11 +27,10 @@ const MainContent = ({ activeTab, content, setIsImageMaximized }) => {
       setCurrentImageIndex(index);
       setMaximizedImage(imageSrc);
       setIsImageMaximized(true); // Set state to true
-
     }
   };
-  
-   const closeMaximizedImage = () => {
+
+  const closeMaximizedImage = () => {
     setMaximizedImage(null);
     setIsImageMaximized(false); // Set state to false
   };
@@ -61,26 +60,16 @@ const MainContent = ({ activeTab, content, setIsImageMaximized }) => {
 
   const handleNextImage = () => {
     if (allImages.length === 0) return;
-    const isLastImage = currentImageIndex === allImages.length - 1;
-    if (isLastImage) {
-      setMaximizedImage(null); // Minimize if it's the last image
-    } else {
-      const nextIndex = (currentImageIndex + 1) % allImages.length;
-      setCurrentImageIndex(nextIndex);
-      setMaximizedImage(allImages[nextIndex]);
-    }
+    const nextIndex = (currentImageIndex + 1) % allImages.length;
+    setCurrentImageIndex(nextIndex);
+    setMaximizedImage(allImages[nextIndex]);
   };
 
   const handlePrevImage = () => {
     if (allImages.length === 0) return;
-    const isFirstImage = currentImageIndex === 0;
-    if (isFirstImage) {
-        closeMaximizedImage();
-} else {
-      const prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
-      setCurrentImageIndex(prevIndex);
-      setMaximizedImage(allImages[prevIndex]);
-    }
+    const prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
+    setCurrentImageIndex(prevIndex);
+    setMaximizedImage(allImages[prevIndex]);
   };
 
   const renderCarousel = (images) => (
@@ -205,7 +194,7 @@ const MainContent = ({ activeTab, content, setIsImageMaximized }) => {
           <FontAwesomeIcon
             icon={faTimes}
             className={styles.closeIcon}
-            onClick={() => setMaximizedImage(null)}
+            onClick={closeMaximizedImage}
           />
           <img
             src={maximizedImage}
