@@ -1,71 +1,83 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-import { getCardsData } from '../../data';
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
 
-const SideBarPage = ({ theme, setTheme }) => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
-  const location = useLocation();
-  const { setHeaderZIndex } = useHeaderContext(); // Use context
+import IntelligentAssist from './CardsData/IntelligentAssist.json';
+import EmailEAR from './CardsData/EmailEAR.json';
+import CaseIntelligence from './CardsData/CaseIntelligence.json';
+import SmartRecruit from './CardsData/SmartRecruit.json';
+import ClaimAssist from './CardsData/ClaimAssist.json';
+import AssistantEV from './CardsData/AssistantEV.json';
+import AutoWiseCompanion from './CardsData/AutoWiseCompanion.json';
+import CitizenAdvisor from './CardsData/CitizenAdvisor.json';
+import FinCompetitor from './CardsData/FinCompetitor.json';
+import SignatureExtraction from './CardsData/SignatureExtraction.json';
+import AiForce from './CardsData/AiForce.json';
+import ApiCase from './CardsData/ApiCase.json';
+import AmsSupport from './CardsData/AmsSupport.json';
+import CodeGreat from './CardsData/CodeGreat.json';
+import AaigApi from './CardsData/AaigApi.json';
+import ResponsibleGen from './CardsData/ResponsibleGen.json';
+import GraphData from './CardsData/GraphData.json';
+import PredictiveAsset from './CardsData/PredictiveAsset.json';
+import SopAssistance from './CardsData/SopAssistance.json';
 
-  // Memoize the fetchData function
-  const fetchData = useCallback(async () => {
-    const data = await getCardsData();
-    const params = new URLSearchParams(location.search);
-    const title = params.get('title');
-    if (title) {
-      setCardTitle(title);
-      const card = data.find((c) => c.title === title);
-      if (card) {
-        setCardContent(card.content);
-      }
-    }
-  }, [location.search]);
+import { images, fetchAssets } from './AssetImports';
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+// Mapping assets for a specific card
+async function mapAssets(card) {
+  const assets = await fetchAssets();
+  
+  // Sanitize the title to match the keys in urldata.json
+  const assetKey = card.title.replace(/\s+/g, '');
 
-  useEffect(() => {
-    if (setHeaderZIndex) { // Check if setHeaderZIndex is defined
-      setHeaderZIndex(0); // Set zIndex to 0 for this page
-      return () => setHeaderZIndex(1000); // Reset zIndex on unmount
-    }
-  }, [setHeaderZIndex]);
+  // Access the data for the specific asset
+  const data = {
+    solutionFlow: assets[`${assetKey}solutionFlow`] || null,
+    techArchitecture: assets[`${assetKey}techArchitecture`] || null,
+    description: assets[`${assetKey}description`] || null,
+    benefits: assets[`${assetKey}benefits`] || null,
+    adoption: assets[`${assetKey}adoption`] || null,
+    demo: assets[`${assetKey}demo`] || null,
+  };
+  
+  console.log(`Data for ${card.title}:`, data);
 
-  // Memoize the handleBackButtonClick function
-  const handleBackButtonClick = useCallback(() => {
-    window.history.back();
-  }, []);
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow,
+      demo: data.demo || null,
+      techArchitecture: data.techArchitecture,
+      description: data.description,
+      benefits: data.benefits,
+      adoption: data.adoption,
+    },
+  };
+}
 
-  // Memoize the handleTabChange function
-  const handleTabChange = useCallback((tabId) => {
-    setActiveTab(tabId);
-  }, []);
+// Mapping cards data asynchronously
+export async function getCardsData() {
+  const cardsData = await Promise.all([
+    mapAssets(IntelligentAssist),
+    mapAssets(EmailEAR),
+    mapAssets(CaseIntelligence),
+    mapAssets(SmartRecruit),
+    mapAssets(ClaimAssist),
+    mapAssets(AssistantEV),
+    mapAssets(AutoWiseCompanion),
+    mapAssets(CitizenAdvisor),
+    mapAssets(FinCompetitor),
+    mapAssets(SignatureExtraction),
+    mapAssets(AiForce),
+    mapAssets(ApiCase),
+    mapAssets(AmsSupport),
+    mapAssets(CodeGreat),
+    mapAssets(AaigApi),
+    mapAssets(ResponsibleGen),
+    mapAssets(GraphData),
+    mapAssets(PredictiveAsset),
+    mapAssets(SopAssistance),
+  ]);
 
-  return (
-    <div className={styles.sideBarPage}>
-      <Header theme={theme} setTheme={setTheme} /> {/* Pass theme and setTheme */}
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
-    </div>
-  );
-};
-
-export default SideBarPage;
+  return cardsData;
+}
