@@ -7,8 +7,8 @@ import darkLogo from "./HCLTechLogoWhite.png"; // White logo for dark theme
 import RequestDemoForm from "./RequestDemoForm";
 import FeedbackForm from "./FeedbackForm";
 import feedbackImg from './feedback10.svg';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import SunIcon from './icons/sun.svg'; // Import your SVGs
+import MoonIcon from './icons/moon.svg'; // Import your SVGs
 
 const Header = ({ theme, setTheme }) => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -80,8 +80,16 @@ const Header = ({ theme, setTheme }) => {
             title="Toggle Theme"
           >
             <div className={styles.toggleCircle}></div>
-            <FontAwesomeIcon icon={faSun} className={`${styles.toggleIcon} ${styles.sunIcon}`} />
-            <FontAwesomeIcon icon={faMoon} className={`${styles.toggleIcon} ${styles.moonIcon}`} />
+            <img
+              src={SunIcon}
+              className={`${styles.toggleIcon} ${styles.sunIcon}`}
+              alt="Sun Icon"
+            />
+            <img
+              src={MoonIcon}
+              className={`${styles.toggleIcon} ${styles.moonIcon}`}
+              alt="Moon Icon"
+            />
           </div>
           <button className={styles.button} onClick={openModal}>
             Request For Live Demo
@@ -107,4 +115,4 @@ const Header = ({ theme, setTheme }) => {
 };
 
 export default Header;
-   
+
