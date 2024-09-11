@@ -21,8 +21,8 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 20px;
-  height: 20px;
+  width: 17px; /* Adjusted size to fit well */
+  height: 17px; /* Adjusted size to fit well */
   background-color: var(--toggle-circle);
   border-radius: 50%;
   transition: transform 0.3s ease;
@@ -33,26 +33,24 @@
 }
 
 .themeToggleButton.dark .toggleCircle {
-  transform: translateX(25px); /* Moves the circle to the right */
+  transform: translateX(24px); /* Adjusted for 45px width */
 }
 
 .toggleIcon {
   position: absolute;
-  font-size: 14px;
-  color: var(--toggle-icon-color);
+  width: 16px; /* Adjusted size */
+  height: 16px; /* Adjusted size */
   transition: opacity 0.3s ease;
 }
 
 .sunIcon {
   left: 5px;
-      color:yellow;
-
+  color: yellow; /* Direct color assignment for SVG */
   opacity: 0;
 }
 
 .moonIcon {
   right: 5px;
-
   opacity: 1;
 }
 
