@@ -1,25 +1,5 @@
-// src/context/HeaderContext.js
-import React, { createContext, useContext, useState } from 'react';
-
-const HeaderContext = createContext();
-
-export const useHeaderContext = () => {
-  return useContext(HeaderContext);
-};
-
-export const HeaderProvider = ({ children }) => {
-  const [headerZIndex, setHeaderZIndex] = useState(1000); // Default zIndex
-
-  return (
-    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
-      {children}
-    </HeaderContext.Provider>
-  );
-};
-
-
 import React from 'react';
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
+import { useHeaderContext } from '../context/HeaderContext'; // Import context
 import styles from "./Header.module.css";
 import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
 import darkLogo from "./HCLTechLogoWhite.png"; // White logo for dark theme
@@ -146,7 +126,7 @@ import SideBar from './SideBar';
 import MainContent from './MainContent';
 import styles from './SideBarPage.module.css';
 import { getCardsData } from '../../data';
-import { useHeaderContext } from '../Context/HeaderContext'; // Import context
+import { useHeaderContext } from '../context/HeaderContext'; // Import context
 
 const SideBarPage = ({ theme, setTheme }) => {
   const [activeTab, setActiveTab] = useState('description');
@@ -205,21 +185,3 @@ const SideBarPage = ({ theme, setTheme }) => {
 };
 
 export default SideBarPage;
-
-
-
-import React, { createContext, useContext, useState } from 'react';
-
-const HeaderContext = createContext();
-
-export const HeaderProvider = ({ children }) => {
-  const [headerZIndex, setHeaderZIndex] = useState(1000);
-
-  return (
-    <HeaderContext.Provider value={{ headerZIndex, setHeaderZIndex }}>
-      {children}
-    </HeaderContext.Provider>
-  );
-};
-
-export const useHeaderContext = () => useContext(HeaderContext);
