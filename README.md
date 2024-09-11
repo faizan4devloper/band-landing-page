@@ -1,58 +1,69 @@
-import React, { useCallback } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./SideBar.module.css";
 
-// Import individual images for each menu item
-import descriptionImg from "./Icons/Description.svg";
-import solutionFlowImg from "./Icons/SolutionFlow.svg";
-import demoImg from "./Icons/Demo.svg";
-import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
-import benefitsImg from "./Icons/Benefits.svg";
-import industyImg from "./Icons/Industry.svg";
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import Header from '../Header/Header';
+import SideBar from './SideBar';
+import MainContent from './MainContent';
+import styles from './SideBarPage.module.css';
+import { getCardsData } from '../../data';
+import { useHeaderContext } from '../Context/HeaderContext'; // Import context
 
-// Memoized menuItems array
-const menuItems = [
-  { id: "description", label: "Description", img: descriptionImg },
-  { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
-  { id: "demo", label: "Demo Video", img: demoImg },
-  {
-    id: "techArchitecture",
-    label: "Technical Architecture",
-    img: techArchitectureImg,
-  },
-  { id: "benefits", label: "Benefits", img: benefitsImg },
-  { id: "adoption", label: "Industry Adoption", img: industyImg },
-];
+const SideBarPage = ({ theme, setTheme }) => {
+  const [activeTab, setActiveTab] = useState('description');
+  const [cardContent, setCardContent] = useState({});
+  const [cardTitle, setCardTitle] = useState('');
+  const location = useLocation();
+  const { setHeaderZIndex } = useHeaderContext(); // Use context
 
-const SideBar = React.memo(({ activeTab, handleTabChange }) => {
-  const handleClick = useCallback(
-    (id) => {
-      handleTabChange(id);
-    },
-    [handleTabChange]
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getCardsData();
+      const params = new URLSearchParams(location.search);
+      const title = params.get('title');
+      if (title) {
+        setCardTitle(title);
+        const card = data.find((c) => c.title === title);
+        if (card) {
+          setCardContent(card.content);
+        }
+      }
+    };
+
+    fetchData();
+  }, [location.search]);
+
+  useEffect(() => {
+    if (setHeaderZIndex) { // Check if setHeaderZIndex is defined
+      setHeaderZIndex(0); // Set zIndex to 0 for this page
+      return () => setHeaderZIndex(1000); // Reset zIndex on unmount
+    }
+  }, [setHeaderZIndex]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
+
+  const handleBackButtonClick = () => {
+    window.history.back();
+  };
 
   return (
-    <nav className={styles.sideBar}>
-      {menuItems.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => handleClick(item.id)}
-          className={`${styles.menuItem} ${
-            activeTab === item.id ? styles.active : ""
-          }`}
-        >
-          <img
-            src={item.img}
-            className={`${styles.iconImg} ${styles.hoverEffect}`}
-          />
-          <span className={styles.label}>{item.label}</span>
-          <FontAwesomeIcon icon={faAngleRight} className={styles.icon} />
+    <div className={styles.sideBarPage}>
+      <Header theme={theme} setTheme={setTheme} /> {/* Pass theme and setTheme */}
+      <div className={styles.header2}>
+        <button onClick={handleBackButtonClick} className={styles.backButton}>
+          <FontAwesomeIcon icon={faArrowLeft} />
         </button>
-      ))}
-    </nav>
+        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
+      </div>
+      <div className={styles.contentWrapper}>
+        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
+        <MainContent activeTab={activeTab} content={cardContent} />
+      </div>
+    </div>
   );
-});
+};
 
-export default SideBar;
+export default SideBarPage;
