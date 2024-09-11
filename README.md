@@ -1,5 +1,4 @@
-/* eslint-disable jsx-a11y/alt-text */
-import React from "react";
+import React, { useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import styles from "./SideBar.module.css";
@@ -10,28 +9,36 @@ import solutionFlowImg from "./Icons/SolutionFlow.svg";
 import demoImg from "./Icons/Demo.svg";
 import techArchitectureImg from "./Icons/ArchitectureFlow.svg";
 import benefitsImg from "./Icons/Benefits.svg";
-import industyImg from "./Icons/Industry.svg"
+import industyImg from "./Icons/Industry.svg";
 
-const SideBar = ({ activeTab, handleTabChange }) => {
-  const menuItems = [
-    { id: "description", label: "Description", img: descriptionImg },
-    { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
-    { id: "demo", label: "Demo Video", img: demoImg },
-    {
-      id: "techArchitecture",
-      label: "Technical Architecture",
-      img: techArchitectureImg,
+// Memoized menuItems array
+const menuItems = [
+  { id: "description", label: "Description", img: descriptionImg },
+  { id: "solutionFlow", label: "Solution Flow", img: solutionFlowImg },
+  { id: "demo", label: "Demo Video", img: demoImg },
+  {
+    id: "techArchitecture",
+    label: "Technical Architecture",
+    img: techArchitectureImg,
+  },
+  { id: "benefits", label: "Benefits", img: benefitsImg },
+  { id: "adoption", label: "Industry Adoption", img: industyImg },
+];
+
+const SideBar = React.memo(({ activeTab, handleTabChange }) => {
+  const handleClick = useCallback(
+    (id) => {
+      handleTabChange(id);
     },
-    { id: "benefits", label: "Benefits", img: benefitsImg },
-    { id:"adoption", label: "Industry Adoption", img: industyImg  },
-  ];
+    [handleTabChange]
+  );
 
   return (
     <nav className={styles.sideBar}>
       {menuItems.map((item) => (
         <button
           key={item.id}
-          onClick={() => handleTabChange(item.id)}
+          onClick={() => handleClick(item.id)}
           className={`${styles.menuItem} ${
             activeTab === item.id ? styles.active : ""
           }`}
@@ -46,6 +53,6 @@ const SideBar = ({ activeTab, handleTabChange }) => {
       ))}
     </nav>
   );
-};
+});
 
 export default SideBar;
