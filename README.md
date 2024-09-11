@@ -333,3 +333,18 @@ const MainContent = ({ activeTab, content }) => {
 };
 
 export default MainContent;
+
+
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { ZIndexProvider } from './ZIndexContext'; // Import the provider
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <ZIndexProvider>
+      <App />
+    </ZIndexProvider>
+  </React.StrictMode>
+);
