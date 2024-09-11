@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense, lazy } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faArrowLeft, faPlay, faPause, faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
-import MyCarousel from "./components/Carousel/MyCarousel";
-import Cards from "./components/Cards/Cards";
 import styles from "./App.module.css";
 import { Link } from "react-router-dom";
+
+const MyCarousel = lazy(() => import("./components/Carousel/MyCarousel"));
+const Cards = lazy(() => import("./components/Cards/Cards"));
 
 const S3_VIDEO_URL = "https://aiml-convai.s3.amazonaws.com/portal-bg-video/HCLTech_AWS_GenAI+Solution+Video.mp4";
 
@@ -111,7 +112,9 @@ const Home = ({
 
   return (
     <>
-      <MyCarousel />
+      <Suspense fallback={<div>Loading Carousel...</div>}>
+        <MyCarousel />
+      </Suspense>
       <div className={`${styles.videoContainer} ${styles[videoState]}`}>
         <video
           className={styles.video}
@@ -162,19 +165,21 @@ const Home = ({
         <span className={`${styles.arrow} ${styles.leftArrow}`} onClick={handleClickLeft}>
           <FontAwesomeIcon icon={faArrowLeft} title="Previous" />
         </span>
-        {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
-          const actualIndex = currentIndex + index;
-          return (
-            <Cards
-              key={index}
-              imageUrl={card.imageUrl}
-              title={card.title}
-              description={card.description}
-              isBig={actualIndex === bigIndex}
-              toggleSize={() => toggleSize(actualIndex)}
-            />
-          );
-        })}
+        <Suspense fallback={<div>Loading Cards...</div>}>
+          {cardsData.slice(currentIndex, currentIndex + 5).map((card, index) => {
+            const actualIndex = currentIndex + index;
+            return (
+              <Cards
+                key={index}
+                imageUrl={card.imageUrl}
+                title={card.title}
+                description={card.description}
+                isBig={actualIndex === bigIndex}
+                toggleSize={() => toggleSize(actualIndex)}
+              />
+            );
+          })}
+        </Suspense>
         <span className={`${styles.arrow} ${styles.rightArrow}`} onClick={handleClickRight}>
           <FontAwesomeIcon icon={faArrowRight} title="Next" />
         </span>
@@ -187,17 +192,18 @@ export default Home;
 
 
 
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Suspense, lazy } from "react";
 import styles from "./Cards.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 
-const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [showPopup, setShowPopup] = useState(false);
+const Card = lazy(() => import("./Card"));
 
-  useEffect(() => {
+const Cards = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
+  const [isHovered, setIsHovered] = React.useState(false);
+  const [showPopup, setShowPopup] = React.useState(false);
+
+  React.useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -224,69 +230,23 @@ const Card = ({ imageUrl, title, description, isBig, toggleSize, tags }) => {
 
   return (
     <div className={styles.cardsContainer}>
-      <div
-        className={`${styles.card} ${isBig ? styles.big : ""}`}
-        style={{ backgroundImage: `url(${imageUrl})` }}
-        onClick={toggleSize}
-      >
-        {mergedTags && (
-          <div className={styles.tagsContainer}>
-            <span className={styles.tag}>{mergedTags}</span>
-          </div>
-        )}
-        {!isBig && <div className={styles.cardTitle}>{title}</div>}
-        {isBig && (
-          <div className={styles.cardContent}>
-            <h3>{title}</h3>
-            <p>{description}</p>
-            <Link
-              to={{
-                pathname: "/dashboard",
-                search: `?title=${encodeURIComponent(title)}`,
-              }}
-              className={styles.readMoreLink}
-              onClick={handleReadMoreClick}
-            >
-              <span
-                className={`${styles.arrow} ${styles.rightArrow} ${
-                  isHovered ? styles.hovered : ""
-                }`}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-              >
-                <span
-                  style={{
-                    fontSize: isHovered ? "0.8em" : "1em",
-                  }}
-                >
-                  {isHovered && "Read More "}
-                </span>
-                <span
-                  style={{
-                    marginLeft: isHovered ? "5px" : "0",
-                    fontSize: isHovered ? "1.3em" : "1em",
-                  }}
-                >
-                  <FontAwesomeIcon icon={faArrowRight} />
-                </span>
-              </span>
-            </Link>
-          </div>
-        )}
-        {showPopup && (
-          <div className={styles.cardPopup} onClick={(e) => e.stopPropagation()}>
-            <h2>No Data Available</h2>
-            <p>Solution Coming Soon!</p>
-            <button className={styles.closeButton} onClick={() => setShowPopup(false)} title="Close Button">
-              Close
-            </button>
-          </div>
-        )}
-      </div>
+      <Suspense fallback={<div>Loading Card...</div>}>
+        <Card
+          imageUrl={imageUrl}
+          title={title}
+          description={description}
+          isBig={isBig}
+          toggleSize={toggleSize}
+          tags={tags}
+          handleReadMoreClick={handleReadMoreClick}
+          showPopup={showPopup}
+          setShowPopup={setShowPopup}
+          isHovered={isHovered}
+          setIsHovered={setIsHovered}
+        />
+      </Suspense>
     </div>
   );
 };
 
-export default Card;
-
-
+export default Cards;
