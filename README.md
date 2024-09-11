@@ -1,187 +1,164 @@
-import React from 'react';
-import { useHeaderContext } from '../context/HeaderContext'; // Import context
-import styles from "./Header.module.css";
-import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
-import darkLogo from "./HCLTechLogoWhite.png"; // White logo for dark theme
-import RequestDemoForm from "./RequestDemoForm";
-import FeedbackForm from "./FeedbackForm";
-import feedbackImg from './feedback10.svg';
-import SunIcon from './sun.svg'; // Import your SVGs
-import MoonIcon from './moon.svg'; // Import your SVGs
-
-const Header = ({ theme, setTheme }) => {
-  const [modalIsOpen, setModalIsOpen] = React.useState(false);
-  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = React.useState(false);
-  const [isVisible, setIsVisible] = React.useState(true);
-  const [lastScrollY, setLastScrollY] = React.useState(0);
-  const { headerZIndex } = useHeaderContext(); // Use context
-
-  const navigate = useNavigate();
-
-  const handleImageClick = () => {
-    navigate("/");
-  };
-
-  const openModal = () => {
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const openFeedbackModal = () => {
-    setFeedbackModalIsOpen(true);
-  };
-
-  const closeFeedbackModal = () => {
-    setFeedbackModalIsOpen(false);
-  };
-
-  const controlHeaderVisibility = () => {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-    setLastScrollY(window.scrollY);
-  };
-
-  React.useEffect(() => {
-    window.addEventListener("scroll", controlHeaderVisibility);
-    return () => {
-      window.removeEventListener("scroll", controlHeaderVisibility);
-    };
-  }, [lastScrollY]);
-
-  const handleThemeToggle = () => {
-    if (typeof setTheme === 'function') {
-      setTheme(theme === 'light' ? 'dark' : 'light');
-    } else {
-      console.error('setTheme is not a function');
-    }
-  };
-
-  return (
-    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`} style={{ zIndex: headerZIndex }}>
-      <nav className={styles.header}>
-        <div className={styles.logo}>
-          <img
-            src={theme === 'light' ? lightLogo : darkLogo}
-            alt="HCLTech Logo"
-            onClick={handleImageClick}
-            title="Navigate to Home"
-          />
-        </div>
-        <div className={styles.right}>
-          <div
-            className={`${styles.themeToggleButton} ${theme === 'light' ? styles.light : styles.dark}`}
-            onClick={handleThemeToggle}
-            title={theme === 'light' ? "Switch to Dark Theme" : "Switch to Light Theme"}
-          >
-            <div className={styles.toggleCircle}></div>
-            <img
-              src={SunIcon}
-              className={`${styles.toggleIcon} ${styles.sunIcon}`}
-              alt="Sun Icon"
-            />
-            <img
-              src={MoonIcon}
-              className={`${styles.toggleIcon} ${styles.moonIcon}`}
-              alt="Moon Icon"
-            />
-          </div>
-          <button className={styles.button} onClick={openModal}>
-            Request For Live Demo
-          </button>
-          <img
-            src={feedbackImg}
-            className={`${styles.feedbackImage} ${styles.whiteImage}`}
-            alt="feedback"
-            onClick={openFeedbackModal}
-            title="Provide Feedback"
-          />
-          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
-            <RequestDemoForm closeModal={closeModal} />
-          </Modal>
-          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
-            <FeedbackForm closeModal={closeFeedbackModal} />
-          </Modal>
-        </div>
-      </nav>
-    </div>
-  );
-};
-
-export default Header;
-
-
-
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import Header from '../Header/Header';
-import SideBar from './SideBar';
-import MainContent from './MainContent';
-import styles from './SideBarPage.module.css';
-import { getCardsData } from '../../data';
-import { useHeaderContext } from '../context/HeaderContext'; // Import context
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import Header from './components/Header/Header';
+import Home from './Home';
+import SideBarPage from './components/Sidebar/SideBarPage';
+import AllCardsPage from './components/Cards/AllCardsPage';
+import Chatbot from './components/ChatBot/Chatbot';
+import Footer from './components/Footer/Footer';
+import { getCardsData } from './data';
+import { BeatLoader } from 'react-spinners';
+import { HeaderProvider } from './components/Context/HeaderContext';
+import styles from './App.module.css';
 
-const SideBarPage = ({ theme, setTheme }) => {
-  const [activeTab, setActiveTab] = useState('description');
-  const [cardContent, setCardContent] = useState({});
-  const [cardTitle, setCardTitle] = useState('');
+const MainApp = () => {
   const location = useLocation();
-  const { setHeaderZIndex } = useHeaderContext(); // Use context
+  const [cardsData, setCardsData] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigIndex, setBigIndex] = useState(null);
+  const [showScrollDown, setShowScrollDown] = useState(true);
+  const [showScrollUp, setShowScrollUp] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light'); // State for theme
+  const cardsContainerRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await getCardsData();
-      const params = new URLSearchParams(location.search);
-      const title = params.get('title');
-      if (title) {
-        setCardTitle(title);
-        const card = data.find((c) => c.title === title);
-        if (card) {
-          setCardContent(card.content);
-        }
-      }
+      setCardsData(data);
+      setLoading(false);
     };
 
     fetchData();
-  }, [location.search]);
+  }, []);
 
   useEffect(() => {
-    if (setHeaderZIndex) { // Check if setHeaderZIndex is defined
-      setHeaderZIndex(0); // Set zIndex to 0 for this page
-      return () => setHeaderZIndex(1000); // Reset zIndex on unmount
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleSize = (index) => {
+    setBigIndex(index === bigIndex ? null : index);
+  };
+
+  const handleClickLeft = () => {
+    const newBigIndex = bigIndex === null || bigIndex === 0 ? cardsData.length - 1 : bigIndex - 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex < currentIndex ? newBigIndex : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleClickRight = () => {
+    const newBigIndex = bigIndex === null || bigIndex === cardsData.length - 1 ? 0 : bigIndex + 1;
+    setBigIndex(newBigIndex);
+    const newCurrentIndex = newBigIndex > currentIndex + 4 ? newBigIndex - 4 : currentIndex;
+    setCurrentIndex(newCurrentIndex);
+  };
+
+  const handleScrollDown = () => {
+    if (cardsContainerRef.current) {
+      cardsContainerRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShowScrollDown(false);
+      setShowScrollUp(true);
     }
-  }, [setHeaderZIndex]);
-
-  const handleTabChange = (tabId) => {
-    setActiveTab(tabId);
   };
 
-  const handleBackButtonClick = () => {
-    window.history.back();
+  const handleScrollUp = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowScrollDown(true);
+    setShowScrollUp(false);
   };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setShowScrollUp(true);
+        setShowScrollDown(false);
+      } else {
+        setShowScrollUp(false);
+        setShowScrollDown(true);
+      }
+    };
+
+    const debounceScroll = debounce(handleScroll, 100);
+    window.addEventListener('scroll', debounceScroll);
+
+    return () => window.removeEventListener('scroll', debounceScroll);
+  }, []);
+
+  const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  };
+
+  const showFooter = location.pathname === '/';
 
   return (
-    <div className={styles.sideBarPage}>
-      <Header theme={theme} setTheme={setTheme} /> {/* Pass theme and setTheme */}
-      <div className={styles.header2}>
-        <button onClick={handleBackButtonClick} className={styles.backButton}>
-          <FontAwesomeIcon icon={faArrowLeft} />
-        </button>
-        {cardTitle && <div className={styles.cardTitle}>{cardTitle}</div>}
-      </div>
-      <div className={styles.contentWrapper}>
-        <SideBar activeTab={activeTab} handleTabChange={handleTabChange} />
-        <MainContent activeTab={activeTab} content={cardContent} />
-      </div>
+    <div className={styles.app}>
+      {loading ? (
+        <div className={styles.loader}>
+          <BeatLoader color="#5931d5" loading={loading} size={15} margin={2} />
+        </div>
+      ) : (
+        <>
+          <Header theme={theme} setTheme={setTheme} />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  cardsData={cardsData}
+                  handleClickLeft={handleClickLeft}
+                  handleClickRight={handleClickRight}
+                  currentIndex={currentIndex}
+                  bigIndex={bigIndex}
+                  toggleSize={toggleSize}
+                  cardsContainerRef={cardsContainerRef}
+                />
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={<SideBarPage theme={theme} setTheme={setTheme} />}
+            />
+            <Route
+              path="/all-cards"
+              element={<AllCardsPage cardsData={cardsData} cardsContainerRef={cardsContainerRef} />}
+            />
+          </Routes>
+          {showScrollDown && location.pathname !== '/all-cards' && location.pathname !== '/dashboard' && (
+            <div className={styles.scrollDownButton} onClick={handleScrollDown} title="Scroll Down">
+              <FontAwesomeIcon icon={faChevronDown} />
+            </div>
+          )}
+          {showScrollUp && (
+            <div className={styles.scrollUpButton} onClick={handleScrollUp} title="Scroll Up">
+              <FontAwesomeIcon icon={faChevronUp} />
+            </div>
+          )}
+          <Chatbot />
+          {showFooter && <Footer />}
+        </>
+      )}
     </div>
   );
 };
 
-export default SideBarPage;
+const App = () => (
+  <Router>
+    <HeaderProvider>
+      <MainApp />
+    </HeaderProvider>
+  </Router>
+);
+
+export default App;
