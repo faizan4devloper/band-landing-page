@@ -18,19 +18,23 @@
   --secondary-color: #c1a1f2;
   --background-color: #1a1a2e;
   --text-color: #ffffff;
-    --text-allsolution-btn: #fff;
-
+  --text-allsolution-btn: #fff;
   --scrollbar-color: #5f1ec1;
   --scrollbar-background: #333333;
   --button-background-color: rgba(95, 30, 193, 0.8);
   --button-hover-color: #c1a1f2;
 }
 
+/* Prevent overflow on body */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scrollbar */
+}
 
 ::-webkit-scrollbar {
   width: 4px;
 }
-
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-color);
@@ -40,24 +44,24 @@
 html, body {
   font-family: "Poppins", sans-serif;
   background-color: var(--background-color);
-
-
 }
 
 .app {
-  width: 1100px;
-  margin: 0 auto;
-  
+  width: 100%; /* Use full width */
+  max-width: 1100px; /* Set max-width to prevent content from stretching too much */
+  margin: 0 auto; /* Center align */
+  padding: 0 10px; /* Add padding for better spacing */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .cardsContainer {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping */
+  justify-content: center;
   gap: 20px;
   margin-top: 80px;
   border-radius: 12px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow wrapping */
-  
+  box-sizing: border-box;
 }
 
 .arrow {
@@ -68,10 +72,10 @@ html, body {
   font-size: 18px;
   width: 18px;
   height: 18px;
-  padding: 5px 5px 5px 5px;
-  border-radius: 50px;
+  padding: 5px;
+  border-radius: 50%;
   border: 2px solid var(--secondary-color);
-  color: rgba(15, 95, 220, 1);
+  color: var(--secondary-color);
   transition: transform 0.5s ease, background 0.5s ease;
 }
 
@@ -94,11 +98,35 @@ html, body {
   .app {
     padding: 0 10px;
   }
+
+  .viewAllContainer {
+    margin-right: 20px; /* Adjust margin for smaller screens */
+  }
 }
 
 @media screen and (max-width: 768px) {
   .app {
-    max-width: 100%;
+    width: 100%;
+    padding: 0 10px;
+  }
+
+  .cardsContainer {
+    gap: 10px; /* Reduce gap for smaller screens */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .cardsContainer {
+    flex-direction: column;
+    align-items: center; /* Center align for very small screens */
+  }
+
+  .arrow {
+    display: none; /* Hide arrows on very small screens */
+  }
+
+  .viewAllContainer {
+    margin-right: 10px; /* Adjust margin for very small screens */
   }
 }
 
@@ -195,8 +223,10 @@ html, body {
   transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
   opacity: 0;
   width: 100%;
-  height: 95vh;
+  height: auto; /* Adjust height automatically */
+  max-height: 95vh; /* Limit the height */
   transform: translateX(-100%); /* Start hidden to the left */
+  overflow: hidden; /* Hide any overflow */
 }
 
 .videoContainer.big {
@@ -261,100 +291,6 @@ html, body {
   }
 }
 
-.playPauseButton.pulse {
-  animation: pulse 2s infinite;
-}
-
-
-/* Desktop and large screens */
-@media screen and (min-width: 1024px) {
-  .app {
-    width: 1100px;
-    margin: 0 auto;
-  }
-
-  .allCardsPage {
-    padding: 20px;
-    margin-top: 112px;
-    margin-left: 270px;
-    position: fixed;
-  }
-
-  .cardsContainer {
-    gap: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-}
-
-/* Tablet screens */
-@media screen and (min-width: 768px) and (max-width: 1024px) {
-  .app {
-    width: 100%;
-    padding: 0 20px;
-  }
-
-  .allCardsPage {
-    margin-left: 220px;
-  }
-
-  .cardsContainer {
-    grid-template-columns: repeat(3, 1fr);
-    
-  }
-
-  .sidebar {
-    width: 200px;
-  }
-}
-
-/* code for ChatBot */
-
-.volumeControl {
-  position: absolute;
-  bottom: 20px;
-  right: 900px;
-  display: flex;
-  align-items: center;
-}
- 
-.volumeIcon {
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  margin-right: 10px;
-}
- 
-.volumeSlider {
-  -webkit-appearance: none;
-  width: 100px;
-  height: 5px;
-  background: #ccc;
-  border-radius: 5px;
-  outline: none;
-}
- 
-.volumeSlider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 15px;
-  height: 15px;
-  background: var(--primary-color);
-  border-radius: 50%;
-  cursor: pointer;
-}
- 
-.volumeSlider::-moz-range-thumb {
-  width: 15px;
-  height: 15px;
-  background: var(--primary-color);
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-
-/* Theme Toggle Button */
 .themeToggleButton {
   position: fixed;
   bottom: 20px;
@@ -374,13 +310,4 @@ html, body {
 .themeToggleButton:hover {
   background-color: var(--button-hover-color);
   transform: scale(1.1);
-}
-
-.themeIcon {
-  font-size: 16px;
-}
-
-.themeText {
-  font-size: 14px;
-  font-weight: 500;
 }
