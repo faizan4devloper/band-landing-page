@@ -1,126 +1,335 @@
-/* Base light theme */
-:root {
-  --light-primary-color: #5f1ec1;
-  --light-background-color: #f9f9f9;
-  --light-border-color: rgba(95, 30, 193, 0.8);
-  --light-text-color: #000;
-  --light-placeholder-color: #999999;
-  --light-button-bg-color: #5f1ec1;
-  --light-button-text-color: #fff;
-  --light-input-border-color: #ccc;
-  --light-input-focus-border-color: #5f1ec1;
-}
+import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
+import styles from "./Header.module.css";
+import lightLogo from "./HCLTechLogoBlue.svg"; // Blue logo for light theme
+import darkLogo from "./HCLTechLogoWhite.png"; // White logo for dark theme
+import RequestDemoForm from "./RequestDemoForm";
+import FeedbackForm from "./FeedbackForm";
+import feedbackImg from './feedback10.svg';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 
-/* Dark theme overrides */
-[data-theme="dark"] {
-  --dark-primary-color: #d6bcfa;
-  --dark-background-color: #1a1a1a;
-  --dark-border-color: rgba(214, 188, 250, 0.8);
-  --dark-text-color: #fff;
-  --dark-placeholder-color: #777;
-  --dark-button-bg-color: #d6bcfa;
-  --dark-button-text-color: #1a1a1a;
-  --dark-input-border-color: #444;
-  --dark-input-focus-border-color: #d6bcfa;
-}
-.formContainer {
-  padding: 30px;
-  background-color: var(--light-background-color);
-  background-color: var(--dark-background-color); /* Fallback for dark */
-  border-left: 4px solid var(--light-border-color);
-  border-left: 4px solid var(--dark-border-color); /* Fallback for dark */
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  max-width: 450px;
-  margin: 0 auto;
-  animation: slideIn 0.5s ease-out;
-  max-height: 80vh;
-  z-index: 1000;
-}
+const Header = ({ theme, setTheme }) => {
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [feedbackModalIsOpen, setFeedbackModalIsOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const navigate = useNavigate();
 
-.demoHead {
-  color: var(--light-primary-color);
-  color: var(--dark-primary-color); /* Fallback for dark */
-  margin-bottom: 10px;
-  text-align: center;
-  margin-top: -10px;
-  font-size: 18px;
-}
+  const handleImageClick = () => {
+    navigate("/");
+  };
 
-.formGroup {
-  margin-bottom: 10px;
-  position: relative;
-}
+  const openModal = () => {
+    setModalIsOpen(true);
+  };
 
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 600;
-  color: var(--light-text-color);
-  color: var(--dark-text-color); /* Fallback for dark */
-  font-size: 12px;
-  transition: color 0.3s;
-}
+  const closeModal = () => {
+    setModalIsOpen(false);
+  };
 
-input::placeholder, textarea::placeholder {
-  color: var(--light-placeholder-color); /* Light theme placeholder */
-  color: var(--dark-placeholder-color); /* Dark theme placeholder */
-  opacity: 1;
-}
+  const openFeedbackModal = () => {
+    setFeedbackModalIsOpen(true);
+  };
 
-input, textarea {
-  width: 90%;
-  padding: 5px;
-  border: none;
-  background-color: transparent;
-  border-bottom: 1px solid var(--light-input-border-color); /* Light theme */
-  border-bottom: 1px solid var(--dark-input-border-color); /* Dark theme */
-  border-radius: 0;
-  font-size: 12px;
-  transition: border-color 0.3s;
-  font-family: "Poppins", sans-serif; /* Apply Google Font */
-}
+  const closeFeedbackModal = () => {
+    setFeedbackModalIsOpen(false);
+  };
 
-input:focus, textarea:focus {
-  border-color: var(--light-input-focus-border-color); /* Light theme */
-  border-color: var(--dark-input-focus-border-color); /* Dark theme */
-  outline: none;
-}
+  const controlHeaderVisibility = () => {
+    if (window.scrollY > lastScrollY) {
+      setIsVisible(false);
+    } else {
+      setIsVisible(true);
+    }
+    setLastScrollY(window.scrollY);
+  };
 
-.submitButton {
-  background-color: var(--light-button-bg-color); /* Light theme */
-  background-color: var(--dark-button-bg-color); /* Dark theme */
-  margin-top: 0px;
-  color: var(--light-button-text-color); /* Light theme */
-  color: var(--dark-button-text-color); /* Dark theme */
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-top: 10px;
-  width: 78%;
-}
+  useEffect(() => {
+    window.addEventListener("scroll", controlHeaderVisibility);
+    return () => {
+      window.removeEventListener("scroll", controlHeaderVisibility);
+    };
+  }, [lastScrollY]);
 
-.closeButton {
-  position: absolute;
-  top: 25px;
-  right: 25px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  color: #aaa;
-}
+  const handleThemeToggle = () => {
+    if (typeof setTheme === 'function') {
+      setTheme(theme === 'light' ? 'dark' : 'light');
+    } else {
+      console.error('setTheme is not a function');
+    }
+  };
 
-.closeButton:hover {
-  color: #555;
-}
+  return (
+    <div className={`${styles.navbarWrapper} ${isVisible ? styles.show : styles.hide}`}>
+      <nav className={styles.header}>
+        <div className={styles.logo}>
+          <img
+            src={theme === 'light' ? lightLogo : darkLogo} // Conditional logo rendering based on theme
+            alt="HCLTech Logo"
+            onClick={handleImageClick}
+            title="Navigate to Home"
+          />
+        </div>
+        
+        <div className={styles.right}>
+          <div
+            className={`${styles.themeToggleButton} ${theme === 'light' ? styles.light : styles.dark}`}
+            onClick={handleThemeToggle}
+            title="Toggle Theme"
+          >
+            <div className={styles.toggleCircle}></div>
+            <FontAwesomeIcon icon={faSun} className={`${styles.toggleIcon} ${styles.sunIcon}`} />
+            <FontAwesomeIcon icon={faMoon} className={`${styles.toggleIcon} ${styles.moonIcon}`} />
+          </div>
+          <button className={styles.button} onClick={openModal}>
+            Request For Live Demo
+          </button>
+          <img
+            src={feedbackImg}
+            className={`${styles.feedbackImage} ${styles.whiteImage}`}
+            alt="feedback"
+            onClick={openFeedbackModal}
+            title="Provide Feedback"
+          />
+          
+          <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className={styles.modal}>
+            <RequestDemoForm closeModal={closeModal} />
+          </Modal>
+          <Modal isOpen={feedbackModalIsOpen} onRequestClose={closeFeedbackModal} className={styles.modal}>
+            <FeedbackForm closeModal={closeFeedbackModal} />
+          </Modal>
+        </div>
+      </nav>
+    </div>
+  );
+};
 
-.successMessage {
-  text-align: center;
-  color: var(--light-primary-color); /* Light theme */
-  color: var(--dark-primary-color); /* Dark theme */
-  font-size: 16px;
-}
+export default Header;
+
+
+import React, { useState, useEffect } from "react";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import Video from "./Video";
+import BeatLoader from "react-spinners/BeatLoader";
+
+const MainContent = ({ activeTab, content }) => {
+  const [maximizedImage, setMaximizedImage] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [laserPos, setLaserPos] = useState({ x: 0, y: 0 });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const allImages = [
+    ...(content.description || []),
+    ...(content.solutionFlow || []),
+    ...(content.techArchitecture || []),
+    ...(content.benefits || []),
+    ...(content.adoption || []),
+  ];
+
+  const toggleMaximize = (imageSrc) => {
+    const index = allImages.indexOf(imageSrc);
+    if (index !== -1) {
+      setCurrentImageIndex(index);
+      setMaximizedImage(imageSrc);
+    }
+  };
+
+  useEffect(() => {
+    if (maximizedImage) {
+      const handleMouseMove = (e) => {
+        setLaserPos({ x: e.clientX, y: e.clientY });
+      };
+      const handleKeyDown = (e) => {
+        if (e.key === "ArrowLeft") {
+          handlePrevImage();
+        } else if (e.key === "ArrowRight") {
+          handleNextImage();
+        }
+      };
+
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("keydown", handleKeyDown);
+
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, [maximizedImage]);
+
+  const handleNextImage = () => {
+    if (allImages.length === 0) return;
+    const isLastImage = currentImageIndex === allImages.length - 1;
+    if (isLastImage) {
+      setMaximizedImage(null); // Minimize if it's the last image
+    } else {
+      const nextIndex = (currentImageIndex + 1) % allImages.length;
+      setCurrentImageIndex(nextIndex);
+      setMaximizedImage(allImages[nextIndex]);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (allImages.length === 0) return;
+    const isFirstImage = currentImageIndex === 0;
+    if (isFirstImage) {
+      setMaximizedImage(null); // Minimize if it's the first image
+    } else {
+      const prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
+      setCurrentImageIndex(prevIndex);
+      setMaximizedImage(allImages[prevIndex]);
+    }
+  };
+
+  const renderCarousel = (images) => (
+    <div className={styles.carouselContainer}>
+      <div className={styles.customThumbs}>
+        {images.map((image, index) => (
+          <div
+            key={index}
+            className={`${styles.customThumbContainer} ${currentSlide === index ? styles.selected : ""}`}
+            onClick={() => setCurrentSlide(index)}
+            title="Click to Enlarge"
+          >
+            <img
+              src={image}
+              alt={`Thumbnail ${index + 1}`}
+              className={styles.customThumb}
+              loading="lazy"
+            />
+          </div>
+        ))}
+      </div>
+      <Carousel
+        showArrows={false}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+        selectedItem={currentSlide}
+        onChange={(index) => setCurrentSlide(index)}
+        className={styles.customCarousel}
+      >
+        {images.map((image, index) => (
+          <div
+            key={index}
+            onClick={() => toggleMaximize(image)}
+          >
+            <img src={image} alt={`Slide ${index + 1}`} title="Click to Enlarge" loading="lazy" />
+          </div>
+        ))}
+      </Carousel>
+    </div>
+  );
+
+  const renderContent = (content) => {
+    if (!content || content.length === 0) {
+      return <BeatLoader color="#5931d4" size={8} />;
+    }
+
+    if (typeof content === "string") {
+      return <div>{content}</div>;
+    }
+
+    return content.length > 1
+      ? renderCarousel(content)
+      : (
+        <img
+          src={content[0]}
+          alt="Single Image"
+          className={maximizedImage === content[0] ? styles.maximized : ""}
+          onClick={() => toggleMaximize(content[0])}
+          title="Click To Enlarge"
+        />
+      );
+  };
+
+  const renderImageOrCarousel = (images) => {
+    if (!images || images.length === 0) {
+      return (
+        <div className={styles.imageLoadingContainer}>
+          <p className={styles.imageLoadingCaption}>Processing, please wait</p>
+          <BeatLoader color="#5931d4" size={8} />
+        </div>
+      );
+    }
+
+    return renderContent(images);
+  };
+
+  if (!content) {
+    return (
+      <div className={styles.mainContent}>Content not available</div>
+    );
+  }
+
+  const contentMap = {
+    description: (
+      <div className={styles.description}>
+        {renderImageOrCarousel(content.description)}
+      </div>
+    ),
+    solutionFlow: (
+      <div className={styles.solution}>
+        {renderImageOrCarousel(content.solutionFlow)}
+      </div>
+    ),
+    demo: (
+      <div className={styles.demo}>
+        <Video src={content.demo} />
+      </div>
+    ),
+    techArchitecture: (
+      <div className={styles.architecture}>
+        {renderImageOrCarousel(content.techArchitecture)}
+      </div>
+    ),
+    benefits: (
+      <div className={styles.benefits}>
+        {renderImageOrCarousel(content.benefits)}
+      </div>
+    ),
+    adoption: (
+      <div className={styles.adoption}>
+        {renderImageOrCarousel(content.adoption)}
+      </div>
+    ),
+  };
+
+  return (
+    <div className={`${styles.mainContent} ${maximizedImage ? styles.laserCursorEnabled : ""}`}>
+      {contentMap[activeTab] || <div>Content not available</div>}
+      {maximizedImage && (
+        <div className={styles.overlay}>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.closeIcon}
+            onClick={() => setMaximizedImage(null)}
+          />
+          <img
+            src={maximizedImage}
+            alt="Maximized view"
+            className={styles.maximizedImage}
+          />
+          <div className={styles.navigationButtons}>
+            <FontAwesomeIcon icon={faChevronLeft} onClick={handlePrevImage} className={styles.navButton} title="Prev"/>
+            <FontAwesomeIcon icon={faChevronRight} onClick={handleNextImage} className={styles.navButton} title="Next"/>
+          </div>
+        </div>
+      )}
+      {maximizedImage && (
+        <div
+          className={styles.laserCursor}
+          style={{ top: `${laserPos.y}px`, left: `${laserPos.x}px` }}
+        />
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
