@@ -1,3 +1,68 @@
+const toggleFullscreen = () => {
+  const videoElement = videoRef.current;
+
+  if (!document.fullscreenElement) {
+    // If the document is not in fullscreen mode, request fullscreen for the video element
+    if (videoElement.requestFullscreen) {
+      videoElement.requestFullscreen();
+    } else if (videoElement.mozRequestFullScreen) { // For Firefox
+      videoElement.mozRequestFullScreen();
+    } else if (videoElement.webkitRequestFullscreen) { // For Chrome, Safari, and Opera
+      videoElement.webkitRequestFullscreen();
+    } else if (videoElement.msRequestFullscreen) { // For IE/Edge
+      videoElement.msRequestFullscreen();
+    }
+  } else {
+    // If the document is already in fullscreen mode, exit fullscreen
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { // For Firefox
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { // For Chrome, Safari, and Opera
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { // For IE/Edge
+      document.msExitFullscreen();
+    }
+  }
+};
+
+
+
+.fullscreenButton {
+  position: absolute;
+  top: 20px; /* Adjust the position to your preference */
+  right: 20px; /* Adjust the position to your preference */
+  background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  border: none;
+  color: white;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 24px; /* Size of the icon */
+  transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.fullscreenButton:hover {
+  background-color: rgba(0, 0, 0, 0.9); /* Darker on hover */
+  transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.fullscreenButton:active {
+  transform: scale(0.95); /* Scale down when clicked */
+}
+
+.fullscreenButton svg {
+  pointer-events: none; /* Ensure the icon itself doesn't block the click event */
+}
+
+
+
+
+
+
+
+
+
 Uncaught (in promise) TypeError: Failed to execute 'exitFullscreen' on 'Document': Document not active
     at toggleFullscreen (Home.js:124:1)
     at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
