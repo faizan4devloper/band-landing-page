@@ -1,3 +1,49 @@
+// Utility function to normalize keys (e.g., AutoWiseDemo -> autowisedemo)
+function normalizeKey(key) {
+  return key.replace(/\s+/g, '').toLowerCase();
+}
+
+async function mapAssets(card) {
+  const assets = await fetchAssets();
+  
+  // Sanitize and normalize the title to match keys in urldata.json
+  const assetKeyCamel = card.title.replace(/\s+/g, ''); // camelCase key
+  const assetKeyLower = normalizeKey(card.title); // lowercase key
+
+  // Access the data for the specific asset
+  const data = {
+    solutionFlow: assets[`${assetKeyCamel}solutionFlow`] || assets[`${assetKeyLower}solutionflow`] || null,
+    techArchitecture: assets[`${assetKeyCamel}techArchitecture`] || assets[`${assetKeyLower}techarchitecture`] || null,
+    description: assets[`${assetKeyCamel}description`] || assets[`${assetKeyLower}description`] || null,
+    benefits: assets[`${assetKeyCamel}benefits`] || assets[`${assetKeyLower}benefits`] || null,
+    adoption: assets[`${assetKeyCamel}adoption`] || assets[`${assetKeyLower}adoption`] || null,
+    demo: assets[`${assetKeyCamel}demo`] || assets[`${assetKeyLower}demo`] || assets[`${assetKeyCamel}Demo`] || assets[`${assetKeyLower}demo`] || null,
+  };
+  
+  console.log(`Data for ${card.title}:`, data);
+
+  return {
+    ...card,
+    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
+    content: {
+      ...card.content,
+      solutionFlow: data.solutionFlow,
+      demo: data.demo || null,
+      techArchitecture: data.techArchitecture,
+      description: data.description,
+      benefits: data.benefits,
+      adoption: data.adoption,
+    },
+  };
+}
+
+
+
+
+
+
+
+
 
 import IntelligentAssist from './CardsData/IntelligentAssist.json';
 import EmailEAR from './CardsData/EmailEAR.json';
