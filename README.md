@@ -1,47 +1,50 @@
-// Utility function to normalize keys (e.g., AutoWiseDemo -> autowisedemo)
-function normalizeKey(key) {
-  return key.replace(/\s+/g, '').toLowerCase();
+// AssetImports.js
+import axios from 'axios';
+
+export const images = {
+  IntelligentAssist: require('./components/Cards/CardsImages/IntelligentAssist.JPEG'),
+  EmailEAR: require('./components/Cards/CardsImages/EmailEAR.JPEG'),
+  CaseIntelligence: require('./components/Cards/CardsImages/CaseIntelligence.JPEG'),
+  SmartRecruit: require('./components/Cards/CardsImages/SmartRecruit.JPEG'),
+  ClaimAssist: require('./components/Cards/CardsImages/ClaimAssist.JPEG'),
+  AssistantEV: require('./components/Cards/CardsImages/AssistantEV.JPEG'),
+  CitizenAdvisor: require('./components/Cards/CardsImages/citizenAdvisor.JPEG'),
+  FinanceCompetitor: require('./components/Cards/CardsImages/FinanceCompetitor.JPEG'),
+  Signature: require('./components/Cards/CardsImages/Signature.JPEG'),
+  AIForce: require('./components/Cards/CardsImages/AIForce.JPEG'),
+  APICase: require('./components/Cards/CardsImages/APICase.JPEG'),
+  AMSSupport: require('./components/Cards/CardsImages/AMSSupport.JPEG'),
+  SOP: require('./components/Cards/CardsImages/SOP.JPEG'),
+  CodeGReat: require('./components/Cards/CardsImages/CodeGReat.JPEG'),
+  AAIG: require('./components/Cards/CardsImages/AAIG.JPEG'),
+  ResponsibleGen: require('./components/Cards/CardsImages/ResponsibleGen.JPEG'),
+  GraphData: require('./components/Cards/CardsImages/GraphData.JPEG'),
+  PredictiveAsset: require('./components/Cards/CardsImages/PredictiveAsset.JPEG'),
+  AutoWiseCampanian: require('./components/Cards/CardsImages/autowiseCompanian.JPEG'),
+};
+
+
+
+// Fetch and cache JSON data using Axios with cache-busting
+export async function fetchAssets() {
+  try {
+    const response = await axios.get(`xyz`, {
+      headers: {
+        'Cache-Control': 'no-cache', // Disable caching
+      }
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch assets:', error);
+    return {}; // Fallback to an empty object in case of error
+  }
 }
 
-async function mapAssets(card) {
-  const assets = await fetchAssets();
-  
-  // Sanitize and normalize the title to match keys in urldata.json
-  const assetKeyCamel = card.title.replace(/\s+/g, ''); // camelCase key
-  const assetKeyLower = normalizeKey(card.title); // lowercase key
-
-  // Access the data for the specific asset
-  const data = {
-    solutionFlow: assets[`${assetKeyCamel}solutionFlow`] || assets[`${assetKeyLower}solutionflow`] || null,
-    techArchitecture: assets[`${assetKeyCamel}techArchitecture`] || assets[`${assetKeyLower}techarchitecture`] || null,
-    description: assets[`${assetKeyCamel}description`] || assets[`${assetKeyLower}description`] || null,
-    benefits: assets[`${assetKeyCamel}benefits`] || assets[`${assetKeyLower}benefits`] || null,
-    adoption: assets[`${assetKeyCamel}adoption`] || assets[`${assetKeyLower}adoption`] || null,
-    demo: assets[`${assetKeyCamel}demo`] || assets[`${assetKeyLower}demo`] || assets[`${assetKeyCamel}Demo`] || assets[`${assetKeyLower}demo`] || null,
-  };
-  
-  console.log(`Data for ${card.title}:`, data);
-
-  return {
-    ...card,
-    imageUrl: images[card.imageUrl] || 'defaultImagePath.jpg', // Use a default image if the specified one is missing
-    content: {
-      ...card.content,
-      solutionFlow: data.solutionFlow,
-      demo: data.demo || null,
-      techArchitecture: data.techArchitecture,
-      description: data.description,
-      benefits: data.benefits,
-      adoption: data.adoption,
-    },
-  };
-}
-
-
-
-
-
-
+fetchAssets().then(data => {
+  console.log('Fetched Assets:', data);
+});
 
 
 
