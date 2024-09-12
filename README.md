@@ -35,7 +35,7 @@ async function mapAssets(card) {
     description: assets[`${assetKey}description`] || null,
     benefits: assets[`${assetKey}benefits`] || null,
     adoption: assets[`${assetKey}adoption`] || null,
-    demo: assets[`${assetKey}demo`] || null,
+    demo: assets[`${assetKey}demo`] || assets[`${assetKey}Demo`] || null,
   };
   
   console.log(`Data for ${card.title}:`, data);
