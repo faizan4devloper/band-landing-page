@@ -1,1 +1,2 @@
-npm install --save @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/react-fontawesome
+ClaimAssist
+Empower your claim process to minimize Claim Denial and maximize reimbursements
