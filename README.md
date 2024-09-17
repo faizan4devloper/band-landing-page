@@ -1,67 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import styles from './Header.module.css';
-import HeaderLogo from '../../assets/icons/HCLTechLogoBlue.svg';
+/* Remove default margins and paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-const Header = () => {
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+/* Set global styles for body */
+body {
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    font-family: Arial, sans-serif; /* Set a base font */
+    line-height: 1.6; /* Improve text readability */
+}
 
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-
-            if (currentScrollY > lastScrollY && currentScrollY > 100) {
-                // Scroll down
-                setIsVisible(false);
-            } else {
-                // Scroll up
-                setIsVisible(true);
-            }
-
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [lastScrollY]);
-
-    return (
-        <header className={`${styles.header} ${isVisible ? styles.visible : styles.hidden}`}>
-            <div className={styles.logo}>
-                <img src={HeaderLogo} alt="Logo" />
-            </div>
-        </header>
-    );
-};
-
-export default Header;
-
-
-.header {
-    position: sticky;
-    top: 0;
+/* Ensure full viewport height and no overflow */
+html, body {
     width: 100%;
-    background-color: #1a1a2e;
-    color: white;
-    padding: 15px;
-    border-bottom: 0.1px solid grey;
+    height: 100%;
+}
+
+/* Set the container to take full width */
+.container {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+
+
+
+
+.welcomeScreen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background-image: url('../../assets/images/welcome-background.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #fff;
     text-align: center;
-    transition: transform 0.3s ease-in-out;
-    z-index: 1000; /* Make sure header is above other content */
+    padding: 2rem;
+    overflow: hidden; /* Prevent overflow */
 }
 
-.visible {
-    transform: translateY(0);
+.content {
+    max-width: 90%; /* Responsive width */
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.hidden {
-    transform: translateY(-100%);
+.title {
+    font-size: 2.5rem; /* Responsive font size */
 }
 
-.logo img {
-    max-height: 20px;
-    cursor: pointer;
+.subtitle {
+    font-size: 1.2rem;
+}
+
+/* Button Styling */
+.startButton {
+    padding: 0.75rem 2rem;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem; /* Smaller font size on small screens */
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .startButton {
+        font-size: 0.9rem;
+        padding: 0.5rem 1.5rem;
+    }
 }
