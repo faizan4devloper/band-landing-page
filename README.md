@@ -8,21 +8,19 @@ const Breadcrumbs = () => {
     const location = useLocation();
     const pathnames = location.pathname.split('/').filter((x) => x);
 
-    // Define a mapping for path segments to breadcrumb names and routes
+    // Define a mapping for path segments to breadcrumb names
     const breadcrumbNameMap = {
-        '': 'Home', // For the root path
         home: 'Home',
-        'upload-documents': 'Upload Documents',
+        'upload-documents': 'UploadDocuments',
+        // Add future mappings here if needed
     };
 
     return (
         <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            {/* Always include Home link */}
-            <Link to="/home" className={styles.crumb}>
+            <Link to="/home" className={styles.crumb}> {/* Changed to /home to match the Home.js page */}
                 <FontAwesomeIcon icon={faHome} className={styles.icon} />
-                Home
             </Link>
-            {pathnames.length > 0 && pathnames.map((value, index) => {
+            {pathnames.map((value, index) => {
                 const to = `/${pathnames.slice(0, index + 1).join('/')}`;
                 const isLast = index === pathnames.length - 1;
                 const name = breadcrumbNameMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
