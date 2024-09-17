@@ -1,93 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { pdfjs } from 'pdfjs-dist';
-import styles from './UploadDocuments.module.css';
+import React, { useState } from 'react';
+import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
+import styles from './Home.module.css';
 
-// Set the worker path for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+const Home = () => {
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [claimType, setClaimType] = useState('');
+    const [claimIdVisible, setClaimIdVisible] = useState(false);
+    const [selectedClaimId, setSelectedClaimId] = useState(null);
+    const [uploadedFile, setUploadedFile] = useState(null); // State to hold the uploaded file
+    const navigate = useNavigate();
 
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile } = location.state || {};
-    const [pdfPreview, setPdfPreview] = useState(null);
-    const [error, setError] = useState(null);
+    // Options for the category select input
+    const categoryOptions = [
+        { value: 'Surrender Claim', label: 'Surrender Claim' },
+        { value: 'Retirement Claim', label: 'Retirement Claim' },
+        { value: 'Death Claim', label: 'Death Claim' },
+    ];
 
-    useEffect(() => {
-        if (uploadedFile && uploadedFile.type === 'application/pdf') {
-            const fileUrl = URL.createObjectURL(uploadedFile);
+    // Options for the claim ID select input
+    const claimIdOptions = [
+        { value: 'claim-123', label: 'Claim ID 123' },
+        { value: 'claim-456', label: 'Claim ID 456' },
+        // Add more claim IDs as needed
+    ];
 
-            const renderPdf = async () => {
-                try {
-                    const pdf = await pdfjs.getDocument(fileUrl).promise;
-                    const page = await pdf.getPage(1);
+    const handleClaimTypeChange = (type) => {
+        setClaimType(type);
+        setClaimIdVisible(type === 'existing');
+    };
 
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    const viewport = page.getViewport({ scale: 1 });
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
-
-                    await page.render({ canvasContext: context, viewport }).promise;
-                    setPdfPreview(canvas.toDataURL());
-                } catch (err) {
-                    setError('Failed to render PDF preview');
-                } finally {
-                    URL.revokeObjectURL(fileUrl);
-                }
-            };
-
-            renderPdf();
+    const handleFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            setUploadedFile(e.target.files[0]);
         }
-    }, [uploadedFile]);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Make sure all fields are filled before proceeding
+        if (!selectedCategory || !claimType || (claimType === 'existing' && !selectedClaimId) || !uploadedFile) {
+            alert('Please fill in all required fields and upload a document.');
+            return;
+        }
+
+        // Navigate to the Upload Documents page with the form data
+        navigate('/upload-documents', {
+            state: {
+                selectedCategory,
+                claimType,
+                selectedClaimId,
+                uploadedFile,
+            },
+        });
+    };
 
     return (
-        <div className={styles.uploadDocuments}>
-            <h2>Upload Documents - Review</h2>
-            <div className={styles.reviewSection}>
-                {uploadedFile ? (
-                    <div className={styles.reviewItem}>
-                        <strong>Uploaded Document:</strong> {uploadedFile.name}
-                        <div className={styles.preview}>
-                            {/* Show image preview if it's an image */}
-                            {uploadedFile.type.startsWith('image/') && (
-                                <img
-                                    src={URL.createObjectURL(uploadedFile)}
-                                    alt="Document Preview"
-                                    className={styles.imagePreview}
-                                />
-                            )}
-                            {/* Show PDF preview as an image if it's a PDF */}
-                            {uploadedFile.type === 'application/pdf' && pdfPreview && (
-                                <img
-                                    src={pdfPreview}
-                                    alt="PDF Preview"
-                                    className={styles.pdfPreview}
-                                />
-                            )}
-                            {/* Provide a link for DOCX and other document types */}
-                            {['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'].includes(uploadedFile.type) && (
-                                <a
-                                    href={URL.createObjectURL(uploadedFile)}
-                                    download={uploadedFile.name}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.documentLink}
-                                >
-                                    View Document
-                                </a>
-                            )}
-                        </div>
+        <div className={styles.home}>
+            <form className={styles.claimForm} onSubmit={handleSubmit}>
+                {/* Choose Claim Category */}
+                <div className={styles.formGroup}>
+                    <label htmlFor="category">Choose Claim Category:</label>
+                    <Select
+                        id="category"
+                        options={categoryOptions}
+                        onChange={(option) => setSelectedCategory(option)}
+                        isClearable
+                        className={styles.select}
+                    />
+                </div>
+
+                {/* Select Type of Claim */}
+                <div className={styles.formGroup}>
+                    <label>Select Type of Claim:</label>
+                    <div className={styles.checkboxGroup}>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="new"
+                                checked={claimType === 'new'}
+                                onChange={() => handleClaimTypeChange('new')}
+                            />
+                            New
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="existing"
+                                checked={claimType === 'existing'}
+                                onChange={() => handleClaimTypeChange('existing')}
+                            />
+                            Existing
+                        </label>
                     </div>
-                ) : (
-                    <div className={styles.reviewItem}>
-                        <strong>No Document Uploaded</strong>
-                        <p className={styles.noFile}>Please upload a document to preview it here.</p>
+                </div>
+
+                {/* Choose Claim ID (Visible only if "Existing" is selected) */}
+                {claimIdVisible && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="claimId">Choose Claim ID:</label>
+                        <Select
+                            id="claimId"
+                            options={claimIdOptions}
+                            onChange={(option) => setSelectedClaimId(option)}
+                            isClearable
+                            className={styles.select}
+                        />
                     </div>
                 )}
-                {error && <p className={styles.error}>{error}</p>}
-            </div>
+
+                {/* Upload Claim Form */}
+                <div className={styles.formGroup}>
+                    <label htmlFor="upload">Upload Claim Form:</label>
+                    <input type="file" id="upload" onChange={handleFileChange} />
+                </div>
+
+                {/* Process Button */}
+                <button type="submit" className={styles.processButton}>
+                    Process
+                </button>
+            </form>
         </div>
     );
 };
 
-export default UploadDocuments;
+export default Home;
