@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
@@ -175,19 +174,52 @@ const Home = () => {
 export default Home;
 
 
-
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './UploadDocuments.module.css';
 
 const UploadDocuments = () => {
     const location = useLocation();
-    const { uploadedFile } = location.state || {};
+    const { uploadedFile, documents = [] } = location.state || {};
 
     return (
         <div className={styles.uploadDocuments}>
             <h2>Upload Documents - Review</h2>
             <div className={styles.reviewSection}>
+                {/* Show existing documents */}
+                {documents.length > 0 && (
+                    <div className={styles.existingDocuments}>
+                        <h3>Existing Documents:</h3>
+                        <ul className={styles.documentList}>
+                            {documents.map((doc, index) => (
+                                <li key={index}>
+                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                        {doc.name}
+                                    </a>
+                                    {/* Show preview for existing documents */}
+                                    {doc.url.endsWith('.pdf') && (
+                                        <iframe
+                                            src={doc.url}
+                                            title={`PDF Preview ${doc.name}`}
+                                            className={styles.pdfPreview}
+                                            width="300px"
+                                            height="300px"
+                                        />
+                                    )}
+                                    {doc.url.startsWith('https://') && (
+                                        <img
+                                            src={doc.url}
+                                            alt={`Preview ${doc.name}`}
+                                            className={styles.imagePreview}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Show uploaded document */}
                 {uploadedFile ? (
                     <div className={styles.reviewItem}>
                         <strong>Uploaded Document:</strong> {uploadedFile.name}
