@@ -6,14 +6,10 @@ const UploadDocuments = () => {
     const location = useLocation();
     const { uploadedFile, documents } = location.state || {};
 
-    const renderPreview = (file) => {
-        if (!file) return null;
-
+    const renderDocumentPreview = (file) => {
         if (file.type.startsWith('image/')) {
             return <img src={URL.createObjectURL(file)} alt="Document Preview" className={styles.imagePreview} />;
-        }
-
-        if (file.type === 'application/pdf') {
+        } else if (file.type === 'application/pdf') {
             return (
                 <iframe
                     src={URL.createObjectURL(file)}
@@ -23,9 +19,7 @@ const UploadDocuments = () => {
                     height="600px"
                 />
             );
-        }
-
-        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
             return (
                 <a
                     href={URL.createObjectURL(file)}
@@ -37,57 +31,46 @@ const UploadDocuments = () => {
                     View Document (DOCX)
                 </a>
             );
+        } else {
+            return (
+                <a
+                    href={URL.createObjectURL(file)}
+                    download={file.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.documentLink}
+                >
+                    View Document
+                </a>
+            );
         }
-
-        return (
-            <a
-                href={URL.createObjectURL(file)}
-                download={file.name}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.documentLink}
-            >
-                View Document
-            </a>
-        );
     };
 
     return (
         <div className={styles.uploadDocuments}>
-            <h2>Document Review</h2>
+            <h2>Upload Documents - Review</h2>
             <div className={styles.reviewSection}>
-                {/* Display uploaded document preview */}
-                {uploadedFile && (
+                {(uploadedFile || documents.length > 0) ? (
                     <div className={styles.reviewItem}>
-                        <strong>Uploaded Document:</strong> {uploadedFile.name}
+                        <strong>Document Preview:</strong>
                         <div className={styles.preview}>
-                            {renderPreview(uploadedFile)}
-                        </div>
-                    </div>
-                )}
-
-                {/* Display existing documents preview */}
-                {documents && documents.length > 0 && (
-                    <div className={styles.reviewItem}>
-                        <strong>Existing Documents:</strong>
-                        <div className={styles.preview}>
-                            {documents.map((doc, index) => (
+                            {uploadedFile && renderDocumentPreview(uploadedFile)}
+                            {documents && documents.map((doc, index) => (
                                 <div key={index}>
-                                    <strong>{doc.name}</strong>: 
-                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                                        View Document
-                                    </a>
+                                    <strong>Existing Document:</strong>
+                                    {renderDocumentPreview({
+                                        name: doc.name,
+                                        type: doc.type,
+                                        url: doc.url
+                                    })}
                                 </div>
                             ))}
                         </div>
                     </div>
-                )}
-
-                {/* Handle case where no documents are available */}
-                {!uploadedFile && (!documents || documents.length === 0) && (
+                ) : (
                     <div className={styles.reviewItem}>
-                        <strong>No Document Available</strong>
-                        <p className={styles.noFile}>Please upload a document or select an existing one to preview it here.</p>
+                        <strong>No Document Uploaded</strong>
+                        <p className={styles.noFile}>Please upload a document to preview it here.</p>
                     </div>
                 )}
             </div>
