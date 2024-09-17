@@ -4,7 +4,7 @@ import styles from './UploadDocuments.module.css';
 
 const UploadDocuments = () => {
     const location = useLocation();
-    const {  uploadedFile } = location.state || {};
+    const { uploadedFile } = location.state || {};
 
     return (
         <div className={styles.uploadDocuments}>
@@ -16,15 +16,43 @@ const UploadDocuments = () => {
                         <div className={styles.preview}>
                             {/* Show image preview if it's an image */}
                             {uploadedFile.type.startsWith('image/') && (
-                                <img src={URL.createObjectURL(uploadedFile)} alt="Document Preview" />
+                                <img
+                                    src={URL.createObjectURL(uploadedFile)}
+                                    alt="Document Preview"
+                                    className={styles.imagePreview}
+                                />
                             )}
-                            {/* Show a link for other document types */}
-                            {!uploadedFile.type.startsWith('image/') && (
+                            {/* Show PDF preview if it's a PDF */}
+                            {uploadedFile.type === 'application/pdf' && (
+                                <iframe
+                                    src={URL.createObjectURL(uploadedFile)}
+                                    title="PDF Preview"
+                                    className={styles.pdfPreview}
+                                />
+                            )}
+                            {/* Provide a link for other document types like DOCX */}
+                            {uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
                                 <a
                                     href={URL.createObjectURL(uploadedFile)}
                                     download={uploadedFile.name}
                                     target="_blank"
                                     rel="noopener noreferrer"
+                                    className={styles.documentLink}
+                                >
+                                    View Document (DOCX)
+                                </a>
+                            )}
+                            {/* Fallback link for other file types */}
+                            {!uploadedFile.type.startsWith('image/') &&
+                                uploadedFile.type !== 'application/pdf' &&
+                                uploadedFile.type !==
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
+                                <a
+                                    href={URL.createObjectURL(uploadedFile)}
+                                    download={uploadedFile.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.documentLink}
                                 >
                                     View Document
                                 </a>
