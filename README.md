@@ -1,3 +1,4 @@
+
 /* Apply box-sizing to all elements */
 *,
 *::before,
@@ -14,7 +15,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden; /* Prevent horizontal scrolling */
-  overflow-y: auto; /* Enable vertical scrolling without scrollbar */
   scrollbar-width: none; /* Firefox */
 }
 
