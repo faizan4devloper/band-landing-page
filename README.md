@@ -1,39 +1,39 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Breadcrumbs.module.css';
+.breadcrumbs {
+    display: flex;
+    align-items: center;
+    margin: 1rem;
+    font-size: 1rem;
+    color: #333;
+}
 
-const Breadcrumbs = () => {
-    const location = useLocation();
-    const pathnames = location.pathname.split('/').filter((x) => x);
+.crumb {
+    display: flex;
+    align-items: center;
+}
 
-    return (
-        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            <Link to="/" className={styles.crumb}>
-                <FontAwesomeIcon icon={faHome} className={styles.icon} />
-            </Link>
-            {pathnames.map((value, index) => {
-                const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-                const isLast = index === pathnames.length - 1;
+.icon {
+    margin-right: 0.5rem;
+    color: #007bff;
+}
 
-                return (
-                    <span key={to} className={styles.crumb}>
-                        <FontAwesomeIcon icon={faChevronRight} className={styles.separator} />
-                        {isLast ? (
-                            <span className={`${styles.link} ${styles.current}`} aria-current="page">
-                                {value.charAt(0).toUpperCase() + value.slice(1)}
-                            </span>
-                        ) : (
-                            <Link to={to} className={styles.link}>
-                                {value.charAt(0).toUpperCase() + value.slice(1)}
-                            </Link>
-                        )}
-                    </span>
-                );
-            })}
-        </nav>
-    );
-};
+.link {
+    color: #007bff; /* Link color */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
 
-export default Breadcrumbs;
+.link:hover {
+    color: #0056b3; /* Darker shade on hover */
+    text-decoration: underline;
+}
+
+.current {
+    font-weight: bold;
+    color: #555; /* Current breadcrumb color */
+}
+
+.separator {
+    margin: 0 0.5rem;
+    color: #999;
+    font-size: 0.8rem; /* Slightly smaller size for separators */
+}
