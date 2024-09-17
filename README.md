@@ -14,13 +14,23 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden; /* Prevent horizontal scrolling */
-  overflow-y: hidden; /* Hide vertical scrolling */
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 /* Hide scrollbar for Webkit browsers (Chrome, Safari, Edge) */
 body::-webkit-scrollbar {
-  width: 0;
+  width: 0; /* Hide scrollbar width */
+}
+
+/* Hide scrollbar for all elements in Webkit browsers */
+*::-webkit-scrollbar {
+  width: 0; /* Chrome, Safari, Edge */
   height: 0;
+}
+
+/* Hide scrollbar for Firefox */
+* {
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Ensure the root element uses 100% of the viewport */
@@ -28,13 +38,4 @@ body::-webkit-scrollbar {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-/* Apply to all scrollable elements */
-* {
-  scrollbar-width: none; /* Firefox */
-}
-
-*::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
 }
