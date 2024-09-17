@@ -1,37 +1,32 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile } from '@fortawesome/free-solid-svg-icons';
-import styles from './WelcomeScreen.module.css';
+/* Fade-in animation for the welcome screen */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
 
-const WelcomeScreen = () => {
-    const navigate = useNavigate(); // Hook to navigate programmatically
+/* Pulsating animation for the start button */
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+}
 
-    const handleStartClick = () => {
-        navigate('/home'); // Navigate to the home screen
-    };
-
-    return (
-        <div className={styles.welcomeScreen}>
-            <div className={styles.content}>
-                <h1 className={styles.title}>ClaimAssist</h1>
-                <p className={styles.subtitle}>
-                    Empower your claim process to minimize Claim Denial and maximize reimbursements
-                </p>
-                <button className={styles.startButton} onClick={handleStartClick}>
-                    Start Claim Assist <FontAwesomeIcon icon={faFile} />
-                </button>
-            </div>
-        </div>
-    );
-};
-
-export default WelcomeScreen;
-
-
-
-
-
+/* Welcome Screen */
 .welcomeScreen {
     display: flex;
     justify-content: center;
@@ -43,6 +38,7 @@ export default WelcomeScreen;
     color: #fff; /* White text for better contrast */
     text-align: center;
     padding: 2rem;
+    animation: fadeIn 1.5s ease-out; /* Apply fade-in animation */
 }
 
 .content {
@@ -50,6 +46,7 @@ export default WelcomeScreen;
     padding: 2rem;
     border-radius: 8px; /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    animation: fadeIn 2s ease-out; /* Apply fade-in animation */
 }
 
 .title {
@@ -75,11 +72,13 @@ export default WelcomeScreen;
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: pulsate 2s infinite; /* Apply pulsate animation */
 }
 
 .startButton:hover {
     background-color: #5f1ebe; /* Darker green on hover */
     color: #fff;
+    animation: none; /* Stop pulsating animation on hover */
 }
 
 .startButton:active {
