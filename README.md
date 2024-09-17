@@ -17,10 +17,12 @@ const Breadcrumbs = () => {
 
     return (
         <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
+            {/* Home breadcrumb */}
             <Link to="/" className={styles.crumb}>
                 <FontAwesomeIcon icon={faHome} className={styles.icon} />
+                Home
             </Link>
-            {pathnames.map((value, index) => {
+            {pathnames.length > 0 && pathnames.map((value, index) => {
                 // Create the path for each breadcrumb link
                 const to = `/${pathnames.slice(0, index + 1).join('/')}`;
                 const isLast = index === pathnames.length - 1;
