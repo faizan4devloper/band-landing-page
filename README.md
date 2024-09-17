@@ -6,6 +6,9 @@ const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [claimType, setClaimType] = useState('');
     const [claimIdVisible, setClaimIdVisible] = useState(false);
+    const [selectedClaimId, setSelectedClaimId] = useState(null);
+    const [uploadedDocs, setUploadedDocs] = useState([]);
+    const [previewUrl, setPreviewUrl] = useState(null);
 
     // Options for the category select input
     const categoryOptions = [
@@ -18,12 +21,28 @@ const Home = () => {
     const claimIdOptions = [
         { value: 'claim-123', label: 'Claim ID 123' },
         { value: 'claim-456', label: 'Claim ID 456' },
-        // Add more claim IDs as needed
     ];
 
     const handleClaimTypeChange = (type) => {
         setClaimType(type);
         setClaimIdVisible(type === 'existing');
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const newDoc = {
+                name: file.name,
+                type: file.type,
+                file: file,
+            };
+            setUploadedDocs([...uploadedDocs, newDoc]);
+        }
+    };
+
+    const handlePreview = (file) => {
+        const url = URL.createObjectURL(file);
+        setPreviewUrl(url);
     };
 
     const handleSubmit = (e) => {
@@ -81,7 +100,7 @@ const Home = () => {
                         <Select
                             id="claimId"
                             options={claimIdOptions}
-                            onChange={(option) => console.log(option)}
+                            onChange={(option) => setSelectedClaimId(option)}
                             isClearable
                             className={styles.select}
                         />
@@ -91,8 +110,40 @@ const Home = () => {
                 {/* Upload Claim Form */}
                 <div className={styles.formGroup}>
                     <label htmlFor="upload">Upload Claim Form:</label>
-                    <input type="file" id="upload" />
+                    <input type="file" id="upload" onChange={handleFileUpload} />
                 </div>
+
+                {/* Uploaded Documents Section */}
+                {(selectedCategory && (claimType === 'new' || selectedClaimId)) && (
+                    <div className={styles.uploadedDocsSection}>
+                        <h3>Uploaded Docs</h3>
+                        <ul className={styles.uploadedDocsList}>
+                            {uploadedDocs.map((doc, index) => (
+                                <li key={index}>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => handlePreview(doc.file)} 
+                                        className={styles.docButton}
+                                    >
+                                        {doc.name}
+                                    </button> - {doc.type}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Document Preview */}
+                {previewUrl && (
+                    <div className={styles.previewSection}>
+                        <h3>Document Preview</h3>
+                        <iframe 
+                            src={previewUrl} 
+                            title="Document Preview" 
+                            className={styles.previewIframe}
+                        ></iframe>
+                    </div>
+                )}
 
                 {/* Process Button */}
                 <button type="submit" className={styles.processButton}>
@@ -105,6 +156,8 @@ const Home = () => {
 
 export default Home;
 
+
+/* Container */
 .home {
     padding: 2rem;
     background-color: #f9f9f9;
@@ -142,7 +195,7 @@ export default Home;
 /* Custom Select Styling */
 .select {
     margin-top: 0.5rem;
-    width: 80%;
+    width: 100%;
 }
 
 /* Process Button */
@@ -158,4 +211,37 @@ export default Home;
 
 .processButton:hover {
     background-color: #4725a1;
+}
+
+/* Uploaded Documents Section */
+.uploadedDocsSection {
+    margin-top: 2rem;
+}
+
+.uploadedDocsList {
+    list-style: none;
+    padding: 0;
+}
+
+.docButton {
+    background: none;
+    border: none;
+    color: #5f1ebe;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.docButton:hover {
+    color: #4725a1;
+}
+
+/* Document Preview Section */
+.previewSection {
+    margin-top: 2rem;
+}
+
+.previewIframe {
+    width: 100%;
+    height: 300px;
+    border: none;
 }
