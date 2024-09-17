@@ -113,3 +113,15 @@ const Home = () => {
 
 export default Home;
 
+import React from 'react';
+import styles from './UploadDocuments.module.css';
+
+const UploadDocuments = () => {
+    return (
+        <div className={styles.uploadDocuments}>
+            
+        </div>
+    );
+};
+
+export default UploadDocuments;
