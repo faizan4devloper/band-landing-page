@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { pdfjs } from 'pdfjs-dist';
-import 'pdfjs-dist/build/pdf.css'; // Ensure PDF.js styles are imported
 import styles from './UploadDocuments.module.css';
 
 // Set the worker path for PDF.js
@@ -67,7 +65,7 @@ const UploadDocuments = () => {
                                 />
                             )}
                             {/* Provide a link for DOCX and other document types */}
-                            {(uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || !uploadedFile.type.startsWith('image/') && uploadedFile.type !== 'application/pdf') && (
+                            {['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/msword'].includes(uploadedFile.type) && (
                                 <a
                                     href={URL.createObjectURL(uploadedFile)}
                                     download={uploadedFile.name}
