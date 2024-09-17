@@ -1,39 +1,30 @@
-.breadcrumbs {
-    display: flex;
-    align-items: center;
-    margin: 1rem;
-    font-size: 1rem;
-    color: #333;
+import React from 'react';
+import styles from './Header.module.css';
+import HeaderLogo from '../../assets/icons/HCLTechLogoBlue.svg';
+
+const Header = () => {
+    return (
+        <header className={styles.header}>
+            <div className={styles.logo}>
+            <img src={HeaderLogo} alt="Logo" />
+            </div>
+        </header>
+    );
+};
+
+export default Header;
+
+.header {
+    /*background-color: #1a1a2e;*/
+    color: white;
+    padding: 15px;
+    border-bottom: 0.1px solid grey;
+    text-align: center;
+    
+    
 }
 
-.crumb {
-    display: flex;
-    align-items: center;
-}
-
-.icon {
-    margin-right: 0.5rem;
-    color: #007bff;
-}
-
-.link {
-    color: #007bff; /* Link color */
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.link:hover {
-    color: #0056b3; /* Darker shade on hover */
-    text-decoration: underline;
-}
-
-.current {
-    font-weight: bold;
-    color: #555; /* Current breadcrumb color */
-}
-
-.separator {
-    margin: 0 0.5rem;
-    color: #999;
-    font-size: 0.8rem; /* Slightly smaller size for separators */
+.logo img {
+  max-height: 20px;
+  cursor: pointer;
 }
