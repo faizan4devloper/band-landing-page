@@ -1,81 +1,40 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import styles from './UploadDocuments.module.css';
+import React, { useState, useEffect } from 'react';
+import styles from './Header.module.css';
+import HeaderLogo from '../../assets/icons/HCLTechLogoBlue.svg';
 
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents } = location.state || {};
+const Header = () => {
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
 
-    const renderDocumentPreview = (file) => {
-        if (file.type.startsWith('image/')) {
-            return <img src={URL.createObjectURL(file)} alt="Document Preview" className={styles.imagePreview} />;
-        } else if (file.type === 'application/pdf') {
-            return (
-                <iframe
-                    src={URL.createObjectURL(file)}
-                    title="PDF Preview"
-                    className={styles.pdfPreview}
-                    width="600px"
-                    height="600px"
-                />
-            );
-        } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-            return (
-                <a
-                    href={URL.createObjectURL(file)}
-                    download={file.name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.documentLink}
-                >
-                    View Document (DOCX)
-                </a>
-            );
-        } else {
-            return (
-                <a
-                    href={URL.createObjectURL(file)}
-                    download={file.name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.documentLink}
-                >
-                    View Document
-                </a>
-            );
-        }
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                // Scroll down
+                setIsVisible(false);
+            } else {
+                // Scroll up
+                setIsVisible(true);
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [lastScrollY]);
 
     return (
-        <div className={styles.uploadDocuments}>
-            <h2>Upload Documents - Review</h2>
-            <div className={styles.reviewSection}>
-                {(uploadedFile || documents.length > 0) ? (
-                    <div className={styles.reviewItem}>
-                        <strong>Document Preview:</strong>
-                        <div className={styles.preview}>
-                            {uploadedFile && renderDocumentPreview(uploadedFile)}
-                            {documents && documents.map((doc, index) => (
-                                <div key={index}>
-                                    <strong>Existing Document:</strong>
-                                    {renderDocumentPreview({
-                                        name: doc.name,
-                                        type: doc.type,
-                                        url: doc.url
-                                    })}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <div className={styles.reviewItem}>
-                        <strong>No Document Uploaded</strong>
-                        <p className={styles.noFile}>Please upload a document to preview it here.</p>
-                    </div>
-                )}
+        <header className={`${styles.header} ${isVisible ? styles.visible : styles.hidden}`}>
+            <div className={styles.logo}>
+                <img src={HeaderLogo} alt="Logo" />
             </div>
-        </div>
+        </header>
     );
 };
 
-export default UploadDocuments;
+export default Header;
