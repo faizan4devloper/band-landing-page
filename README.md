@@ -1,124 +1,28 @@
 import React, { useState } from 'react';
-import Select from 'react-select';
-import { useNavigate } from 'react-router-dom';
-import styles from './Home.module.css';
-
-const Home = () => {
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [claimType, setClaimType] = useState('');
-    const [claimIdVisible, setClaimIdVisible] = useState(false);
-    const navigate = useNavigate(); // Hook to navigate programmatically
-
-
-    // Options for the category select input
-    const categoryOptions = [
-        { value: 'Surrender Claim', label: 'Surrender Claim' },
-        { value: 'Retirement Claim', label: 'Retirement Claim' },
-        { value: 'Death Claim', label: 'Death Claim' },
-    ];
-
-    // Options for the claim ID select input
-    const claimIdOptions = [
-        { value: 'claim-123', label: 'Claim ID 123' },
-        { value: 'claim-456', label: 'Claim ID 456' },
-        // Add more claim IDs as needed
-    ];
-
-    const handleClaimTypeChange = (type) => {
-        setClaimType(type);
-        setClaimIdVisible(type === 'existing');
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Add form submission logic here
-        console.log('Form Submitted');
-    };
-    
-    const handleProceedToUpload = () => {
-        // Navigate to the Upload Documents page
-        navigate('/upload-documents');
-    };
-
-    return (
-        <div className={styles.home}>
-            <form className={styles.claimForm} onSubmit={handleSubmit}>
-                {/* Choose Claim Category */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="category">Choose Claim Category:</label>
-                    <Select
-                        id="category"
-                        options={categoryOptions}
-                        onChange={(option) => setSelectedCategory(option)}
-                        isClearable
-                        className={styles.select}
-                    />
-                </div>
-
-                {/* Select Type of Claim */}
-                <div className={styles.formGroup}>
-                    <label>Select Type of Claim:</label>
-                    <div className={styles.checkboxGroup}>
-                        <label>
-                            <input
-                                type="radio"
-                                name="claimType"
-                                value="new"
-                                checked={claimType === 'new'}
-                                onChange={() => handleClaimTypeChange('new')}
-                            />
-                            New
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                name="claimType"
-                                value="existing"
-                                checked={claimType === 'existing'}
-                                onChange={() => handleClaimTypeChange('existing')}
-                            />
-                            Existing
-                        </label>
-                    </div>
-                </div>
-
-                {/* Choose Claim ID (Visible only if "Existing" is selected) */}
-                {claimIdVisible && (
-                    <div className={styles.formGroup}>
-                        <label htmlFor="claimId">Choose Claim ID:</label>
-                        <Select
-                            id="claimId"
-                            options={claimIdOptions}
-                            onChange={(option) => console.log(option)}
-                            isClearable
-                            className={styles.select}
-                        />
-                    </div>
-                )}
-
-                {/* Upload Claim Form */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="upload">Upload Claim Form:</label>
-                    <input type="file" id="upload" />
-                </div>
-
-                {/* Process Button */}
-                <button type="submit" className={styles.processButton} onClick={handleProceedToUpload}>
-                    Process
-                </button>
-            </form>
-        </div>
-    );
-};
-
-export default Home;
-
-
-
-import React from 'react';
 import styles from './UploadDocuments.module.css';
 
 const UploadDocuments = () => {
+    const [uploadedFiles, setUploadedFiles] = useState([]);
+
+    const handleFileChange = (e) => {
+        const files = Array.from(e.target.files);
+        const filesWithPreview = files.map((file) => {
+            const filePreview = URL.createObjectURL(file); // Create a URL for preview
+            return {
+                file,
+                preview: filePreview,
+            };
+        });
+
+        setUploadedFiles(filesWithPreview);
+    };
+
+    const handleFileRemove = (index) => {
+        const newFiles = [...uploadedFiles];
+        newFiles.splice(index, 1); // Remove the selected file
+        setUploadedFiles(newFiles);
+    };
+
     return (
         <div className={styles.uploadDocuments}>
             <h2>Upload Documents</h2>
@@ -126,11 +30,48 @@ const UploadDocuments = () => {
                 {/* Upload Claim Form */}
                 <div className={styles.formGroup}>
                     <label htmlFor="upload">Upload Claim Form:</label>
-                    <input type="file" id="upload" />
+                    <input
+                        type="file"
+                        id="upload"
+                        onChange={handleFileChange}
+                        multiple
+                    />
                 </div>
 
                 {/* Document Preview */}
-                {/* Add document preview logic here */}
+                <div className={styles.previewContainer}>
+                    {uploadedFiles.map((fileData, index) => (
+                        <div key={index} className={styles.previewItem}>
+                            {/* Show image preview if the file is an image */}
+                            {fileData.file.type.startsWith('image/') && (
+                                <img
+                                    src={fileData.preview}
+                                    alt="Preview"
+                                    className={styles.previewImage}
+                                />
+                            )}
+                            {/* Show a link to download or view the file if it's not an image */}
+                            {!fileData.file.type.startsWith('image/') && (
+                                <a
+                                    href={fileData.preview}
+                                    download={fileData.file.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.previewLink}
+                                >
+                                    {fileData.file.name}
+                                </a>
+                            )}
+                            <button
+                                type="button"
+                                onClick={() => handleFileRemove(index)}
+                                className={styles.removeButton}
+                            >
+                                Remove
+                            </button>
+                        </div>
+                    ))}
+                </div>
 
                 {/* Process Button */}
                 <button type="submit" className={styles.processButton}>
@@ -142,3 +83,45 @@ const UploadDocuments = () => {
 };
 
 export default UploadDocuments;
+
+/* Styles for the preview section */
+.previewContainer {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.previewItem {
+    position: relative;
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+
+.previewImage {
+    max-width: 100px;
+    max-height: 100px;
+    object-fit: cover;
+}
+
+.previewLink {
+    display: block;
+    margin-top: 0.5rem;
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.removeButton {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
