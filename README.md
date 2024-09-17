@@ -1,7 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
+
+// Mock function to get documents for a given claim ID
+const getDocumentsForClaim = (claimId) => {
+    // Replace this with actual API call to get documents
+    const documents = {
+        'claim-123': [{ name: 'Document 1.pdf', url: 'https://example.com/doc1.pdf' }],
+        'claim-456': [{ name: 'Document 2.pdf', url: 'https://example.com/doc2.pdf' }],
+    };
+    return documents[claimId] || [];
+};
 
 const Home = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -9,6 +19,7 @@ const Home = () => {
     const [claimIdVisible, setClaimIdVisible] = useState(false);
     const [selectedClaimId, setSelectedClaimId] = useState(null);
     const [uploadedFile, setUploadedFile] = useState(null); // State to hold the uploaded file
+    const [documents, setDocuments] = useState([]); // State to hold documents for existing claims
     const navigate = useNavigate();
 
     // Options for the category select input
@@ -28,6 +39,21 @@ const Home = () => {
     const handleClaimTypeChange = (type) => {
         setClaimType(type);
         setClaimIdVisible(type === 'existing');
+        if (type === 'new') {
+            setDocuments([]); // Reset documents for new claims
+            setSelectedClaimId(null);
+        }
+    };
+
+    const handleClaimIdChange = (option) => {
+        setSelectedClaimId(option);
+        if (option) {
+            // Fetch documents for the selected claim ID
+            const fetchedDocuments = getDocumentsForClaim(option.value);
+            setDocuments(fetchedDocuments);
+        } else {
+            setDocuments([]);
+        }
     };
 
     const handleFileChange = (e) => {
@@ -39,8 +65,8 @@ const Home = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         // Make sure all fields are filled before proceeding
-        if (!selectedCategory || !claimType || (claimType === 'existing' && !selectedClaimId) || !uploadedFile) {
-            alert('Please fill in all required fields and upload a document.');
+        if (!selectedCategory || !claimType || (claimType === 'existing' && !selectedClaimId) || (claimType === 'new' && !uploadedFile)) {
+            alert('Please fill in all required fields and upload a document if applicable.');
             return;
         }
 
@@ -51,6 +77,7 @@ const Home = () => {
                 claimType,
                 selectedClaimId,
                 uploadedFile,
+                documents,
             },
         });
     };
@@ -104,18 +131,36 @@ const Home = () => {
                         <Select
                             id="claimId"
                             options={claimIdOptions}
-                            onChange={(option) => setSelectedClaimId(option)}
+                            onChange={handleClaimIdChange}
                             isClearable
                             className={styles.select}
                         />
                     </div>
                 )}
 
-                {/* Upload Claim Form */}
-                <div className={styles.formGroup}>
-                    <label htmlFor="upload">Upload Claim Form:</label>
-                    <input type="file" id="upload" onChange={handleFileChange} />
-                </div>
+                {/* Show associated documents for existing claims */}
+                {claimType === 'existing' && documents.length > 0 && (
+                    <div className={styles.formGroup}>
+                        <label>Associated Documents:</label>
+                        <ul className={styles.documentList}>
+                            {documents.map((doc, index) => (
+                                <li key={index}>
+                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                        {doc.name}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {/* Upload Claim Form (Visible only if "New" is selected) */}
+                {claimType === 'new' && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="upload">Upload Claim Form:</label>
+                        <input type="file" id="upload" onChange={handleFileChange} />
+                    </div>
+                )}
 
                 {/* Process Button */}
                 <button type="submit" className={styles.processButton}>
