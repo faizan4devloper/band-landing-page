@@ -1,46 +1,45 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Breadcrumbs.module.css';
+import { useLocation } from 'react-router-dom';
+import styles from './UploadDocuments.module.css';
 
-const Breadcrumbs = () => {
+const UploadDocuments = () => {
     const location = useLocation();
-    const pathnames = location.pathname.split('/').filter((x) => x);
-
-    // Define a mapping for path segments to breadcrumb names
-    const breadcrumbNameMap = {
-        home: 'Home',
-        'upload-documents': 'Upload Documents',
-    };
+    const {  uploadedFile } = location.state || {};
 
     return (
-        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            <Link to="/" className={styles.crumb}>
-                <FontAwesomeIcon icon={faHome} className={styles.icon} />
-            </Link>
-            {pathnames.map((value, index) => {
-                const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-                const isLast = index === pathnames.length - 1;
-                const name = breadcrumbNameMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
-
-                return (
-                    <span key={to} className={styles.crumb}>
-                        <FontAwesomeIcon icon={faChevronRight} className={styles.separator} />
-                        {isLast ? (
-                            <span className={`${styles.link} ${styles.current}`} aria-current="page">
-                                {name}
-                            </span>
-                        ) : (
-                            <Link to={to} className={styles.link}>
-                                {name}
-                            </Link>
-                        )}
-                    </span>
-                );
-            })}
-        </nav>
+        <div className={styles.uploadDocuments}>
+            <h2>Upload Documents - Review</h2>
+            <div className={styles.reviewSection}>
+                {uploadedFile ? (
+                    <div className={styles.reviewItem}>
+                        <strong>Uploaded Document:</strong> {uploadedFile.name}
+                        <div className={styles.preview}>
+                            {/* Show image preview if it's an image */}
+                            {uploadedFile.type.startsWith('image/') && (
+                                <img src={URL.createObjectURL(uploadedFile)} alt="Document Preview" />
+                            )}
+                            {/* Show a link for other document types */}
+                            {!uploadedFile.type.startsWith('image/') && (
+                                <a
+                                    href={URL.createObjectURL(uploadedFile)}
+                                    download={uploadedFile.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    View Document
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className={styles.reviewItem}>
+                        <strong>No Document Uploaded</strong>
+                        <p className={styles.noFile}>Please upload a document to preview it here.</p>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 
-export default Breadcrumbs;
+export default UploadDocuments;
