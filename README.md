@@ -1,4 +1,3 @@
-
 /* Apply box-sizing to all elements */
 *,
 *::before,
@@ -15,12 +14,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden; /* Prevent horizontal scrolling */
-  scrollbar-width: none; /* Firefox */
+  overflow-y: hidden; /* Hide vertical scrolling */
 }
 
 /* Hide scrollbar for Webkit browsers (Chrome, Safari, Edge) */
 body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Edge */
+  width: 0;
+  height: 0;
 }
 
 /* Ensure the root element uses 100% of the viewport */
@@ -28,4 +28,13 @@ body::-webkit-scrollbar {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Apply to all scrollable elements */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }
