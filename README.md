@@ -1,38 +1,43 @@
-
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { pdfjs, Document, Page } from 'react-pdf';
+import { pdfjs } from 'pdfjs-dist';
+import 'pdfjs-dist/build/pdf.css'; // Ensure PDF.js styles are imported
 import styles from './UploadDocuments.module.css';
 
 // Set the worker path for PDF.js
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const UploadDocuments = () => {
     const location = useLocation();
     const { uploadedFile } = location.state || {};
     const [pdfPreview, setPdfPreview] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         if (uploadedFile && uploadedFile.type === 'application/pdf') {
-            // Convert PDF to image preview
             const fileUrl = URL.createObjectURL(uploadedFile);
-            const pdf = pdfjs.getDocument(fileUrl);
 
-            pdf.promise.then((pdfDoc) => {
-                pdfDoc.getPage(1).then((page) => {
+            const renderPdf = async () => {
+                try {
+                    const pdf = await pdfjs.getDocument(fileUrl).promise;
+                    const page = await pdf.getPage(1);
+
                     const canvas = document.createElement('canvas');
                     const context = canvas.getContext('2d');
                     const viewport = page.getViewport({ scale: 1 });
                     canvas.width = viewport.width;
                     canvas.height = viewport.height;
 
-                    page.render({ canvasContext: context, viewport }).promise.then(() => {
-                        setPdfPreview(canvas.toDataURL());
-                    });
-                });
-            });
+                    await page.render({ canvasContext: context, viewport }).promise;
+                    setPdfPreview(canvas.toDataURL());
+                } catch (err) {
+                    setError('Failed to render PDF preview');
+                } finally {
+                    URL.revokeObjectURL(fileUrl);
+                }
+            };
 
-            return () => URL.revokeObjectURL(fileUrl);
+            renderPdf();
         }
     }, [uploadedFile]);
 
@@ -80,6 +85,7 @@ const UploadDocuments = () => {
                         <p className={styles.noFile}>Please upload a document to preview it here.</p>
                     </div>
                 )}
+                {error && <p className={styles.error}>{error}</p>}
             </div>
         </div>
     );
