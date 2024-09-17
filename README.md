@@ -6,101 +6,88 @@ const UploadDocuments = () => {
     const location = useLocation();
     const { uploadedFile, documents } = location.state || {};
 
+    const renderPreview = (file) => {
+        if (!file) return null;
+
+        if (file.type.startsWith('image/')) {
+            return <img src={URL.createObjectURL(file)} alt="Document Preview" className={styles.imagePreview} />;
+        }
+
+        if (file.type === 'application/pdf') {
+            return (
+                <iframe
+                    src={URL.createObjectURL(file)}
+                    title="PDF Preview"
+                    className={styles.pdfPreview}
+                    width="600px"
+                    height="600px"
+                />
+            );
+        }
+
+        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            return (
+                <a
+                    href={URL.createObjectURL(file)}
+                    download={file.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.documentLink}
+                >
+                    View Document (DOCX)
+                </a>
+            );
+        }
+
+        return (
+            <a
+                href={URL.createObjectURL(file)}
+                download={file.name}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.documentLink}
+            >
+                View Document
+            </a>
+        );
+    };
+
     return (
         <div className={styles.uploadDocuments}>
-            <h2>Upload Documents - Review</h2>
+            <h2>Document Review</h2>
             <div className={styles.reviewSection}>
-                <div className={styles.reviewItem}>
-                    <strong>Uploaded Document:</strong> 
-                    {uploadedFile ? (
+                {/* Display uploaded document preview */}
+                {uploadedFile && (
+                    <div className={styles.reviewItem}>
+                        <strong>Uploaded Document:</strong> {uploadedFile.name}
                         <div className={styles.preview}>
-                            {/* Show image preview if it's an image */}
-                            {uploadedFile.type.startsWith('image/') && (
-                                <img
-                                    src={URL.createObjectURL(uploadedFile)}
-                                    alt="Document Preview"
-                                    className={styles.imagePreview}
-                                />
-                            )}
-                            {/* Show PDF preview if it's a PDF */}
-                            {uploadedFile.type === 'application/pdf' && (
-                                <iframe
-                                    src={URL.createObjectURL(uploadedFile)}
-                                    title="PDF Preview"
-                                    className={styles.pdfPreview}
-                                    width="600px"
-                                    height="600px"
-                                />
-                            )}
-                            {/* Provide a link for other document types like DOCX */}
-                            {uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
-                                <a
-                                    href={URL.createObjectURL(uploadedFile)}
-                                    download={uploadedFile.name}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.documentLink}
-                                >
-                                    View Document (DOCX)
-                                </a>
-                            )}
-                            {/* Fallback link for other file types */}
-                            {!uploadedFile.type.startsWith('image/') &&
-                                uploadedFile.type !== 'application/pdf' &&
-                                uploadedFile.type !==
-                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
-                                <a
-                                    href={URL.createObjectURL(uploadedFile)}
-                                    download={uploadedFile.name}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.documentLink}
-                                >
-                                    View Document
-                                </a>
-                            )}
+                            {renderPreview(uploadedFile)}
                         </div>
-                    ) : (
-                        <p className={styles.noFile}>No document uploaded</p>
-                    )}
-                </div>
+                    </div>
+                )}
 
-                {/* Existing Documents Preview */}
+                {/* Display existing documents preview */}
                 {documents && documents.length > 0 && (
                     <div className={styles.reviewItem}>
                         <strong>Existing Documents:</strong>
                         <div className={styles.preview}>
                             {documents.map((doc, index) => (
-                                <div key={index} className={styles.previewItem}>
-                                    {/* Show image preview if it's an image */}
-                                    {doc.url.endsWith('.jpg') || doc.url.endsWith('.png') ? (
-                                        <img
-                                            src={doc.url}
-                                            alt={doc.name}
-                                            className={styles.imagePreview}
-                                        />
-                                    ) : doc.url.endsWith('.pdf') ? (
-                                        <iframe
-                                            src={doc.url}
-                                            title={`PDF Preview ${index}`}
-                                            className={styles.pdfPreview}
-                                            width="600px"
-                                            height="600px"
-                                        />
-                                    ) : (
-                                        <a
-                                            href={doc.url}
-                                            download={doc.name}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className={styles.documentLink}
-                                        >
-                                            {doc.name}
-                                        </a>
-                                    )}
+                                <div key={index}>
+                                    <strong>{doc.name}</strong>: 
+                                    <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                                        View Document
+                                    </a>
                                 </div>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* Handle case where no documents are available */}
+                {!uploadedFile && (!documents || documents.length === 0) && (
+                    <div className={styles.reviewItem}>
+                        <strong>No Document Available</strong>
+                        <p className={styles.noFile}>Please upload a document or select an existing one to preview it here.</p>
                     </div>
                 )}
             </div>
