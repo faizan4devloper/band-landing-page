@@ -1,47 +1,112 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Breadcrumbs.module.css';
+import { useLocation } from 'react-router-dom';
+import styles from './UploadDocuments.module.css';
 
-const Breadcrumbs = () => {
+const UploadDocuments = () => {
     const location = useLocation();
-    const pathnames = location.pathname.split('/').filter((x) => x);
-
-    // Define a mapping for path segments to breadcrumb names
-    const breadcrumbNameMap = {
-        home: 'Home',
-        'upload-documents': 'UploadDocuments',
-        // Add future mappings here if needed
-    };
+    const { uploadedFile, documents } = location.state || {};
 
     return (
-        <nav className={styles.breadcrumbs} aria-label="Breadcrumb">
-            <Link to="/home" className={styles.crumb}> {/* Changed to /home to match the Home.js page */}
-                <FontAwesomeIcon icon={faHome} className={styles.icon} />
-            </Link>
-            {pathnames.map((value, index) => {
-                const to = `/${pathnames.slice(0, index + 1).join('/')}`;
-                const isLast = index === pathnames.length - 1;
-                const name = breadcrumbNameMap[value] || value.charAt(0).toUpperCase() + value.slice(1);
+        <div className={styles.uploadDocuments}>
+            <h2>Upload Documents - Review</h2>
+            <div className={styles.reviewSection}>
+                <div className={styles.reviewItem}>
+                    <strong>Uploaded Document:</strong> 
+                    {uploadedFile ? (
+                        <div className={styles.preview}>
+                            {/* Show image preview if it's an image */}
+                            {uploadedFile.type.startsWith('image/') && (
+                                <img
+                                    src={URL.createObjectURL(uploadedFile)}
+                                    alt="Document Preview"
+                                    className={styles.imagePreview}
+                                />
+                            )}
+                            {/* Show PDF preview if it's a PDF */}
+                            {uploadedFile.type === 'application/pdf' && (
+                                <iframe
+                                    src={URL.createObjectURL(uploadedFile)}
+                                    title="PDF Preview"
+                                    className={styles.pdfPreview}
+                                    width="500px"
+                                    height="500px"
+                                />
+                            )}
+                            {/* Provide a link for other document types like DOCX */}
+                            {uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
+                                <a
+                                    href={URL.createObjectURL(uploadedFile)}
+                                    download={uploadedFile.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.documentLink}
+                                >
+                                    View Document (DOCX)
+                                </a>
+                            )}
+                            {/* Fallback link for other file types */}
+                            {!uploadedFile.type.startsWith('image/') &&
+                                uploadedFile.type !== 'application/pdf' &&
+                                uploadedFile.type !==
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document' && (
+                                <a
+                                    href={URL.createObjectURL(uploadedFile)}
+                                    download={uploadedFile.name}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={styles.documentLink}
+                                >
+                                    View Document
+                                </a>
+                            )}
+                        </div>
+                    ) : (
+                        <p className={styles.noFile}>No document uploaded</p>
+                    )}
+                </div>
 
-                return (
-                    <span key={to} className={styles.crumb}>
-                        <FontAwesomeIcon icon={faChevronRight} className={styles.separator} />
-                        {isLast ? (
-                            <span className={`${styles.link} ${styles.current}`} aria-current="page">
-                                {name}
-                            </span>
-                        ) : (
-                            <Link to={to} className={styles.link}>
-                                {name}
-                            </Link>
-                        )}
-                    </span>
-                );
-            })}
-        </nav>
+                {/* Existing Documents Preview */}
+                {documents && documents.length > 0 && (
+                    <div className={styles.reviewItem}>
+                        <strong>Existing Documents:</strong>
+                        <div className={styles.preview}>
+                            {documents.map((doc, index) => (
+                                <div key={index} className={styles.previewItem}>
+                                    {/* Show image preview if it's an image */}
+                                    {doc.url.endsWith('.jpg') || doc.url.endsWith('.png') ? (
+                                        <img
+                                            src={doc.url}
+                                            alt={doc.name}
+                                            className={styles.imagePreview}
+                                        />
+                                    ) : doc.url.endsWith('.pdf') ? (
+                                        <iframe
+                                            src={doc.url}
+                                            title={`PDF Preview ${index}`}
+                                            className={styles.pdfPreview}
+                                            width="500px"
+                                            height="500px"
+                                        />
+                                    ) : (
+                                        <a
+                                            href={doc.url}
+                                            download={doc.name}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={styles.documentLink}
+                                        >
+                                            {doc.name}
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
     );
 };
 
-export default Breadcrumbs;
+export default UploadDocuments;
