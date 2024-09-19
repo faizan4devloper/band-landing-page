@@ -1,5 +1,3 @@
-AWSReservedSSO_AdministratorAccess_25c87e0fb613a877:~/environment $ cd Claim-assist
-AWSReservedSSO_AdministratorAccess_25c87e0fb613a877:~/environment/Claim-assist $ cd web-app
 AWSReservedSSO_AdministratorAccess_25c87e0fb613a877:~/environment/Claim-assist/web-app (master) $ npm start
 
 > web-app@0.1.0 start
@@ -11,7 +9,7 @@ It is likely not a bug in Create React App, but something you need to fix locall
 
 The react-scripts package provided by Create React App requires a dependency:
 
-  "webpack": "4.29.6"
+  "webpack": "4.42.0"
 
 Don't try to install it manually: your package manager does it automatically.
 However, a different version of webpack was detected higher up in the tree:
