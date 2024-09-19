@@ -1,73 +1,22 @@
-npm install @react-pdf-viewer/core
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE unable to resolve dependency tree
+npm ERR! 
+npm ERR! While resolving: web-app@0.1.0
+npm ERR! Found: pdfjs-dist@4.6.82
+npm ERR! node_modules/pdfjs-dist
+npm ERR!   pdfjs-dist@"^4.6.82" from the root project
+npm ERR! 
+npm ERR! Could not resolve dependency:
+npm ERR! peer pdfjs-dist@"^2.16.105 || ^3.0.279" from @react-pdf-viewer/core@3.12.0
+npm ERR! node_modules/@react-pdf-viewer/core
+npm ERR!   @react-pdf-viewer/core@"*" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR! 
+npm ERR! For a full report see:
+npm ERR! /home/ec2-user/.npm/_logs/2024-09-19T09_02_36_551Z-eresolve-report.txt
 
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import { Document, Page } from '@react-pdf-viewer/core';
-import styles from './UploadDocuments.module.css';
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    // Combine uploaded file and existing documents into a single array
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    return (
-        <div className={styles.uploadDocuments}>
-            <h2>Documents Review</h2>
-            {allDocuments.length > 0 ? (
-                <div className={styles.reviewSection}>
-                    <div className={styles.preview}>
-                        {allDocuments.map((doc, index) => (
-                            <div key={index} className={styles.previewItem}>
-                                {/* Handle uploaded file (Blob object) and existing document (URL string) differently */}
-                                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
-                                    <img
-                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        alt={doc.name || "Document Preview"}
-                                        className={styles.imagePreview}
-                                    />
-                                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
-                                    <div className={styles.pdfPreview}>
-                                        <Document
-                                            file={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        >
-                                            <Page pageNumber={1} />
-                                        </Document>
-                                    </div>
-                                ) : doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx') ? (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document (DOCX)
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document
-                                    </a>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <p className={styles.noFile}>No document available</p>
-            )}
-        </div>
-    );
-};
-
-export default UploadDocuments;
+npm ERR! A complete log of this run can be found in: /home/ec2-user/.npm/_logs/2024-09-19T09_02_36_551Z-debug-0.log
