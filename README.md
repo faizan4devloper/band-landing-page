@@ -1,249 +1,219 @@
-import React from 'react';
+import React, { useState } from 'react';
+import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAlt } from '@fortawesome/free-solid-svg-icons';
-import { motion } from 'framer-motion';
-import styles from './WelcomeScreen.module.css';
+import styles from './Home.module.css';
 
-const WelcomeScreen = () => {
-    const navigate = useNavigate(); // Hook to navigate programmatically
+// Mock function to get documents for a given claim ID
+const getDocumentsForClaim = (claimId) => {
+    // Replace this with actual API call to get documents
+    const documents = {
+        'claim-123': [{ name: 'Document 1.pdf', url: 'https://gbihr.org/images/docs/test.pdf' }],
+        'claim-456': [{ name: 'Document 2.pdf', url: 'https://tourism.gov.in/sites/default/files/2019-04/dummy-pdf_2.pdf' }],
+    };
+    return documents[claimId] || [];
+};
 
-    const handleStartClick = () => {
-        navigate('/home'); // Navigate to the home screen
+const Home = () => {
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [claimType, setClaimType] = useState('');
+    const [claimIdVisible, setClaimIdVisible] = useState(false);
+    const [selectedClaimId, setSelectedClaimId] = useState(null);
+    const [uploadedFile, setUploadedFile] = useState(null); // State to hold the uploaded file
+    const [documents, setDocuments] = useState([]); // State to hold documents for existing claims
+    const navigate = useNavigate();
+
+    // Options for the category select input
+    const categoryOptions = [
+        { value: 'Surrender Claim', label: 'Surrender Claim' },
+        { value: 'Retirement Claim', label: 'Retirement Claim' },
+        { value: 'Death Claim', label: 'Death Claim' },
+    ];
+
+    // Options for the claim ID select input
+    const claimIdOptions = [
+        { value: 'claim-123', label: 'Claim ID 123' },
+        { value: 'claim-456', label: 'Claim ID 456' },
+        // Add more claim IDs as needed
+    ];
+
+    const handleClaimTypeChange = (type) => {
+        setClaimType(type);
+        setClaimIdVisible(type === 'existing');
+        if (type === 'new') {
+            setDocuments([]); // Reset documents for new claims
+            setSelectedClaimId(null);
+        }
+    };
+
+    const handleClaimIdChange = (option) => {
+        setSelectedClaimId(option);
+        if (option) {
+            // Fetch documents for the selected claim ID
+            const fetchedDocuments = getDocumentsForClaim(option.value);
+            setDocuments(fetchedDocuments);
+        } else {
+            setDocuments([]);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            setUploadedFile(e.target.files[0]);
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Make sure all fields are filled before proceeding
+        if (!selectedCategory || !claimType || (claimType === 'existing' && !selectedClaimId) || (claimType === 'new' && !uploadedFile)) {
+            alert('Please fill in all required fields and upload a document if applicable.');
+            return;
+        }
+
+        // Navigate to the Upload Documents page with the form data
+        navigate('/upload-documents', {
+            state: {
+                selectedCategory,
+                claimType,
+                selectedClaimId,
+                uploadedFile,
+                documents,
+            },
+        });
     };
 
     return (
-        <motion.div
-            className={styles.welcomeScreen}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5 }}
-        >
-            <motion.div
-                className={styles.content}
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 2, delay: 0.5 }}
-            >
-                <motion.h1
-                    className={styles.title}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 1, delay: 1 }}
-                >
-                    ClaimAssist
-                </motion.h1>
-                <motion.p
-                    className={styles.subtitle}
-                    initial={{ x: -50, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ duration: 1, delay: 1.2 }}
-                >
-                    Empower your claim process to minimize Claim Denial and maximize reimbursements
-                </motion.p>
-                <motion.button
-                    className={styles.startButton}
-                    onClick={handleStartClick}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    <span className={styles.buttonText}>Start Claim Assist</span>
-                    <FontAwesomeIcon icon={faFileAlt} className={styles.icon} />
-                </motion.button>
-            </motion.div>
-            {/* Optional: Add decorative elements like floating shapes */}
-            <div className={styles.decorativeShapes}>
-                <span className={styles.shape}></span>
-                <span className={styles.shape}></span>
-                <span className={styles.shape}></span>
-            </div>
-        </motion.div>
+        <div className={styles.home}>
+            <form className={styles.claimForm} onSubmit={handleSubmit}>
+                {/* Choose Claim Category */}
+                <div className={styles.formGroup}>
+                    <label htmlFor="category">Choose Claim Category:</label>
+                    <Select
+                        id="category"
+                        options={categoryOptions}
+                        onChange={(option) => setSelectedCategory(option)}
+                        isClearable
+                        className={styles.select}
+                    />
+                </div>
+
+                {/* Select Type of Claim */}
+                <div className={styles.formGroup}>
+                    <label>Select Type of Claim:</label>
+                    <div className={styles.checkboxGroup}>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="new"
+                                checked={claimType === 'new'}
+                                onChange={() => handleClaimTypeChange('new')}
+                            />
+                            New
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="existing"
+                                checked={claimType === 'existing'}
+                                onChange={() => handleClaimTypeChange('existing')}
+                            />
+                            Existing
+                        </label>
+                    </div>
+                </div>
+
+                {/* Choose Claim ID (Visible only if "Existing" is selected) */}
+                {claimIdVisible && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="claimId">Choose Claim ID:</label>
+                        <Select
+                            id="claimId"
+                            options={claimIdOptions}
+                            onChange={handleClaimIdChange}
+                            isClearable
+                            className={styles.select}
+                        />
+                    </div>
+                )}
+
+                
+
+                {/* Upload Claim Form (Visible only if "New" is selected) */}
+                {claimType === 'new' && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="upload">Upload Claim Form:</label>
+                        <input type="file" id="upload" onChange={handleFileChange} />
+                    </div>
+                )}
+
+                {/* Process Button */}
+                <button type="submit" className={styles.processButton}>
+                    Process
+                </button>
+            </form>
+        </div>
     );
 };
 
-export default WelcomeScreen;
+export default Home;
 
 
 
-/* Import any necessary fonts */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
-
-/* Keyframes for background floating shapes */
-@keyframes float {
-    0% {
-        transform: translateY(0) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-20px) rotate(10deg);
-    }
-    100% {
-        transform: translateY(0) rotate(-10deg);
-    }
-}
-
-/* Welcome Screen Container */
-.welcomeScreen {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: #fff;
-    text-align: center;
+.home {
     padding: 2rem;
-    overflow: hidden;
-    font-family: 'Roboto', sans-serif;
-}
-
-/* Content Box */
-.content {
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-    padding: 3rem 2rem;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    max-width: 600px;
-    width: 100%;
-    animation: fadeIn 2s ease-out;
-}
-
-/* Title Styling */
-.title {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #ffffff;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
-    line-height: 1.2;
-    letter-spacing: 1px;
-}
-
-/* Subtitle Styling */
-.subtitle {
-    font-size: 1.3rem;
-    line-height: 1.6;
-    margin-bottom: 2.5rem;
-    color: #e0e0e0;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4);
-    font-weight: 300;
-}
-
-/* Start Button Styling */
-.startButton {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
+    border-radius: 8px;
     color: #fff;
-    background: linear-gradient(45deg, #ff6b6b, #f94d6a);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    max-width: 430px;
+    margin: 2rem auto;
+}
+
+/* Form Group */
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+/* Form Label */
+.formGroup label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;    
+}
+
+/* Checkbox Group */
+.checkboxGroup {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Checkbox Label */
+.checkboxGroup label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Custom Select Styling */
+.select {
+    margin-top: 0.5rem;
+    width: 80%;
+}
+
+/* Process Button */
+.processButton {
+    background: linear-gradient(45deg, #FF005C, #1B98E0);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 50px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    transition: background-color 0.3s ease;
 }
 
-.startButton::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(45deg) scale(0);
-    transition: transform 0.5s ease;
-}
-
-.startButton:hover::before {
-    transform: rotate(45deg) scale(1);
-}
-
-.buttonText {
-    margin-right: 0.5rem;
-    z-index: 1;
-}
-
-/* Icon Styling */
-.icon {
-    transition: transform 0.3s ease;
-}
-
-.startButton:hover .icon {
-    transform: translateX(5px);
-}
-
-/* Decorative Floating Shapes */
-.decorativeShapes {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.shape {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
-    animation: float 6s ease-in-out infinite;
-    opacity: 0.7;
-}
-
-.shape:nth-child(1) {
-    top: 20%;
-    left: 15%;
-    animation-delay: 0s;
-}
-
-.shape:nth-child(2) {
-    top: 60%;
-    left: 70%;
-    animation-delay: 2s;
-    width: 150px;
-    height: 150px;
-}
-
-.shape:nth-child(3) {
-    top: 80%;
-    left: 30%;
-    animation-delay: 4s;
-    width: 80px;
-    height: 80px;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .content {
-        padding: 2rem 1.5rem;
-    }
-
-    .title {
-        font-size: 2.5rem;
-    }
-
-    .subtitle {
-        font-size: 1.1rem;
-    }
-
-    .startButton {
-        padding: 0.6rem 1.2rem;
-        font-size: 1rem;
-    }
-}
-
-/* Additional Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.processButton:hover {
+    background-color: #4725a1;
 }
