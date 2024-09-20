@@ -1,4 +1,3 @@
-// WelcomeScreen.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,10 +6,10 @@ import { motion } from 'framer-motion';
 import styles from './WelcomeScreen.module.css';
 
 const WelcomeScreen = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Hook to navigate programmatically
 
     const handleStartClick = () => {
-        navigate('/home');
+        navigate('/home'); // Navigate to the home screen
     };
 
     return (
@@ -24,7 +23,7 @@ const WelcomeScreen = () => {
                 className={styles.content}
                 initial={{ y: 50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 1.5, delay: 0.5 }}
+                transition={{ duration: 2, delay: 0.5 }}
             >
                 <motion.h1
                     className={styles.title}
@@ -40,7 +39,7 @@ const WelcomeScreen = () => {
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 1, delay: 1.2 }}
                 >
-                    Empower your claim process to minimize claim denial and maximize reimbursements
+                    Empower your claim process to minimize Claim Denial and maximize reimbursements
                 </motion.p>
                 <motion.button
                     className={styles.startButton}
@@ -66,10 +65,7 @@ export default WelcomeScreen;
 
 
 
-
-/* WelcomeScreen.module.css */
-
-/* Import necessary fonts */
+/* Import any necessary fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
 /* Keyframes for background floating shapes */
@@ -92,7 +88,6 @@ export default WelcomeScreen;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /* No additional background to allow global gradient */
     color: #fff;
     text-align: center;
     padding: 2rem;
@@ -100,9 +95,9 @@ export default WelcomeScreen;
     font-family: 'Roboto', sans-serif;
 }
 
-/* Content Box with Glassmorphism */
+/* Content Box */
 .content {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     padding: 3rem 2rem;
     border-radius: 12px;
@@ -137,30 +132,18 @@ export default WelcomeScreen;
 .startButton {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
     padding: 0.75rem 1.5rem;
     font-size: 1.1rem;
     font-weight: 600;
     color: #fff;
-    background: linear-gradient(45deg, #FF005C, #1B98E0);
+    background: linear-gradient(45deg, #ff6b6b, #f94d6a);
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     position: relative;
     overflow: hidden;
-    animation: glow 2s infinite alternate;
-}
-
-/* Glow Animation */
-@keyframes glow {
-    from {
-        box-shadow: 0 0 10px #FF005C, 0 0 20px #FF005C, 0 0 30px #1B98E0;
-    }
-    to {
-        box-shadow: 0 0 20px #FF005C, 0 0 40px #FF005C, 0 0 60px #1B98E0;
-    }
 }
 
 .startButton::before {
@@ -235,24 +218,6 @@ export default WelcomeScreen;
     height: 80px;
 }
 
-/* Pulse animation for the icon */
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
-/* Icon Pulse */
-.icon {
-    animation: pulse 1.5s infinite;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .content {
@@ -270,21 +235,6 @@ export default WelcomeScreen;
     .startButton {
         padding: 0.6rem 1.2rem;
         font-size: 1rem;
-    }
-
-    .shape {
-        width: 60px;
-        height: 60px;
-    }
-
-    .shape:nth-child(2) {
-        width: 100px;
-        height: 100px;
-    }
-
-    .shape:nth-child(3) {
-        width: 50px;
-        height: 50px;
     }
 }
 
