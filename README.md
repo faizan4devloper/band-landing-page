@@ -1,7 +1,66 @@
+// reactSelectStyles.js
+
+const customSelectStyles = {
+    control: (provided, state) => ({
+        ...provided,
+        background: 'rgba(255, 255, 255, 0.1)',
+        borderColor: state.isFocused ? '#FF005C' : '#1B98E0',
+        boxShadow: state.isFocused ? '0 0 0 1px #FF005C' : 'none',
+        '&:hover': {
+            borderColor: '#FF005C',
+        },
+        color: '#fff',
+    }),
+    menu: (provided) => ({
+        ...provided,
+        background: '#1B98E0',
+        borderRadius: '8px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+        marginTop: '0.5rem',
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        background: state.isSelected
+            ? '#FF005C'
+            : state.isFocused
+            ? 'rgba(255, 0, 92, 0.2)'
+            : 'transparent',
+        color: '#fff',
+        cursor: 'pointer',
+        '&:active': {
+            background: '#FF005C',
+        },
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: '#fff',
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: '#e2e2e2',
+    }),
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        color: '#fff',
+        '&:hover': {
+            color: '#FF005C',
+        },
+    }),
+    indicatorSeparator: (provided) => ({
+        ...provided,
+        background: '#fff',
+    }),
+};
+
+export default customSelectStyles;
+
+
+// Home.jsx
 import React, { useState } from 'react';
 import Select from 'react-select';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
+import customSelectStyles from './reactSelectStyles'; // Import custom styles
 
 // Mock function to get documents for a given claim ID
 const getDocumentsForClaim = (claimId) => {
@@ -94,6 +153,8 @@ const Home = () => {
                         onChange={(option) => setSelectedCategory(option)}
                         isClearable
                         className={styles.select}
+                        styles={customSelectStyles} // Apply custom styles
+                        placeholder="Select a category..."
                     />
                 </div>
 
@@ -134,17 +195,23 @@ const Home = () => {
                             onChange={handleClaimIdChange}
                             isClearable
                             className={styles.select}
+                            styles={customSelectStyles} // Apply custom styles
+                            placeholder="Select a claim ID..."
                         />
                     </div>
                 )}
-
-                
 
                 {/* Upload Claim Form (Visible only if "New" is selected) */}
                 {claimType === 'new' && (
                     <div className={styles.formGroup}>
                         <label htmlFor="upload">Upload Claim Form:</label>
-                        <input type="file" id="upload" onChange={handleFileChange} />
+                        <input
+                            type="file"
+                            id="upload"
+                            onChange={handleFileChange}
+                            className={styles.fileInput}
+                            accept=".pdf, .doc, .docx" // Restrict file types
+                        />
                     </div>
                 )}
 
@@ -158,62 +225,3 @@ const Home = () => {
 };
 
 export default Home;
-
-
-
-.home {
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    border-radius: 8px;
-    color: #fff;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    max-width: 430px;
-    margin: 2rem auto;
-}
-
-/* Form Group */
-.formGroup {
-    margin-bottom: 1.5rem;
-}
-
-/* Form Label */
-.formGroup label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.5rem;    
-}
-
-/* Checkbox Group */
-.checkboxGroup {
-    display: flex;
-    gap: 1rem;
-}
-
-/* Checkbox Label */
-.checkboxGroup label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-/* Custom Select Styling */
-.select {
-    margin-top: 0.5rem;
-    width: 80%;
-}
-
-/* Process Button */
-.processButton {
-    background: linear-gradient(45deg, #FF005C, #1B98E0);
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.processButton:hover {
-    background-color: #4725a1;
-}
