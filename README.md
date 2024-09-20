@@ -22,15 +22,16 @@ const customSelectStyles = {
     option: (provided, state) => ({
         ...provided,
         background: state.isSelected
-            ? '#2684ff'
+            ? '#FF005C'  // Background color when selected
             : state.isFocused
-            ? '#2684ff'
-            : 'transparent',
-        color: '#fff',
+            ? '#2684ff'  // Background color when focused
+            : 'transparent', // Default background color
+        color: state.isSelected || state.isFocused ? '#fff' : '#000', // Text color
         cursor: 'pointer',
+        margin: '5px 0', // Adds space between menu items
+        padding: '8px 12px',
         '&:active': {
             background: '#FF005C',
-        paddingBottom: '10px'
         },
     }),
     singleValue: (provided) => ({
