@@ -35,66 +35,84 @@
     justify-content: center;
     align-items: center;
     height: 75vh;
+    /* Full viewport height */
+    /*background-image: url('../../assets/images/welcome-background.jpg');*/
+    /* Add a background image */
     background-size: cover;
     background-position: center;
-    color: #ffffff;
+    color: #fff;
+    /* White text for better contrast */
     text-align: center;
     padding: 2rem;
     animation: fadeIn 1.5s ease-out;
+    /* Apply fade-in animation */
 }
 
 .content {
-    background: rgba(11, 61, 145, 0.8); /* Darkened version of the background for better contrast */
+    background: rgba(0, 0, 0, 0.6);
+    /* Semi-transparent background for contrast */
     padding: 2rem;
     border-radius: 8px;
+    /* Rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Subtle shadow */
     animation: fadeIn 2s ease-out;
+    /* Apply fade-in animation */
 }
+
 
 /* Title and Subtitle Styling */
 .title {
-    font-size: 3rem;
+    font-size: 3rem; /* Large title */
     font-weight: bold;
-    margin-bottom: 0.5rem;
-    color: #F2F2F2; /* Light gray to match the gradient */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
-    line-height: 1.2;
-    letter-spacing: 1px;
+    margin-bottom: 0.5rem; /* Smaller margin for closer spacing */
+    color: #ffffff; /* White text for contrast */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6); /* Subtle shadow for readability */
+    line-height: 1.2; /* Tight line-height for title */
+    letter-spacing: 1px; /* Slightly spaced letters for a modern look */
 }
 
 .subtitle {
-    font-size: 1.2rem;
-    line-height: 1.6;
-    margin: 0 0 2rem 0;
-    color: #c9d6e3; /* A slightly lighter gray for contrast */
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
-    font-weight: 300;
+    font-size: 1.2rem; /* Subtitle font size */
+    line-height: 1.6; /* Line-height for readability */
+    margin: 0 0 2rem 0; /* Spacing below subtitle */
+    color: #e2e2e2; /* Slightly lighter color for contrast */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4); /* Subtle shadow for readability */
+    font-weight: 300; /* Light font-weight for a more refined look */
 }
+
 
 /* Button Styling */
 .startButton {
     padding: 0.55rem 1rem;
     font-size: 1rem;
     font-weight: bold;
-    color: #0B3D91; /* Matches the darker part of the background */
-    background-color: #F2F2F2; /* Matches the lighter part of the gradient */
+    color: #fff;
+    background-color: #5f1ebe;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: .5s ease;
     animation: pulsate 2s infinite;
+    /* Apply pulsate animation */
 }
 
 .startButton:hover {
-    background-color: #D9E2EC; /* A lighter version for hover */
+    background-color: #e2d9fb;
+    /* Darker green on hover */
     transform: scale(1.1);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    color: #0B3D91;
+    /* Slightly larger button */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+
+    color: #5f1ebe;
     animation: none;
+    /* Stop pulsating animation on hover */
 }
 
+/* Button Active State */
 .startButton:active {
-    transform: scale(1);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scale(1); /* Reset size to normal */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Original shadow */
 }
