@@ -1,3 +1,5 @@
+  background: rgb(0, 0, 0);
+
 .content {
     background: rgba(0, 0, 0, 0.4); /* Semi-transparent background for glass effect */
     backdrop-filter: blur(10px); /* Apply the blur effect */
