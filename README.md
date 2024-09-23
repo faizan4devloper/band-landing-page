@@ -1,89 +1,29 @@
-/* Breadcrumbs.module.css */
-.breadcrumbs {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #f4f4f4;
-    border-radius: 8px;
-    margin: 15px 0;
-}
-
-.breadcrumbsList {
-    list-style: none;
-    display: flex;
-    gap: 10px;
-    padding: 0;
-    margin: 0;
-}
-
-.breadcrumbItem {
-    display: flex;
-    align-items: center;
-    color: #007bff;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: color 0.3s ease;
-}
-
-.breadcrumbItem:hover {
-    color: #0056b3;
-}
-
-.breadcrumbIcon {
-    margin-right: 5px;
-}
-
-.separator {
-    content: "/";
-    margin-left: 10px;
-    color: #ccc;
-}
-
-.lastItemSeparator {
-    content: "";
-}
-
-
-
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUpload, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import styles from './Breadcrumbs.module.css'; // Import CSS module
 
 const Breadcrumbs = () => {
     const location = useLocation();
-    const paths = location.pathname.split('/').filter((path) => path);
-
-    const breadcrumbs = [
-        { path: '/', label: 'Home', icon: faHome },
-        { path: '/home', label: 'Dashboard', icon: faHome },
-        { path: '/upload-documents', label: 'Upload Documents', icon: faUpload }
-    ];
-
-    const getBreadcrumbData = (path) => breadcrumbs.find((breadcrumb) => breadcrumb.path === path) || {};
+    const paths = location.pathname.split('/').filter(Boolean);
 
     return (
         <nav className={styles.breadcrumbs}>
             <ul className={styles.breadcrumbsList}>
-                <li>
-                    <Link to="/" className={styles.breadcrumbItem}>
-                        <FontAwesomeIcon icon={faHome} className={styles.breadcrumbIcon} />
-                        <span>Home</span>
-                    </Link>
+                {/* Home link */}
+                <li className={styles.breadcrumbItem}>
+                    <Link to="/" className={styles.link}>Home</Link>
                 </li>
                 {paths.map((path, index) => {
                     const fullPath = `/${paths.slice(0, index + 1).join('/')}`;
-                    const breadcrumbData = getBreadcrumbData(fullPath);
                     return (
-                        <li key={index}>
-                            <Link to={fullPath} className={styles.breadcrumbItem}>
-                                <FontAwesomeIcon icon={breadcrumbData.icon || faCheckCircle} className={styles.breadcrumbIcon} />
-                                <span>{breadcrumbData.label}</span>
-                            </Link>
-                            {index < paths.length - 1 && <span className={styles.separator}>/</span>}
-                        </li>
+                        <React.Fragment key={index}>
+                            <span className={styles.separator}>/</span>
+                            <li className={styles.breadcrumbItem}>
+                                <Link to={fullPath} className={styles.link}>
+                                    {path.replace(/-/g, ' ')}
+                                </Link>
+                            </li>
+                        </React.Fragment>
                     );
                 })}
             </ul>
@@ -92,3 +32,50 @@ const Breadcrumbs = () => {
 };
 
 export default Breadcrumbs;
+
+
+/* Breadcrumbs.module.css */
+.breadcrumbs {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    background-color: transparent;
+}
+
+.breadcrumbsList {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    margin: 0;
+    font-size: 1.25rem; /* Adjust size to match the example */
+    font-family: Arial, sans-serif;
+    color: #7d71f7; /* Light purple color */
+}
+
+.breadcrumbItem {
+    display: flex;
+    align-items: center;
+}
+
+.link {
+    text-decoration: none;
+    color: #7d71f7; /* Match the purple color */
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.link:hover {
+    color: #5e4dc4; /* Slightly darker on hover */
+}
+
+.separator {
+    margin: 0 10px;
+    color: #d4c6f4; /* Light separator color */
+    font-weight: 300;
+}
+
+.breadcrumbItem:last-child .link {
+    font-weight: 700; /* Bold for the last item */
+}
