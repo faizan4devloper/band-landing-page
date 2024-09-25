@@ -1,81 +1,65 @@
-.processButton {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
+    
 
-.processButton::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(45deg) scale(0);
-    transition: transform 0.5s ease;
-}
+// reactSelectStyles.js
 
-.processButton:hover::before {
-    transform: rotate(45deg) scale(1);
-}
+const customSelectStyles = {
+    control: (provided, state) => ({
+        ...provided,
+        background: 'rgba(255, 255, 255, 0.1)',
+        borderColor: state.isFocused ? '#1B98E0' : '#1B98E0',
+        boxShadow: state.isFocused ? '0 0 0 1px #FF005C' : 'none',
+        '&:hover': {
+            borderColor: '#1B98E0',
+        },
+        color: '#fff',
+    }),
+    menu: (provided) => ({
+        ...provided,
+        background: '#fff',
+        color: '#000',
+        borderRadius: '8px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
+        marginTop: '0.5rem',
+    }),
+    option: (provided, state) => ({
+        ...provided,
+        background: state.isSelected
+            ? '#2684ff'  // Background color when selected
+            : state.isFocused
+            ? '#2684ff'  // Background color when focused
+            : 'transparent', // Default background color
+        color: state.isSelected || state.isFocused ? '#fff' : '#000', // Text color
+        cursor: 'pointer',
+        margin: '5px 0', // Adds space between menu items
+        padding: '8px 12px',
+        '&:active': {
+            background: '#2684ff',
+        },
+    }),
+    singleValue: (provided) => ({
+        ...provided,
+        color: '#fff',
+    }),
+    placeholder: (provided) => ({
+        ...provided,
+        color: '#e2e2e2',
+    }),
+    dropdownIndicator: (provided) => ({
+        ...provided,
+        color: '#fff',
+        '&:hover': {
+            color: '#FF005C',
+        },
+    }),
+    indicatorSeparator: (provided) => ({
+        ...provided,
+        background: '#fff',
+    }),
+};
+
+export default customSelectStyles;
 
 
-
-
-
-
-
-.processButton {
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.startButton {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #fff;
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
-}
-
-.startButton::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: rotate(45deg) scale(0);
-    transition: transform 0.5s ease;
-}
-
-.startButton:hover::before {
-    transform: rotate(45deg) scale(1);
-}
+This is my buttons color:-background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+    This is my whole web app bg color:-background: linear-gradient(135deg, #F2F2F2 0%, #7ca2e1 100%);
+match the customSelectStyles according i provided colors
