@@ -1,120 +1,249 @@
-const customSelectStyles = {
-    control: (provided, state) => ({
-        ...provided,
-        background: 'rgba(242, 242, 242, 0.1)',  // Lighter version of #F2F2F2
-        borderColor: state.isFocused ? '#7ca2e1' : '#7ca2e1',  // Matches button colors
-        boxShadow: state.isFocused ? '0 0 0 1px #7ca2e1' : 'none',  // Light blue focus
-        '&:hover': {
-            borderColor: '#7ca2e1',
-        },
-        color: '#fff',
-    }),
-    menu: (provided) => ({
-        ...provided,
-        background: '#F2F2F2',  // Matches the light part of the gradient
-        color: '#000',
-        borderRadius: '8px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-        marginTop: '0.5rem',
-    }),
-    option: (provided, state) => ({
-        ...provided,
-        background: state.isSelected
-            ? '#7ca2e1'  // Light blue for selected
-            : state.isFocused
-            ? '#7ca2e1'  // Light blue for focused
-            : 'transparent',
-        color: state.isSelected || state.isFocused ? '#fff' : '#000',  // White text on selected/focused
-        cursor: 'pointer',
-        margin: '5px 0',
-        padding: '8px 12px',
-        '&:active': {
-            background: '#7ca2e1',
-        },
-    }),
-    singleValue: (provided) => ({
-        ...provided,
-        color: '#fff',
-    }),
-    placeholder: (provided) => ({
-        ...provided,
-        color: '#e2e2e2',
-    }),
-    dropdownIndicator: (provided) => ({
-        ...provided,
-        color: '#fff',
-        '&:hover': {
-            color: '#7ca2e1',
-        },
-    }),
-    indicatorSeparator: (provided) => ({
-        ...provided,
-        background: '#fff',
-    }),
+import React, { useState } from 'react';
+import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
+import styles from './Home.module.css';
+import customSelectStyles from './reactSelectStyles'; // Import custom styles
+
+
+// Mock function to get documents for a given claim ID
+const getDocumentsForClaim = (claimId) => {
+    // Replace this with actual API call to get documents
+    const documents = {
+        'claim-123': [{ name: 'Document 1.pdf', url: 'https://gbihr.org/images/docs/test.pdf' }],
+        'claim-456': [{ name: 'Document 2.pdf', url: 'https://tourism.gov.in/sites/default/files/2019-04/dummy-pdf_2.pdf' }],
+    };
+    return documents[claimId] || [];
 };
 
-export default customSelectStyles;    
+const Home = () => {
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [claimType, setClaimType] = useState('');
+    const [claimIdVisible, setClaimIdVisible] = useState(false);
+    const [selectedClaimId, setSelectedClaimId] = useState(null);
+    const [uploadedFile, setUploadedFile] = useState(null); // State to hold the uploaded file
+    const [documents, setDocuments] = useState([]); // State to hold documents for existing claims
+    const navigate = useNavigate();
 
-// reactSelectStyles.js
+    // Options for the category select input
+    const categoryOptions = [
+        { value: 'Surrender Claim', label: 'Surrender Claim' },
+        { value: 'Retirement Claim', label: 'Retirement Claim' },
+        { value: 'Death Claim', label: 'Death Claim' },
+    ];
 
-const customSelectStyles = {
-    control: (provided, state) => ({
-        ...provided,
-        background: 'rgba(255, 255, 255, 0.1)',
-        borderColor: state.isFocused ? '#1B98E0' : '#1B98E0',
-        boxShadow: state.isFocused ? '0 0 0 1px #FF005C' : 'none',
-        '&:hover': {
-            borderColor: '#1B98E0',
-        },
-        color: '#fff',
-    }),
-    menu: (provided) => ({
-        ...provided,
-        background: '#fff',
-        color: '#000',
-        borderRadius: '8px',
-        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.2)',
-        marginTop: '0.5rem',
-    }),
-    option: (provided, state) => ({
-        ...provided,
-        background: state.isSelected
-            ? '#2684ff'  // Background color when selected
-            : state.isFocused
-            ? '#2684ff'  // Background color when focused
-            : 'transparent', // Default background color
-        color: state.isSelected || state.isFocused ? '#fff' : '#000', // Text color
-        cursor: 'pointer',
-        margin: '5px 0', // Adds space between menu items
-        padding: '8px 12px',
-        '&:active': {
-            background: '#2684ff',
-        },
-    }),
-    singleValue: (provided) => ({
-        ...provided,
-        color: '#fff',
-    }),
-    placeholder: (provided) => ({
-        ...provided,
-        color: '#e2e2e2',
-    }),
-    dropdownIndicator: (provided) => ({
-        ...provided,
-        color: '#fff',
-        '&:hover': {
-            color: '#FF005C',
-        },
-    }),
-    indicatorSeparator: (provided) => ({
-        ...provided,
-        background: '#fff',
-    }),
+    // Options for the claim ID select input
+    const claimIdOptions = [
+        { value: 'claim-123', label: 'Claim ID 123' },
+        { value: 'claim-456', label: 'Claim ID 456' },
+        // Add more claim IDs as needed
+    ];
+
+    const handleClaimTypeChange = (type) => {
+        setClaimType(type);
+        setClaimIdVisible(type === 'existing');
+        if (type === 'new') {
+            setDocuments([]); // Reset documents for new claims
+            setSelectedClaimId(null);
+        }
+    };
+
+    const handleClaimIdChange = (option) => {
+        setSelectedClaimId(option);
+        if (option) {
+            // Fetch documents for the selected claim ID
+            const fetchedDocuments = getDocumentsForClaim(option.value);
+            setDocuments(fetchedDocuments);
+        }
+        else {
+            setDocuments([]);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files.length > 0) {
+            setUploadedFile(e.target.files[0]);
+        }
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        // Make sure all fields are filled before proceeding
+        if (!selectedCategory || !claimType || (claimType === 'existing' && !selectedClaimId) || (claimType === 'new' && !uploadedFile)) {
+            alert('Please fill in all required fields and upload a document if applicable.');
+            return;
+        }
+
+        // Navigate to the Upload Documents page with the form data
+        navigate('/Upload-documents', {
+            state: {
+                selectedCategory,
+                claimType,
+                selectedClaimId,
+                uploadedFile,
+                documents,
+            },
+        });
+    };
+
+    return (
+        <div className={styles.home}>
+            <form className={styles.claimForm} onSubmit={handleSubmit}>
+                {/* Choose Claim Category */}
+                <div className={styles.formGroup}>
+                    <label htmlFor="category">Choose Claim Category:</label>
+                    <Select
+                        id="category"
+                        options={categoryOptions}
+                        onChange={(option) => setSelectedCategory(option)}
+                        isClearable
+                        className={styles.select}
+                        styles={customSelectStyles} // Apply custom styles
+
+                    />
+                </div>
+
+                {/* Select Type of Claim */}
+                <div className={styles.formGroup}>
+                    <label>Select Type of Claim:</label>
+                    <div className={styles.checkboxGroup}>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="new"
+                                checked={claimType === 'new'}
+                                onChange={() => handleClaimTypeChange('new')}
+                            />
+                            New
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                name="claimType"
+                                value="existing"
+                                checked={claimType === 'existing'}
+                                onChange={() => handleClaimTypeChange('existing')}
+                            />
+                            Existing
+                        </label>
+                    </div>
+                </div>
+
+                {/* Choose Claim ID (Visible only if "Existing" is selected) */}
+                {claimIdVisible && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="claimId">Choose Claim ID:</label>
+                        <Select
+                            id="claimId"
+                            options={claimIdOptions}
+                            onChange={handleClaimIdChange}
+                            isClearable
+                            className={styles.select}
+                            styles={customSelectStyles} // Apply custom styles
+
+                        />
+                    </div>
+                )}
+
+                
+
+                {/* Upload Claim Form (Visible only if "New" is selected) */}
+                {claimType === 'new' && (
+                    <div className={styles.formGroup}>
+                        <label htmlFor="upload">Upload Claim Form:</label>
+                        <input type="file" id="upload" onChange={handleFileChange} />
+                    </div>
+                )}
+
+                {/* Process Button */}
+                <button type="submit" className={styles.processButton}>
+                    Process
+                </button>
+            </form>
+        </div>
+    );
 };
 
-export default customSelectStyles;
+export default Home;
 
 
-This is my buttons color:-background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    This is my whole web app bg color:-background: linear-gradient(135deg, #F2F2F2 0%, #7ca2e1 100%);
-match the customSelectStyles according i provided colors
+.home {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    max-width: 430px;
+    margin: 2rem auto;
+}
+
+/* Form Group */
+.formGroup {
+    margin-bottom: 1.5rem;
+}
+
+/* Form Label */
+.formGroup label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;    
+}
+
+/* Checkbox Group */
+.checkboxGroup {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Checkbox Label */
+.checkboxGroup label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Custom Select Styling */
+.select {
+    margin-top: 0.5rem;
+    width: 80%;
+}
+
+/* Process Button */
+.processButton {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 1.1rem;
+    color: #fff;
+    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.processButton::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg) scale(0);
+    transition: transform 0.5s ease;
+}
+
+.processButton:hover::before {
+    transform: rotate(45deg) scale(1);
+}
+
+
+
+/*.processButton:hover {*/
+/*    background-color: #4725a1;*/
+/*}*/
