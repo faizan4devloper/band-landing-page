@@ -1,3 +1,7 @@
+https://hcltech.imgix.net/sites/default/files/images/special-pages/home/01/testimonial-bg.webp
+
+
+
 background: linear-gradient(135deg, #08AEEA 0%, #2AF598 100%);
 background: linear-gradient(135deg, #08AEEA 5%, #2AF598);
 background: rgba(255, 255, 255, 0.2);
