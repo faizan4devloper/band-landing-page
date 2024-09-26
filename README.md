@@ -97,3 +97,118 @@ const UploadDocuments = () => {
 };
 
 export default UploadDocuments;
+
+
+
+{
+    "category": "Payment Instruction Form",
+    "extracted_data": {
+        "PAYMENT_INSTRUCTION_FORM": {
+            "STATEMENT_DATE": "12/06/2024",
+            "POLICY_NUMBER": "L2065777",
+            "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
+            "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "PAYMENT_DETAILS": {
+            "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
+            "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
+            "ACCOUNT_NUMBER": "50614866",
+            "BANK_SORT_CODE": "20-57-40",
+            "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
+            "SIGNED_DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM": {
+            "STATEMENT_DATE": "12/06/2024",
+            "POLICY_NUMBER": "L2065777",
+            "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
+            "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "LOST_POLICY_FORM_SIGNED": {
+            "FULL_NAME": "Mr Mcglynn, James Christopher",
+            "DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM_WITNESSED_BY": {
+            "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
+            "DATE": "13/06/2024",
+            "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
+            "OFFICIAL_STAMP": "",
+            "DAY-TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
+            "OCCUPATION_OF_WITNESS": "Teacher"
+        }
+    },
+    "unfilledpercent": "4%"
+}
+
+
+import React from 'react';
+import styles from './PaymentInstructionForm.module.css';
+
+const PaymentInstructionForm = ({ formData }) => {
+    return (
+        <div className={styles.formContainer}>
+            <h3>Payment Instruction Form</h3>
+            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
+            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
+            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
+            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
+        </div>
+    );
+};
+
+export default PaymentInstructionForm;
+
+
+import React from 'react';
+import styles from './PaymentDetails.module.css';
+
+const PaymentDetails = ({ paymentData }) => {
+    return (
+        <div className={styles.paymentContainer}>
+            <h3>Payment Details</h3>
+            <p><strong>Bank Name & Address:</strong> {paymentData.BANK_NAME_AND_ADDRESS}</p>
+            <p><strong>Account Holder's Name:</strong> {paymentData.ACCOUNT_HOLDERS_NAME}</p>
+            <p><strong>Account Number:</strong> {paymentData.ACCOUNT_NUMBER}</p>
+            <p><strong>Bank Sort Code:</strong> {paymentData.BANK_SORT_CODE}</p>
+            <p><strong>Signed Full Name:</strong> {paymentData.SIGNED_FULL_NAME}</p>
+            <p><strong>Signed Date:</strong> {paymentData.SIGNED_DATE}</p>
+        </div>
+    );
+};
+
+export default PaymentDetails;
+
+import React from 'react';
+import styles from './LostPolicyForm.module.css';
+
+const LostPolicyForm = ({ formData }) => {
+    return (
+        <div className={styles.formContainer}>
+            <h3>Lost Policy Form</h3>
+            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
+            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
+            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
+            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
+        </div>
+    );
+};
+
+export default LostPolicyForm;
+
+
+import React from 'react';
+import styles from './WitnessDetails.module.css';
+
+const WitnessDetails = ({ witnessData }) => {
+    return (
+        <div className={styles.witnessContainer}>
+            <h3>Witness Details</h3>
+            <p><strong>Full Name of Witness:</strong> {witnessData.FULL_NAME_OF_WITNESS}</p>
+            <p><strong>Date:</strong> {witnessData.DATE}</p>
+            <p><strong>Address of Witness:</strong> {witnessData.ADDRESS_OF_WITNESS}</p>
+            <p><strong>Day-time Telephone:</strong> {witnessData.DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS}</p>
+            <p><strong>Occupation:</strong> {witnessData.OCCUPATION_OF_WITNESS}</p>
+        </div>
+    );
+};
+
+export default WitnessDetails;
