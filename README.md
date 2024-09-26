@@ -5,7 +5,7 @@ import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
 import PaymentDetails from '../Entities/PaymentDetails';
 import LostPolicyForm from '../Entities/LostPolicyForm';
 import WitnessDetails from '../Entities/WitnessDetails';
-import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
+import data from '../../../Json/DocumentEntities.json';
 
 const UploadDocuments = () => {
     const location = useLocation();
@@ -17,226 +17,206 @@ const UploadDocuments = () => {
         ...documents
     ];
 
-    // Access JSON data with fallback to handle undefined
+    // Access JSON data with fallback
     const formData = data.extracted_data?.PAYMENT_INSTRUCTION_FORM || {};
     const paymentData = data.extracted_data?.PAYMENT_DETAILS || {};
     const lostPolicyFormData = data.extracted_data?.LOST_POLICY_FORM || {};
     const witnessData = data.extracted_data?.LOST_POLICY_FORM_WITNESSED_BY || {};
 
-
     // Helper function to get document type label
     const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
-        }
-        else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
             return 'PDF';
-        }
-        else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
             return 'DOCX';
-        }
-        else {
+        } else {
             return 'Other';
         }
     };
 
     return (
-    <div className={styles.container}>    
-        <div className={styles.uploadDocuments}>
-            <h2 className={styles.documentHead}>Documents Review</h2>
-            {allDocuments.length > 0 ? (
-                <div className={styles.reviewSection}>
-                    <div className={styles.preview}>
-                        {allDocuments.map((doc, index) => (
-                            <div key={index} className={styles.previewItem}>
-                                <p className={styles.documentType}>Type: {getDocumentType(doc)}</p> {/* Display document type */}
-                                {/* Handle uploaded file (Blob object) and existing document (URL string) differently */}
-                                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
-                                    <img
-                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        alt={doc.name || "Document Preview"}
-                                        className={styles.imagePreview}
-                                    />
-                                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
-                                    <iframe
-                                        // src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
-                                        title={`PDF Preview ${index}`}
-                                        className={styles.pdfPreview}
-                                        width="550px"
-                                        height="750px"
-                                        // sandbox="allow-scripts allow same-origin"
-                                        frameBorder="0"
-                                    />
-                                    // <object
-                                    //     data={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                    //     type="application/pdf"
-                                    //     className={styles.pdfPreview}
-                                    //     width="550px"
-                                    //     height="750px"
-                                    // />
-                                ) : doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx') ? (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document (DOCX)
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document
-                                    </a>
-                                )}
-                            </div>
-                        ))}
+        <div className={styles.container}>
+            <div className={styles.uploadDocuments}>
+                <h2 className={styles.documentHead}>Documents Review</h2>
+                {allDocuments.length > 0 ? (
+                    <div className={styles.reviewSection}>
+                        <div className={styles.preview}>
+                            {allDocuments.map((doc, index) => (
+                                <div key={index} className={styles.previewItem}>
+                                    <p className={styles.documentType}>Type: {getDocumentType(doc)}</p>
+                                    {/* Handling image, PDF, DOCX, or other files */}
+                                    {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
+                                        <img
+                                            src={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                            alt={doc.name || "Document Preview"}
+                                            className={styles.imagePreview}
+                                        />
+                                    ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
+                                        <iframe
+                                            src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
+                                            title={`PDF Preview ${index}`}
+                                            className={styles.pdfPreview}
+                                        />
+                                    ) : doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx') ? (
+                                        <a
+                                            href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                            download={doc.name || doc.name}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={styles.documentLink}
+                                        >
+                                            View Document (DOCX)
+                                        </a>
+                                    ) : (
+                                        <a
+                                            href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                            download={doc.name || doc.name}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={styles.documentLink}
+                                        >
+                                            View Document
+                                        </a>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     </div>
+                ) : (
+                    <p className={styles.noFile}>No document available</p>
+                )}
+                {/* Form components */}
+                <div className={styles.formsContainer}>
+                    <PaymentInstructionForm formData={formData} />
+                    <PaymentDetails paymentData={paymentData} />
+                    <LostPolicyForm formData={lostPolicyFormData} />
+                    <WitnessDetails witnessData={witnessData} />
                 </div>
-            ) : (
-                <p className={styles.noFile}>No document available</p>
-            )}
-            {/* Here you can render the imported forms/components */}
-            <div className={styles.formsContainer}>
-                <PaymentInstructionForm formData={formData} />
-                <PaymentDetails paymentData={paymentData} />
-                <LostPolicyForm formData={lostPolicyFormData} />
-                <WitnessDetails witnessData={witnessData} />
             </div>
         </div>
-    </div>    
     );
 };
 
 export default UploadDocuments;
 
 
-/* UploadDocuments.module.css */
 .container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    justify-content: space-around;
-    align-items: flex-start;
-    padding: 2rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: linear-gradient(135deg, #f0f4ff 0%, #d7e1fa 100%);
+    border-radius: 12px;
 }
 
 .uploadDocuments {
-    flex: 1 1 45%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    width: 90%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
 }
 
-.formsContainer {
-    flex: 1 1 45%;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-
-.formsContainer > div {
-    background-color: #fff;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.formsContainer > div:hover {
-    transform: translateY(-5px);
-}
-.documentType {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    text-align: center;
-    color: #333;
-}
 .documentHead {
     text-align: center;
-    margin:0;
-    font-size: 1.8rem;
-    /*margin-bottom: 1.5rem;*/
-    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 1rem;
 }
 
 .reviewSection {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1.5rem;
-}
-
-.reviewItem {
-    padding: 1rem;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.reviewItem strong {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-    color: #555;
 }
 
 .preview {
-    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
 }
 
-.preview img {
+.previewItem {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.previewItem:hover {
+    transform: translateY(-10px);
+}
+
+.documentType {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.imagePreview, .pdfPreview {
     max-width: 100%;
-    height: auto;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
 }
 
-.preview a {
-    display: inline-block;
-    margin-top: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: white;
-    border-radius: 4px;
+.documentLink {
+    color: #3498db;
     text-decoration: none;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
+    font-weight: bold;
+    border: 2px solid #3498db;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.preview a:hover {
-    background-color: #0056b3;
+.documentLink:hover {
+    background-color: #3498db;
+    color: #fff;
 }
 
 .noFile {
     color: #888;
+    font-size: 1.2rem;
     text-align: center;
-    font-size: 1rem;
+    margin-top: 2rem;
+}
+
+.formsContainer {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.formsContainer > div {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.formsContainer > div:hover {
+    transform: translateY(-8px);
 }
 
 @media (max-width: 768px) {
+    .formsContainer {
+        grid-template-columns: 1fr;
+    }
+
     .uploadDocuments {
-        padding: 1rem;
-    }
-
-    .reviewItem {
-        padding: 0.5rem;
-    }
-
-    h2 {
-        font-size: 1.5rem;
+        width: 100%;
     }
 }
