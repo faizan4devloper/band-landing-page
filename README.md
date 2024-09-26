@@ -113,6 +113,103 @@ const UploadDocuments = () => {
 
 export default UploadDocuments;
 
+/* UploadDocuments.module.css */
+
+.uploadDocuments {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+}
+.documentType {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: center;
+    color: #333;
+}
+.documentHead {
+    text-align: center;
+    margin:0;
+    font-size: 1.8rem;
+    /*margin-bottom: 1.5rem;*/
+    color: #fff;
+}
+
+.reviewSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.reviewItem {
+    padding: 1rem;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.reviewItem strong {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.preview {
+    margin-top: 1rem;
+}
+
+.preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.preview a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.preview a:hover {
+    background-color: #0056b3;
+}
+
+.noFile {
+    color: #888;
+    text-align: center;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .uploadDocuments {
+        padding: 1rem;
+    }
+
+    .reviewItem {
+        padding: 0.5rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+}
+
 
 import React from 'react';
 import styles from './PaymentInstructionForm.module.css';
