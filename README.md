@@ -1,117 +1,170 @@
-ERROR
-Cannot read properties of undefined (reading 'STATEMENT_DATE')
-TypeError: Cannot read properties of undefined (reading 'STATEMENT_DATE')
-    at PaymentInstructionForm (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:688:36)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'BANK_NAME_AND_ADDRESS')
-TypeError: Cannot read properties of undefined (reading 'BANK_NAME_AND_ADDRESS')
-    at PaymentDetails (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:538:39)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'STATEMENT_DATE')
-TypeError: Cannot read properties of undefined (reading 'STATEMENT_DATE')
-    at LostPolicyForm (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/main.280473e80b453012cfbd.hot-update.js:43:36)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'FULL_NAME_OF_WITNESS')
-TypeError: Cannot read properties of undefined (reading 'FULL_NAME_OF_WITNESS')
-    at WitnessDetails (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:814:39)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'STATEMENT_DATE')
-TypeError: Cannot read properties of undefined (reading 'STATEMENT_DATE')
-    at PaymentInstructionForm (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:688:36)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'BANK_NAME_AND_ADDRESS')
-TypeError: Cannot read properties of undefined (reading 'BANK_NAME_AND_ADDRESS')
-    at PaymentDetails (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:538:39)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'STATEMENT_DATE')
-TypeError: Cannot read properties of undefined (reading 'STATEMENT_DATE')
-    at LostPolicyForm (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/main.280473e80b453012cfbd.hot-update.js:43:36)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'FULL_NAME_OF_WITNESS')
-TypeError: Cannot read properties of undefined (reading 'FULL_NAME_OF_WITNESS')
-    at WitnessDetails (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:814:39)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20605:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20649:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:20706:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40604:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-ERROR
-Cannot read properties of undefined (reading 'STATEMENT_DATE')
-TypeError: Cannot read properties of undefined (reading 'STATEMENT_DATE')
-    at PaymentInstructionForm (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:688:36)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30349:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:34320:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35623:20)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40582:18)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39852:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39775:9)
-    at renderRootSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39748:11)
-    at recoverFromConcurrentError (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39240:24)
-    at performConcurrentWorkOnRoot (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:39153:26)
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import styles from './UploadDocuments.module.css';
+import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
+import PaymentDetails from '../Entities/PaymentDetails';
+import LostPolicyForm from '../Entities/LostPolicyForm';
+import WitnessDetails from '../Entities/WitnessDetails';
+import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
+
+const UploadDocuments = () => {
+    const location = useLocation();
+    const { uploadedFile, documents = [] } = location.state || {};
+
+    // Combine uploaded file and existing documents into a single array
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
+
+    // Helper function to get document type label
+    const getDocumentType = (doc) => {
+        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
+            return 'Image';
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+            return 'PDF';
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+            return 'DOCX';
+        } else {
+            return 'Other';
+        }
+    };
+
+    return (
+        <div className={styles.uploadDocuments}>
+            <h2 className={styles.documentHead}>Documents Review</h2>
+            {allDocuments.length > 0 ? (
+                <div className={styles.reviewSection}>
+                    <div className={styles.preview}>
+                        {allDocuments.map((doc, index) => (
+                            <div key={index} className={styles.previewItem}>
+                                <p className={styles.documentType}>Type: {getDocumentType(doc)}</p> {/* Display document type */}
+                                {/* Handle uploaded file (Blob object) and existing document (URL string) differently */}
+                                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
+                                    <img
+                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                        alt={doc.name || "Document Preview"}
+                                        className={styles.imagePreview}
+                                    />
+                                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
+                                    <iframe
+                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                        title={`PDF Preview ${index}`}
+                                        className={styles.pdfPreview}
+                                        width="550px"
+                                        height="750px"
+                                    />
+                                ) : doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx') ? (
+                                    <a
+                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                        download={doc.name || doc.name}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.documentLink}
+                                    >
+                                        View Document (DOCX)
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                        download={doc.name || doc.name}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.documentLink}
+                                    >
+                                        View Document
+                                    </a>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <p className={styles.noFile}>No document available</p>
+            )}
+            {/* Here you can render the imported forms/components */}
+            <PaymentInstructionForm />
+            <PaymentDetails />
+            <LostPolicyForm />
+            <WitnessDetails />
+            {/* Example of using the imported data */}
+            <div>
+                <h3>Document Entities</h3>
+                <pre>{JSON.stringify(data, null, 2)}</pre> {/* Render the JSON data for debugging */}
+            </div>
+        </div>
+    );
+};
+
+export default UploadDocuments;
+
+import React from 'react';
+import styles from './PaymentInstructionForm.module.css';
+
+const PaymentInstructionForm = ({ formData }) => {
+    return (
+        <div className={styles.formContainer}>
+            <h3>Payment Instruction Form</h3>
+            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
+            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
+            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
+            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
+        </div>
+    );
+};
+
+export default PaymentInstructionForm;
+
+import React from 'react';
+import styles from './PaymentDetails.module.css';
+
+const PaymentDetails = ({ paymentData }) => {
+    return (
+        <div className={styles.paymentContainer}>
+            <h3>Payment Details</h3>
+            <p><strong>Bank Name & Address:</strong> {paymentData.BANK_NAME_AND_ADDRESS}</p>
+            <p><strong>Account Holder's Name:</strong> {paymentData.ACCOUNT_HOLDERS_NAME}</p>
+            <p><strong>Account Number:</strong> {paymentData.ACCOUNT_NUMBER}</p>
+            <p><strong>Bank Sort Code:</strong> {paymentData.BANK_SORT_CODE}</p>
+            <p><strong>Signed Full Name:</strong> {paymentData.SIGNED_FULL_NAME}</p>
+            <p><strong>Signed Date:</strong> {paymentData.SIGNED_DATE}</p>
+        </div>
+    );
+};
+
+export default PaymentDetails;
+
+import React from 'react';
+import styles from './LostPolicyForm.module.css';
+
+const LostPolicyForm = ({ formData }) => {
+    return (
+        <div className={styles.formContainer}>
+            <h3>Lost Policy Form</h3>
+            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
+            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
+            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
+            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
+        </div>
+    );
+};
+
+export default LostPolicyForm;
+
+import React from 'react';
+import styles from './WitnessDetails.module.css';
+
+const WitnessDetails = ({ witnessData }) => {
+    return (
+        <div className={styles.witnessContainer}>
+            <h3>Witness Details</h3>
+            <p><strong>Full Name of Witness:</strong> {witnessData.FULL_NAME_OF_WITNESS}</p>
+            <p><strong>Date:</strong> {witnessData.DATE}</p>
+            <p><strong>Address of Witness:</strong> {witnessData.ADDRESS_OF_WITNESS}</p>
+            <p><strong>Day-time Telephone:</strong> {witnessData.DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS}</p>
+            <p><strong>Occupation:</strong> {witnessData.OCCUPATION_OF_WITNESS}</p>
+        </div>
+    );
+};
+
+export default WitnessDetails;
