@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+// Import FontAwesomeIcon and the specific icons you want to use
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import styles from './PaymentInstructionForm.module.css';
 
 const PaymentInstructionForm = ({ formData = {} }) => {
-    // State to control the dropdown visibility
     const [isOpen, setIsOpen] = useState(false);
 
-    // Function to toggle the dropdown visibility
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
@@ -14,10 +15,12 @@ const PaymentInstructionForm = ({ formData = {} }) => {
         <div className={styles.formContainer}>
             <div className={styles.header} onClick={toggleDropdown}>
                 <h3>Payment Instruction Form</h3>
-                {/* Arrow icon to indicate open/close state */}
-                <span className={`${styles.arrowIcon} ${isOpen ? styles.open : ''}`}>&#9660;</span>
+                {/* Font Awesome Icon */}
+                <FontAwesomeIcon
+                    icon={faChevronDown}
+                    className={`${styles.arrowIcon} ${isOpen ? styles.open : ''}`}
+                />
             </div>
-            {/* Drop-down content */}
             <div className={`${styles.content} ${isOpen ? styles.open : ''}`}>
                 <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE || 'N/A'}</p>
                 <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER || 'N/A'}</p>
@@ -62,10 +65,11 @@ h3 {
     font-size: 1.6rem;
 }
 
-/* Arrow icon for indicating dropdown state */
+/* Font Awesome Icon for dropdown */
 .arrowIcon {
     font-size: 1.5rem;
     transition: transform 0.3s ease;
+    color: white; /* Customize the icon color */
 }
 
 .arrowIcon.open {
@@ -76,11 +80,12 @@ h3 {
 .content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-out;
+    transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
 }
 
 .content.open {
     max-height: 500px; /* Adjust based on content */
+    opacity: 1;
 }
 
 /* Styling for the form fields */
