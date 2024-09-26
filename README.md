@@ -1,214 +1,68 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
-import styles from './UploadDocuments.module.css';
-import PaymentInstructionForm from './PaymentInstructionForm';
-import PaymentDetails from './PaymentDetails';
-import LostPolicyForm from './LostPolicyForm';
-import WitnessDetails from './WitnessDetails';
-import data from './documentEntities.json'; // Import the JSON file
+react-dom.development.js:28478 Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
+Check the render method of `UploadDocuments`.
+    at createFiberFromTypeAndProps (react-dom.development.js:28478:1)
+    at createFiberFromElement (react-dom.development.js:28504:1)
+    at createChild (react-dom.development.js:13345:1)
+    at reconcileChildrenArray (react-dom.development.js:13640:1)
+    at reconcileChildFibers (react-dom.development.js:14057:1)
+    at reconcileChildren (react-dom.development.js:19186:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+2react-jsx-dev-runtime.development.js:87 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
-    // Combine uploaded file and existing documents into a single array
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
+Check your code at UploadDocuments.js:88.
+    at UploadDocuments (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1442:81)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46925:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47627:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47561:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45502:5)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44:80)
+printWarning @ react-jsx-dev-runtime.development.js:87
+Show 1 more frame
+Show less
+react-dom.development.js:28478 Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
-    // Helper function to get document type label
-    const getDocumentType = (doc) => {
-        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
-            return 'Image';
-        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
-            return 'PDF';
-        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
-            return 'DOCX';
-        } else {
-            return 'Other';
-        }
-    };
+Check the render method of `UploadDocuments`.
+    at createFiberFromTypeAndProps (react-dom.development.js:28478:1)
+    at createFiberFromElement (react-dom.development.js:28504:1)
+    at createChild (react-dom.development.js:13345:1)
+    at reconcileChildrenArray (react-dom.development.js:13640:1)
+    at reconcileChildFibers (react-dom.development.js:14057:1)
+    at reconcileChildren (react-dom.development.js:19186:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+react-dom.development.js:18704 The above error occurred in the <div> component:
 
-    return (
-        <div className={styles.uploadDocuments}>
-            <h2 className={styles.documentHead}>Documents Review</h2>
-            {allDocuments.length > 0 ? (
-                <div className={styles.reviewSection}>
-                    <div className={styles.preview}>
-                        {allDocuments.map((doc, index) => (
-                            <div key={index} className={styles.previewItem}>
-                                <p className={styles.documentType}>Type: {getDocumentType(doc)}</p> {/* Display document type */}
-                                {/* Handle uploaded file (Blob object) and existing document (URL string) differently */}
-                                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
-                                    <img
-                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        alt={doc.name || "Document Preview"}
-                                        className={styles.imagePreview}
-                                    />
-                                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
-                                    <iframe
-                                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        title={`PDF Preview ${index}`}
-                                        className={styles.pdfPreview}
-                                        width="550px"
-                                        height="750px"
-                                    />
-                                ) : doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx') ? (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document (DOCX)
-                                    </a>
-                                ) : (
-                                    <a
-                                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                        download={doc.name || doc.name}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.documentLink}
-                                    >
-                                        View Document
-                                    </a>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            ) : (
-                <p className={styles.noFile}>No document available</p>
-            )}
-            {/* Here you can render the imported forms/components */}
-            <PaymentInstructionForm />
-            <PaymentDetails />
-            <LostPolicyForm />
-            <WitnessDetails />
-            {/* Example of using the imported data */}
-            <div>
-                <h3>Document Entities</h3>
-                <pre>{JSON.stringify(data, null, 2)}</pre> {/* Render the JSON data for debugging */}
-            </div>
-        </div>
-    );
-};
+    at div
+    at UploadDocuments (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1442:81)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46925:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47627:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47561:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45502:5)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44:80)
 
-export default UploadDocuments;
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ react-dom.development.js:18704
+Show 1 more frame
+Show less
+react-dom.development.js:26962 Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: object. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
-
-
-{
-    "category": "Payment Instruction Form",
-    "extracted_data": {
-        "PAYMENT_INSTRUCTION_FORM": {
-            "STATEMENT_DATE": "12/06/2024",
-            "POLICY_NUMBER": "L2065777",
-            "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
-            "POLICY_OWNER": "Mr JC Mcglynn"
-        },
-        "PAYMENT_DETAILS": {
-            "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
-            "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
-            "ACCOUNT_NUMBER": "50614866",
-            "BANK_SORT_CODE": "20-57-40",
-            "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
-            "SIGNED_DATE": "13/06/2024"
-        },
-        "LOST_POLICY_FORM": {
-            "STATEMENT_DATE": "12/06/2024",
-            "POLICY_NUMBER": "L2065777",
-            "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
-            "POLICY_OWNER": "Mr JC Mcglynn"
-        },
-        "LOST_POLICY_FORM_SIGNED": {
-            "FULL_NAME": "Mr Mcglynn, James Christopher",
-            "DATE": "13/06/2024"
-        },
-        "LOST_POLICY_FORM_WITNESSED_BY": {
-            "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
-            "DATE": "13/06/2024",
-            "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
-            "OFFICIAL_STAMP": "",
-            "DAY-TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
-            "OCCUPATION_OF_WITNESS": "Teacher"
-        }
-    },
-    "unfilledpercent": "4%"
-}
-
-
-import React from 'react';
-import styles from './PaymentInstructionForm.module.css';
-
-const PaymentInstructionForm = ({ formData }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Payment Instruction Form</h3>
-            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
-            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
-            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
-            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
-        </div>
-    );
-};
-
-export default PaymentInstructionForm;
-
-
-import React from 'react';
-import styles from './PaymentDetails.module.css';
-
-const PaymentDetails = ({ paymentData }) => {
-    return (
-        <div className={styles.paymentContainer}>
-            <h3>Payment Details</h3>
-            <p><strong>Bank Name & Address:</strong> {paymentData.BANK_NAME_AND_ADDRESS}</p>
-            <p><strong>Account Holder's Name:</strong> {paymentData.ACCOUNT_HOLDERS_NAME}</p>
-            <p><strong>Account Number:</strong> {paymentData.ACCOUNT_NUMBER}</p>
-            <p><strong>Bank Sort Code:</strong> {paymentData.BANK_SORT_CODE}</p>
-            <p><strong>Signed Full Name:</strong> {paymentData.SIGNED_FULL_NAME}</p>
-            <p><strong>Signed Date:</strong> {paymentData.SIGNED_DATE}</p>
-        </div>
-    );
-};
-
-export default PaymentDetails;
-
-import React from 'react';
-import styles from './LostPolicyForm.module.css';
-
-const LostPolicyForm = ({ formData }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Lost Policy Form</h3>
-            <p><strong>Statement Date:</strong> {formData.STATEMENT_DATE}</p>
-            <p><strong>Policy Number:</strong> {formData.POLICY_NUMBER}</p>
-            <p><strong>Policy On the Life Of:</strong> {formData.POLICY_ON_THE_LIFE_OF}</p>
-            <p><strong>Policy Owner:</strong> {formData.POLICY_OWNER}</p>
-        </div>
-    );
-};
-
-export default LostPolicyForm;
-
-
-import React from 'react';
-import styles from './WitnessDetails.module.css';
-
-const WitnessDetails = ({ witnessData }) => {
-    return (
-        <div className={styles.witnessContainer}>
-            <h3>Witness Details</h3>
-            <p><strong>Full Name of Witness:</strong> {witnessData.FULL_NAME_OF_WITNESS}</p>
-            <p><strong>Date:</strong> {witnessData.DATE}</p>
-            <p><strong>Address of Witness:</strong> {witnessData.ADDRESS_OF_WITNESS}</p>
-            <p><strong>Day-time Telephone:</strong> {witnessData.DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS}</p>
-            <p><strong>Occupation:</strong> {witnessData.OCCUPATION_OF_WITNESS}</p>
-        </div>
-    );
-};
-
-export default WitnessDetails;
+Check the render method of `UploadDocuments`.
+    at createFiberFromTypeAndProps (react-dom.development.js:28478:1)
+    at createFiberFromElement (react-dom.development.js:28504:1)
+    at createChild (react-dom.development.js:13345:1)
+    at reconcileChildrenArray (react-dom.development.js:13640:1)
+    at reconcileChildFibers (react-dom.development.js:14057:1)
+    at reconcileChildren (react-dom.development.js:19186:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at beginWork$1 (react-dom.development.js:27465:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
