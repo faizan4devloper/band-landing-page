@@ -1,6 +1,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './UploadDocuments.module.css';
+import PaymentInstructionForm from './PaymentInstructionForm';
+import PaymentDetails from './PaymentDetails';
+import LostPolicyForm from './LostPolicyForm';
+import WitnessDetails from './WitnessDetails';
+import data from './documentEntities.json'; // Import the JSON file
 
 const UploadDocuments = () => {
     const location = useLocation();
@@ -77,6 +82,16 @@ const UploadDocuments = () => {
             ) : (
                 <p className={styles.noFile}>No document available</p>
             )}
+            {/* Here you can render the imported forms/components */}
+            <PaymentInstructionForm />
+            <PaymentDetails />
+            <LostPolicyForm />
+            <WitnessDetails />
+            {/* Example of using the imported data */}
+            <div>
+                <h3>Document Entities</h3>
+                <pre>{JSON.stringify(data, null, 2)}</pre> {/* Render the JSON data for debugging */}
+            </div>
         </div>
     );
 };
