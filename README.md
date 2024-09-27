@@ -121,13 +121,66 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.uploadDocuments {
+    flex: 2; /* Allow the upload section to take more space */
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.documentHead {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.reviewSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.previewItem {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.imagePreview {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.pdfPreview {
+    border-radius: 8px;
+}
+
+.documentLink {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.noFile {
+    color: #666;
+    font-style: italic;
+}
 
 .sidebar {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.9);
+    flex: 1; /* Sidebar takes less space */
+    background: #f0f8ff; /* Light background for the sidebar */
     padding: 20px;
-    border-radius: 12px;
-    margin-left: 20px;
+    border-radius: 10px;
+    margin-left: 20px; /* Space between the two sections */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -148,12 +201,15 @@ export default UploadDocuments;
     margin-bottom: 10px;
     border-radius: 6px;
     transition: background 0.3s;
+    background: #e8f0fe; /* Light blue background */
 }
 
 .formItem:hover {
-    background: #f0f0f0;
+    background: #d1e7fd; /* Slightly darker blue on hover */
 }
 
 .formDisplay {
     margin-top: 20px;
+    border-top: 1px solid #e0e0e0; /* Separator */
+    padding-top: 10px;
 }
