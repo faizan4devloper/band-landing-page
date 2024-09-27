@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './UploadDocuments.module.css';
 import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
@@ -27,7 +27,7 @@ const UploadDocuments = () => {
     const [selectedForm, setSelectedForm] = useState(null);
 
     // Helper function to get document type label
-    const getDocumentType = useCallback((doc) => {
+    const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
         } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
@@ -37,45 +37,10 @@ const UploadDocuments = () => {
         } else {
             return 'Other';
         }
-    }, []);
+    };
 
-    // Memoized PreviewItem to prevent re-renders
-    const PreviewItem = React.memo(({ doc, index }) => {
-        return (
-            <div key={index} className={styles.previewItem}>
-                <p className={styles.documentType}>Type: {getDocumentType(doc)}</p>
-                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
-                    <img
-                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                        alt={doc.name || "Document Preview"}
-                        className={styles.imagePreview}
-                    />
-                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
-                    <iframe
-                        src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
-                        title={`PDF Preview ${index}`}
-                        className={styles.pdfPreview}
-                        width="550px"
-                        height="750px"
-                        frameBorder="0"
-                    />
-                ) : (
-                    <a
-                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                        download={doc.name || doc.name}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.documentLink}
-                    >
-                        View Document
-                    </a>
-                )}
-            </div>
-        );
-    });
-
-    // Memoized form display to avoid re-rendering
-    const FormDisplay = React.memo(({ selectedForm }) => {
+    // Render the selected form data
+    const renderFormData = () => {
         switch (selectedForm) {
             case 'PaymentInstructionForm':
                 return <PaymentInstructionForm formData={formData} />;
@@ -86,20 +51,47 @@ const UploadDocuments = () => {
             case 'WitnessDetails':
                 return <WitnessDetails witnessData={witnessData} />;
             default:
-                return <div className={styles.noSelection}>Please select a form from the sidebar</div>;
+                return <p>Please select a form to view its data.</p>;
         }
-    });
+    };
 
     return (
         <div className={styles.container}>
-            {/* Left Side - Upload Documents Section */}
             <div className={styles.uploadDocuments}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
                 {allDocuments.length > 0 ? (
                     <div className={styles.reviewSection}>
                         <div className={styles.preview}>
                             {allDocuments.map((doc, index) => (
-                                <PreviewItem key={index} doc={doc} />
+                                <div key={index} className={styles.previewItem}>
+                                    <p className={styles.documentType}>Type: {getDocumentType(doc)}</p>
+                                    {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
+                                        <img
+                                            src={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                            alt={doc.name || "Document Preview"}
+                                            className={styles.imagePreview}
+                                        />
+                                    ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
+                                        <iframe
+                                            src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
+                                            title={`PDF Preview ${index}`}
+                                            className={styles.pdfPreview}
+                                            width="400px"
+                                            height="550px"
+                                            frameBorder="0"
+                                        />
+                                    ) : (
+                                        <a
+                                            href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                                            download={doc.name || doc.name}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={styles.documentLink}
+                                        >
+                                            View Document
+                                        </a>
+                                    )}
+                                </div>
                             ))}
                         </div>
                     </div>
@@ -108,12 +100,10 @@ const UploadDocuments = () => {
                 )}
             </div>
 
-            {/* Center - Form Display Section */}
             <div className={styles.formDisplay}>
-                <FormDisplay selectedForm={selectedForm} />
+                {renderFormData()}
             </div>
 
-            {/* Right Side - Sidebar */}
             <div className={styles.sidebar}>
                 <h3 className={styles.sidebarTitle}>Forms</h3>
                 <ul className={styles.formList}>
@@ -130,19 +120,173 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
+
+
+/*.container {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*    justify-content: center;*/
+/*    padding: 3rem;*/
+/*    border-radius: 12px;*/
+/*}*/
+
+/*.contentWrapper {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    width: 90%;*/
+/*    background: rgba(0, 0, 0, 0.5);*/
+/*    backdrop-filter: blur(10px);*/
+/*    border-radius: 8px;*/
+/*    color: #fff;*/
+/*    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);*/
+/*    padding: 2rem;*/
+/*    gap: 2rem;*/
+/*}*/
+
+/*.uploadDocuments {*/
+/*    background: rgba(0, 0, 0, 0.5);*/
+/*    flex: 1;*/
+    /*max-width: 90%;*/
+/*    width: 800px;*/
+/*        padding: 30px;*/
+/*        border-radius: 12px;*/
+/*        border-left: 5px solid #7ca2e1;*/
+/*}*/
+
+/*.documentHead {*/
+/*    text-align: center;*/
+/*    font-size: 2rem;*/
+/*    font-weight: bold;*/
+/*    color: #fff;*/
+    /*margin-bottom: 2rem;*/
+    /*margin: 0;*/
+/*    padding-bottom: 1rem;*/
+/*}*/
+
+/*.reviewSection {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+        
+
+/*    align-items: center;*/
+/*}*/
+
+/*.preview {*/
+/*    display: grid;*/
+/*    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));*/
+/*    gap: 1.5rem;*/
+/*}*/
+
+/*.previewItem {*/
+/*    background-color: #ffffff;*/
+/*    border-radius: 12px;*/
+/*    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);*/
+/*    padding: 1.5rem;*/
+/*    text-align: center;*/
+/*    transition: transform 0.3s ease-in-out;*/
+/*}*/
+
+/*.previewItem:hover {*/
+/*    transform: translateY(-10px);*/
+/*}*/
+
+/*.documentType {*/
+/*    font-size: 1rem;*/
+/*    font-weight: bold;*/
+/*    color: #2c3e50;*/
+/*    margin-bottom: 1rem;*/
+/*}*/
+
+/*.imagePreview, .pdfPreview {*/
+/*    max-width: 100%;*/
+/*    border-radius: 8px;*/
+/*    margin-bottom: 1rem;*/
+/*}*/
+
+/*.documentLink {*/
+/*    color: #3498db;*/
+/*    text-decoration: none;*/
+/*    font-weight: bold;*/
+/*    border: 2px solid #3498db;*/
+/*    padding: 0.5rem 1rem;*/
+/*    border-radius: 8px;*/
+/*    transition: background-color 0.3s ease, color 0.3s ease;*/
+/*}*/
+
+/*.documentLink:hover {*/
+/*    background-color: #3498db;*/
+/*    color: #fff;*/
+/*}*/
+
+/*.noFile {*/
+/*    color: #888;*/
+/*    font-size: 1.2rem;*/
+/*    text-align: center;*/
+/*    margin-top: 2rem;*/
+/*}*/
+
+/*.formsContainer {*/
+/*    margin-top: 3rem;*/
+/*    display: grid;*/
+/*    grid-template-columns: 1fr 1fr;*/
+/*    gap: 2rem;*/
+/*}*/
+
+/*.formsContainer > div {*/
+    /*background-color: #fff;*/
+/*    padding: 1.5rem;*/
+    /*border-radius: 12px;*/
+/*    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);*/
+/*    transition: transform 0.3s ease;*/
+/*}*/
+
+/*.sidebar {*/
+/*    flex: 1;*/
+/*    background: rgba(255, 255, 255, 0.9);*/
+/*    padding: 20px;*/
+/*    border-radius: 12px;*/
+/*    margin-left: 20px;*/
+/*    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);*/
+/*}*/
+
+/*.sidebarTitle {*/
+/*    font-size: 1.6rem;*/
+/*    font-weight: bold;*/
+/*    margin-bottom: 1rem;*/
+/*}*/
+
+/*.formsContainer > div:hover {*/
+/*    transform: translateY(-8px);*/
+/*}*/
+
+/*@media (max-width: 768px) {*/
+/*    .formsContainer {*/
+/*        grid-template-columns: 1fr;*/
+/*    }*/
+
+/*    .uploadDocuments {*/
+/*        width: 100%;*/
+/*    }*/
+/*}*/
+
+
 .container {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr; /* Left for upload, center for form, right for sidebar */
-    gap: 20px;
+    display: flex;
+    justify-content: space-between;
     padding: 20px;
+        gap: 20px;
+
 }
 
 .uploadDocuments {
+    flex: 1.5; /* Larger than the sidebar */
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
+
 
 .documentHead {
     text-align: center;
@@ -150,8 +294,9 @@ export default UploadDocuments;
     font-weight: bold;
     color: #fff;
     margin-bottom: 2rem;
+    margin: 0;
+    padding-bottom: 1rem;
 }
-
 .reviewSection {
     display: flex;
     flex-direction: column;
@@ -186,13 +331,14 @@ export default UploadDocuments;
     font-style: italic;
 }
 
-/* Sidebar Styles */
 .sidebar {
+    flex: 1; /* Smaller than the upload section */
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
+
 
 .sidebarTitle {
     font-size: 1.6rem;
@@ -218,19 +364,13 @@ export default UploadDocuments;
     background: #d1e7fd; /* Slightly darker blue on hover */
 }
 
-/* Center - Form Display */
 .formDisplay {
-    background-color: #fff;
+    flex: 1; /* Center form section */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    grid-column: 2 / 3; /* Center the form display */
-    align-self: center; /* Ensure it's vertically centered */
 }
-
-.noSelection {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #666;
-}
-
