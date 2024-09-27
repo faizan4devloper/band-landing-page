@@ -5,24 +5,28 @@ import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
 import PaymentDetails from '../Entities/PaymentDetails';
 import LostPolicyForm from '../Entities/LostPolicyForm';
 import WitnessDetails from '../Entities/WitnessDetails';
-import data from '../../../Json/DocumentEntities.json';
+import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
 
 const UploadDocuments = () => {
     const location = useLocation();
     const { uploadedFile, documents = [] } = location.state || {};
-    
+
+    // Combine uploaded file and existing documents into a single array
     const allDocuments = [
         ...(uploadedFile ? [uploadedFile] : []),
         ...documents
     ];
 
+    // Access JSON data with fallback to handle undefined
     const formData = data.extracted_data?.PAYMENT_INSTRUCTION_FORM || {};
     const paymentData = data.extracted_data?.PAYMENT_DETAILS || {};
     const lostPolicyFormData = data.extracted_data?.LOST_POLICY_FORM || {};
     const witnessData = data.extracted_data?.LOST_POLICY_FORM_WITNESSED_BY || {};
 
+    // State to manage the selected form
     const [selectedForm, setSelectedForm] = useState(null);
 
+    // Helper function to get document type label
     const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
@@ -35,6 +39,7 @@ const UploadDocuments = () => {
         }
     };
 
+    // Render the selected form data
     const renderFormData = () => {
         switch (selectedForm) {
             case 'PaymentInstructionForm':
@@ -46,7 +51,7 @@ const UploadDocuments = () => {
             case 'WitnessDetails':
                 return <WitnessDetails witnessData={witnessData} />;
             default:
-                return null;
+                return <p>Please select a form to view its data.</p>;
         }
     };
 
@@ -94,6 +99,11 @@ const UploadDocuments = () => {
                     <p className={styles.noFile}>No document available</p>
                 )}
             </div>
+
+            <div className={styles.formDisplay}>
+                {renderFormData()}
+            </div>
+
             <div className={styles.sidebar}>
                 <h3 className={styles.sidebarTitle}>Forms</h3>
                 <ul className={styles.formList}>
@@ -102,9 +112,6 @@ const UploadDocuments = () => {
                     <li onClick={() => setSelectedForm('LostPolicyForm')} className={styles.formItem}>Lost Policy Form</li>
                     <li onClick={() => setSelectedForm('WitnessDetails')} className={styles.formItem}>Witness Details</li>
                 </ul>
-                <div className={styles.formDisplay}>
-                    {renderFormData()}
-                </div>
             </div>
         </div>
     );
@@ -118,70 +125,34 @@ export default UploadDocuments;
     display: flex;
     justify-content: space-between;
     padding: 20px;
+    gap: 20px;
 }
 
 .uploadDocuments {
-    flex: 2; /* Upload section takes more space */
+    flex: 1.5; /* Larger than the sidebar */
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
-.documentHead {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 2rem;
-    margin: 0;
-    padding-bottom: 1rem;
-}
-
-.reviewSection {
+.formDisplay {
+    flex: 1; /* Center form section */
     display: flex;
-    flex-direction: column;
-}
-
-.previewItem {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background: #f9f9f9;
-}
-
-.imagePreview {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-}
-
-.pdfPreview {
-    border-radius: 8px;
-}
-
-.documentLink {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
-}
-
-.noFile {
-    color: #666;
-    font-style: italic;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    background: rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
 .sidebar {
-    flex: 1; /* Sidebar takes less space */
+    flex: 1; /* Smaller than the upload section */
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    margin-left: 20px; /* Space between the two sections */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center content in sidebar */
 }
 
 .sidebarTitle {
@@ -193,7 +164,6 @@ export default UploadDocuments;
 .formList {
     list-style: none;
     padding: 0;
-    width: 100%; /* Full width for the list */
 }
 
 .formItem {
@@ -203,19 +173,8 @@ export default UploadDocuments;
     border-radius: 6px;
     transition: background 0.3s;
     background: #e8f0fe; /* Light blue background */
-    text-align: center; /* Center text in sidebar items */
 }
 
 .formItem:hover {
     background: #d1e7fd; /* Slightly darker blue on hover */
-}
-
-.formDisplay {
-    margin-top: 20px;
-    border-top: 1px solid #e0e0e0; /* Separator */
-    padding-top: 10px;
-    width: 100%; /* Full width for the form display */
-    display: flex;
-    justify-content: center; /* Center the form display */
-    align-items: center; /* Vertically center */
 }
