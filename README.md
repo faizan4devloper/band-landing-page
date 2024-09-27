@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import styles from './UploadDocuments.module.css';
 import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
@@ -27,20 +27,17 @@ const UploadDocuments = () => {
     const [selectedForm, setSelectedForm] = useState(null);
 
     // Helper function to get document type label
-    const getDocumentType = (doc) => {
+    const getDocumentType = useCallback((doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
-        }
-        else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
             return 'PDF';
-        }
-        else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
             return 'DOCX';
-        }
-        else {
+        } else {
             return 'Other';
         }
-    };
+    }, []);
 
     // Memoized PreviewItem to prevent re-renders
     const PreviewItem = React.memo(({ doc, index }) => {
@@ -77,8 +74,8 @@ const UploadDocuments = () => {
         );
     });
 
-    // Render the selected form data
-    const renderFormData = () => {
+    // Memoized form display to avoid re-rendering
+    const FormDisplay = React.memo(({ selectedForm }) => {
         switch (selectedForm) {
             case 'PaymentInstructionForm':
                 return <PaymentInstructionForm formData={formData} />;
@@ -89,9 +86,9 @@ const UploadDocuments = () => {
             case 'WitnessDetails':
                 return <WitnessDetails witnessData={witnessData} />;
             default:
-                return null;
+                return <div className={styles.noSelection}>Please select a form from the sidebar</div>;
         }
-    };
+    });
 
     return (
         <div className={styles.container}>
@@ -113,7 +110,7 @@ const UploadDocuments = () => {
 
             {/* Center - Form Display Section */}
             <div className={styles.formDisplay}>
-                {renderFormData()}
+                <FormDisplay selectedForm={selectedForm} />
             </div>
 
             {/* Right Side - Sidebar */}
@@ -131,3 +128,109 @@ const UploadDocuments = () => {
 };
 
 export default UploadDocuments;
+
+
+.container {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr; /* Left for upload, center for form, right for sidebar */
+    gap: 20px;
+    padding: 20px;
+}
+
+.uploadDocuments {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+}
+
+.documentHead {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.reviewSection {
+    display: flex;
+    flex-direction: column;
+}
+
+.previewItem {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #f9f9f9;
+}
+
+.imagePreview {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.pdfPreview {
+    border-radius: 8px;
+}
+
+.documentLink {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.noFile {
+    color: #666;
+    font-style: italic;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+}
+
+.sidebarTitle {
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+}
+
+.formList {
+    list-style: none;
+    padding: 0;
+}
+
+.formItem {
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    transition: background 0.3s;
+    background: #e8f0fe; /* Light blue background */
+}
+
+.formItem:hover {
+    background: #d1e7fd; /* Slightly darker blue on hover */
+}
+
+/* Center - Form Display */
+.formDisplay {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    grid-column: 2 / 3; /* Center the form display */
+    align-self: center; /* Ensure it's vertically centered */
+}
+
+.noSelection {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+}
+
