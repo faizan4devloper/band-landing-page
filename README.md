@@ -30,14 +30,52 @@ const UploadDocuments = () => {
     const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
-        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+        }
+        else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
             return 'PDF';
-        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+        }
+        else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
             return 'DOCX';
-        } else {
+        }
+        else {
             return 'Other';
         }
     };
+
+    // Memoized PreviewItem to prevent re-renders
+    const PreviewItem = React.memo(({ doc, index }) => {
+        return (
+            <div key={index} className={styles.previewItem}>
+                <p className={styles.documentType}>Type: {getDocumentType(doc)}</p>
+                {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
+                    <img
+                        src={doc.url ? doc.url : URL.createObjectURL(doc)}
+                        alt={doc.name || "Document Preview"}
+                        className={styles.imagePreview}
+                    />
+                ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
+                    <iframe
+                        src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
+                        title={`PDF Preview ${index}`}
+                        className={styles.pdfPreview}
+                        width="550px"
+                        height="750px"
+                        frameBorder="0"
+                    />
+                ) : (
+                    <a
+                        href={doc.url ? doc.url : URL.createObjectURL(doc)}
+                        download={doc.name || doc.name}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.documentLink}
+                    >
+                        View Document
+                    </a>
+                )}
+            </div>
+        );
+    });
 
     // Render the selected form data
     const renderFormData = () => {
@@ -51,47 +89,20 @@ const UploadDocuments = () => {
             case 'WitnessDetails':
                 return <WitnessDetails witnessData={witnessData} />;
             default:
-                return <p>Please select a form to view its data.</p>;
+                return null;
         }
     };
 
     return (
         <div className={styles.container}>
+            {/* Left Side - Upload Documents Section */}
             <div className={styles.uploadDocuments}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
                 {allDocuments.length > 0 ? (
                     <div className={styles.reviewSection}>
                         <div className={styles.preview}>
                             {allDocuments.map((doc, index) => (
-                                <div key={index} className={styles.previewItem}>
-                                    <p className={styles.documentType}>Type: {getDocumentType(doc)}</p>
-                                    {doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png') ? (
-                                        <img
-                                            src={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                            alt={doc.name || "Document Preview"}
-                                            className={styles.imagePreview}
-                                        />
-                                    ) : doc.type === 'application/pdf' || doc.url?.endsWith('.pdf') ? (
-                                        <iframe
-                                            src={`${doc.url ? doc.url : URL.createObjectURL(doc)}#toolbar=0&navpanes=0&scrollbar=0`}
-                                            title={`PDF Preview ${index}`}
-                                            className={styles.pdfPreview}
-                                            width="550px"
-                                            height="750px"
-                                            frameBorder="0"
-                                        />
-                                    ) : (
-                                        <a
-                                            href={doc.url ? doc.url : URL.createObjectURL(doc)}
-                                            download={doc.name || doc.name}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className={styles.documentLink}
-                                        >
-                                            View Document
-                                        </a>
-                                    )}
-                                </div>
+                                <PreviewItem key={index} doc={doc} />
                             ))}
                         </div>
                     </div>
@@ -100,10 +111,12 @@ const UploadDocuments = () => {
                 )}
             </div>
 
+            {/* Center - Form Display Section */}
             <div className={styles.formDisplay}>
                 {renderFormData()}
             </div>
 
+            {/* Right Side - Sidebar */}
             <div className={styles.sidebar}>
                 <h3 className={styles.sidebarTitle}>Forms</h3>
                 <ul className={styles.formList}>
@@ -118,63 +131,3 @@ const UploadDocuments = () => {
 };
 
 export default UploadDocuments;
-
-
-
-.container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    gap: 20px;
-}
-
-.uploadDocuments {
-    flex: 1.5; /* Larger than the sidebar */
-    background: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-}
-
-.formDisplay {
-    flex: 1; /* Center form section */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; /* Align to the top */
-    background: rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-}
-
-.sidebar {
-    flex: 1; /* Smaller than the upload section */
-    background: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-}
-
-.sidebarTitle {
-    font-size: 1.6rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-}
-
-.formList {
-    list-style: none;
-    padding: 0;
-}
-
-.formItem {
-    cursor: pointer;
-    padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    transition: background 0.3s;
-    background: #e8f0fe; /* Light blue background */
-}
-
-.formItem:hover {
-    background: #d1e7fd; /* Slightly darker blue on hover */
-}
