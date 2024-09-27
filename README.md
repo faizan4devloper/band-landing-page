@@ -129,18 +129,22 @@ export default UploadDocuments;
 
 .uploadDocuments {
     flex: 2; /* Allow the upload section to take more space */
-    background: white;
+background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    
 }
 
 .documentHead {
-    font-size: 1.8rem;
+    text-align: center;
+    font-size: 2rem;
     font-weight: bold;
-    margin-bottom: 1rem;
+    color: #fff;
+    margin-bottom: 2rem;
+    margin: 0;
+    padding-bottom: 1rem;
 }
-
 .reviewSection {
     display: flex;
     flex-direction: column;
@@ -177,11 +181,11 @@ export default UploadDocuments;
 
 .sidebar {
     flex: 1; /* Sidebar takes less space */
-    background: #f0f8ff; /* Light background for the sidebar */
+    background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     margin-left: 20px; /* Space between the two sections */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .sidebarTitle {
