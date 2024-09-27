@@ -5,44 +5,36 @@ import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
 import PaymentDetails from '../Entities/PaymentDetails';
 import LostPolicyForm from '../Entities/LostPolicyForm';
 import WitnessDetails from '../Entities/WitnessDetails';
-import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
+import data from '../../../Json/DocumentEntities.json';
 
 const UploadDocuments = () => {
     const location = useLocation();
     const { uploadedFile, documents = [] } = location.state || {};
-
-    // Combine uploaded file and existing documents into a single array
+    
     const allDocuments = [
         ...(uploadedFile ? [uploadedFile] : []),
         ...documents
     ];
 
-    // Access JSON data with fallback to handle undefined
     const formData = data.extracted_data?.PAYMENT_INSTRUCTION_FORM || {};
     const paymentData = data.extracted_data?.PAYMENT_DETAILS || {};
     const lostPolicyFormData = data.extracted_data?.LOST_POLICY_FORM || {};
     const witnessData = data.extracted_data?.LOST_POLICY_FORM_WITNESSED_BY || {};
 
-    // State to manage the selected form
     const [selectedForm, setSelectedForm] = useState(null);
 
-    // Helper function to get document type label
     const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
-        }
-        else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
             return 'PDF';
-        }
-        else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
             return 'DOCX';
-        }
-        else {
+        } else {
             return 'Other';
         }
     };
 
-    // Render the selected form data
     const renderFormData = () => {
         switch (selectedForm) {
             case 'PaymentInstructionForm':
@@ -121,6 +113,7 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
+
 .container {
     display: flex;
     justify-content: space-between;
@@ -128,12 +121,11 @@ export default UploadDocuments;
 }
 
 .uploadDocuments {
-    flex: 2; /* Allow the upload section to take more space */
-background: rgba(0, 0, 0, 0.5);
+    flex: 2; /* Upload section takes more space */
+    background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
 .documentHead {
@@ -145,6 +137,7 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     margin: 0;
     padding-bottom: 1rem;
 }
+
 .reviewSection {
     display: flex;
     flex-direction: column;
@@ -184,8 +177,11 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     background: rgba(0, 0, 0, 0.5);
     padding: 20px;
     border-radius: 10px;
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     margin-left: 20px; /* Space between the two sections */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content in sidebar */
 }
 
 .sidebarTitle {
@@ -197,6 +193,7 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 .formList {
     list-style: none;
     padding: 0;
+    width: 100%; /* Full width for the list */
 }
 
 .formItem {
@@ -206,6 +203,7 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     border-radius: 6px;
     transition: background 0.3s;
     background: #e8f0fe; /* Light blue background */
+    text-align: center; /* Center text in sidebar items */
 }
 
 .formItem:hover {
@@ -216,4 +214,8 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     margin-top: 20px;
     border-top: 1px solid #e0e0e0; /* Separator */
     padding-top: 10px;
+    width: 100%; /* Full width for the form display */
+    display: flex;
+    justify-content: center; /* Center the form display */
+    align-items: center; /* Vertically center */
 }
