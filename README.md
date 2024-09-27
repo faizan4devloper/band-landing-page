@@ -117,47 +117,125 @@ const UploadDocuments = () => {
 
 export default UploadDocuments;
 
-    
-    import React from 'react';
-    import styles from './LostPolicyForm.module.css';
-    
-    const LostPolicyForm = ({ lostPolicyFormData = {} }) => {
-        return (
-            <div className={styles.lostPolicyContainer}>
-                <h3>Lost Policy Form</h3>
-                <p><strong>Statement Date:</strong> {lostPolicyFormData.STATEMENT_DATE || 'N/A'}</p>
-                <p><strong>Policy Number:</strong> {lostPolicyFormData.POLICY_NUMBER || 'N/A'}</p>
-                <p><strong>Policy On the Life Of:</strong> {lostPolicyFormData.POLICY_ON_THE_LIFE_OF || 'N/A'}</p>
-                <p><strong>Policy Owner:</strong> {lostPolicyFormData.POLICY_OWNER || 'N/A'}</p>
-            </div>
-        );
-    };
-    
-    export default LostPolicyForm;
 
-    .lostPolicyContainer {
+
+
+
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    border-radius: 12px;
+}
+
+.uploadDocuments {
+    width: 90%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.documentHead {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+}
+
+.reviewSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.previewItem {
     background-color: #ffffff;
-    padding: 20px;
-    margin: 20px 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
 }
 
-.lostPolicyContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
-    border-bottom: 2px solid #7ca2e1;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+.previewItem:hover {
+    transform: translateY(-10px);
 }
 
-.lostPolicyContainer p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
+.documentType {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 1rem;
 }
 
-strong {
-    color: #7ca2e1;
+.imagePreview, .pdfPreview {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.documentLink {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+    border: 2px solid #3498db;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.documentLink:hover {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.noFile {
+    color: #888;
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.formsContainer {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.formsContainer > div {
+    background-color: #fff;
+    padding: 1.5rem;
+    /*border-radius: 12px;*/
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.formsContainer > div:hover {
+    transform: translateY(-8px);
+}
+
+@media (max-width: 768px) {
+    .formsContainer {
+        grid-template-columns: 1fr;
+    }
+
+    .uploadDocuments {
+        width: 100%;
+    }
 }
