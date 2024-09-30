@@ -1,210 +1,118 @@
-    import React from 'react';
-    import styles from './LostPolicyForm.module.css';
-    
-    const LostPolicyForm = ({ lostPolicyFormData = {} }) => {
-        return (
-            <div className={styles.lostPolicyContainer}>
-               <div className={styles.formContainer}>
-            <h3>Lost Policy Form</h3>
-            {Object.keys(lostPolicyFormData).length > 0 ? (
-                Object.entries(lostPolicyFormData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-            </div>
-        );
-    };
-    
-    export default LostPolicyForm;
-
-    .lostPolicyContainer {
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 20px 0;
-    /*border-radius: 10px;*/
-    border-left: 5px solid #7ca2e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-}
-
-.lostPolicyContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
-    border-bottom: 2px solid #7ca2e1;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.lostPolicyContainer p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
-}
-
-strong {
-    color: #7ca2e1;
-}
-
-
-    import React from 'react';
-    import styles from './PaymentDetails.module.css';
-    
-    const PaymentDetails = ({ paymentData = {}}) => {
-        return (
-            <div className={styles.paymentContainer}>
-                <div className={styles.formContainer}>
-            <h3>Payment Details Form</h3>
-            {Object.keys(paymentData).length > 0 ? (
-                Object.entries(paymentData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-            </div>
-        );
-    };
-    
-    export default PaymentDetails;
-
-
-    .paymentContainer {
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 20px 0;
-    /*border-radius: 10px;*/
-    border-left: 5px solid #7ca2e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-}
-
-.paymentContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
-    border-bottom: 2px solid #7ca2e1;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.paymentContainer p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
-}
-
-strong {
-    color: #7ca2e1;
-}
-
-
-
 import React from 'react';
-import styles from './PaymentInstructionForm.module.css';
+import styles from './Sidebar.module.css';
+import { FaFileAlt, FaMoneyCheckAlt, FaFileContract, FaUserCheck } from 'react-icons/fa'; // Example icons
 
-const PaymentInstructionForm = ({ formData = {} }) => {
-    // Dynamically generate form fields from the formData object
+const Sidebar = ({ onSelectForm }) => {
     return (
-        <div className={styles.formContainer}>
-            <h3>Payment Instruction Form</h3>
-            {Object.keys(formData).length > 0 ? (
-                Object.entries(formData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
+        <div className={styles.sidebar}>
+            <h3 className={styles.sidebarTitle}>Forms</h3>
+            <ul className={styles.formList}>
+                <li onClick={() => onSelectForm('PaymentInstructionForm')} className={styles.formItem}>
+                    <FaFileAlt className={styles.icon} /> Payment Instruction Form
+                </li>
+                <li onClick={() => onSelectForm('PaymentDetails')} className={styles.formItem}>
+                    <FaMoneyCheckAlt className={styles.icon} /> Payment Details
+                </li>
+                <li onClick={() => onSelectForm('LostPolicyForm')} className={styles.formItem}>
+                    <FaFileContract className={styles.icon} /> Lost Policy Form
+                </li>
+                <li onClick={() => onSelectForm('WitnessDetails')} className={styles.formItem}>
+                    <FaUserCheck className={styles.icon} /> Witness Details
+                </li>
+            </ul>
         </div>
     );
 };
 
-export default PaymentInstructionForm;
+export default Sidebar;
+
+
+.sidebar {
+    flex: 1;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.sidebarTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: #ffffff;
+}
+
+.formList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.formItem {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.3s;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.formItem:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.icon {
+    margin-right: 10px;
+    font-size: 1.2rem;
+    color: #f5f5f5;
+}
+
+.formItem:hover .icon {
+    color: #ffffff;
+}
+
+
+
 
 .formContainer {
     background-color: #ffffff;
-    padding: 20px;
+    padding: 30px;
     margin: 20px 0;
-    /*border-radius: 10px;*/
     border-left: 5px solid #7ca2e1;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    border-radius: 10px;
+    max-width: 700px;
+    transition: box-shadow 0.3s ease;
 }
 
-.formContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
+.formContainer:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+h3 {
+    color: #4a4a4a;
+    font-size: 1.8rem;
+    font-weight: 600;
     border-bottom: 2px solid #7ca2e1;
     padding-bottom: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-family: 'Poppins', sans-serif;
 }
 
 p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
+    font-size: 1.2rem;
+    color: #555555;
+    line-height: 1.6;
+    margin: 12px 0;
 }
 
 strong {
     color: #7ca2e1;
-}
-
-import React from 'react';
-import styles from './WitnessDetails.module.css';
-
-const WitnessDetails = ({ witnessData ={} }) => {
-    return (
-        <div className={styles.witnessContainer}>
-            <div className={styles.formContainer}>
-            <h3>Witness Details</h3>
-            {Object.keys(witnessData).length > 0 ? (
-                Object.entries(witnessData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-        </div>
-    );
-};
-
-export default WitnessDetails;
-
-.witnessContainer {
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 20px 0;
-    /*border-radius: 10px;*/
-    border-left: 5px solid #7ca2e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
-}
-
-.witnessContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
-    border-bottom: 2px solid #7ca2e1;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.witnessContainer p {
-    font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
-}
-
-strong {
-    color: #7ca2e1;
+    font-weight: 600;
 }
