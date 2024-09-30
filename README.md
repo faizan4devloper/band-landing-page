@@ -1,37 +1,16 @@
-import React, { useState } from 'react';
-import sidebarStyles from './Sidebar.module.css';
+// Sidebar.js
+import React from 'react';
+import styles from './Sidebar.module.css';
 
-const Sidebar = () => {
-    const [selectedForm, setSelectedForm] = useState('');
-
+const Sidebar = ({ onSelectForm }) => {
     return (
-        <div className={sidebarStyles.sidebar}>
-            <h3 className={sidebarStyles.sidebarTitle}>Forms</h3>
-            <ul className={sidebarStyles.formList}>
-                <li
-                    onClick={() => setSelectedForm('PaymentInstructionForm')}
-                    className={`${sidebarStyles.formItem} ${selectedForm === 'PaymentInstructionForm' ? sidebarStyles.active : ''}`}
-                >
-                    Payment Instruction Form
-                </li>
-                <li
-                    onClick={() => setSelectedForm('PaymentDetails')}
-                    className={`${sidebarStyles.formItem} ${selectedForm === 'PaymentDetails' ? sidebarStyles.active : ''}`}
-                >
-                    Payment Details
-                </li>
-                <li
-                    onClick={() => setSelectedForm('LostPolicyForm')}
-                    className={`${sidebarStyles.formItem} ${selectedForm === 'LostPolicyForm' ? sidebarStyles.active : ''}`}
-                >
-                    Lost Policy Form
-                </li>
-                <li
-                    onClick={() => setSelectedForm('WitnessDetails')}
-                    className={`${sidebarStyles.formItem} ${selectedForm === 'WitnessDetails' ? sidebarStyles.active : ''}`}
-                >
-                    Witness Details
-                </li>
+        <div className={styles.sidebar}>
+            <h3 className={styles.sidebarTitle}>Forms</h3>
+            <ul className={styles.formList}>
+                <li onClick={() => onSelectForm('PaymentInstructionForm')} className={styles.formItem}>Payment Instruction Form</li>
+                <li onClick={() => onSelectForm('PaymentDetails')} className={styles.formItem}>Payment Details</li>
+                <li onClick={() => onSelectForm('LostPolicyForm')} className={styles.formItem}>Lost Policy Form</li>
+                <li onClick={() => onSelectForm('WitnessDetails')} className={styles.formItem}>Witness Details</li>
             </ul>
         </div>
     );
@@ -40,10 +19,6 @@ const Sidebar = () => {
 export default Sidebar;
 
 
-
-
-
-/* Sidebar.module.css */
 
 .sidebar {
     flex: 1;
@@ -54,7 +29,6 @@ export default Sidebar;
     color: white;
     transition: all 0.3s ease-in-out;
     max-width: 300px;
-    height: 100vh;
 }
 
 .sidebar:hover {
@@ -99,6 +73,10 @@ export default Sidebar;
 .formItem:active {
     transform: scale(0.98);
     background: rgba(255, 255, 255, 0.3);
+}
+
+.formItem:hover .icon {
+    color: #ffffff;
 }
 
 .formItem.active {
