@@ -1,3 +1,85 @@
+/* Main container for the entire UploadDocuments page */
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 100%;
+    height: 100vh; /* Full viewport height */
+    gap: 20px; /* Space between sidebar, form, and documents */
+    padding: 20px;
+}
+
+/* Document review section styling */
+.uploadDocuments {
+    flex: 2; /* Take up twice the space compared to the sidebar */
+    background-color: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    height: 100%; /* Full height */
+    overflow-y: auto;
+}
+
+/* Headings */
+.documentHead {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #334155;
+    text-align: center;
+}
+
+/* Review section for documents */
+.reviewSection {
+    display: flex;
+    flex-direction: column;
+}
+
+/* No file message */
+.noFile {
+    color: #64748b;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* Preview section for individual documents */
+.preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Individual document preview styling */
+.preview > * {
+    background-color: #e2e8f0;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+/* When hovering over individual document preview */
+.preview > *:hover {
+    transform: scale(1.05);
+}
+
+/* Sidebar styling from previous code */
+.sidebar {
+    flex: 1; /* Sidebar takes up less space */
+    max-width: 250px; /* Fixed width for the sidebar */
+    height: 100%; /* Full height */
+}
+
+/* FormDisplay styling from previous code */
+.formDisplay {
+    flex: 3; /* Form takes up more space than the sidebar */
+    height: 100%; /* Full height */
+    max-width: 600px; /* Optional, to limit form width */
+    overflow-y: auto; /* Scroll if content exceeds height */
+}
+
+
 // UploadDocuments.js
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -54,101 +136,3 @@ const UploadDocuments = () => {
 };
 
 export default UploadDocuments;
-
-
-
-.container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
-    gap: 20px;
-}
-
-.uploadDocuments {
-    flex: 1.5; /* Larger than the sidebar */
-    background: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-}
-
-.documentHead {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 2rem;
-    margin: 0;
-    padding-bottom: 1rem;
-}
-
-.reviewSection {
-    display: flex;
-    flex-direction: column;
-}
-
-.noFile {
-    color: #666;
-    font-style: italic;
-}
-
-/*.formDisplay {*/
-/*    flex: 1;*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    align-items: flex-start;*/
-/*    background: rgba(0, 0, 0, 0.5);*/
-/*    padding: 20px;*/
-/*    border-radius: 10px;*/
-/*    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);*/
-/*}*/
-
-
-
-
-
-
-
-
-/* Main container for the form display */
-.formDisplay {
-    background-color: #1e293b; /* Same dark background as sidebar */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); /* Same strong shadow as sidebar */
-    flex: 3; /* Flex-grow to take up space proportionally */
-    transition: all 0.3s ease; /* Smooth transitions for any future changes */
-    max-height: 100%; /* Maintain a fixed height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e2e8f0; /* Light text color like the sidebar */
-    overflow: auto; /* Handle overflow in case content exceeds container height */
-}
-
-/* Style the forms inside the formDisplay */
-.formDisplay > * {
-    margin-bottom: 20px;
-    width: 100%; /* Ensure forms take full width */
-}
-
-/* Text when no form is selected */
-.formDisplay p {
-    color: #94a3b8; /* Muted blue-grey text color */
-    text-align: center;
-    font-size: 1.2rem;
-    padding: 40px 0;
-}
-
-/* Responsive behavior for smaller screens */
-@media (max-width: 768px) {
-    .formDisplay {
-        padding: 15px;
-        max-width: 100%; /* Adjust width for mobile */
-        flex: none; /* Override flex-grow behavior for small screens */
-    }
-
-    .formDisplay p {
-        font-size: 1rem;
-    }
-}
