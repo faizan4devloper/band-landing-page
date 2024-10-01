@@ -1,153 +1,181 @@
-/* Sidebar container */
-.sidebar {
-    background-color: #f1f5f9;
+    import React from 'react';
+    import styles from './LostPolicyForm.module.css';
+    
+    const LostPolicyForm = ({ lostPolicyFormData = {} }) => {
+        return (
+            <div className={styles.lostPolicyContainer}>
+               <div className={styles.formContainer}>
+            <h3>Lost Policy Form</h3>
+            {Object.keys(lostPolicyFormData).length > 0 ? (
+                Object.entries(lostPolicyFormData).map(([key, value]) => (
+                    <p key={key}>
+                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
+                    </p>
+                ))
+            ) : (
+                <p>No data available</p>
+            )}
+        </div>
+            </div>
+        );
+    };
+    
+    export default LostPolicyForm;
+
+
+        import React from 'react';
+    import styles from './PaymentDetails.module.css';
+    
+    const PaymentDetails = ({ paymentData = {}}) => {
+        return (
+            <div className={styles.paymentContainer}>
+                <div className={styles.formContainer}>
+            <h3>Payment Details Form</h3>
+            {Object.keys(paymentData).length > 0 ? (
+                Object.entries(paymentData).map(([key, value]) => (
+                    <p key={key}>
+                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
+                    </p>
+                ))
+            ) : (
+                <p>No data available</p>
+            )}
+        </div>
+            </div>
+        );
+    };
+    
+    export default PaymentDetails;
+
+    .paymentContainer {
+    background-color: #ffffff;
     padding: 20px;
-    border-radius: 12px;
+    margin: 20px 0;
+    /*border-radius: 10px;*/
+    border-left: 5px solid #7ca2e1;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    height: 100%; /* Full height as defined by parent */
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Space between items */
-    overflow-y: auto; /* Allow scrolling if necessary */
+    max-width: 600px;
 }
 
-/* Sidebar heading */
-.sidebarHead {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #1e293b;
-    text-align: center;
-    margin-bottom: 15px;
+.paymentContainer h3 {
+    color: #333;
+    font-size: 1.6rem;
+    border-bottom: 2px solid #7ca2e1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* Sidebar list */
-.sidebarList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.paymentContainer p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #555;
 }
 
-/* Sidebar list item */
-.sidebarListItem {
-    padding: 12px 15px;
-    background-color: #e2e8f0;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    color: #334155;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Hover effect for sidebar items */
-.sidebarListItem:hover {
-    background-color: #cbd5e1;
-    transform: scale(1.02);
-}
-
-/* Active sidebar item */
-.activeItem {
-    background-color: #7ca2e1;
-    color: #ffffff;
-}
-
-/* Right arrow icon */
-.sidebarIcon {
-    font-size: 1.2rem;
-    color: #64748b;
-}
-
-/* Add extra spacing if needed for large lists */
-@media screen and (max-width: 768px) {
-    .sidebar {
-        height: auto; /* In case of mobile, allow the sidebar to adapt */
-    }
+strong {
+    color: #7ca2e1;
 }
 
 
 
+import React from 'react';
+import styles from './PaymentInstructionForm.module.css';
 
+const PaymentInstructionForm = ({ formData = {} }) => {
+    // Dynamically generate form fields from the formData object
+    return (
+        <div className={styles.formContainer}>
+            <h3>Payment Instruction Form</h3>
+            {Object.keys(formData).length > 0 ? (
+                Object.entries(formData).map(([key, value]) => (
+                    <p key={key}>
+                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
+                    </p>
+                ))
+            ) : (
+                <p>No data available</p>
+            )}
+        </div>
+    );
+};
 
+export default PaymentInstructionForm;
 
-
-/* Form display container */
-.formDisplay {
+.formContainer {
     background-color: #ffffff;
     padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    height: 100%; /* Full height as defined by parent */
-    overflow-y: auto; /* Scroll if form data exceeds container height */
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* Space between form fields or content */
+    margin: 20px 0;
+    /*border-radius: 10px;*/
+    border-left: 5px solid #7ca2e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
 }
 
-/* Form heading */
-.formHead {
+.formContainer h3 {
+    color: #333;
     font-size: 1.6rem;
-    font-weight: bold;
-    color: #1e293b;
-    text-align: center;
-    margin-bottom: 10px;
+    border-bottom: 2px solid #7ca2e1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* Form field group */
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Space between input fields */
-}
-
-/* Form labels */
-.formLabel {
-    font-size: 1.2rem;
-    color: #475569;
-    font-weight: 500;
-}
-
-/* Form input field */
-.formInput {
-    padding: 12px;
+p {
     font-size: 1.1rem;
-    color: #334155;
-    background-color: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    margin: 10px 0;
+    color: #555;
 }
 
-/* Form input field on focus */
-.formInput:focus {
-    border-color: #7ca2e1;
-    outline: none;
+strong {
+    color: #7ca2e1;
+}
+
+import React from 'react';
+import styles from './WitnessDetails.module.css';
+
+const WitnessDetails = ({ witnessData ={} }) => {
+    return (
+        <div className={styles.witnessContainer}>
+            <div className={styles.formContainer}>
+            <h3>Witness Details</h3>
+            {Object.keys(witnessData).length > 0 ? (
+                Object.entries(witnessData).map(([key, value]) => (
+                    <p key={key}>
+                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
+                    </p>
+                ))
+            ) : (
+                <p>No data available</p>
+            )}
+        </div>
+        </div>
+    );
+};
+
+export default WitnessDetails;
+
+.witnessContainer {
     background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(124, 162, 225, 0.2);
+    padding: 20px;
+    margin: 20px 0;
+    /*border-radius: 10px;*/
+    border-left: 5px solid #7ca2e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
 }
 
-/* Button styling */
-.formButton {
-    padding: 12px 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: #3b82f6;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+.witnessContainer h3 {
+    color: #333;
+    font-size: 1.6rem;
+    border-bottom: 2px solid #7ca2e1;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* Button hover */
-.formButton:hover {
-    background-color: #2563eb;
+.witnessContainer p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+    color: #555;
 }
 
-/* Button disabled state */
-.formButton:disabled {
-    background-color: #94a3b8;
-    cursor: not-allowed;
+strong {
+    color: #7ca2e1;
 }
