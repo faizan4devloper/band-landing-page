@@ -1,12 +1,6 @@
-      background: linear-gradient(135deg, #F2F2F2 0%, #7ca2e1 100%);
-this is my whole web app background color and header color is
-background: rgba(0, 0, 0, 0.6);
-i want suitable color of sidebar
-
-
 /* Container styling */
 .sidebar {
-    background-color: #1e293b;
+    background-color: #3b4e73; /* Mid-tone blue to match the app gradient */
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -14,7 +8,8 @@ i want suitable color of sidebar
     display: flex;
     flex-direction: column;
     gap: 15px; /* Space between items */
-    overflow-y: auto; /* Allow scrolling if necessary */}
+    overflow-y: auto; /* Allow scrolling if necessary */
+}
 
 .sidebar:hover {
     transform: scale(1.02); /* Subtle scaling on hover */
@@ -42,7 +37,7 @@ i want suitable color of sidebar
     align-items: center;
     padding: 12px;
     margin-bottom: 12px;
-    background: #334155; /* Darker item background */
+    background: #4f6a94; /* Darker item background */
     border-radius: 8px;
     color: #e2e8f0; /* Light text color */
     font-size: 1.1rem;
@@ -51,7 +46,7 @@ i want suitable color of sidebar
 }
 
 .formItem:hover {
-    background: #475569; /* Lighter on hover */
+    background: #617da8; /* Lighter on hover */
     transform: translateX(5px); /* Slight movement on hover */
 }
 
@@ -67,7 +62,7 @@ i want suitable color of sidebar
 
 /* Active form item */
 .active {
-    background: #64748b; /* Different background for active state */
+    background: #7588b2; /* Slightly lighter background for active state */
     color: #ffffff;
 }
 
