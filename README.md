@@ -1,138 +1,153 @@
-/* Main container for the entire UploadDocuments page */
-.container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    max-width: 100%;
-    height: 100vh; /* Full viewport height */
-    gap: 20px; /* Space between sidebar, form, and documents */
+/* Sidebar container */
+.sidebar {
+    background-color: #f1f5f9;
     padding: 20px;
-}
-
-/* Document review section styling */
-.uploadDocuments {
-    flex: 2; /* Take up twice the space compared to the sidebar */
-    background-color: #f8fafc;
     border-radius: 12px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-    padding: 20px;
-    height: 100%; /* Full height */
-    overflow-y: auto;
-}
-
-/* Headings */
-.documentHead {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #334155;
-    text-align: center;
-}
-
-/* Review section for documents */
-.reviewSection {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    height: 100%; /* Full height as defined by parent */
     display: flex;
     flex-direction: column;
+    gap: 15px; /* Space between items */
+    overflow-y: auto; /* Allow scrolling if necessary */
 }
 
-/* No file message */
-.noFile {
-    color: #64748b;
-    font-size: 1.2rem;
+/* Sidebar heading */
+.sidebarHead {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1e293b;
     text-align: center;
+    margin-bottom: 15px;
 }
 
-/* Preview section for individual documents */
-.preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+/* Sidebar list */
+.sidebarList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
-/* Individual document preview styling */
-.preview > * {
+/* Sidebar list item */
+.sidebarListItem {
+    padding: 12px 15px;
     background-color: #e2e8f0;
     border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    font-size: 1.2rem;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Hover effect for sidebar items */
+.sidebarListItem:hover {
+    background-color: #cbd5e1;
+    transform: scale(1.02);
+}
+
+/* Active sidebar item */
+.activeItem {
+    background-color: #7ca2e1;
+    color: #ffffff;
+}
+
+/* Right arrow icon */
+.sidebarIcon {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+/* Add extra spacing if needed for large lists */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        height: auto; /* In case of mobile, allow the sidebar to adapt */
+    }
+}
+
+
+
+
+
+
+
+/* Form display container */
+.formDisplay {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    height: 100%; /* Full height as defined by parent */
+    overflow-y: auto; /* Scroll if form data exceeds container height */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form fields or content */
+}
+
+/* Form heading */
+.formHead {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* Form field group */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between input fields */
+}
+
+/* Form labels */
+.formLabel {
+    font-size: 1.2rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+/* Form input field */
+.formInput {
+    padding: 12px;
+    font-size: 1.1rem;
+    color: #334155;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     transition: all 0.3s ease;
 }
 
-/* When hovering over individual document preview */
-.preview > *:hover {
-    transform: scale(1.05);
+/* Form input field on focus */
+.formInput:focus {
+    border-color: #7ca2e1;
+    outline: none;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(124, 162, 225, 0.2);
 }
 
-/* Sidebar styling from previous code */
-.sidebar {
-    flex: 1; /* Sidebar takes up less space */
-    max-width: 250px; /* Fixed width for the sidebar */
-    height: 100%; /* Full height */
+/* Button styling */
+.formButton {
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #3b82f6;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
 }
 
-/* FormDisplay styling from previous code */
-.formDisplay {
-    flex: 3; /* Form takes up more space than the sidebar */
-    height: 100%; /* Full height */
-    max-width: 600px; /* Optional, to limit form width */
-    overflow-y: auto; /* Scroll if content exceeds height */
+/* Button hover */
+.formButton:hover {
+    background-color: #2563eb;
 }
 
-
-// UploadDocuments.js
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import FormDisplay from './FormDisplay';
-import DocumentPreview from './DocumentPreview';
-import styles from './UploadDocuments.module.css';
-import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    const formData = data.extracted_data?.PAYMENT_INSTRUCTION_FORM || {};
-    const paymentData = data.extracted_data?.PAYMENT_DETAILS || {};
-    const lostPolicyFormData = data.extracted_data?.LOST_POLICY_FORM || {};
-    const witnessData = data.extracted_data?.LOST_POLICY_FORM_WITNESSED_BY || {};
-
-    const [selectedForm, setSelectedForm] = useState(null);
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.uploadDocuments}>
-                <h2 className={styles.documentHead}>Documents Review</h2>
-                {allDocuments.length > 0 ? (
-                    <div className={styles.reviewSection}>
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <p className={styles.noFile}>No document available</p>
-                )}
-            </div>
-
-            <FormDisplay 
-                selectedForm={selectedForm} 
-                formData={formData} 
-                paymentData={paymentData} 
-                lostPolicyFormData={lostPolicyFormData} 
-                witnessData={witnessData} 
-            />
-
-            <Sidebar onSelectForm={setSelectedForm} />
-        </div>
-    );
-};
-
-export default UploadDocuments;
+/* Button disabled state */
+.formButton:disabled {
+    background-color: #94a3b8;
+    cursor: not-allowed;
+}
