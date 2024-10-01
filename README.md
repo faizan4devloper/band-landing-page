@@ -1,127 +1,76 @@
-import React from 'react';
-import styles from './FormStyles.module.css'; // Import shared styles
-
-const LostPolicyForm = ({ lostPolicyFormData = {} }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Lost Policy Form</h3>
-            {Object.keys(lostPolicyFormData).length > 0 ? (
-                Object.entries(lostPolicyFormData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-    );
-};
-
-export default LostPolicyForm;
-
-import React from 'react';
-import styles from './FormStyles.module.css'; // Import shared styles
-
-const PaymentDetails = ({ paymentData = {} }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Payment Details Form</h3>
-            {Object.keys(paymentData).length > 0 ? (
-                Object.entries(paymentData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-    );
-};
-
-export default PaymentDetails;
+      background: linear-gradient(135deg, #F2F2F2 0%, #7ca2e1 100%);
+this is my whole web app background color and header color is
+background: rgba(0, 0, 0, 0.6);
+i want suitable color of sidebar
 
 
-import React from 'react';
-import styles from './FormStyles.module.css'; // Import shared styles
-
-const PaymentInstructionForm = ({ formData = {} }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Payment Instruction Form</h3>
-            {Object.keys(formData).length > 0 ? (
-                Object.entries(formData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-    );
-};
-
-export default PaymentInstructionForm;
-
-
-import React from 'react';
-import styles from './FormStyles.module.css'; // Import shared styles
-
-const WitnessDetails = ({ witnessData = {} }) => {
-    return (
-        <div className={styles.formContainer}>
-            <h3>Witness Details</h3>
-            {Object.keys(witnessData).length > 0 ? (
-                Object.entries(witnessData).map(([key, value]) => (
-                    <p key={key}>
-                        <strong>{key.replace(/_/g, ' ')}:</strong> {value || 'N/A'}
-                    </p>
-                ))
-            ) : (
-                <p>No data available</p>
-            )}
-        </div>
-    );
-};
-
-export default WitnessDetails;
-
-
-
-/* General form container */
-.formContainer {
-    background-color: #ffffff;
+/* Container styling */
+.sidebar {
+    background-color: #1e293b;
     padding: 20px;
-    margin: 20px 0;
-    border-left: 5px solid #7ca2e1; /* Same border for all forms */
+    border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    max-width: 600px; /* Uniform width for all forms */
-    width: 100%; /* Ensure it fits within the parent container */
+    height: 100%; /* Full height as defined by parent */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between items */
+    overflow-y: auto; /* Allow scrolling if necessary */}
+
+.sidebar:hover {
+    transform: scale(1.02); /* Subtle scaling on hover */
 }
 
-/* Headings for all forms */
-.formContainer h3 {
-    color: #333;
-    font-size: 1.6rem;
-    border-bottom: 2px solid #7ca2e1;
-    padding-bottom: 10px;
+/* Sidebar title */
+.sidebarTitle {
+    color: #ffffff; /* White title for contrast */
+    font-size: 1.8rem;
+    font-weight: bold;
     margin-bottom: 20px;
-    font-weight: 600;
-    text-align: left;
+    text-align: center;
 }
 
-/* Paragraphs for displaying form data */
-.formContainer p {
+/* Form list */
+.formList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Form items */
+.formItem {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 12px;
+    background: #334155; /* Darker item background */
+    border-radius: 8px;
+    color: #e2e8f0; /* Light text color */
     font-size: 1.1rem;
-    margin: 10px 0;
-    color: #555;
-    word-wrap: break-word; /* Handle long text gracefully */
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* Strong text to highlight labels */
-strong {
-    color: #7ca2e1;
-    font-weight: 500;
+.formItem:hover {
+    background: #475569; /* Lighter on hover */
+    transform: translateX(5px); /* Slight movement on hover */
+}
+
+.icon {
+    margin-right: 10px;
+    color: #94a3b8; /* Light blue icon color */
+    transition: color 0.3s;
+}
+
+.formItem:hover .icon {
+    color: #fbbf24; /* Icon changes to gold on hover */
+}
+
+/* Active form item */
+.active {
+    background: #64748b; /* Different background for active state */
+    color: #ffffff;
+}
+
+.active .icon {
+    color: #fbbf24; /* Gold icon for active state */
 }
