@@ -93,14 +93,14 @@ export default FormDisplay;
 
 /* Card group styles */
 .cardGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid layout */
+    gap: 20px; /* Gap between cards */
 }
 
 /* Card styles */
 .card {
-    background: linear-gradient(135deg, #ffffff, #e5e7eb); /* Soft gradient for cards */
+    background: linear-gradient(135deg, #ffffff, #f0f0f0); /* Soft gradient for cards */
     border-radius: 12px; /* Rounded corners */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
     padding: 20px; /* Padding inside the card */
@@ -131,7 +131,7 @@ export default FormDisplay;
     padding: 10px;
     font-size: 1.1rem;
     color: #1e293b; /* Dark color for input text */
-    background-color: #f1f5f9; /* Light background for input */
+    background-color: #e2e8f0; /* Light background for input */
     border: none; /* Remove border */
     border-radius: 8px; /* Rounded corners */
     margin-top: 5px; /* Margin above input */
@@ -141,7 +141,7 @@ export default FormDisplay;
 /* Form input field hover and focus effects */
 .formInput:hover,
 .formInput:focus {
-    background-color: #e2e8f0; /* Lighten background on hover/focus */
+    background-color: #d1fae5; /* Lighten background on hover/focus */
 }
 
 /* Button styles (if needed in future) */
