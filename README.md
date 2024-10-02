@@ -45,3 +45,57 @@ const FormDisplay = ({ selectedForm }) => {
 };
 
 export default FormDisplay;
+
+
+
+
+.formDisplay {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    height: 100%; /* Full height as defined by parent */
+    overflow-y: auto; /* Scroll if form data exceeds container height */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between form fields or content */
+}
+
+.formHead {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between input fields */
+}
+
+.formField {
+    display: flex;
+    flex-direction: column;
+}
+
+.formLabel {
+    font-size: 1.2rem;
+    color: #475569;
+    font-weight: 500;
+}
+
+.formInput {
+    padding: 12px;
+    font-size: 1.1rem;
+    color: #334155;
+    background-color: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+.selectMessage {
+    color: #ffffff;
+    text-align: center;
+}
