@@ -1,36 +1,3 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import FormDisplay from './FormDisplay';
-import styles from './UploadDocuments.module.css';
-import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    // No need to extract data here since FormDisplay uses the JSON directly.
-    const [selectedForm, setSelectedForm] = useState(null);
-
-    return (
-        <div className={styles.container}>
-            {/* Render the FormDisplay component, passing only the selectedForm */}
-            <FormDisplay selectedForm={selectedForm} />
-            
-            {/* Render the Sidebar component, passing the setSelectedForm function */}
-            <Sidebar onSelectForm={setSelectedForm} />
-        </div>
-    );
-};
-
-export default UploadDocuments;
-
-
 import React from 'react';
 import styles from './Sidebar.module.css';
 
@@ -53,3 +20,52 @@ const Sidebar = ({ onSelectForm }) => {
 };
 
 export default Sidebar;
+
+
+import React, { useEffect, useState } from 'react';
+import formDataJson from '../../../Json/DocumentEntities.json'; // Import the JSON file
+import styles from './FormDisplay.module.css';
+
+const FormDisplay = ({ selectedForm }) => {
+    const [formData, setFormData] = useState(null);
+
+    useEffect(() => {
+        // Simulate fetching data from a JSON file
+        setFormData(formDataJson.extracted_data);
+    }, []);
+
+    // Render form data based on selected form
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.selectMessage}>Loading data...</p>;
+        }
+
+        const selectedData = formData[selectedForm];
+
+        if (!selectedData) {
+            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
+        }
+
+        return (
+            <div>
+                <h2 className={styles.formHead}>{selectedForm}</h2>
+                <div className={styles.formGroup}>
+                    {Object.entries(selectedData).map(([key, value]) => (
+                        <div key={key} className={styles.formField}>
+                            <label className={styles.formLabel}>{key.replace(/_/g, ' ')}:</label>
+                            <p className={styles.formInput}>{value}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className={styles.formDisplay}>
+            {renderFormData()}
+        </div>
+    );
+};
+
+export default FormDisplay;
