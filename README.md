@@ -1,168 +1,102 @@
-import React, { useEffect, useState } from 'react';
-import formDataJson from '../../../Json/DocumentEntities.json'; // Import the JSON file
-import styles from './FormDisplay.module.css';
+import React from 'react';
+import styles from './Sidebar.module.css';
 
-const FormDisplay = ({ selectedForm }) => {
-    const [formData, setFormData] = useState(null);
-
-    useEffect(() => {
-        // Simulate fetching data from a JSON file
-        setFormData(formDataJson.extracted_data);
-    }, []);
-
-    // Render form data based on selected form
-    const renderFormData = () => {
-        if (!formData) {
-            return <p className={styles.loadingMessage}>Loading data...</p>;
-        }
-
-        const selectedData = formData[selectedForm];
-
-        if (!selectedData) {
-            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
-        }
-
-        return (
-            <div className={styles.cardContainer}>
-                <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
-                <div className={styles.cardGroup}>
-                    {Object.entries(selectedData).map(([key, value]) => (
-                        <div key={key} className={styles.card}>
-                            <div className={styles.cardHeader}>
-                                <label className={styles.formLabel}>{key.replace(/_/g, ' ')}:</label>
-                            </div>
-                            <div className={styles.cardContent}>
-                                <p className={styles.formInput}>{value}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
+const Sidebar = ({ onSelectForm }) => {
+    const handleFormSelect = (formName) => {
+        onSelectForm(formName);
     };
 
     return (
-        <div className={styles.formDisplay}>
-            {renderFormData()}
+        <div className={styles.sidebar}>
+            <h3 className={styles.sidebarTitle}>Select a Form</h3>
+            <ul className={styles.formList}>
+                <li className={styles.formItem} onClick={() => handleFormSelect('PAYMENT_INSTRUCTION_FORM')}>
+                    Payment Instruction Form
+                </li>
+                <li className={styles.formItem} onClick={() => handleFormSelect('PAYMENT_DETAILS')}>
+                    Payment Details
+                </li>
+                <li className={styles.formItem} onClick={() => handleFormSelect('LOST_POLICY_FORM')}>
+                    Lost Policy Form
+                </li>
+                <li className={styles.formItem} onClick={() => handleFormSelect('LOST_POLICY_FORM_WITNESSED_BY')}>
+                    Witness Details
+                </li>
+            </ul>
         </div>
     );
 };
 
-export default FormDisplay;
+export default Sidebar;
 
 
-
-/* FormDisplay.module.css */
-.formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+/* Sidebar container */
+.sidebar {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.85));
+    padding: 20px;
+    border-radius: 12px;
     height: 100%;
-    width: 100%;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 20px;
+    width: 250px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
 
-/* Loading message styling */
-.loadingMessage,
-.selectMessage {
+/* Sidebar title */
+.sidebarTitle {
+    color: #fff;
     font-size: 1.2rem;
-    color: #ffffff;
+    font-weight: 700;
     text-align: center;
-    margin-top: 20px;
-}
-
-/* Form heading */
-.formHead {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #ffffff;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-/* Card container */
-.cardContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-/* Card group styles */
-.cardGroup {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid layout */
-    gap: 20px; /* Gap between cards */
-}
-
-/* Card styles */
-.card {
-    background: linear-gradient(135deg, #ffffff, #f0f0f0); /* Soft gradient for cards */
-    border-radius: 12px; /* Rounded corners */
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-    padding: 20px; /* Padding inside the card */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
-    position: relative; /* Position relative for pseudo-elements */
-}
-
-/* Card hover effect */
-.card:hover {
-    transform: translateY(-5px); /* Lift effect */
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
-}
-
-/* Card header styles */
-.cardHeader {
     margin-bottom: 10px;
 }
 
-/* Form label styles */
-.formLabel {
-    font-size: 1.2rem;
-    color: #334155; /* Dark grey for labels */
-    font-weight: 600;
+/* Form list styles */
+.formList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-/* Form input field styles */
-.formInput {
-    padding: 10px;
-    font-size: 1.1rem;
-    color: #1e293b; /* Dark color for input text */
-    background-color: #e2e8f0; /* Light background for input */
-    border: none; /* Remove border */
-    border-radius: 8px; /* Rounded corners */
-    margin-top: 5px; /* Margin above input */
-    transition: background-color 0.3s ease; /* Smooth background color change */
-}
-
-/* Form input field hover and focus effects */
-.formInput:hover,
-.formInput:focus {
-    background-color: #d1fae5; /* Lighten background on hover/focus */
-}
-
-/* Button styles (if needed in future) */
-.formButton {
-    padding: 12px 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
+/* Form item styles */
+.formItem {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: linear-gradient(135deg, #4f709c, #7ca2e1);
+    border-radius: 10px;
     color: #ffffff;
-    background-color: #3b82f6;
-    border: none;
-    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+    transition: all 0.3s ease;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.formButton:hover {
-    background-color: #2563eb;
+/* Hover and active states */
+.formItem:hover {
+    background: #6f92c2;
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.formButton:disabled {
-    background-color: #94a3b8;
-    cursor: not-allowed;
+.icon {
+    color: #ffffff;
+    transition: color 0.3s;
 }
+
+/* Active item styles */
+.active {
+    background: #617da8;
+    color: #fff;
+}
+
+.active .icon {
+    color: #fbbf24;
+}
+
