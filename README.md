@@ -1,61 +1,3 @@
-// UploadDocuments.js
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import FormDisplay from './FormDisplay';
-import DocumentPreview from './DocumentPreview';
-import styles from './UploadDocuments.module.css';
-import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    const formData = data.extracted_data?.PAYMENT_INSTRUCTION_FORM || {};
-    const paymentData = data.extracted_data?.PAYMENT_DETAILS || {};
-    const lostPolicyFormData = data.extracted_data?.LOST_POLICY_FORM || {};
-    const witnessData = data.extracted_data?.LOST_POLICY_FORM_WITNESSED_BY || {};
-
-    const [selectedForm, setSelectedForm] = useState(null);
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.uploadDocuments}>
-                <h2 className={styles.documentHead}>Documents Review</h2>
-                {allDocuments.length > 0 ? (
-                    <div className={styles.reviewSection}>
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <p className={styles.noFile}>No document available</p>
-                )}
-            </div>
-
-            <FormDisplay 
-                selectedForm={selectedForm} 
-                formData={formData} 
-                paymentData={paymentData} 
-                lostPolicyFormData={lostPolicyFormData} 
-                witnessData={witnessData} 
-            />
-
-            <Sidebar onSelectForm={setSelectedForm} />
-        </div>
-    );
-};
-
-export default UploadDocuments;
-
-
 /* Main container for the entire UploadDocuments page */
 .container {
     display: flex;
@@ -63,21 +5,21 @@ export default UploadDocuments;
     justify-content: space-between;
     align-items: flex-start;
     max-width: 100%;
-    height: 100vh; /* Full viewport height */
     gap: 20px; /* Space between sidebar, form, and documents */
     padding: 20px;
+    /* Remove height constraint to allow the content to determine the container's size */
 }
 
 /* Document review section styling */
 .uploadDocuments {
-    flex: 2; /* Take up twice the space compared to the sidebar */
+    flex-grow: 2; /* Take up more space but allow flex to control the height naturally */
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     border-radius: 12px;
     padding: 20px;
-    height: 100%; /* Full height */
-    overflow-y: auto;
+    /* Remove fixed height to prevent the bottom constraint */
+    overflow-y: auto; /* Scroll if content exceeds the container height */
 }
 
 /* Headings */
@@ -123,17 +65,17 @@ box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     transform: scale(1.05);
 }
 
-/* Sidebar styling from previous code */
+/* Sidebar styling */
 .sidebar {
-    flex: 1; /* Sidebar takes up less space */
-    max-width: 250px; /* Fixed width for the sidebar */
-    height: 100%; /* Full height */
+    flex-grow: 1;
+    max-width: 250px;
+    height: auto; /* Adjust height to fit content */
 }
 
-/* FormDisplay styling from previous code */
+/* FormDisplay styling */
 .formDisplay {
-    flex: 3; /* Form takes up more space than the sidebar */
-    height: 100%; /* Full height */
+    flex-grow: 3; /* Form takes up more space but is flexible */
+    height: auto; /* Adjust height to fit content */
     max-width: 600px; /* Optional, to limit form width */
     overflow-y: auto; /* Scroll if content exceeds height */
 }
