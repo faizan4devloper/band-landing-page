@@ -51,11 +51,12 @@ const FormDisplay = ({ selectedForm }) => {
 export default FormDisplay;
 
 
+
 /* FormDisplay.module.css */
 .formDisplay {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.85));
-    padding: 25px;
-    border-radius: 12px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 30px;
+    border-radius: 16px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
     height: 100%;
     width: 100%;
@@ -76,7 +77,7 @@ export default FormDisplay;
 
 /* Form heading */
 .formHead {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: bold;
     color: #ffffff;
     text-align: center;
@@ -99,23 +100,29 @@ export default FormDisplay;
 
 /* Card styles */
 .card {
-    background-color: #ffffff; /* White background for card */
-    border-radius: 10px; /* Rounded corners for cards */
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Shadow for depth */
-    padding: 15px; /* Padding inside the card */
+    background: linear-gradient(135deg, #ffffff, #e5e7eb); /* Soft gradient for cards */
+    border-radius: 12px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    padding: 20px; /* Padding inside the card */
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+    position: relative; /* Position relative for pseudo-elements */
 }
 
 /* Card hover effect */
 .card:hover {
     transform: translateY(-5px); /* Lift effect */
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+}
+
+/* Card header styles */
+.cardHeader {
+    margin-bottom: 10px;
 }
 
 /* Form label styles */
 .formLabel {
     font-size: 1.2rem;
-    color: #333; /* Dark grey for labels */
+    color: #334155; /* Dark grey for labels */
     font-weight: 600;
 }
 
@@ -123,11 +130,18 @@ export default FormDisplay;
 .formInput {
     padding: 10px;
     font-size: 1.1rem;
-    color: #111827; /* Dark color for input text */
+    color: #1e293b; /* Dark color for input text */
     background-color: #f1f5f9; /* Light background for input */
-    border: 1px solid #e2e8f0; /* Light border */
+    border: none; /* Remove border */
     border-radius: 8px; /* Rounded corners */
     margin-top: 5px; /* Margin above input */
+    transition: background-color 0.3s ease; /* Smooth background color change */
+}
+
+/* Form input field hover and focus effects */
+.formInput:hover,
+.formInput:focus {
+    background-color: #e2e8f0; /* Lighten background on hover/focus */
 }
 
 /* Button styles (if needed in future) */
