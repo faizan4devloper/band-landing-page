@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './Sidebar.module.css';
+import { FaCreditCard, FaFileInvoiceDollar, FaClipboardCheck, FaUserFriends } from 'react-icons/fa'; // Importing icons
 
-const Sidebar = ({ onSelectForm }) => {
+const Sidebar = ({ onSelectForm, activeForm }) => {
     const handleFormSelect = (formName) => {
         onSelectForm(formName);
     };
@@ -10,16 +11,20 @@ const Sidebar = ({ onSelectForm }) => {
         <div className={styles.sidebar}>
             <h3 className={styles.sidebarTitle}>Select a Form</h3>
             <ul className={styles.formList}>
-                <li className={styles.formItem} onClick={() => handleFormSelect('PAYMENT_INSTRUCTION_FORM')}>
+                <li className={`${styles.formItem} ${activeForm === 'PAYMENT_INSTRUCTION_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_INSTRUCTION_FORM')}>
+                    <FaCreditCard className={styles.icon} />
                     Payment Instruction Form
                 </li>
-                <li className={styles.formItem} onClick={() => handleFormSelect('PAYMENT_DETAILS')}>
+                <li className={`${styles.formItem} ${activeForm === 'PAYMENT_DETAILS' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_DETAILS')}>
+                    <FaFileInvoiceDollar className={styles.icon} />
                     Payment Details
                 </li>
-                <li className={styles.formItem} onClick={() => handleFormSelect('LOST_POLICY_FORM')}>
+                <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM')}>
+                    <FaClipboardCheck className={styles.icon} />
                     Lost Policy Form
                 </li>
-                <li className={styles.formItem} onClick={() => handleFormSelect('LOST_POLICY_FORM_WITNESSED_BY')}>
+                <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM_WITNESSED_BY' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM_WITNESSED_BY')}>
+                    <FaUserFriends className={styles.icon} />
                     Witness Details
                 </li>
             </ul>
@@ -46,10 +51,10 @@ export default Sidebar;
 /* Sidebar title */
 .sidebarTitle {
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 1.5rem; /* Increased font size for better visibility */
     font-weight: 700;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 /* Form list styles */
@@ -94,9 +99,24 @@ export default Sidebar;
 .active {
     background: #617da8;
     color: #fff;
+    transform: translateY(-3px); /* Slight lift effect on active */
 }
 
 .active .icon {
-    color: #fbbf24;
+    color: #fbbf24; /* Change icon color on active */
 }
 
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Reduce width for smaller screens */
+    }
+    
+    .sidebarTitle {
+        font-size: 1.2rem; /* Adjust title font size for smaller screens */
+    }
+
+    .formItem {
+        font-size: 1rem; /* Adjust font size for form items */
+    }
+}
