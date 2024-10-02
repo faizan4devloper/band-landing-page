@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './Sidebar.module.css';
-import { FaCreditCard, FaFileInvoiceDollar, FaClipboardCheck, FaUserFriends } from 'react-icons/fa'; // Importing icons
+import { FaChevronLeft, FaCreditCard, FaFileInvoiceDollar, FaClipboardCheck, FaUserFriends } from 'react-icons/fa'; // Importing icons
 
 const Sidebar = ({ onSelectForm, activeForm }) => {
     const handleFormSelect = (formName) => {
@@ -12,20 +12,24 @@ const Sidebar = ({ onSelectForm, activeForm }) => {
             <h3 className={styles.sidebarTitle}>Select a Form</h3>
             <ul className={styles.formList}>
                 <li className={`${styles.formItem} ${activeForm === 'PAYMENT_INSTRUCTION_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_INSTRUCTION_FORM')}>
+                    <FaChevronLeft className={styles.chevronIcon} />
+                    <span className={styles.formText}>Payment Instruction Form</span>
                     <FaCreditCard className={styles.icon} />
-                    Payment Instruction Form
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'PAYMENT_DETAILS' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_DETAILS')}>
+                    <FaChevronLeft className={styles.chevronIcon} />
+                    <span className={styles.formText}>Payment Details</span>
                     <FaFileInvoiceDollar className={styles.icon} />
-                    Payment Details
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM')}>
+                    <FaChevronLeft className={styles.chevronIcon} />
+                    <span className={styles.formText}>Lost Policy Form</span>
                     <FaClipboardCheck className={styles.icon} />
-                    Lost Policy Form
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM_WITNESSED_BY' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM_WITNESSED_BY')}>
+                    <FaChevronLeft className={styles.chevronIcon} />
+                    <span className={styles.formText}>Witness Details</span>
                     <FaUserFriends className={styles.icon} />
-                    Witness Details
                 </li>
             </ul>
         </div>
@@ -33,6 +37,9 @@ const Sidebar = ({ onSelectForm, activeForm }) => {
 };
 
 export default Sidebar;
+
+
+
 
 
 /* Sidebar container */
@@ -51,7 +58,7 @@ export default Sidebar;
 /* Sidebar title */
 .sidebarTitle {
     color: #fff;
-    font-size: 1.5rem; /* Increased font size for better visibility */
+    font-size: 1.5rem;
     font-weight: 700;
     text-align: center;
     margin-bottom: 20px;
@@ -71,6 +78,7 @@ export default Sidebar;
 .formItem {
     display: flex;
     align-items: center;
+    justify-content: space-between; /* Distributes space between items */
     padding: 15px;
     background: linear-gradient(135deg, #4f709c, #7ca2e1);
     border-radius: 10px;
@@ -83,6 +91,25 @@ export default Sidebar;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Chevron icon style */
+.chevronIcon {
+    color: #ffffff;
+    font-size: 1.2rem; /* Adjust size as needed */
+    transition: color 0.3s;
+}
+
+/* Centered text style */
+.formText {
+    flex-grow: 1; /* Takes up remaining space for centering */
+    text-align: center; /* Center align the text */
+}
+
+/* Icon on the right */
+.icon {
+    color: #ffffff;
+    transition: color 0.3s;
+}
+
 /* Hover and active states */
 .formItem:hover {
     background: #6f92c2;
@@ -90,12 +117,6 @@ export default Sidebar;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.icon {
-    color: #ffffff;
-    transition: color 0.3s;
-}
-
-/* Active item styles */
 .active {
     background: #617da8;
     color: #fff;
