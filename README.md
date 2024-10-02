@@ -1,71 +1,38 @@
-/* Container styling */
-.sidebar {
-    background-color: #3b4e73; /* Mid-tone blue to match the app gradient */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    height: 100%; /* Full height as defined by parent */
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Space between items */
-    overflow-y: auto; /* Allow scrolling if necessary */
-}
-
-.sidebar:hover {
-    transform: scale(1.02); /* Subtle scaling on hover */
-}
-
-/* Sidebar title */
-.sidebarTitle {
-    color: #ffffff; /* White title for contrast */
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-/* Form list */
-.formList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Form items */
-.formItem {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin-bottom: 12px;
-    background: #4f6a94; /* Darker item background */
-    border-radius: 8px;
-    color: #e2e8f0; /* Light text color */
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.formItem:hover {
-    background: #617da8; /* Lighter on hover */
-    transform: translateX(5px); /* Slight movement on hover */
-}
-
-.icon {
-    margin-right: 10px;
-    color: #94a3b8; /* Light blue icon color */
-    transition: color 0.3s;
-}
-
-.formItem:hover .icon {
-    color: #fbbf24; /* Icon changes to gold on hover */
-}
-
-/* Active form item */
-.active {
-    background: #7588b2; /* Slightly lighter background for active state */
-    color: #ffffff;
-}
-
-.active .icon {
-    color: #fbbf24; /* Gold icon for active state */
+{
+    "category": "Payment Instruction Form",
+    "extracted_data": {
+        "PAYMENT_INSTRUCTION_FORM": {
+            "STATEMENT_DATE": "12/06/2024",
+            "POLICY_NUMBER": "L2065777",
+            "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
+            "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "PAYMENT_DETAILS": {
+            "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
+            "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
+            "ACCOUNT_NUMBER": "50614866",
+            "BANK_SORT_CODE": "20-57-40",
+            "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
+            "SIGNED_DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM": {
+            "STATEMENT_DATE": "12/06/2024",
+            "POLICY_NUMBER": "L2065777",
+            "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
+            "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "LOST_POLICY_FORM_SIGNED": {
+            "FULL_NAME": "Mr Mcglynn, James Christopher",
+            "DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM_WITNESSED_BY": {
+            "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
+            "DATE": "13/06/2024",
+            "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
+            "OFFICIAL_STAMP": "",
+            "DAY-TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
+            "OCCUPATION_OF_WITNESS": "Teacher"
+        }
+    },
+    "unfilledpercent": "4%"
 }
