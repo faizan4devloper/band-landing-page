@@ -23,13 +23,17 @@ const FormDisplay = ({ selectedForm }) => {
         }
 
         return (
-            <div className={styles.formContainer}>
+            <div className={styles.cardContainer}>
                 <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
-                <div className={styles.formGroup}>
+                <div className={styles.cardGroup}>
                     {Object.entries(selectedData).map(([key, value]) => (
-                        <div key={key} className={styles.formField}>
-                            <label className={styles.formLabel}>{key.replace(/_/g, ' ')}:</label>
-                            <p className={styles.formInput}>{value}</p>
+                        <div key={key} className={styles.card}>
+                            <div className={styles.cardHeader}>
+                                <label className={styles.formLabel}>{key.replace(/_/g, ' ')}:</label>
+                            </div>
+                            <div className={styles.cardContent}>
+                                <p className={styles.formInput}>{value}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -46,7 +50,8 @@ const FormDisplay = ({ selectedForm }) => {
 
 export default FormDisplay;
 
-/* Form display container */
+
+/* FormDisplay.module.css */
 .formDisplay {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.85));
     padding: 25px;
@@ -60,7 +65,8 @@ export default FormDisplay;
     gap: 20px;
 }
 
-/* Default message styling */
+/* Loading message styling */
+.loadingMessage,
 .selectMessage {
     font-size: 1.2rem;
     color: #ffffff;
@@ -77,39 +83,54 @@ export default FormDisplay;
     margin-bottom: 20px;
 }
 
-/* Form group styles */
-.formGroup {
+/* Card container */
+.cardContainer {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 20px;
+}
+
+/* Card group styles */
+.cardGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Card styles */
+.card {
+    background-color: #ffffff; /* White background for card */
+    border-radius: 10px; /* Rounded corners for cards */
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    padding: 15px; /* Padding inside the card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+}
+
+/* Card hover effect */
+.card:hover {
+    transform: translateY(-5px); /* Lift effect */
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
 }
 
 /* Form label styles */
 .formLabel {
     font-size: 1.2rem;
-    color: #d1d5db;
+    color: #333; /* Dark grey for labels */
     font-weight: 600;
 }
 
-/* Form input field */
+/* Form input field styles */
 .formInput {
-    padding: 12px;
+    padding: 10px;
     font-size: 1.1rem;
-    color: #111827;
-    background-color: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    transition: all 0.3s ease;
+    color: #111827; /* Dark color for input text */
+    background-color: #f1f5f9; /* Light background for input */
+    border: 1px solid #e2e8f0; /* Light border */
+    border-radius: 8px; /* Rounded corners */
+    margin-top: 5px; /* Margin above input */
 }
 
-/* Input field on focus */
-.formInput:focus {
-    border-color: #7ca2e1;
-    background-color: #ffffff;
-    box-shadow: 0 0 0 3px rgba(124, 162, 225, 0.2);
-}
-
-/* Button styles */
+/* Button styles (if needed in future) */
 .formButton {
     padding: 12px 20px;
     font-size: 1.2rem;
