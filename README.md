@@ -52,82 +52,78 @@ export default Sidebar;
 
 
 
-/* Container styling */
+/* Sidebar container */
 .sidebar {
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.85));
     padding: 20px;
     border-radius: 12px;
-    height: 100%; /* Full height as defined by parent */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Space between items */
-    overflow-y: auto; /* Allow scrolling if necessary */
+    gap: 20px;
+    width: 250px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
 }
-
 
 /* Sidebar title */
 .sidebarTitle {
-    color: #ffffff; /* White title for contrast */
-    font-size: .9rem;
-    font-weight: bold;
-    /*margin-bottom: 20px;*/
-    margin:0px;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
     text-align: center;
+    margin-bottom: 10px;
 }
 
-/* Form list */
+/* Form list styles */
 .formList {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
-/* Form items */
+/* Form item styles */
 .formItem {
     display: flex;
     align-items: center;
-    padding: 12px;
-    margin-bottom: 12px;
-background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-border-radius: 8px;
-    color: #fff; /* Light text color */
+    padding: 15px;
+    background: linear-gradient(135deg, #4f709c, #7ca2e1);
+    border-radius: 10px;
+    color: #ffffff;
     font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Hover and active states */
 .formItem:hover {
-    background: #617da8; /* Lighter on hover */
-    transform: translateX(5px); /* Slight movement on hover */
+    background: #6f92c2;
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .icon {
-    margin-right: 10px;
-    color: #ffffff; /* Light blue icon color */
+    color: #ffffff;
     transition: color 0.3s;
 }
 
-.formItem:hover .icon {
-    color: #fbbf24; /* Icon changes to gold on hover */
-}
-
-/* Active form item */
+/* Active item styles */
 .active {
-    background: #7588b2; /* Slightly lighter background for active state */
-    color: #ffffff;
+    background: #617da8;
+    color: #fff;
 }
 
 .active .icon {
-    color: #fbbf24; /* Gold icon for active state */
+    color: #fbbf24;
 }
 
 
 
-
-
-// FormDisplay.js
 import React from 'react';
 import PaymentInstructionForm from '../Entities/PaymentInstructionForm';
 import PaymentDetails from '../Entities/PaymentDetails';
@@ -164,62 +160,68 @@ export default FormDisplay;
 
 /* Form display container */
 .formDisplay {
-background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
-    padding: 20px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(51, 65, 85, 0.85));
+    padding: 25px;
     border-radius: 12px;
-box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-height: 100%; /* Full height as defined by parent */
-    overflow-y: auto; /* Scroll if form data exceeds container height */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Space between form fields or content */
-    width: 430px;
+    gap: 20px;
+}
+
+/* Default message styling */
+.selectMessage {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-align: center;
+    margin-top: 20px;
 }
 
 /* Form heading */
 .formHead {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #1e293b;
+    color: #ffffff;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
-/* Form field group */
+/* Form group styles */
 .formGroup {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Space between input fields */
+    gap: 12px;
 }
 
-/* Form labels */
+/* Form label styles */
 .formLabel {
     font-size: 1.2rem;
-    color: #475569;
-    font-weight: 500;
+    color: #d1d5db;
+    font-weight: 600;
 }
 
 /* Form input field */
 .formInput {
     padding: 12px;
     font-size: 1.1rem;
-    color: #334155;
+    color: #111827;
     background-color: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     transition: all 0.3s ease;
 }
 
-/* Form input field on focus */
+/* Input field on focus */
 .formInput:focus {
     border-color: #7ca2e1;
-    outline: none;
     background-color: #ffffff;
     box-shadow: 0 0 0 3px rgba(124, 162, 225, 0.2);
 }
 
-/* Button styling */
+/* Button styles */
 .formButton {
     padding: 12px 20px;
     font-size: 1.2rem;
@@ -233,17 +235,11 @@ height: 100%; /* Full height as defined by parent */
     margin-top: 10px;
 }
 
-/* Button hover */
 .formButton:hover {
     background-color: #2563eb;
 }
 
-/* Button disabled state */
 .formButton:disabled {
     background-color: #94a3b8;
     cursor: not-allowed;
-}
-.selectMessage{
-    color: #ffffff;
-    text-align: center;
 }
