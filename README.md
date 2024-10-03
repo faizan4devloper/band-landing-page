@@ -1,6 +1,7 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faCreditCard, faFileInvoiceDollar, faClipboardCheck, faUserFriends } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
-import { FaChevronLeft, FaCreditCard, FaFileInvoiceDollar, FaClipboardCheck, FaUserFriends } from 'react-icons/fa'; // Importing icons
 
 const Sidebar = ({ onSelectForm, activeForm }) => {
     const handleFormSelect = (formName) => {
@@ -12,24 +13,24 @@ const Sidebar = ({ onSelectForm, activeForm }) => {
             <h3 className={styles.sidebarTitle}>Select a Form</h3>
             <ul className={styles.formList}>
                 <li className={`${styles.formItem} ${activeForm === 'PAYMENT_INSTRUCTION_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_INSTRUCTION_FORM')}>
-                    <FaChevronLeft className={styles.chevronIcon} />
+                    <FontAwesomeIcon icon={faChevronLeft} className={styles.chevronIcon} />
                     <span className={styles.formText}>Payment Instruction Form</span>
-                    <FaCreditCard className={styles.icon} />
+                    <FontAwesomeIcon icon={faCreditCard} className={styles.icon} />
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'PAYMENT_DETAILS' ? styles.active : ''}`} onClick={() => handleFormSelect('PAYMENT_DETAILS')}>
-                    <FaChevronLeft className={styles.chevronIcon} />
+                    <FontAwesomeIcon icon={faChevronLeft} className={styles.chevronIcon} />
                     <span className={styles.formText}>Payment Details</span>
-                    <FaFileInvoiceDollar className={styles.icon} />
+                    <FontAwesomeIcon icon={faFileInvoiceDollar} className={styles.icon} />
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM')}>
-                    <FaChevronLeft className={styles.chevronIcon} />
+                    <FontAwesomeIcon icon={faChevronLeft} className={styles.chevronIcon} />
                     <span className={styles.formText}>Lost Policy Form</span>
-                    <FaClipboardCheck className={styles.icon} />
+                    <FontAwesomeIcon icon={faClipboardCheck} className={styles.icon} />
                 </li>
                 <li className={`${styles.formItem} ${activeForm === 'LOST_POLICY_FORM_WITNESSED_BY' ? styles.active : ''}`} onClick={() => handleFormSelect('LOST_POLICY_FORM_WITNESSED_BY')}>
-                    <FaChevronLeft className={styles.chevronIcon} />
+                    <FontAwesomeIcon icon={faChevronLeft} className={styles.chevronIcon} />
                     <span className={styles.formText}>Witness Details</span>
-                    <FaUserFriends className={styles.icon} />
+                    <FontAwesomeIcon icon={faUserFriends} className={styles.icon} />
                 </li>
             </ul>
         </div>
@@ -37,8 +38,6 @@ const Sidebar = ({ onSelectForm, activeForm }) => {
 };
 
 export default Sidebar;
-
-
 
 
 
@@ -78,7 +77,7 @@ export default Sidebar;
 .formItem {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Distributes space between items */
+    justify-content: space-between;
     padding: 15px;
     background: linear-gradient(135deg, #4f709c, #7ca2e1);
     border-radius: 10px;
@@ -91,10 +90,11 @@ export default Sidebar;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Chevron icon style */
+/* Chevron icon on the left */
 .chevronIcon {
     color: #ffffff;
     font-size: 1.2rem; /* Adjust size as needed */
+    margin-right: 10px;
     transition: color 0.3s;
 }
 
@@ -104,9 +104,10 @@ export default Sidebar;
     text-align: center; /* Center align the text */
 }
 
-/* Icon on the right */
+/* Right-side icons */
 .icon {
     color: #ffffff;
+    font-size: 1.2rem;
     transition: color 0.3s;
 }
 
@@ -132,7 +133,7 @@ export default Sidebar;
     .sidebar {
         width: 200px; /* Reduce width for smaller screens */
     }
-    
+
     .sidebarTitle {
         font-size: 1.2rem; /* Adjust title font size for smaller screens */
     }
