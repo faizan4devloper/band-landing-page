@@ -1,58 +1,98 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/free-solid-svg-icons';
-import styles from './Breadcrumbs.module.css'; // Import CSS module
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import FormDisplay from './FormDisplay';
+import styles from './NewPage.module.css';
 
-const Breadcrumbs = () => {
+const NewPage = () => {
     const location = useLocation();
-    const paths = location.pathname.split('/').filter(Boolean); // Split pathname into an array of paths
+    const { uploadedFile, documents = [] } = location.state || {};
+
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
+
+    // No need to extract data here since FormDisplay uses the JSON directly.
+    const [selectedForm, setSelectedForm] = useState(null);
 
     return (
-        <nav className={styles.breadcrumbs}>
-            <ul className={styles.breadcrumbsList}>
-                {/* Home link */}
-                <li className={styles.breadcrumbItem}>
-                    <Link to="/" className={styles.link}>
-                        <FontAwesomeIcon icon={faHome} />
-                    </Link>
-                </li>
-
-                {/* Check if path contains 'upload-documents' and manually add 'Home' */}
-                {paths.includes('upload-documents') && (
-                    <>
-                        <span className={styles.separator}>/</span>
-                        <li className={styles.breadcrumbItem}>
-                            <Link to="/home" className={styles.link}>Home</Link>
-                        </li>
-                    </>
-                )}
-
-                {/* Dynamically render the remaining paths */}
-                {paths.map((path, index) => {
-                    // Construct the full path for each part of the route
-                    const fullPath = `/${paths.slice(0, index + 1).join('/')}`;
-                    let pathName = path.replace(/-/g, ' '); // Replace dashes with spaces for readability
-
-                    // Add custom breadcrumb titles for specific routes (e.g., 'Verification')
-                    if (path.toLowerCase() === 'verification') {
-                        pathName = 'Verification';
-                    }
-
-                    return (
-                        <React.Fragment key={index}>
-                            <span className={styles.separator}>/</span>
-                            <li className={styles.breadcrumbItem}>
-                                <Link to={fullPath} className={styles.link}>
-                                    {pathName}
-                                </Link>
-                            </li>
-                        </React.Fragment>
-                    );
-                })}
-            </ul>
-        </nav>
+        <div className={styles.container}>
+            
+            
+            {/* Render the FormDisplay component, passing only the selectedForm */}
+            <Sidebar onSelectForm={setSelectedForm} />
+            
+            {/* Render the Sidebar component, passing the setSelectedForm function */}
+            <FormDisplay selectedForm={selectedForm} />
+        </div>
     );
 };
 
-export default Breadcrumbs;
+export default NewPage;
+
+
+
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/DocumentEntities.json'; // Import the JSON file
+import styles from './FormDisplay.module.css';
+ 
+const FormDisplay = ({ selectedForm }) => {
+    const [formData, setFormData] = useState(null);
+ 
+    useEffect(() => {
+        // Simulate fetching data from a JSON file
+        setFormData(formDataJson.extracted_data);
+    }, []);
+ 
+    // Render form data based on selected form in a table format
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.loadingMessage}>Loading data...</p>;
+        }
+ 
+        const selectedData = formData[selectedForm];
+ 
+        if (!selectedData) {
+            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
+        }
+ 
+        return (
+            <div className={styles.tableContainer}>
+                <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
+                
+                <button className={styles.nextBtn}>Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon}/></button>
+                <table className={styles.dataTable}>
+                    <thead>
+                        <tr>
+                            <th className={styles.tableHeader}>Field</th>
+                            <th className={styles.tableHeader}>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.entries(selectedData).map(([key, value]) => (
+                            <tr key={key} className={styles.tableRow}>
+                                <td className={styles.tableCell}>
+                                    {key.replace(/_/g, ' ')}
+                                </td>
+                                <td className={styles.tableCell}>
+                                    {value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
+ 
+    return (
+        <div className={styles.formDisplay}>
+            {renderFormData()}
+        </div>
+    );
+};
+ 
+export default FormDisplay;
