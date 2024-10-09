@@ -1,39 +1,5 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import FormDisplay from './FormDisplay';
-import styles from './NewPage.module.css';
-
-const NewPage = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    // No need to extract data here since FormDisplay uses the JSON directly.
-    const [selectedForm, setSelectedForm] = useState(null);
-
-    return (
-        <div className={styles.container}>
-            
-            
-            {/* Render the FormDisplay component, passing only the selectedForm */}
-            <Sidebar onSelectForm={setSelectedForm} />
-            
-            {/* Render the Sidebar component, passing the setSelectedForm function */}
-            <FormDisplay selectedForm={selectedForm} />
-        </div>
-    );
-};
-
-export default NewPage;
-
-
-
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import formDataJson from '../../../Json/DocumentEntities.json'; // Import the JSON file
@@ -41,11 +7,18 @@ import styles from './FormDisplay.module.css';
  
 const FormDisplay = ({ selectedForm }) => {
     const [formData, setFormData] = useState(null);
+    const navigate = useNavigate(); // Initialize the navigate hook
  
     useEffect(() => {
         // Simulate fetching data from a JSON file
         setFormData(formDataJson.extracted_data);
     }, []);
+ 
+    // Handle the "Next" button click
+    const handleNextClick = () => {
+        // Navigate back to NewPage.js (if needed, you can pass state as well)
+        navigate('/newpage', { state: { someData: 'optionalData' } });
+    };
  
     // Render form data based on selected form in a table format
     const renderFormData = () => {
@@ -63,7 +36,10 @@ const FormDisplay = ({ selectedForm }) => {
             <div className={styles.tableContainer}>
                 <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
                 
-                <button className={styles.nextBtn}>Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon}/></button>
+                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add the click handler */}
+                    Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon}/>
+                </button>
+                
                 <table className={styles.dataTable}>
                     <thead>
                         <tr>
@@ -96,3 +72,31 @@ const FormDisplay = ({ selectedForm }) => {
 };
  
 export default FormDisplay;
+
+
+
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import FormDisplay from './FormDisplay';
+import styles from './NewPage.module.css';
+
+const NewPage = () => {
+    const location = useLocation();
+    const { uploadedFile, documents = [], someData } = location.state || {}; // Access passed state here
+
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
+
+    return (
+        <div className={styles.container}>
+            <Sidebar />
+            <FormDisplay selectedForm={someData} /> {/* Pass the state to FormDisplay if needed */}
+        </div>
+    );
+};
+
+export default NewPage;
+
