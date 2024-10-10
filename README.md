@@ -1,50 +1,72 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header/Header';
-import WelcomeScreen from './components/WelcomeScreen/WelcomeScreen';
-import Home from './components/Pages/Home/Home';
-import UploadDocuments from './components/Pages/Uploads/UploadDocuments';
-import NewPage from './components/Pages/NewPage/NewPage';
-import Breadcrumbs from './components/Breadcrumbs/Breadcrumbs'; // Importing the Breadcrumbs component
-import { HashLoader	 } from 'react-spinners';
-import styles from './App.module.css'; // Assuming you're using CSS modules
+npm install react-chat-widget
 
-function App() {
-    const [loading, setLoading] = useState(true); // Manage loading state
+import React, { useState } from 'react';
+import { Widget, addResponseMessage } from 'react-chat-widget';
+import 'react-chat-widget/lib/styles.css';
+import { FiMessageSquare } from 'react-icons/fi';
+import { IoCloseSharp } from 'react-icons/io5';
+import styles from './ChatBot.module.css'; // Assuming you're using CSS modules
 
-    // Simulate loading process and hide loader after 2 seconds
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setLoading(false);
-        }, 4000); // You can adjust the duration as needed
+function ChatBot() {
+    const [isOpen, setIsOpen] = useState(false);
 
-        return () => clearTimeout(timer); // Cleanup timeout on component unmount
-    }, []);
+    const handleToggle = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const handleNewUserMessage = (message) => {
+        console.log(`New message incoming! ${message}`);
+        // Handle the user message, you can send it to a backend here.
+        addResponseMessage("I'm an advanced bot. How can I assist you?");
+    };
 
     return (
-        <Router>
-            <div className="App">
-                {/* Show loader when loading is true */}
-                {loading ? (
-                    <div className={styles.loader}>
-                        <HashLoader	 color="#7ca2e1" loading={loading} size={45} margin={2} />
-                    </div>
-                ) : (
-                    <>
-                        <Header />
-                        {/* Breadcrumbs component will dynamically display based on current route */}
-                        <Breadcrumbs />
-                        <Routes>
-                            <Route path="/" element={<WelcomeScreen />} />
-                            <Route path="/Home" element={<Home />} />
-                            <Route path="/Upload-documents" element={<UploadDocuments />} />
-                            <Route path="/New-page" element={<NewPage />} />
-                        </Routes>
-                    </>
-                )}
+        <>
+            {/* Chatbot Icon */}
+            <div className={styles.chatIcon} onClick={handleToggle}>
+                {isOpen ? <IoCloseSharp size={30} /> : <FiMessageSquare size={30} />}
             </div>
-        </Router>
+
+            {/* Chatbot Window */}
+            {isOpen && (
+                <div className={styles.chatWindow}>
+                    <Widget
+                        title="AI Ninja"
+                        subtitle="Ask me anything!"
+                        handleNewUserMessage={handleNewUserMessage}
+                    />
+                </div>
+            )}
+        </>
     );
 }
 
-export default App;
+export default ChatBot;
+
+
+/* ChatBot.module.css */
+.chatIcon {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #7ca2e1;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.chatIcon:hover {
+    background-color: #5c88d1;
+}
+
+.chatWindow {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: opacity 0.3s ease;
+}
