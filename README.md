@@ -1,44 +1,12 @@
-
-/* Default Light Theme */
-:root {
-  --primary-color: #5f1ec1;
-  --secondary-color: rgba(15, 95, 220, 1);
-  --background-color: #ffffff;
-  --inp-text-color: #00000;
-  --chat-text-color:#fff;
-  --scrollbar-color: rgba(15, 95, 220, 1);
-  --scrollbar-background: #dcdcdc;
-  --button-background-color: rgba(13, 85, 198, 0.1);
-  --button-hover-color: #5f1ec1;
-    --placeholder-color: #a9a9a9; /* Light theme placeholder color */
-    --icon-color: #000000;
-
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --background-color: #1a1a2e;
-  --inp-text-color: #ffffff;
-    --text-color:#ffffff;
-  --scrollbar-color: #5f1ec1;
-  --scrollbar-background: #333333;
-  --button-background-color: rgba(95, 30, 193, 0.8);
-  --button-hover-color: #c1a1f2;
-    --placeholder-color: #555555; /* Dark theme placeholder color */
-        --icon-color: #ffffff;
-
-
-}
+/* Default Light Theme without :root and variables */
 
 /* Chatbot Styles */
 .chatbotIcon {
   position: fixed;
   bottom: 20px;
   right: 20px;
-background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-color: #000;
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+  color: #000;
   padding: 10px;
   border-radius: 50%;
   cursor: pointer;
@@ -61,7 +29,7 @@ color: #000;
   right: 20px;
   width: 320px;
   height: 420px;
-  background-color: var(--background-color);
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
   display: flex;
@@ -82,7 +50,7 @@ color: #000;
   justify-content: space-between;
   align-items: center;
   background: linear-gradient(90deg, #5f1ec1 0%, #c1a1f2 100%);
-  color: var(--chat-text-color);
+  color: #fff;
   padding: 10px;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
@@ -96,7 +64,7 @@ color: #000;
 .closeButton, .clearChatButton, .minimizeButton {
   background: none;
   border: none;
-  color: var(--chat-text-color);
+  color: #fff;
   font-size: 16px;
   cursor: pointer;
   margin-left: 5px;
@@ -139,7 +107,7 @@ color: #000;
 .icon {
   margin: 0 8px;
   font-size: 15px;
-  color: var(--chat-text-color)
+  color: #fff;
 }
 
 .messageText {
@@ -154,7 +122,7 @@ color: #000;
 }
 
 .messageText a {
-  color: var(--primary-color);
+  color: #5f1ec1;
   text-decoration: none;
   font-size: 10px;
   margin-bottom: 5px;
@@ -171,24 +139,21 @@ color: #000;
 }
 
 .chatbotInput input::placeholder {
-  color: var(--placeholder-color);
-  /*font-style: italic;*/
+  color: #a9a9a9;
 }
-
-
 
 .chatbotInput input {
   flex: 1;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  color: var(--inp-text-color);
+  color: #000;
   outline: none;
 }
 
 .chatbotInput button {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--chat-text-color);
+  background: linear-gradient(90deg, #5f1ec1 0%, rgba(15, 95, 220, 1) 100%);
+  color: #fff;
   border: none;
   padding: 10px;
   border-radius: 4px;
@@ -211,11 +176,11 @@ color: #000;
 
 .clearChatWindow {
   position: absolute;
-  bottom: 130px; /* Adjust based on available space */
+  bottom: 130px;
   left: 0;
   right: 0;
-  background: var(--background-color);
-  color: var(--text-color);
+  background: #ffffff;
+  color: #000;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
@@ -224,7 +189,7 @@ color: #000;
 
 .confirmButton {
   background-color: #d9534f;
-  color: var(--chat-text-color);
+  color: #fff;
   padding: 8px 18px;
   border: none;
   border-radius: 4px;
@@ -233,8 +198,8 @@ color: #000;
 }
 
 .cancelButton {
-  background-color: var(--primary-color);
-  color: var(--chat-text-color);
+  background-color: #5f1ec1;
+  color: #fff;
   padding: 8px 18px;
   border: none;
   border-radius: 4px;
@@ -260,7 +225,7 @@ color: #000;
 
 .botStatus {
   font-size: 12px;
-  color: var(--chat-text-color);
+  color: #fff;
   display: flex;
   align-items: center;
 }
