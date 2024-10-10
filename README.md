@@ -1,4 +1,37 @@
-
+{
+  "claimassist-history-lambda": {
+    "Approver1_Focuses_On": [
+      "reason for lost policy",
+      "date of loss",
+      "police report or official documentation to support lost policy claim",
+      "details about circumstances of policy loss",
+      "copy of government issued photo ID"
+    ],
+    "Approver2_Focuses_On": [
+      "wet signature on form",
+      "matching signatures",
+      "specification of date of loss",
+      "confirmation of bank account ownership",
+      "clarity in circumstances of policy loss",
+      "matching account details"
+    ],
+    "Additional_Information": [
+      "Reason for lost policy with details",
+      "Date of loss",
+      "Police report for lost policy",
+      "Details on circumstances of policy loss",
+      "Photo identification of policyholder"
+    ],
+    "Suggested_Action_Items": [
+      "Resubmit form with wet signature",
+      "Resign form if signature mismatch",
+      "Provide date of loss",
+      "Confirm bank account details",
+      "Submit additional supporting documents"
+    ],
+    "Detailed_Summary": "The verification officers focus on different details to process the claims. Approver1 focuses more on reasons, dates, and documents related to lost policies, while Approver2 focuses on details related to signatures, dates, and account details in forms. Additional details on reasons, dates, documents, and identities would help process similar claims along with suggested actions to resubmit forms with corrections."
+  },
+  
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
