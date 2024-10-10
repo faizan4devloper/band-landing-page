@@ -1,37 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json'; 
+import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json'; // Import the JSON file
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = ({ selectedForm }) => {
     const [formData, setFormData] = useState(null);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Create navigate function
 
     useEffect(() => {
-        setFormData(formDataJson);
+        // Set formData from the correct key within the JSON structure
+        setFormData(formDataJson); // Set the entire JSON structure for now
     }, []);
 
+    // Function to handle "Next" button click
     const handleNextClick = () => {
+        // Navigate to the Verification page
         navigate('/New-page');
     };
 
-    const renderList = (items) => (
-        <ul className={styles.list}>
-            {items.map((item, index) => (
-                <li key={index} className={styles.listItem}>
-                    {item}
-                </li>
-            ))}
-        </ul>
-    );
+    // Function to choose FontAwesome icons based on the form key
+    const chooseIcon = (key) => {
+        switch (key.toLowerCase()) {
+            case 'approver1_focuses_on':
+                return faInfoCircle;
+            case 'approver2_focuses_on':
+                return faSignature;
+            case 'additional_information':
+                return faFileAlt;
+            case 'suggested_action_items':
+                return faQuestionCircle;
+            case 'detailed_summary':
+                return faIdCard;
+            default:
+                return faCalendarAlt;
+        }
+    };
 
+    // Render form data based on selected form in a table format
     const renderFormData = () => {
         if (!formData) {
             return <p className={styles.loadingMessage}>Loading data...</p>;
         }
 
+        // Access correct part of JSON using selectedForm
         const selectedData = formData[selectedForm];
 
         if (!selectedData) {
@@ -39,32 +52,49 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
 
         return (
-            <div className={styles.container}>
-                <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
+            <div className={styles.tableContainer}>
+                <h2 className={styles.formHead}>
+                    <FontAwesomeIcon icon={faFileAlt} className={styles.headerIcon} />
+                    {selectedForm.replace(/_/g, ' ')}
+                </h2>
 
-                <button className={styles.nextBtn} onClick={handleNextClick}>
+                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
                     Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
                 </button>
 
-                <div className={styles.dataSection}>
-                    {Object.entries(selectedData).map(([key, value]) => (
-                        <div key={key} className={styles.dataBlock}>
-                            <h3 className={styles.dataTitle}>{key.replace(/_/g, ' ')}</h3>
-                            {Array.isArray(value) ? renderList(value) : <p className={styles.dataText}>{value}</p>}
-                        </div>
-                    ))}
-                </div>
+                <table className={styles.dataTable}>
+                    <thead>
+                        <tr>
+                            <th className={styles.tableHeader}>Field</th>
+                            <th className={styles.tableHeader}>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.entries(selectedData).map(([key, value]) => (
+                            <tr key={key} className={styles.tableRow}>
+                                <td className={styles.tableCell}>
+                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.tableIcon} />
+                                    {key.replace(/_/g, ' ')}
+                                </td>
+                                <td className={styles.tableCell}>
+                                    {Array.isArray(value) ? value.join(', ') : value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         );
     };
 
-    return <div className={styles.formDisplay}>{renderFormData()}</div>;
+    return (
+        <div className={styles.formDisplay}>
+            {renderFormData()}
+        </div>
+    );
 };
 
 export default NewFormDisplay;
-
-
-
 
 
 /* Main container */
@@ -74,6 +104,8 @@ export default NewFormDisplay;
     height: 100%;
     width: 100%;
     overflow-y: auto;
+    display: flex;
+    gap: 20px;
     font-family: 'Arial', sans-serif;
 }
 
@@ -88,64 +120,82 @@ export default NewFormDisplay;
 
 /* Form heading */
 .formHead {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #fff;
-    margin-bottom: 20px;
-}
-
-/* Data section */
-.dataSection {
+    color: #f8fafc;
+    text-align: left;
+    margin-bottom: 25px;
+    text-transform: capitalize;
     display: flex;
-    flex-direction: column;
-    gap: 20px;
+    align-items: center;
 }
 
-/* Data block for each key */
-.dataBlock {
+.headerIcon {
+    margin-right: 10px;
+    color: #7ca2e1;
+}
+
+/* Table container */
+.tableContainer {
+    margin-top: 20px;
+    width: 100%;
     background-color: #f1f5f9;
     border-left: 4px solid #7ca2e1;
     padding: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    transition: background 0.3s ease;
+    overflow-x: auto;
 }
 
-/* Hover effect for data blocks */
-.dataBlock:hover {
+/* Table styles */
+.dataTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #ffffff;
+}
+
+/* Table headers */
+.tableHeader {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #1f2937;
+    background-color: #f9fafb;
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: capitalize;
+}
+
+/* Table rows */
+.tableRow {
+    transition: background-color 0.3s ease;
+}
+
+.tableRow:hover {
     background-color: #e2e8f0;
 }
 
-/* Data title */
-.dataTitle {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #1f2937;
-    margin-bottom: 10px;
-}
-
-/* Data text (for non-list data) */
-.dataText {
-    font-size: 1rem;
+/* Table cells */
+.tableCell {
+    font-size: 0.9rem;
+    font-weight: 600;
     color: #374151;
-}
-
-/* List styling */
-.list {
-    padding-left: 20px;
-    margin: 0;
-    list-style-type: disc;
-}
-
-.listItem {
-    font-size: 1rem;
-    color: #374151;
-    margin-bottom: 5px;
-}
-
-/* Next Button */
-.nextBtn {
-    display: inline-flex;
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
     align-items: center;
+}
+
+.tableIcon {
+    margin-right: 8px;
+    color: #7ca2e1;
+}
+
+/* Next button */
+.nextBtn {
+    position: absolute;
+    top: -40px;
+    right: 20px;
     padding: 0.60rem 2rem;
     font-size: 1.1rem;
     color: #fff;
@@ -155,11 +205,10 @@ export default NewFormDisplay;
     cursor: pointer;
     transition: background 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
 }
 
 .nextBtn:hover {
-    background: linear-gradient(135deg, #F2F2F2, #7ca2e1);
+    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
     transform: scale(1.05);
 }
 
@@ -172,17 +221,18 @@ export default NewFormDisplay;
     transform: translateX(5px);
 }
 
-/* Responsive Design */
+/* Responsive design */
 @media (max-width: 768px) {
+    .tableCell {
+        white-space: normal;
+    }
+
     .formHead {
-        font-size: 1.2rem;
+        font-size: 1.5rem;
     }
 
-    .listItem {
-        font-size: 0.9rem;
-    }
-
-    .dataText {
-        font-size: 0.9rem;
+    .nextBtn {
+        top: -30px;
+        right: 15px;
     }
 }
