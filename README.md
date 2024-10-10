@@ -72,7 +72,7 @@ const NewFormDisplay = ({ selectedForm }) => {
                     <tbody>
                         {Object.entries(selectedData).map(([key, value]) => (
                             <tr key={key} className={styles.tableRow}>
-                                <td className={styles.tableCell}>
+                                <td className={styles.tableHeadingCell}> {/* Updated the class */}
                                     <FontAwesomeIcon icon={chooseIcon(key)} className={styles.tableIcon} />
                                     {key.replace(/_/g, ' ')}
                                 </td>
@@ -95,6 +95,16 @@ const NewFormDisplay = ({ selectedForm }) => {
 };
 
 export default NewFormDisplay;
+
+
+
+
+
+
+
+
+
+
 
 
 /* Main container */
@@ -189,6 +199,18 @@ export default NewFormDisplay;
 .tableIcon {
     margin-right: 8px;
     color: #7ca2e1;
+}
+
+/* Heading cell (first column) */
+.tableHeadingCell {
+    font-size: 1.1rem;  /* Larger font size */
+    font-weight: bold;  /* Bold text for heading */
+    color: #2563eb; /* Custom color for headings */
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
 }
 
 /* Next button */
