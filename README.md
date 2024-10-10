@@ -1,240 +1,160 @@
-/* Default Light Theme without :root and variables */
-
-/* Chatbot Styles */
-.chatbotIcon {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-  color: #000;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1000;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.chatbotContainer {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 420px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  z-index: 1001;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.chatbotContainer.open {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.chatbotHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(90deg, #5f1ec1 0%, #c1a1f2 100%);
-  color: #fff;
-  padding: 10px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.chatbotTitle {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.closeButton, .clearChatButton, .minimizeButton {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  margin-left: 5px;
-}
-
-.chatbotMessages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  animation: slideIn 0.5s ease;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+{
+  "claimassist-history-lambda": {
+    "Approver1_Focuses_On": [
+      "reason for lost policy",
+      "date of loss",
+      "police report or official documentation to support lost policy claim",
+      "details about circumstances of policy loss",
+      "copy of government issued photo ID"
+    ],
+    "Approver2_Focuses_On": [
+      "wet signature on form",
+      "matching signatures",
+      "specification of date of loss",
+      "confirmation of bank account ownership",
+      "clarity in circumstances of policy loss",
+      "matching account details"
+    ],
+    "Additional_Information": [
+      "Reason for lost policy with details",
+      "Date of loss",
+      "Police report for lost policy",
+      "Details on circumstances of policy loss",
+      "Photo identification of policyholder"
+    ],
+    "Suggested_Action_Items": [
+      "Resubmit form with wet signature",
+      "Resign form if signature mismatch",
+      "Provide date of loss",
+      "Confirm bank account details",
+      "Submit additional supporting documents"
+    ],
+    "Detailed_Summary": "The verification officers focus on different details to process the claims. Approver1 focuses more on reasons, dates, and documents related to lost policies, while Approver2 focuses on details related to signatures, dates, and account details in forms. Additional details on reasons, dates, documents, and identities would help process similar claims along with suggested actions to resubmit forms with corrections."
+  },
+  "claimassist-docextract-lambda": {
+    "Input_Payload": {
+      "filename": "claimassist%2Fclaimforms%2FCL17254323%2F1.Filled_L2065777+PIF+and+LPF.pdf",
+      "claimid": "CL17254323"
+    },
+    "Output_Response": {
+      "ExtractedData": {
+        "PAYMENT_INSTRUCTION_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "PAYMENT_DETAILS": {
+          "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
+          "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
+          "ACCOUNT_NUMBER": "50614866",
+          "BANK_SORT_CODE": "20-57-40",
+          "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
+          "SIGNED_DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "LOST_POLICY_FORM_SIGNED": {
+          "FULL_NAME": "Mr Mcglynn, James Christopher",
+          "DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM_WITNESSED_BY": {
+          "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
+          "DATE": "13/06/2024",
+          "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
+          "OFFICIAL_STAMP": "",
+          "DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
+          "OCCUPATION_OF_WITNESS": "Teacher"
+        }
+      },
+      "rawtext": [
+        "claimassist/claimforms/CL17254323/1: 'Retirement, Investments, Insurance, AVIVA... etc.'"
+      ],
+      "keyvaluesText": [
+        "claimassist/claimforms/CL17254323/1: ['Key: Account holder's name, Value: J.C.MC Ghywon', 'Key: Policy Number:, Value: L2065777', ...etc.]"
+      ]
+    }
   }
 }
 
-.userMessage, .botMessage {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
 
-.userMessage {
-  justify-content: flex-end;
-}
 
-.botMessage {
-  justify-content: flex-start;
-}
 
-.icon {
-  margin: 0 8px;
-  font-size: 15px;
-  color: #fff;
-}
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json'; // Import the JSON file
+import styles from './NewFormDisplay.module.css';
 
-.messageText {
-  max-width: 75%;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  color: #333;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-}
+const NewFormDisplay = ({ selectedForm }) => {
+    const [formData, setFormData] = useState(null);
+    const navigate = useNavigate(); // Create navigate function
 
-.messageText a {
-  color: #5f1ec1;
-  text-decoration: none;
-  font-size: 10px;
-  margin-bottom: 5px;
-}
+    useEffect(() => {
+        // Simulate fetching data from a JSON file
+        setFormData(formDataJson.extracted_data);
+    }, []);
 
-.userMessage .messageText {
-  background-color: #d1e7ff;
-}
+    // Function to handle "Next" button click
+    const handleNextClick = () => {
+        // Navigate to the Verification page
+        navigate('/New-page');
+    };
 
-.chatbotInput {
-  display: flex;
-  border-top: 1px solid #ddd;
-  padding: 10px;
-}
+    // Render form data based on selected form in a table format
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.loadingMessage}>Loading data...</p>;
+        }
 
-.chatbotInput input::placeholder {
-  color: #a9a9a9;
-}
+        const selectedData = formData[selectedForm];
 
-.chatbotInput input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  color: #000;
-  outline: none;
-}
+        if (!selectedData) {
+            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
+        }
 
-.chatbotInput button {
-  background: linear-gradient(90deg, #5f1ec1 0%, rgba(15, 95, 220, 1) 100%);
-  color: #fff;
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  margin-left: 10px;
-  cursor: pointer;
-}
+        return (
+            <div className={styles.tableContainer}>
+                <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
 
-.clearChatOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1002;
-}
+                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
+                    Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon}/>
+                </button>
 
-.clearChatWindow {
-  position: absolute;
-  bottom: 130px;
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  color: #000;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
+                <table className={styles.dataTable}>
+                    <thead>
+                        <tr>
+                            <th className={styles.tableHeader}>Field</th>
+                            <th className={styles.tableHeader}>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.entries(selectedData).map(([key, value]) => (
+                            <tr key={key} className={styles.tableRow}>
+                                <td className={styles.tableCell}>
+                                    {key.replace(/_/g, ' ')}
+                                </td>
+                                <td className={styles.tableCell}>
+                                    {value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
+    };
 
-.confirmButton {
-  background-color: #d9534f;
-  color: #fff;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
-}
+    return (
+        <div className={styles.formDisplay}>
+            {renderFormData()}
+        </div>
+    );
+};
 
-.cancelButton {
-  background-color: #5f1ec1;
-  color: #fff;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.botProfile {
-  display: flex;
-  align-items: center;
-}
-
-.botImage {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.botInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.botStatus {
-  font-size: 12px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-}
-
-.onlineDot {
-  width: 8px;
-  height: 8px;
-  background-color: #4caf50; /* Green dot */
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
-}
+export default NewFormDisplay;
