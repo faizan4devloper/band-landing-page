@@ -53,22 +53,12 @@ const NewFormDisplay = ({ selectedForm }) => {
 
         return (
             <div className={styles.tableContainer}>
-                <h2 className={styles.formHead}>
-                    <FontAwesomeIcon icon={faFileAlt} className={styles.headerIcon} />
-                    {selectedForm.replace(/_/g, ' ')}
-                </h2>
-
                 <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
                     Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
                 </button>
 
                 <table className={styles.dataTable}>
-                    <thead>
-                        <tr>
-                            <th className={styles.tableHeader}>Field</th>
-                            <th className={styles.tableHeader}>Value</th>
-                        </tr>
-                    </thead>
+                   
                     <tbody>
                         {Object.entries(selectedData).map(([key, value]) => (
                             <tr key={key} className={styles.tableRow}>
@@ -95,14 +85,6 @@ const NewFormDisplay = ({ selectedForm }) => {
 };
 
 export default NewFormDisplay;
-
-
-
-
-
-
-
-
 
 
 
@@ -187,8 +169,8 @@ export default NewFormDisplay;
 
 /* Table cells */
 .tableCell {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    /*font-weight: 600;*/
     color: #374151;
     padding: 16px 12px;
     border-bottom: 1px solid #e5e7eb;
