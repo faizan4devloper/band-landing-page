@@ -1,40 +1,70 @@
-react-dom.development.js:18704 The above error occurred in the <p> component:
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json';
+import styles from './NewFormDisplay.module.css';
 
-    at p
-    at div
-    at div
-    at div
-    at div
-    at NewFormDisplay (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1384:82)
-    at div
-    at NewPage (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1543:81)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47570:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48272:5)
-    at div
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48206:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46147:5)
-    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49:80)
+const NewFormDisplay = () => {
+    const [formData, setFormData] = useState(null);
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-4
-react-dom.development.js:18704 The above error occurred in the <p> component:
+    useEffect(() => {
+        setFormData(formDataJson);
+    }, []);
 
-    at p
-    at div
-    at div
-    at div
-    at div
-    at NewFormDisplay (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/main.19c2cec….hot-update.js:34:82)
-    at div
-    at NewPage (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1543:81)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47570:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48272:5)
-    at div
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48206:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46147:5)
-    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49:80)
+    const chooseIcon = (key) => {
+        switch (key.toLowerCase()) {
+            case 'approver1_focuses_on':
+                return faInfoCircle;
+            case 'approver2_focuses_on':
+                return faSignature;
+            case 'additional_information':
+                return faFileAlt;
+            case 'suggested_action_items':
+                return faQuestionCircle;
+            case 'detailed_summary':
+                return faIdCard;
+            default:
+                return faCalendarAlt;
+        }
+    };
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-﻿
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.loadingMessage}>Loading data...</p>;
+        }
+
+        return (
+            <div className={styles.formDataContainer}>
+                {Object.entries(formData).map(([formName, formDetails]) => (
+                    <div key={formName} className={styles.formDataSection}>
+                        <h2 className={styles.formTitle}>{formName.replace(/_/g, ' ')}</h2>
+                        {formDetails && Object.entries(formDetails).map(([key, value]) => (
+                            <div key={key}>
+                                <h3 className={styles.formDataTitle}>
+                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
+                                    {key.replace(/_/g, ' ')}
+                                </h3>
+                                {/* Ensure value exists and handle arrays properly */}
+                                {value ? (
+                                    <p className={styles.formDataContent}>
+                                        {Array.isArray(value) ? value.join(', ') : value}
+                                    </p>
+                                ) : (
+                                    <p className={styles.formDataContent}>No data available</p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    return (
+        <div className={styles.formDisplay}>
+            {renderFormData()}
+        </div>
+    );
+};
+
+export default NewFormDisplay;
