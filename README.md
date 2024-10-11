@@ -97,16 +97,12 @@ const NewFormDisplay = () => {
 export default NewFormDisplay;
 
 
-
-
-
-
-
 /* Main container */
 .formDisplay {
     background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
     height: 100%;
+    padding-top: 0px;
     width: 100%;
     overflow-y: auto;
     font-family: 'Arial', sans-serif;
@@ -129,25 +125,25 @@ export default NewFormDisplay;
 .formItem {
     background-color: #1f2937;
     color: #f8fafc;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-size: 1.1rem;
+    padding: 12px 20px;
+    border-radius: 0px 0px 8px 8px;
+    font-size: .8rem;
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background 0.3s ease, transform 0.4s ease;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .formItem:hover {
-    background-color: #2563eb;
-    transform: translateY(-5px);
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+    /*transform: translateY(-5px);*/
 }
 
 .formItem.active {
-    background-color: #3b82f6;
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
 }
 
 /* Chevron icon in form item */
@@ -186,7 +182,7 @@ export default NewFormDisplay;
 
 /* Card header */
 .cardHeader {
-    background-color: #2563eb;
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
     color: white;
     padding: 15px;
     font-size: 1.2rem;
