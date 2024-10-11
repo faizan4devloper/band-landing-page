@@ -1,3 +1,51 @@
+// src/components/Dashboard.js
+import React, { useEffect, useState } from 'react';
+import ClaimHistory from './ClaimHistory';
+import DocExtract from './DocExtract';
+import SuggestedActions from './SuggestedActions';
+import Summary from './Summary';
+import styles from './Dashboard.module.css';
+
+const Dashboard = () => {
+  const [claimData, setClaimData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch('/NewEntities.json'); // Adjust the path if necessary
+      const data = await response.json();
+      setClaimData(data);
+    };
+
+    fetchData();
+  }, []);
+
+  if (!claimData) {
+    return <div>Loading...</div>; // Show a loading state while fetching data
+  }
+
+  return (
+    <div className={styles.dashboard}>
+      <h1>Claim Assist Dashboard</h1>
+      <ClaimHistory data={claimData['claimassist-history-lambda']} />
+      <DocExtract data={claimData['claimassist-docextract-lambda']} />
+      <SuggestedActions data={claimData['claimassist-history-lambda'].Suggested_Action_Items} />
+      <Summary summary={claimData['claimassist-history-lambda'].Detailed_Summary} />
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
+
+
+
+
+
+
+
+
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
