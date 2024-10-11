@@ -59,9 +59,7 @@ const NewFormDisplay = ({ selectedForm }) => {
                     </div>
                 ))}
 
-                <button className={styles.nextBtn} onClick={handleNextClick}>
-                    Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
-                </button>
+                
             </div>
         );
     };
@@ -72,16 +70,16 @@ const NewFormDisplay = ({ selectedForm }) => {
 export default NewFormDisplay;
 
 
-
 /* Main container */
 .formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
+   background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
-    min-height: 100vh;
+    height: 100%;
     width: 100%;
+    overflow-y: auto;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    gap: 20px;
+    font-family: 'Arial', sans-serif;
 }
 
 /* Grid layout for cards */
