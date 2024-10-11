@@ -1,69 +1,19 @@
-import React, { useState } from 'react';
-import styles from './NewSidebar.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-
-const Sidebar = ({ onSelectForm }) => {
-    const [activeItem, setActiveItem] = useState('')
-    
-    const handleFormSelect = (formName) => {
-        setActiveItem(formName);
-        onSelectForm(formName);
-    };
-
-    return (
-        <div className={styles.sidebar}>
-            <h3 className={styles.sidebarTitle}>Select a Form</h3>
-            <ul className={styles.formList}>
-                <li
-                    className={`${styles.formItem} ${activeItem === 'claimassist-history-lambda' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('claimassist-history-lambda')}
-                >
-                    <span className={styles.formText}>Verification Status</span>
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </li>
-                <li
-                    className={`${styles.formItem} ${activeItem === 'PAYMENT_DETAILS' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('PAYMENT_DETAILS')}
-                >
-                    <span className={styles.formText}>Reviewer Insights</span>
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </li>
-                <li
-                    className={`${styles.formItem} ${activeItem === 'LOST_POLICY_FORM' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('LOST_POLICY_FORM')}
-                >
-                    <span className={styles.formText}>Checklist</span>
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </li>
-                
-            </ul>
-        </div>
-    );
-};
-
-export default Sidebar;
-
-
-
-
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import formDataJson from '../../../Json/NewEntities.json';
 import styles from './NewFormDisplay.module.css';
 
-const NewFormDisplay = ({ selectedForm }) => {
+const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const navigate = useNavigate();
+    const [selectedForm, setSelectedForm] = useState(''); // Manage the selected form state
 
     useEffect(() => {
         setFormData(formDataJson); // Set the entire JSON structure for now
     }, []);
 
-    const handleNextClick = () => {
-        navigate('/New-page');
+    const handleFormSelect = (formName) => {
+        setSelectedForm(formName); // Set the selected form when clicked
     };
 
     const chooseIcon = (key) => {
@@ -107,13 +57,42 @@ const NewFormDisplay = ({ selectedForm }) => {
                         </div>
                     </div>
                 ))}
-
-                
             </div>
         );
     };
 
-    return <div className={styles.formDisplay}>{renderFormData()}</div>;
+    return (
+        <div className={styles.formDisplay}>
+            {/* Form Selection Options */}
+            <h3 className={styles.formSelectionTitle}>Select a Form</h3>
+            <ul className={styles.formList}>
+                <li
+                    className={`${styles.formItem} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`}
+                    onClick={() => handleFormSelect('claimassist-history-lambda')}
+                >
+                    <span className={styles.formText}>Verification Status</span>
+                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
+                </li>
+                <li
+                    className={`${styles.formItem} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`}
+                    onClick={() => handleFormSelect('PAYMENT_DETAILS')}
+                >
+                    <span className={styles.formText}>Reviewer Insights</span>
+                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
+                </li>
+                <li
+                    className={`${styles.formItem} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`}
+                    onClick={() => handleFormSelect('LOST_POLICY_FORM')}
+                >
+                    <span className={styles.formText}>Checklist</span>
+                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
+                </li>
+            </ul>
+
+            {/* Form Data Display */}
+            {renderFormData()}
+        </div>
+    );
 };
 
 export default NewFormDisplay;
