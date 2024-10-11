@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt,
-    faQuestionCircle, faInfoCircle
-} from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
+import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json'; // Import the JSON file
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = ({ selectedForm }) => {
     const [formData, setFormData] = useState(null);
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Create navigate function
 
     useEffect(() => {
-        setFormData(formDataJson);
+        // Set formData from the correct key within the JSON structure
+        setFormData(formDataJson); // Set the entire JSON structure for now
     }, []);
 
+    // Function to handle "Next" button click
     const handleNextClick = () => {
+        // Navigate to the Verification page
         navigate('/New-page');
     };
 
+    // Function to choose FontAwesome icons based on the form key
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
             case 'approver1_focuses_on':
@@ -37,11 +38,13 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
     };
 
+    // Render form data based on selected form in a table format
     const renderFormData = () => {
         if (!formData) {
             return <p className={styles.loadingMessage}>Loading data...</p>;
         }
 
+        // Access correct part of JSON using selectedForm
         const selectedData = formData[selectedForm];
 
         if (!selectedData) {
@@ -49,191 +52,191 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
 
         return (
-            <div className={styles.formContent}>
-                <div className={styles.cardsWrapper}>
-                    {Object.entries(selectedData).map(([key, value]) => (
-                        <div key={key} className={styles.formCard}>
-                            <div className={styles.formLabel}>
-                                <FontAwesomeIcon icon={chooseIcon(key)} className={styles.formIcon} />
-                                {key.replace(/_/g, ' ')}
-                            </div>
-                            <div className={styles.formValue}>
-                                {Array.isArray(value) ? value.join(', ') : value}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                <div className={styles.actionSection}>
-                    <button className={styles.nextBtn} onClick={handleNextClick}>
-                        Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
-                    </button>
-                </div>
+            <div className={styles.tableContainer}>
+                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
+                    Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
+                </button>
+
+                <table className={styles.dataTable}>
+                   
+                    <tbody>
+                        {Object.entries(selectedData).map(([key, value]) => (
+                            <tr key={key} className={styles.tableRow}>
+                                <td className={styles.tableHeadingCell}> {/* Updated the class */}
+                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.tableIcon} />
+                                    {key.replace(/_/g, ' ')}
+                                </td>
+                                <td className={styles.tableCell}>
+                                    {Array.isArray(value) ? value.join(', ') : value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         );
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.descriptionSection}>
-                <h2>Form Description</h2>
-                <p>Details and metadata about the selected form.</p>
-            </div>
-            <div className={styles.formDisplaySection}>
-                {renderFormData()}
-            </div>
-            <div className={styles.uploadSection}>
-                <h3>Uploaded Files</h3>
-                <div className={styles.uploadArea}>
-                    {/* You can add file upload inputs here */}
-                    <p>Drag and drop files or click to upload.</p>
-                </div>
-            </div>
-            <div className={styles.historySection}>
-                <h3>History</h3>
-                <ul>
-                    {/* Add history items here */}
-                    <li>Previous form submission - 04 Feb, 2023</li>
-                    <li>Another entry - 02 Mar, 2023</li>
-                </ul>
-            </div>
+        <div className={styles.formDisplay}>
+            {renderFormData()}
         </div>
     );
 };
 
 export default NewFormDisplay;
 
-/* Main container layout */
-.container {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    grid-gap: 2rem;
-    padding: 2rem;
-    background-color: #f4f5f7;
-    font-family: 'Inter', sans-serif;
-}
 
-/* Description section */
-.descriptionSection {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
 
-.descriptionSection h2 {
-    font-size: 1.5rem;
-    color: #1f2937;
-    margin-bottom: 1rem;
-}
 
-.descriptionSection p {
-    color: #6b7280;
-    font-size: 1rem;
-}
-
-/* Form display section */
-.formDisplaySection {
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Main container */
+.formDisplay {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 30px;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    gap: 20px;
+    font-family: 'Arial', sans-serif;
 }
 
-.cardsWrapper {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+/* Loading and select messages */
+.loadingMessage,
+.selectMessage {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin-top: 20px;
 }
 
-.formCard {
-    background-color: #eef2f7;
-    padding: 1.2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.formLabel {
+/* Form heading */
+.formHead {
+    font-size: 1.8rem;
     font-weight: bold;
-    color: #2563eb;
+    color: #f8fafc;
+    text-align: left;
+    margin-bottom: 25px;
+    text-transform: capitalize;
     display: flex;
     align-items: center;
 }
 
-.formIcon {
-    margin-right: 0.5rem;
-    color: #60a5fa;
+.headerIcon {
+    margin-right: 10px;
+    color: #7ca2e1;
 }
 
-.formValue {
-    margin-top: 0.5rem;
+/* Table container */
+.tableContainer {
+    margin-top: 20px;
+    width: 100%;
+    background-color: #f1f5f9;
+    border-left: 4px solid #7ca2e1;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+/* Table styles */
+.dataTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background-color: #ffffff;
+}
+
+/* Table headers */
+.tableHeader {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #1f2937;
+    background-color: #f9fafb;
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: capitalize;
+}
+
+/* Table rows */
+.tableRow {
+    transition: background-color 0.3s ease;
+}
+
+.tableRow:hover {
+    background-color: #e2e8f0;
+}
+
+/* Table cells */
+.tableCell {
+    font-size: 0.8rem;
+    /*font-weight: 600;*/
     color: #374151;
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
 }
 
-/* Action section */
-.actionSection {
-    margin-top: 2rem;
-    text-align: right;
+.tableIcon {
+    margin-right: 8px;
+    color: #7ca2e1;
 }
 
+/* Heading cell (first column) */
+.tableHeadingCell {
+    font-size: 1.1rem;  /* Larger font size */
+    font-weight: bold;  /* Bold text for heading */
+    color: #2563eb; /* Custom color for headings */
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    text-transform: capitalize;
+    display: flex;
+    align-items: center;
+}
+
+/* Next button */
 .nextBtn {
-    background-color: #2563eb;
+    position: absolute;
+    top: -40px;
+    right: 20px;
+    padding: 0.60rem 2rem;
+    font-size: 1.1rem;
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.6);
     border: none;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .nextBtn:hover {
-    background-color: #1e40af;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+    transform: scale(1.05);
 }
 
 .nextIcon {
-    margin-left: 8px;
+    margin-left: 10px;
+    transition: transform 0.3s ease;
 }
 
-/* Upload section */
-.uploadSection {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.nextBtn:hover .nextIcon {
+    transform: translateX(5px);
 }
 
-.uploadArea {
-    background-color: #f9fafb;
-    padding: 2rem;
-    border: 2px dashed #d1d5db;
-    border-radius: 8px;
-    text-align: center;
-    color: #6b7280;
-}
+/* Responsive design */
+@media (max-width: 768px) {
+    .tableCell {
+        white-space: normal;
+    }
 
-/* History section */
-.historySection {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
+    .formHead {
+        font-size: 1.5rem;
+    }
 
-.historySection h3 {
-    margin-bottom: 1rem;
-    color: #1f2937;
-}
-
-.historySection ul {
-    list-style: none;
-    padding: 0;
-}
-
-.historySection li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #e5e7eb;
-    color: #6b7280;
+    .nextBtn {
+        top: -30px;
+        right: 15px;
+    }
 }
