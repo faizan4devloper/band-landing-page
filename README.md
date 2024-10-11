@@ -1,3 +1,117 @@
+/* Main container */
+.formDisplay {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 30px;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+}
+
+/* Form selection section */
+.formSelection {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
+}
+
+/* Individual form button */
+.formItem {
+    background-color: #1f2937;
+    color: #f8fafc;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.formItem:hover, .formItem.active {
+    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+    color: #1f2937;
+}
+
+.chevronIcon {
+    color: #f8fafc;
+    transition: transform 0.3s ease;
+}
+
+.formItem:hover .chevronIcon {
+    transform: translateX(5px);
+}
+
+/* Consistent layout for form data */
+.formDataSection {
+    background-color: #f1f5f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #374151;
+}
+
+/* Titles for each section in form data */
+.formDataTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* Content in form data */
+.formDataContent {
+    font-size: 1rem;
+    color: #1f2937;
+    padding-left: 15px;
+    line-height: 1.6;
+}
+
+/* Hover effect */
+.formDataSection:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading and select messages */
+.loadingMessage,
+.selectMessage {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .formDisplay {
+        padding: 15px;
+    }
+
+    .formDataTitle {
+        font-size: 1rem;
+    }
+    
+    .formDataContent {
+        font-size: 0.9rem;
+    }
+}
+
+
+
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
@@ -6,14 +120,14 @@ import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const [selectedForm, setSelectedForm] = useState(''); // Manage the selected form state
+    const [selectedForm, setSelectedForm] = useState('');
 
     useEffect(() => {
-        setFormData(formDataJson); // Set the entire JSON structure for now
+        setFormData(formDataJson);
     }, []);
 
     const handleFormSelect = (formName) => {
-        setSelectedForm(formName); // Set the selected form when clicked
+        setSelectedForm(formName);
     };
 
     const chooseIcon = (key) => {
@@ -45,16 +159,16 @@ const NewFormDisplay = () => {
         }
 
         return (
-            <div className={styles.gridContainer}>
+            <div className={styles.formDataSection}>
                 {Object.entries(selectedData).map(([key, value]) => (
-                    <div key={key} className={styles.card}>
-                        <div className={styles.cardHeader}>
+                    <div key={key}>
+                        <h2 className={styles.formDataTitle}>
                             <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
                             {key.replace(/_/g, ' ')}
-                        </div>
-                        <div className={styles.cardContent}>
+                        </h2>
+                        <p className={styles.formDataContent}>
                             {Array.isArray(value) ? value.join(', ') : value}
-                        </div>
+                        </p>
                     </div>
                 ))}
             </div>
@@ -63,7 +177,6 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.formDisplay}>
-            {/* Form Selection Buttons */}
             <div className={styles.formSelection}>
                 <div
                     className={`${styles.formItem} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`}
@@ -88,174 +201,9 @@ const NewFormDisplay = () => {
                 </div>
             </div>
 
-            {/* Form Data Display */}
             {renderFormData()}
         </div>
     );
 };
 
 export default NewFormDisplay;
-
-
-/* Main container */
-.formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    padding: 30px;
-    height: 100%;
-    padding-top: 0px;
-    width: 100%;
-    overflow-y: auto;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
-}
-
-/* Form selection section */
-.formSelection {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding-bottom: 20px;
-}
-
-/* Individual form button */
-.formItem {
-    background-color: #1f2937;
-    color: #f8fafc;
-    padding: 12px 20px;
-    border-radius: 0px 0px 8px 8px;
-    font-size: .8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.4s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.formItem:hover {
-  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    /*transform: translateY(-5px);*/
-}
-
-.formItem.active {
-  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-}
-
-/* Chevron icon in form item */
-.chevronIcon {
-    color: #f8fafc;
-    transition: transform 0.3s ease;
-}
-
-.formItem:hover .chevronIcon {
-    transform: translateX(5px);
-}
-
-/* Grid layout for cards */
-.gridContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    width: 100%;
-}
-
-/* Card styles */
-.card {
-    background-color: #f1f5f9;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-}
-
-/* Card header */
-.cardHeader {
-  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    color: white;
-    padding: 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.cardIcon {
-    color: #f8fafc;
-}
-
-/* Card content */
-.cardContent {
-    padding: 20px;
-    font-size: 1rem;
-    color: #374151;
-}
-
-/* Next button */
-.nextBtn {
-    margin-top: 20px;
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    color: #fff;
-    background-color: #2563eb;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    justify-self: center;
-}
-
-.nextBtn:hover {
-    background-color: #3b82f6;
-    transform: scale(1.05);
-}
-
-.nextIcon {
-    margin-left: 10px;
-    transition: transform 0.3s ease;
-}
-
-.nextBtn:hover .nextIcon {
-    transform: translateX(5px);
-}
-
-/* Loading and select messages */
-.loadingMessage,
-.selectMessage {
-    font-size: 1.5rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .formDisplay {
-        padding: 15px;
-    }
-
-    .cardHeader {
-        font-size: 1rem;
-    }
-
-    .nextBtn {
-        font-size: 1rem;
-        padding: 0.5rem 1.5rem;
-    }
-}
