@@ -1,189 +1,19 @@
-/* Main container */
-.formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    padding: 30px;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* Loading and select messages */
-.loadingMessage,
-.selectMessage {
-    font-size: 1.8rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-top: 20px;
-    font-weight: 500;
-}
-
-/* Form heading */
-.formHead {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #f8fafc;
-    text-align: left;
-    margin-bottom: 25px;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-}
-
-.headerIcon {
-    margin-right: 10px;
-    color: #9dc2ff;
-}
-
-/* Table container */
-.tableContainer {
-    margin-top: 20px;
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.1); /* Glass effect */
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-    overflow-x: auto;
-    position: relative;
-}
-
-/* Table styles */
-.dataTable {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: transparent;
-}
-
-/* Table headers */
-.tableHeader {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #f1f5f9;
-    background-color: transparent;
-    padding: 16px 12px;
-    text-align: left;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Table rows */
-.tableRow {
-    transition: background-color 0.4s ease, transform 0.3s ease;
-    cursor: pointer;
-}
-
-.tableRow:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    transform: scale(1.02);
-}
-
-/* Table cells */
-.tableCell {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #cbd5e1;
-    padding: 16px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-}
-
-/* Icons in the table */
-.tableIcon {
-    margin-right: 8px;
-    color: #9dc2ff;
-    transition: color 0.3s ease;
-}
-
-.tableIcon:hover {
-    color: #fbbf24; /* On hover, change to yellow */
-}
-
-/* Heading cell (first column) */
-.tableHeadingCell {
-    font-size: 1.3rem;  /* Larger font size */
-    font-weight: bold;  /* Bold text for heading */
-    color: #7dd3fc; /* Light blue */
-    padding: 16px 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    text-transform: capitalize;
-}
-
-/* Next button */
-.nextBtn {
-    position: absolute;
-    top: -40px;
-    right: 20px;
-    padding: 0.8rem 2.5rem;
-    font-size: 1.2rem;
-    color: #fff;
-    background: linear-gradient(135deg, #7ca2e1, #2563eb);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.nextBtn:hover {
-    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
-    transform: scale(1.05);
-}
-
-.nextIcon {
-    margin-left: 10px;
-    transition: transform 0.3s ease;
-}
-
-.nextBtn:hover .nextIcon {
-    transform: translateX(8px);
-}
-
-/* Expandable Row */
-.expandableRow {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease-out, padding 0.5s ease-out;
-}
-
-.expandableRow.expanded {
-    max-height: 300px; /* Adjust based on content */
-    padding: 10px 0;
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .tableCell {
-        white-space: normal;
-    }
-
-    .formHead {
-        font-size: 1.7rem;
-    }
-
-    .nextBtn {
-        top: -30px;
-        right: 15px;
-    }
-}
-
-
-
-
-
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt,
+    faQuestionCircle, faInfoCircle
+} from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json';
+import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = ({ selectedForm }) => {
     const [formData, setFormData] = useState(null);
-    const [expandedRows, setExpandedRows] = useState([]);
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     useEffect(() => {
-        setFormData(formDataJson); 
+        setFormData(formDataJson);
     }, []);
 
     const handleNextClick = () => {
@@ -192,19 +22,19 @@ const NewFormDisplay = ({ selectedForm }) => {
 
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
-            case 'approver1_focuses_on': return faInfoCircle;
-            case 'approver2_focuses_on': return faSignature;
-            case 'additional_information': return faFileAlt;
-            case 'suggested_action_items': return faQuestionCircle;
-            case 'detailed_summary': return faIdCard;
-            default: return faCalendarAlt;
+            case 'approver1_focuses_on':
+                return faInfoCircle;
+            case 'approver2_focuses_on':
+                return faSignature;
+            case 'additional_information':
+                return faFileAlt;
+            case 'suggested_action_items':
+                return faQuestionCircle;
+            case 'detailed_summary':
+                return faIdCard;
+            default:
+                return faCalendarAlt;
         }
-    };
-
-    const toggleExpandRow = (key) => {
-        setExpandedRows((prevState) =>
-            prevState.includes(key) ? prevState.filter(row => row !== key) : [...prevState, key]
-        );
     };
 
     const renderFormData = () => {
@@ -213,45 +43,157 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
 
         const selectedData = formData[selectedForm];
+
         if (!selectedData) {
             return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
         }
 
         return (
-            <div className={styles.tableContainer}>
+            <div className={styles.formContent}>
                 <button className={styles.nextBtn} onClick={handleNextClick}>
                     Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
                 </button>
 
-                <table className={styles.dataTable}>
-                    <tbody>
-                        {Object.entries(selectedData).map(([key, value]) => (
-                            <React.Fragment key={key}>
-                                <tr className={styles.tableRow} onClick={() => toggleExpandRow(key)}>
-                                    <td className={styles.tableHeadingCell}>
-                                        <FontAwesomeIcon icon={chooseIcon(key)} className={styles.tableIcon} />
-                                        {key.replace(/_/g, ' ')}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {Array.isArray(value) ? value.join(', ') : value}
-                                    </td>
-                                </tr>
-                                <tr className={`${styles.expandableRow} ${expandedRows.includes(key) ? styles.expanded : ''}`}>
-                                    <td colSpan="2"> {/* Add more details or content here */} Expanded content for {key}</td>
-                                </tr>
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table>
+                <div className={styles.formTable}>
+                    {Object.entries(selectedData).map(([key, value]) => (
+                        <div key={key} className={styles.formRow}>
+                            <div className={styles.formLabel}>
+                                <FontAwesomeIcon icon={chooseIcon(key)} className={styles.formIcon} />
+                                {key.replace(/_/g, ' ')}
+                            </div>
+                            <div className={styles.formValue}>
+                                {Array.isArray(value) ? value.join(', ') : value}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         );
     };
 
     return (
-        <div className={styles.formDisplay}>
-            {renderFormData()}
+        <div className={styles.container}>
+            <div className={styles.sidebar}>
+                <h2>Forms</h2>
+                {/* Add other sidebar elements here */}
+            </div>
+            <div className={styles.mainContent}>
+                {renderFormData()}
+            </div>
         </div>
     );
 };
 
 export default NewFormDisplay;
+
+
+/* Main container */
+.container {
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 240px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+/* Main content area */
+.mainContent {
+    flex-grow: 1;
+    padding: 40px;
+    overflow-y: auto;
+    background-color: #f1f5f9;
+}
+
+.formContent {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.formTable {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1rem;
+}
+
+.formRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.formLabel {
+    display: flex;
+    align-items: center;
+    color: #2563eb;
+    font-weight: bold;
+}
+
+.formIcon {
+    margin-right: 10px;
+    color: #7ca2e1;
+}
+
+.formValue {
+    color: #374151;
+    font-size: 0.9rem;
+}
+
+/* Next button */
+.nextBtn {
+    background-color: #1e40af;
+    color: #fff;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.nextBtn:hover {
+    background-color: #1d4ed8;
+    transform: scale(1.05);
+}
+
+.nextIcon {
+    margin-left: 8px;
+    transition: transform 0.3s ease;
+}
+
+.nextBtn:hover .nextIcon {
+    transform: translateX(5px);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .formTable {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        width: 180px;
+    }
+
+    .mainContent {
+        padding: 20px;
+    }
+}
