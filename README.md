@@ -1,26 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json'; // Import the JSON file
+import formDataJson from '../../../Json/NewEntities.json';
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = ({ selectedForm }) => {
     const [formData, setFormData] = useState(null);
-    const navigate = useNavigate(); // Create navigate function
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // Set formData from the correct key within the JSON structure
         setFormData(formDataJson); // Set the entire JSON structure for now
     }, []);
 
-    // Function to handle "Next" button click
     const handleNextClick = () => {
-        // Navigate to the Verification page
         navigate('/New-page');
     };
 
-    // Function to choose FontAwesome icons based on the form key
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
             case 'approver1_focuses_on':
@@ -38,13 +34,11 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
     };
 
-    // Render form data based on selected form in a table format
     const renderFormData = () => {
         if (!formData) {
             return <p className={styles.loadingMessage}>Loading data...</p>;
         }
 
-        // Access correct part of JSON using selectedForm
         const selectedData = formData[selectedForm];
 
         if (!selectedData) {
@@ -52,40 +46,30 @@ const NewFormDisplay = ({ selectedForm }) => {
         }
 
         return (
-            <div className={styles.tableContainer}>
-                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
+            <div className={styles.gridContainer}>
+                {Object.entries(selectedData).map(([key, value]) => (
+                    <div key={key} className={styles.card}>
+                        <div className={styles.cardHeader}>
+                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
+                            {key.replace(/_/g, ' ')}
+                        </div>
+                        <div className={styles.cardContent}>
+                            {Array.isArray(value) ? value.join(', ') : value}
+                        </div>
+                    </div>
+                ))}
+
+                <button className={styles.nextBtn} onClick={handleNextClick}>
                     Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
                 </button>
-
-                <table className={styles.dataTable}>
-                   
-                    <tbody>
-                        {Object.entries(selectedData).map(([key, value]) => (
-                            <tr key={key} className={styles.tableRow}>
-                                <td className={styles.tableHeadingCell}> {/* Updated the class */}
-                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.tableIcon} />
-                                    {key.replace(/_/g, ' ')}
-                                </td>
-                                <td className={styles.tableCell}>
-                                    {Array.isArray(value) ? value.join(', ') : value}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
             </div>
         );
     };
 
-    return (
-        <div className={styles.formDisplay}>
-            {renderFormData()}
-        </div>
-    );
+    return <div className={styles.formDisplay}>{renderFormData()}</div>;
 };
 
 export default NewFormDisplay;
-
 
 
 
@@ -93,126 +77,80 @@ export default NewFormDisplay;
 .formDisplay {
     background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
-    height: 100%;
+    min-height: 100vh;
     width: 100%;
-    overflow-y: auto;
     display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Grid layout for cards */
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    font-family: 'Arial', sans-serif;
-}
-
-/* Loading and select messages */
-.loadingMessage,
-.selectMessage {
-    font-size: 1.5rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Form heading */
-.formHead {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #f8fafc;
-    text-align: left;
-    margin-bottom: 25px;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-}
-
-.headerIcon {
-    margin-right: 10px;
-    color: #7ca2e1;
-}
-
-/* Table container */
-.tableContainer {
-    margin-top: 20px;
     width: 100%;
+}
+
+/* Card styles */
+.card {
     background-color: #f1f5f9;
-    border-left: 4px solid #7ca2e1;
-    padding: 20px;
+    border-radius: 10px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-/* Table styles */
-.dataTable {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    background-color: #ffffff;
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
-/* Table headers */
-.tableHeader {
-    font-size: 1rem;
+/* Card header */
+.cardHeader {
+    background-color: #2563eb;
+    color: white;
+    padding: 15px;
+    font-size: 1.2rem;
     font-weight: bold;
-    color: #1f2937;
-    background-color: #f9fafb;
-    padding: 16px 12px;
-    text-align: left;
-    border-bottom: 2px solid #e5e7eb;
     text-transform: capitalize;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
-/* Table rows */
-.tableRow {
-    transition: background-color 0.3s ease;
+.cardIcon {
+    color: #f8fafc;
 }
 
-.tableRow:hover {
-    background-color: #e2e8f0;
-}
-
-/* Table cells */
-.tableCell {
-    font-size: 0.8rem;
-    /*font-weight: 600;*/
+/* Card content */
+.cardContent {
+    padding: 20px;
+    font-size: 1rem;
     color: #374151;
-    padding: 16px 12px;
-    border-bottom: 1px solid #e5e7eb;
-    display: flex;
-    align-items: center;
-}
-
-.tableIcon {
-    margin-right: 8px;
-    color: #7ca2e1;
-}
-
-/* Heading cell (first column) */
-.tableHeadingCell {
-    font-size: 1.1rem;  /* Larger font size */
-    font-weight: bold;  /* Bold text for heading */
-    color: #2563eb; /* Custom color for headings */
-    padding: 16px 12px;
-    border-bottom: 1px solid #e5e7eb;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
 }
 
 /* Next button */
 .nextBtn {
-    position: absolute;
-    top: -40px;
-    right: 20px;
-    padding: 0.60rem 2rem;
+    margin-top: 20px;
+    padding: 0.75rem 2rem;
     font-size: 1.1rem;
     color: #fff;
-    background: rgba(0, 0, 0, 0.6);
+    background-color: #2563eb;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    justify-self: center;
 }
 
 .nextBtn:hover {
-    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+    background-color: #3b82f6;
     transform: scale(1.05);
 }
 
@@ -225,18 +163,27 @@ export default NewFormDisplay;
     transform: translateX(5px);
 }
 
+/* Loading and select messages */
+.loadingMessage,
+.selectMessage {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin-top: 20px;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
-    .tableCell {
-        white-space: normal;
+    .formDisplay {
+        padding: 15px;
     }
 
-    .formHead {
-        font-size: 1.5rem;
+    .cardHeader {
+        font-size: 1rem;
     }
 
     .nextBtn {
-        top: -30px;
-        right: 15px;
+        font-size: 1rem;
+        padding: 0.5rem 1.5rem;
     }
 }
