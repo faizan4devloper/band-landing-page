@@ -1,85 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
-import styles from './NewFormDisplay.module.css';
-
-const NewFormDisplay = ({ selectedForm }) => {
-    const [formData, setFormData] = useState(null);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        setFormData(formDataJson); // Set the entire JSON structure for now
-    }, []);
-
-    const handleNextClick = () => {
-        navigate('/New-page');
-    };
-
-    const chooseIcon = (key) => {
-        switch (key.toLowerCase()) {
-            case 'approver1_focuses_on':
-                return faInfoCircle;
-            case 'approver2_focuses_on':
-                return faSignature;
-            case 'additional_information':
-                return faFileAlt;
-            case 'suggested_action_items':
-                return faQuestionCircle;
-            case 'detailed_summary':
-                return faIdCard;
-            default:
-                return faCalendarAlt;
-        }
-    };
-
-    const renderFormData = () => {
-        if (!formData) {
-            return <p className={styles.loadingMessage}>Loading data...</p>;
-        }
-
-        const selectedData = formData[selectedForm];
-
-        if (!selectedData) {
-            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
-        }
-
-        return (
-            <div className={styles.gridContainer}>
-                {Object.entries(selectedData).map(([key, value]) => (
-                    <div key={key} className={styles.card}>
-                        <div className={styles.cardHeader}>
-                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
-                            {key.replace(/_/g, ' ')}
-                        </div>
-                        <div className={styles.cardContent}>
-                            {Array.isArray(value) ? value.join(', ') : value}
-                        </div>
-                    </div>
-                ))}
-
-                
-            </div>
-        );
-    };
-
-    return <div className={styles.formDisplay}>{renderFormData()}</div>;
-};
-
-export default NewFormDisplay;
-
-
 /* Main container */
 .formDisplay {
-   background: linear-gradient(135deg, #1e293b, #334155);
+    background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
     height: 100%;
     width: 100%;
     overflow-y: auto;
     display: flex;
-    gap: 20px;
+    justify-content: center;
+    align-items: center;
     font-family: 'Arial', sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 /* Grid layout for cards */
@@ -88,22 +18,26 @@ export default NewFormDisplay;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     width: 100%;
+    max-width: 1200px; /* Ensure a max width for better spacing */
 }
 
 /* Card styles */
 .card {
-    background-color: #f1f5f9;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, #ffffff, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden; /* Ensure it handles overflow properly */
+    min-height: 300px; /* Stretching the card to fill vertically */
 }
 
 .card:hover {
     transform: scale(1.05);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Card header */
@@ -117,12 +51,18 @@ export default NewFormDisplay;
     display: flex;
     align-items: center;
     gap: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    box-shadow: inset 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .cardIcon {
     color: #f8fafc;
+    transition: transform 0.4s ease;
+}
+
+.card:hover .cardIcon {
+    transform: rotate(360deg);
 }
 
 /* Card content */
@@ -130,6 +70,10 @@ export default NewFormDisplay;
     padding: 20px;
     font-size: 1rem;
     color: #374151;
+    flex-grow: 1; /* Stretch the content area */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 /* Next button */
@@ -140,7 +84,7 @@ export default NewFormDisplay;
     color: #fff;
     background-color: #2563eb;
     border: none;
-    border-radius: 5px;
+    border-radius: 30px;
     cursor: pointer;
     transition: background 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
@@ -168,6 +112,16 @@ export default NewFormDisplay;
     color: #e2e8f0;
     text-align: center;
     margin-top: 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 /* Responsive design */
