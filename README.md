@@ -6,15 +6,10 @@ import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const [selectedForm, setSelectedForm] = useState('');
 
     useEffect(() => {
         setFormData(formDataJson);
     }, []);
-
-    const handleFormSelect = (formName) => {
-        setSelectedForm(formName);
-    };
 
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
@@ -38,23 +33,22 @@ const NewFormDisplay = () => {
             return <p className={styles.loadingMessage}>Loading data...</p>;
         }
 
-        const selectedData = formData[selectedForm];
-
-        if (!selectedData) {
-            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
-        }
-
         return (
-            <div className={styles.formDataSection}>
-                {Object.entries(selectedData).map(([key, value]) => (
-                    <div key={key}>
-                        <h2 className={styles.formDataTitle}>
-                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
-                            {key.replace(/_/g, ' ')}
-                        </h2>
-                        <p className={styles.formDataContent}>
-                            {Array.isArray(value) ? value.join(', ') : value}
-                        </p>
+            <div className={styles.formDataContainer}>
+                {Object.entries(formData).map(([formName, formDetails]) => (
+                    <div key={formName} className={styles.formDataSection}>
+                        <h2 className={styles.formTitle}>{formName.replace(/_/g, ' ')}</h2>
+                        {Object.entries(formDetails).map(([key, value]) => (
+                            <div key={key}>
+                                <h3 className={styles.formDataTitle}>
+                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
+                                    {key.replace(/_/g, ' ')}
+                                </h3>
+                                <p className={styles.formDataContent}>
+                                    {Array.isArray(value) ? value.join(', ') : value}
+                                </p>
+                            </div>
+                        ))}
                     </div>
                 ))}
             </div>
@@ -63,36 +57,14 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.formDisplay}>
-            <div className={styles.formSelection}>
-                <div
-                    className={`${styles.formItem} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('claimassist-history-lambda')}
-                >
-                    Verification Status
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </div>
-                <div
-                    className={`${styles.formItem} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('PAYMENT_DETAILS')}
-                >
-                    Reviewer Insights
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </div>
-                <div
-                    className={`${styles.formItem} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`}
-                    onClick={() => handleFormSelect('LOST_POLICY_FORM')}
-                >
-                    Checklist
-                    <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
-                </div>
-            </div>
-
             {renderFormData()}
         </div>
     );
 };
 
 export default NewFormDisplay;
+
+
 
 
 /* Main container */
@@ -109,50 +81,21 @@ export default NewFormDisplay;
     gap: 40px;
 }
 
-/* Form selection section */
-.formSelection {
+/* Container for all forms' data */
+.formDataContainer {
     display: flex;
-    gap: 15px;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding-bottom: 20px;
+    flex-direction: column;
+    gap: 30px;
 }
 
-/* Individual form button */
-.formItem {
-    background-color: #1f2937;
-    color: #f8fafc;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.4s ease;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+/* Titles for form sections */
+.formTitle {
+    font-size: 1.5rem;
+    color: #f2f2f2;
+    margin-bottom: 20px;
 }
 
-.formItem:hover, .formItem.active {
-    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
-    color: #1f2937;
-}
-
-.chevronIcon.active{
-    color: #000;
-}
-
-.chevronIcon {
-    color: #f8fafc;
-    transition: transform 0.3s ease;
-}
-
-.formItem:hover .chevronIcon {
-    transform: translateX(5px);
-}
-
-/* Consistent layout for form data */
+/* Consistent layout for each form data section */
 .formDataSection {
     background-color: #f1f5f9;
     padding: 20px;
@@ -187,8 +130,7 @@ export default NewFormDisplay;
 }
 
 /* Loading and select messages */
-.loadingMessage,
-.selectMessage {
+.loadingMessage {
     font-size: 1.5rem;
     color: #e2e8f0;
     text-align: center;
@@ -209,4 +151,3 @@ export default NewFormDisplay;
         font-size: 0.9rem;
     }
 }
-
