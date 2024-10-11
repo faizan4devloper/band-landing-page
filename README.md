@@ -45,16 +45,16 @@ const NewFormDisplay = () => {
         }
 
         return (
-            <div className={styles.sectionContainer}>
+            <div className={styles.formDataSection}>
                 {Object.entries(selectedData).map(([key, value]) => (
-                    <div key={key} className={styles.expandableSection}>
-                        <div className={styles.sectionHeader}>
-                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.sectionIcon} />
-                            <h3>{key.replace(/_/g, ' ')}</h3>
-                        </div>
-                        <div className={styles.sectionContent}>
+                    <div key={key}>
+                        <h2 className={styles.formDataTitle}>
+                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
+                            {key.replace(/_/g, ' ')}
+                        </h2>
+                        <p className={styles.formDataContent}>
                             {Array.isArray(value) ? value.join(', ') : value}
-                        </div>
+                        </p>
                     </div>
                 ))}
             </div>
@@ -86,6 +86,7 @@ const NewFormDisplay = () => {
                     <FontAwesomeIcon icon={faChevronRight} className={styles.chevronIcon} />
                 </div>
             </div>
+
             {renderFormData()}
         </div>
     );
@@ -94,11 +95,7 @@ const NewFormDisplay = () => {
 export default NewFormDisplay;
 
 
-
-
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
+/* Main container */
 .formDisplay {
     background: linear-gradient(135deg, #1e293b, #334155);
     padding: 30px;
@@ -109,7 +106,7 @@ export default NewFormDisplay;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 40px;
 }
 
 /* Form selection section */
@@ -121,12 +118,13 @@ export default NewFormDisplay;
     padding-bottom: 20px;
 }
 
+/* Individual form button */
 .formItem {
     background-color: #1f2937;
     color: #f8fafc;
     padding: 12px 20px;
-    border-radius: 0px 0px 8px 8px;
-    font-size: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
     font-weight: bold;
     text-transform: uppercase;
     cursor: pointer;
@@ -136,8 +134,13 @@ export default NewFormDisplay;
     gap: 10px;
 }
 
-.formItem.active {
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+.formItem:hover, .formItem.active {
+    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+    color: #1f2937;
+}
+
+.chevronIcon.active{
+    color: #000;
 }
 
 .chevronIcon {
@@ -149,53 +152,38 @@ export default NewFormDisplay;
     transform: translateX(5px);
 }
 
-/* Expandable sections */
-.sectionContainer {
+/* Consistent layout for form data */
+.formDataSection {
+    background-color: #f1f5f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    width: 100%;
-}
-
-.expandableSection {
-    background-color: #f1f5f9;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: max-height 0.5s ease, padding 0.5s ease;
-    padding: 20px;
-    max-height: 500px; /* Adjust this based on content */
-}
-
-.sectionHeader {
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    color: white;
-    padding: 15px;
-    font-size: 1.5rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-}
-
-.sectionIcon {
-    color: white;
-}
-
-.sectionContent {
-    padding: 10px 15px;
-    font-size: 1rem;
     color: #374151;
-    line-height: 1.6;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.5s ease;
 }
 
-.expandableSection:hover .sectionContent {
-    max-height: 1000px; /* Will stretch to fit content */
-    padding: 20px;
+/* Titles for each section in form data */
+.formDataTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* Content in form data */
+.formDataContent {
+    font-size: 1rem;
+    color: #1f2937;
+    padding-left: 15px;
+    line-height: 1.6;
+}
+
+/* Hover effect */
+.formDataSection:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
 /* Loading and select messages */
@@ -207,13 +195,18 @@ export default NewFormDisplay;
     margin-top: 20px;
 }
 
-/* Responsive design */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .formDisplay {
         padding: 15px;
     }
 
-    .sectionHeader {
-        font-size: 1.2rem;
+    .formDataTitle {
+        font-size: 1rem;
+    }
+    
+    .formDataContent {
+        font-size: 0.9rem;
     }
 }
+
