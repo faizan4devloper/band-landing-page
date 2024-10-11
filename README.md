@@ -1,141 +1,82 @@
-/* Main container */
-.formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    padding: 30px;
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Arial', sans-serif;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Grid layout for cards */
-.gridContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px; /* Ensure a max width for better spacing */
-}
-
-/* Card styles */
-.card {
-    background: linear-gradient(135deg, #ffffff, #e2e8f0);
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: hidden; /* Ensure it handles overflow properly */
-    min-height: 300px; /* Stretching the card to fill vertically */
-}
-
-.card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Card header */
-.cardHeader {
-    background-color: #2563eb;
-    color: white;
-    padding: 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: capitalize;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    box-shadow: inset 0 -2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.cardIcon {
-    color: #f8fafc;
-    transition: transform 0.4s ease;
-}
-
-.card:hover .cardIcon {
-    transform: rotate(360deg);
-}
-
-/* Card content */
-.cardContent {
-    padding: 20px;
-    font-size: 1rem;
-    color: #374151;
-    flex-grow: 1; /* Stretch the content area */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-
-/* Next button */
-.nextBtn {
-    margin-top: 20px;
-    padding: 0.75rem 2rem;
-    font-size: 1.1rem;
-    color: #fff;
-    background-color: #2563eb;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    justify-self: center;
-}
-
-.nextBtn:hover {
-    background-color: #3b82f6;
-    transform: scale(1.05);
-}
-
-.nextIcon {
-    margin-left: 10px;
-    transition: transform 0.3s ease;
-}
-
-.nextBtn:hover .nextIcon {
-    transform: translateX(5px);
-}
-
-/* Loading and select messages */
-.loadingMessage,
-.selectMessage {
-    font-size: 1.5rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Animations */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
+{
+  "claimassist-history-lambda": {
+    "Approver1_Focuses_On": [
+      "reason for lost policy",
+      "date of loss",
+      "police report or official documentation to support lost policy claim",
+      "details about circumstances of policy loss",
+      "copy of government issued photo ID"
+    ],
+    "Approver2_Focuses_On": [
+      "wet signature on form",
+      "matching signatures",
+      "specification of date of loss",
+      "confirmation of bank account ownership",
+      "clarity in circumstances of policy loss",
+      "matching account details"
+    ],
+    "Additional_Information": [
+      "Reason for lost policy with details",
+      "Date of loss",
+      "Police report for lost policy",
+      "Details on circumstances of policy loss",
+      "Photo identification of policyholder"
+    ],
+    "Suggested_Action_Items": [
+      "Resubmit form with wet signature",
+      "Resign form if signature mismatch",
+      "Provide date of loss",
+      "Confirm bank account details",
+      "Submit additional supporting documents"
+    ],
+    "Detailed_Summary": "The verification officers focus on different details to process the claims. Approver1 focuses more on reasons, dates, and documents related to lost policies, while Approver2 focuses on details related to signatures, dates, and account details in forms. Additional details on reasons, dates, documents, and identities would help process similar claims along with suggested actions to resubmit forms with corrections."
+  },
+  "claimassist-docextract-lambda": {
+    "Input_Payload": {
+      "filename": "claimassist%2Fclaimforms%2FCL17254323%2F1.Filled_L2065777+PIF+and+LPF.pdf",
+      "claimid": "CL17254323"
+    },
+    "Output_Response": {
+      "ExtractedData": {
+        "PAYMENT_INSTRUCTION_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "PAYMENT_DETAILS": {
+          "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
+          "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
+          "ACCOUNT_NUMBER": "50614866",
+          "BANK_SORT_CODE": "20-57-40",
+          "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
+          "SIGNED_DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "LOST_POLICY_FORM_SIGNED": {
+          "FULL_NAME": "Mr Mcglynn, James Christopher",
+          "DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM_WITNESSED_BY": {
+          "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
+          "DATE": "13/06/2024",
+          "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
+          "OFFICIAL_STAMP": "",
+          "DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
+          "OCCUPATION_OF_WITNESS": "Teacher"
+        }
+      },
+      "rawtext": [
+        "claimassist/claimforms/CL17254323/1: 'Retirement, Investments, Insurance, AVIVA... etc.'"
+      ],
+      "keyvaluesText": [
+        "claimassist/claimforms/CL17254323/1: ['Key: Account holder's name, Value: J.C.MC Ghywon', 'Key: Policy Number:, Value: L2065777', ...etc.]"
+      ]
     }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-    .formDisplay {
-        padding: 15px;
-    }
-
-    .cardHeader {
-        font-size: 1rem;
-    }
-
-    .nextBtn {
-        font-size: 1rem;
-        padding: 0.5rem 1.5rem;
-    }
+  }
 }
