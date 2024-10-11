@@ -50,13 +50,9 @@ const NewFormDisplay = ({ selectedForm }) => {
 
         return (
             <div className={styles.formContent}>
-                <button className={styles.nextBtn} onClick={handleNextClick}>
-                    Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
-                </button>
-
-                <div className={styles.formTable}>
+                <div className={styles.cardsWrapper}>
                     {Object.entries(selectedData).map(([key, value]) => (
-                        <div key={key} className={styles.formRow}>
+                        <div key={key} className={styles.formCard}>
                             <div className={styles.formLabel}>
                                 <FontAwesomeIcon icon={chooseIcon(key)} className={styles.formIcon} />
                                 {key.replace(/_/g, ' ')}
@@ -67,18 +63,38 @@ const NewFormDisplay = ({ selectedForm }) => {
                         </div>
                     ))}
                 </div>
+                <div className={styles.actionSection}>
+                    <button className={styles.nextBtn} onClick={handleNextClick}>
+                        Next <FontAwesomeIcon icon={faChevronRight} className={styles.nextIcon} />
+                    </button>
+                </div>
             </div>
         );
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.sidebar}>
-                <h2>Forms</h2>
-                {/* Add other sidebar elements here */}
+            <div className={styles.descriptionSection}>
+                <h2>Form Description</h2>
+                <p>Details and metadata about the selected form.</p>
             </div>
-            <div className={styles.mainContent}>
+            <div className={styles.formDisplaySection}>
                 {renderFormData()}
+            </div>
+            <div className={styles.uploadSection}>
+                <h3>Uploaded Files</h3>
+                <div className={styles.uploadArea}>
+                    {/* You can add file upload inputs here */}
+                    <p>Drag and drop files or click to upload.</p>
+                </div>
+            </div>
+            <div className={styles.historySection}>
+                <h3>History</h3>
+                <ul>
+                    {/* Add history items here */}
+                    <li>Previous form submission - 04 Feb, 2023</li>
+                    <li>Another entry - 02 Mar, 2023</li>
+                </ul>
             </div>
         </div>
     );
@@ -86,114 +102,138 @@ const NewFormDisplay = ({ selectedForm }) => {
 
 export default NewFormDisplay;
 
-
-/* Main container */
+/* Main container layout */
 .container {
-    display: flex;
-    height: 100vh;
-    background-color: #f8f9fa;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-gap: 2rem;
+    padding: 2rem;
+    background-color: #f4f5f7;
     font-family: 'Inter', sans-serif;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 240px;
+/* Description section */
+.descriptionSection {
     background-color: #fff;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.sidebar h2 {
+.descriptionSection h2 {
     font-size: 1.5rem;
     color: #1f2937;
     margin-bottom: 1rem;
 }
 
-/* Main content area */
-.mainContent {
-    flex-grow: 1;
-    padding: 40px;
-    overflow-y: auto;
-    background-color: #f1f5f9;
+.descriptionSection p {
+    color: #6b7280;
+    font-size: 1rem;
 }
 
-.formContent {
+/* Form display section */
+.formDisplaySection {
     background-color: #fff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-/* Table styling */
-.formTable {
+.cardsWrapper {
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
 }
 
-.formRow {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #e5e7eb;
+.formCard {
+    background-color: #eef2f7;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .formLabel {
+    font-weight: bold;
+    color: #2563eb;
     display: flex;
     align-items: center;
-    color: #2563eb;
-    font-weight: bold;
 }
 
 .formIcon {
-    margin-right: 10px;
-    color: #7ca2e1;
+    margin-right: 0.5rem;
+    color: #60a5fa;
 }
 
 .formValue {
+    margin-top: 0.5rem;
     color: #374151;
-    font-size: 0.9rem;
 }
 
-/* Next button */
+/* Action section */
+.actionSection {
+    margin-top: 2rem;
+    text-align: right;
+}
+
 .nextBtn {
-    background-color: #1e40af;
+    background-color: #2563eb;
     color: #fff;
-    padding: 12px 24px;
+    padding: 10px 20px;
+    border-radius: 8px;
     border: none;
-    border-radius: 6px;
     cursor: pointer;
-    margin-top: 20px;
-    font-size: 1rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .nextBtn:hover {
-    background-color: #1d4ed8;
-    transform: scale(1.05);
+    background-color: #1e40af;
+    transform: translateY(-2px);
 }
 
 .nextIcon {
     margin-left: 8px;
-    transition: transform 0.3s ease;
 }
 
-.nextBtn:hover .nextIcon {
-    transform: translateX(5px);
+/* Upload section */
+.uploadSection {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .formTable {
-        grid-template-columns: 1fr;
-    }
+.uploadArea {
+    background-color: #f9fafb;
+    padding: 2rem;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    text-align: center;
+    color: #6b7280;
+}
 
-    .sidebar {
-        width: 180px;
-    }
+/* History section */
+.historySection {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-    .mainContent {
-        padding: 20px;
-    }
+.historySection h3 {
+    margin-bottom: 1rem;
+    color: #1f2937;
+}
+
+.historySection ul {
+    list-style: none;
+    padding: 0;
+}
+
+.historySection li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+    color: #6b7280;
 }
