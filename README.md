@@ -1,70 +1,80 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
-import styles from './NewFormDisplay.module.css';
+The above error occurred in the <p> component:
 
-const NewFormDisplay = () => {
-    const [formData, setFormData] = useState(null);
+    at p
+    at div
+    at div
+    at div
+    at div
+    at NewFormDisplay (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1384:82)
+    at div
+    at NewPage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1543:81)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47570:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48272:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48206:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46147:5)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49:80)
 
-    useEffect(() => {
-        setFormData(formDataJson);
-    }, []);
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ react-dom.development.js:18704
+Show 1 more frame
+Show less
+4react-dom.development.js:18704 The above error occurred in the <p> component:
 
-    const chooseIcon = (key) => {
-        switch (key.toLowerCase()) {
-            case 'approver1_focuses_on':
-                return faInfoCircle;
-            case 'approver2_focuses_on':
-                return faSignature;
-            case 'additional_information':
-                return faFileAlt;
-            case 'suggested_action_items':
-                return faQuestionCircle;
-            case 'detailed_summary':
-                return faIdCard;
-            default:
-                return faCalendarAlt;
-        }
-    };
+    at p
+    at div
+    at div
+    at div
+    at div
+    at NewFormDisplay (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/main.19c2cec846d85e35ae14.hot-update.js:34:82)
+    at div
+    at NewPage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1543:81)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47570:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48272:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48206:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46147:5)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49:80)
 
-    const renderFormData = () => {
-        if (!formData) {
-            return <p className={styles.loadingMessage}>Loading data...</p>;
-        }
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ react-dom.development.js:18704
+Show 1 more frame
+Show less
+2react-dom.development.js:18704 The above error occurred in the <p> component:
 
-        return (
-            <div className={styles.formDataContainer}>
-                {Object.entries(formData).map(([formName, formDetails]) => (
-                    <div key={formName} className={styles.formDataSection}>
-                        <h2 className={styles.formTitle}>{formName.replace(/_/g, ' ')}</h2>
-                        {formDetails && Object.entries(formDetails).map(([key, value]) => (
-                            <div key={key}>
-                                <h3 className={styles.formDataTitle}>
-                                    <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
-                                    {key.replace(/_/g, ' ')}
-                                </h3>
-                                {/* Ensure value exists and handle arrays properly */}
-                                {value ? (
-                                    <p className={styles.formDataContent}>
-                                        {Array.isArray(value) ? value.join(', ') : value}
-                                    </p>
-                                ) : (
-                                    <p className={styles.formDataContent}>No data available</p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-        );
-    };
+    at p
+    at div
+    at div
+    at div
+    at div
+    at NewFormDisplay (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/main.60f08618436ec46bc0f9.hot-update.js:34:82)
+    at div
+    at NewPage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1543:81)
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47570:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48272:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48206:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46147:5)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49:80)
 
-    return (
-        <div className={styles.formDisplay}>
-            {renderFormData()}
-        </div>
-    );
-};
-
-export default NewFormDisplay;
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ react-dom.development.js:18704
+update.callback @ react-dom.development.js:18737
+callCallback @ react-dom.development.js:15036
+commitUpdateQueue @ react-dom.development.js:15057
+commitLayoutEffectOnFiber @ react-dom.development.js:23430
+commitLayoutMountEffects_complete @ react-dom.development.js:24727
+commitLayoutEffects_begin @ react-dom.development.js:24713
+commitLayoutEffects @ react-dom.development.js:24651
+commitRootImpl @ react-dom.development.js:26862
+commitRoot @ react-dom.development.js:26721
+finishConcurrentRender @ react-dom.development.js:25931
+performConcurrentWorkOnRoot @ react-dom.development.js:25848
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+Show 15 more frames
+Show less
