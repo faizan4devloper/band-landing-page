@@ -1,3 +1,52 @@
+/* Button to toggle document preview */
+.togglePreviewButton {
+  position: fixed; /* Fixed at the bottom-right corner */
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 50px; /* Rounded button */
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-size: 1rem; /* Slightly larger text */
+  display: flex;
+  align-items: center; /* Align icon and text */
+  gap: 8px; /* Space between icon and text */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.togglePreviewButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.1); /* Slight scaling on hover */
+}
+
+/* Icon styling */
+.togglePreviewButtonIcon {
+  font-size: 1.2rem; /* Adjust icon size */
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+  .togglePreviewButton {
+    padding: 10px 20px;
+    bottom: 15px;
+    right: 15px;
+    font-size: 0.9rem;
+  }
+}
+
+
+import { FaFileAlt } from 'react-icons/fa'; // FontAwesome for document icon
+
+<button className={styles.togglePreviewButton} onClick={togglePreview}>
+    <FaFileAlt className={styles.togglePreviewButtonIcon} />
+    {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
+</button>
+
+
+
 
 
 import React, { useState } from 'react';
