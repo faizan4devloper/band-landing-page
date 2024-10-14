@@ -56,6 +56,7 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
+
 .container {
   display: flex;
   flex-direction: row;
@@ -63,33 +64,37 @@ export default UploadDocuments;
   max-width: 100%;
   height: 100vh;
   padding: 20px;
+  position: relative;
   transition: all 0.5s ease;
 }
 
-/* Adjust the widths based on the state */
 .uploadDocuments {
-  flex: 0;
-  background: rgba(0, 0, 0, 0.5);
+  flex: 2;
+  background:linear-gradient(135deg, #1e293b, #334155);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   border-radius: 12px;
   padding: 20px;
   height: 100%;
   overflow-y: auto;
-  width: 0; /* Hidden initially */
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%; /* Adjust as needed */
+  transform: translateX(100%); /* Initially off-screen */
+  transition: all 0.5s ease; /* Smooth transition */
   opacity: 0; /* Start hidden */
-  transition: all 0.5s ease;
 }
 
-/* When visible, it takes up space */
+/* Slide-in from the right */
 .slideIn {
-  width: 30%; /* Adjust the width as necessary */
+  transform: translateX(0);
   opacity: 1;
 }
 
-/* When hidden, it goes back to no width */
+/* Slide-out to the right */
 .slideOut {
-  width: 0;
+  transform: translateX(100%);
   opacity: 0;
 }
 
@@ -114,6 +119,7 @@ export default UploadDocuments;
 
 .preview {
   display: flex;
+  margin:auto;
   flex-wrap: wrap;
   gap: 15px;
 }
@@ -127,86 +133,6 @@ export default UploadDocuments;
 }
 
 .preview > *:hover {
-  transform: scale(1.05);
-}
-
-/* Shrinking effect for Sidebar and FormDisplay */
-.shrink {
-  flex: 1; /* Adjust this to shrink the other components when the preview is open */
-  transition: all 0.5s ease;
-}
-
-.sidebar {
-  flex: 2;
-  max-width: 250px;
-  height: 100%;
-  transition: all 0.5s ease;
-}
-
-.formDisplay {
-  flex: 4;
-  height: 100%;
-  max-width: 600px;
-  overflow-y: auto;
-  transition: all 0.5s ease;
-}
-
-/* Button to toggle document preview */
-.togglePreviewButton {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Added a transform transition */
-}
-
-.togglePreviewButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.1); /* Slight scale on hover */
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
-
-.noFile {
-  color: #67748b;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.preview > * {
-  background-color: #e2e8f0;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.preview > *:hover {
-  transform: scale(1.05);
 }
 
 /* Shrinking effect for Sidebar and FormDisplay */
