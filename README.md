@@ -18,6 +18,198 @@ const UploadDocuments = () => {
     const [selectedForm, setSelectedForm] = useState(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar starts open by default
     const [isDocumentPreviewVisible, setIsDocumentPreviewVisible] = useState(false); // DocumentPreview starts hidden
+    const [isUploadDocumentsVisible, setIsUploadDocumentsVisible] = useState(true); // UploadDocuments section starts visible
+
+    // Function to handle the toggle state
+    const handleToggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
+    // Function to toggle the visibility of DocumentPreview
+    const handleToggleDocumentPreview = () => {
+        setIsDocumentPreviewVisible(!isDocumentPreviewVisible);
+    };
+
+    // Function to toggle the visibility of the entire UploadDocuments section
+    const handleToggleUploadDocuments = () => {
+        setIsUploadDocumentsVisible(!isUploadDocumentsVisible);
+    };
+
+    return (
+        <div className={styles.container}>
+            {/* Button to toggle the visibility of the entire UploadDocuments section */}
+            <button 
+                className={styles.toggleUploadDocumentsButton} 
+                onClick={handleToggleUploadDocuments}
+            >
+                {isUploadDocumentsVisible ? 'Hide Documents Section' : 'Show Documents Section'}
+            </button>
+
+            {/* UploadDocuments section, hidden or visible */}
+            {isUploadDocumentsVisible && (
+                <div className={styles.uploadDocuments}>
+                    <h2 className={styles.documentHead}>Documents Review</h2>
+                    
+                    {/* Button to toggle DocumentPreview visibility */}
+                    <button 
+                        className={styles.togglePreviewButton} 
+                        onClick={handleToggleDocumentPreview}
+                    >
+                        {isDocumentPreviewVisible ? 'Hide Documents' : 'Show Documents'}
+                    </button>
+
+                    {allDocuments.length > 0 && (
+                        <div 
+                            className={`${styles.reviewSection} ${isDocumentPreviewVisible ? styles.visible : styles.hidden}`}
+                        >
+                            <div className={styles.preview}>
+                                {allDocuments.map((doc, index) => (
+                                    <DocumentPreview key={index} document={doc} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+};
+
+export default UploadDocuments;
+
+
+
+
+.container {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  height: 100vh;
+  padding: 20px;
+  position: relative;
+  transition: all 0.5s ease;
+}
+
+.uploadDocuments {
+  flex: 2;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  border-radius: 12px;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+
+.uploadDocuments.hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.documentHead {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+  text-align: center;
+}
+
+/* Transition effect for DocumentPreview section */
+.reviewSection {
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.reviewSection.visible {
+  max-height: 500px;
+  opacity: 1;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.preview > * {
+  background-color: #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.preview > *:hover {
+  transform: scale(1.05);
+}
+
+/* Button to toggle UploadDocuments visibility */
+.toggleUploadDocumentsButton {
+  margin-bottom: 20px;
+  background-color: #dc3545;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.toggleUploadDocumentsButton:hover {
+  background-color: #c82333;
+}
+
+/* Button to toggle document preview */
+.togglePreviewButton {
+  margin-top: 20px;
+  background-color: #28a745;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.togglePreviewButton:hover {
+  background-color: #218838;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import DocumentPreview from './DocumentPreview';
+import FormDisplay from './FormDisplay';
+import styles from './UploadDocuments.module.css';
+import data from '../../../Json/DocumentEntities.json'; // Import the JSON file
+
+const UploadDocuments = () => {
+    const location = useLocation();
+    const { uploadedFile, documents = [] } = location.state || {};
+
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
+
+    const [selectedForm, setSelectedForm] = useState(null);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Sidebar starts open by default
+    const [isDocumentPreviewVisible, setIsDocumentPreviewVisible] = useState(false); // DocumentPreview starts hidden
 
     // Function to handle the toggle state
     const handleToggleSidebar = () => {
