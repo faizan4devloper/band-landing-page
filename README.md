@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -23,6 +25,10 @@ const UploadDocuments = () => {
 
     return (
         <div className={styles.container}>
+            {/* Sidebar and FormDisplay sections */}
+            <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+            <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+
             {/* UploadDocuments section */}
             <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
@@ -39,10 +45,6 @@ const UploadDocuments = () => {
                 )}
             </div>
 
-            {/* Sidebar and FormDisplay sections will shrink when preview is visible */}
-            <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-            <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-
             {/* Toggle Button */}
             <button className={styles.togglePreviewButton} onClick={togglePreview}>
                 {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
@@ -54,8 +56,6 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
-
-
 .container {
   display: flex;
   flex-direction: row;
@@ -63,12 +63,12 @@ export default UploadDocuments;
   max-width: 100%;
   height: 100vh;
   padding: 20px;
-  position: relative;
   transition: all 0.5s ease;
 }
 
+/* Adjust the widths based on the state */
 .uploadDocuments {
-  flex: 2;
+  flex: 0;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
@@ -76,24 +76,20 @@ export default UploadDocuments;
   padding: 20px;
   height: 100%;
   overflow-y: auto;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 50%; /* Adjust as needed */
-  transform: translateX(100%); /* Initially off-screen */
-  transition: all 0.5s ease; /* Smooth transition */
+  width: 0; /* Hidden initially */
   opacity: 0; /* Start hidden */
+  transition: all 0.5s ease;
 }
 
-/* Slide-in from the right */
+/* When visible, it takes up space */
 .slideIn {
-  transform: translateX(0);
+  width: 30%; /* Adjust the width as necessary */
   opacity: 1;
 }
 
-/* Slide-out to the right */
+/* When hidden, it goes back to no width */
 .slideOut {
-  transform: translateX(100%);
+  width: 0;
   opacity: 0;
 }
 
@@ -108,6 +104,85 @@ export default UploadDocuments;
 .reviewSection {
   display: flex;
   flex-direction: column;
+}
+
+.noFile {
+  color: #67748b;
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.preview > * {
+  background-color: #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.preview > *:hover {
+  transform: scale(1.05);
+}
+
+/* Shrinking effect for Sidebar and FormDisplay */
+.shrink {
+  flex: 1; /* Adjust this to shrink the other components when the preview is open */
+  transition: all 0.5s ease;
+}
+
+.sidebar {
+  flex: 2;
+  max-width: 250px;
+  height: 100%;
+  transition: all 0.5s ease;
+}
+
+.formDisplay {
+  flex: 4;
+  height: 100%;
+  max-width: 600px;
+  overflow-y: auto;
+  transition: all 0.5s ease;
+}
+
+/* Button to toggle document preview */
+.togglePreviewButton {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Added a transform transition */
+}
+
+.togglePreviewButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.1); /* Slight scale on hover */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 .noFile {
