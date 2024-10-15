@@ -20,10 +20,10 @@ const NewFormDisplay = () => {
         setFormData(formDataJson);
     }, []);
 
-    const toggleExpanded = (key) => {
+    const toggleExpanded = (sectionKey) => {
         setExpanded((prev) => ({
             ...prev,
-            [key]: !prev[key],
+            [sectionKey]: !prev[sectionKey],
         }));
     };
 
@@ -100,103 +100,3 @@ const NewFormDisplay = () => {
 };
 
 export default NewFormDisplay;
-
-
-/* Main container for the whole dashboard */
-.dashboardContainer {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
-    height: 100%;
-    padding: 20px;
-    background: linear-gradient(135deg, #1e293b, #334155);
-    margin: 0 auto;
-}
-
-/* Styling each card (like a widget) */
-.card {
-    background-color: #fff;
-    border: 1px solid #d1d5db;
-    border-left: 5px solid #7ca2e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 15px;
-    color: #374151;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border-radius: 8px;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
-/* Sub-card container */
-.subCardContainer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-/* Each sub-card for displaying individual sections */
-.subCard {
-    background: linear-gradient(135deg, #93c5fd, #2563eb);
-    border-radius: 8px;
-    padding: 10px;
-    color: white;
-    flex: 1 1 calc(50% - 10px);
-    transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.subCard:hover {
-    background: linear-gradient(135deg, #60a5fa, #1d4ed8);
-}
-
-/* Sub-card title */
-.subCardTitle {
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-/* Sub-card content */
-.subCardContent {
-    font-size: 0.85rem;
-}
-
-/* Icon styling */
-.cardIcon {
-    margin-right: 8px;
-    color: white;
-    font-size: 1.1rem;
-}
-
-/* Button styling */
-.viewAllButton {
-    background: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-top: 20px;
-    border: none;
-    cursor: pointer;
-    color: #2563eb;
-    transition: color 0.2s ease;
-}
-
-.viewAllButton:hover {
-    color: #000;
-}
-
-/* Responsive Layout */
-@media (max-width: 768px) {
-    .dashboardContainer {
-        grid-template-columns: 1fr;
-    }
-    .subCard {
-        flex: 1 1 100%;
-    }
-}
