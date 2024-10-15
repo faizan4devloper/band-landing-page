@@ -100,8 +100,63 @@ const NewFormDisplay = () => {
 export default NewFormDisplay;
 
 
+/* Main container for the whole dashboard */
+.dashboardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+    height: 100%;
+    padding: 20px;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    margin: 0 auto;
+}
 
-/* Additional styles for the Verification Status list */
+/* Styling each card (similar to widgets in the screenshot) */
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    color: #374151;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s, box-shadow 0.3s; /* Animation on hover */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+}
+
+/* Card Header */
+.card h3 {
+    font-size: 1.25rem; /* Increased font size */
+    color: #1f2937;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #2563eb; /* Bottom border for distinction */
+    padding-bottom: 10px; /* Space between text and border */
+}
+
+/* Form Data Section */
+.formDataSection {
+    margin-top: 20px;
+}
+
+.formDataTitle {
+    font-size: 1rem; /* Increased font size for titles */
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 8px;
+}
+
+.formDataContent {
+    font-size: 0.9rem; /* Adjust font size */
+    color: #4b5563;
+    line-height: 1.5; /* Better readability */
+}
+
+/* List styles for Verification Status */
 .verificationList {
     list-style: none; /* Remove default bullet points */
     padding-left: 0; /* Remove padding */
@@ -110,27 +165,30 @@ export default NewFormDisplay;
 .verificationItem {
     display: flex;
     align-items: center; /* Align icon and text vertically */
-    margin-bottom: 8px; /* Space between items */
-    font-size: 0.8rem; /* Font size adjustment */
-    color: #4b5563; /* Text color for list items */
+    margin-bottom: 12px; /* Space between items */
+    font-size: 0.9rem; /* Font size adjustment */
+    color: #374151; /* Text color for list items */
+    transition: color 0.3s; /* Color transition */
+}
+
+.verificationItem:hover {
+    color: #2563eb; /* Change color on hover */
 }
 
 .listIcon {
     margin-right: 8px; /* Space between icon and text */
+    color: #2563eb; /* Icon color */
 }
 
-/* Additional styles for Reviewer Insights structured data */
+/* Nested object styling */
 .nestedObject {
     margin-top: 10px; /* Space between nested sections */
 }
 
-/* Style the card header */
-.card h3 {
-    font-size: 1rem;
-    color: #1f2937;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #2563eb; /* Add a bottom border for distinction */
-    padding-bottom: 5px; /* Space between text and border */
+.nestedObject h4 {
+    font-size: 0.85rem; /* Adjusted font size for nested keys */
+    font-weight: 500;
+    color: #374151;
 }
 
 /* Responsive Layout */
