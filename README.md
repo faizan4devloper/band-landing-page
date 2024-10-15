@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faChevronRight,
     faSignature,
     faIdCard,
     faFileAlt,
@@ -9,24 +8,30 @@ import {
     faQuestionCircle,
     faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
+import formDataJson from '../../../Json/NewEntities.json'; // Make sure this path is correct
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const [expanded, setExpanded] = useState({});
+    const [expanded, setExpanded] = useState({
+        verificationStatus: false,
+        reviewerInsights: false,
+        checklist: false
+    });
 
     useEffect(() => {
         setFormData(formDataJson);
     }, []);
 
-    const toggleExpanded = (key) => {
+    // Toggle expanded state for a specific section
+    const toggleExpanded = (section) => {
         setExpanded((prev) => ({
             ...prev,
-            [key]: !prev[key],
+            [section]: !prev[section],
         }));
     };
 
+    // Chooses the correct icon based on the section name
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
             case 'approver1_focuses_on':
@@ -44,13 +49,14 @@ const NewFormDisplay = () => {
         }
     };
 
+    // Renders data for a specific section
     const renderFormData = (formKey, isExpanded) => {
         if (!formData || !formData[formKey]) return null;
 
         const selectedData = formData[formKey];
         const entries = Object.entries(selectedData);
 
-        // Show fewer entries when collapsed
+        // Show first 3 entries if collapsed
         const displayedEntries = isExpanded ? entries : entries.slice(0, 3);
 
         return (
@@ -72,28 +78,30 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.dashboardContainer}>
-            {/* Use unique keys for expanded state but same data source */}
+            {/* Section 1: Verification Status */}
             <div className={styles.card}>
                 <h3>Verification Status</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Verification Status'])}
-                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Verification Status')}>
-                    {expanded['Verification Status'] ? 'View Less' : 'View All'}
+                {renderFormData('verification_status', expanded.verificationStatus)} 
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('verificationStatus')}>
+                    {expanded.verificationStatus ? 'View Less' : 'View All'}
                 </button>
             </div>
 
+            {/* Section 2: Reviewer Insights */}
             <div className={styles.card}>
                 <h3>Reviewer Insights</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Reviewer Insights'])}
-                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Reviewer Insights')}>
-                    {expanded['Reviewer Insights'] ? 'View Less' : 'View All'}
+                {renderFormData('reviewer_insights', expanded.reviewerInsights)} 
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('reviewerInsights')}>
+                    {expanded.reviewerInsights ? 'View Less' : 'View All'}
                 </button>
             </div>
 
+            {/* Section 3: Checklist */}
             <div className={styles.card}>
                 <h3>Checklist</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Checklist'])}
-                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Checklist')}>
-                    {expanded['Checklist'] ? 'View Less' : 'View All'}
+                {renderFormData('checklist', expanded.checklist)} 
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('checklist')}>
+                    {expanded.checklist ? 'View Less' : 'View All'}
                 </button>
             </div>
         </div>
