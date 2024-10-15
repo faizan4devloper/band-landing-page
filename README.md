@@ -1,226 +1,225 @@
-/* Button to toggle document preview */
-.togglePreviewButton {
-  position: fixed; /* Fixed at the bottom-right corner */
-  bottom: 20px;
-  right: 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 50px; /* Rounded button */
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-size: 1rem; /* Slightly larger text */
-  display: flex;
-  align-items: center; /* Align icon and text */
-  gap: 8px; /* Space between icon and text */
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
+import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/NewEntities.json';
+import styles from './NewFormDisplay.module.css';
 
-.togglePreviewButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.1); /* Slight scaling on hover */
-}
+const NewFormDisplay = () => {
+    const [formData, setFormData] = useState(null);
+    const [selectedForm, setSelectedForm] = useState('');
 
-/* Icon styling */
-.togglePreviewButtonIcon {
-  font-size: 1.2rem; /* Adjust icon size */
-}
+    useEffect(() => {
+        setFormData(formDataJson);
+    }, []);
 
-/* For mobile responsiveness */
-@media (max-width: 768px) {
-  .togglePreviewButton {
-    padding: 10px 20px;
-    bottom: 15px;
-    right: 15px;
-    font-size: 0.9rem;
-  }
-}
+    const handleFormSelect = (formName) => {
+        setSelectedForm(formName);
+    };
 
+    const chooseIcon = (key) => {
+        switch (key.toLowerCase()) {
+            case 'approver1_focuses_on':
+                return faInfoCircle;
+            case 'approver2_focuses_on':
+                return faSignature;
+            case 'additional_information':
+                return faFileAlt;
+            case 'suggested_action_items':
+                return faQuestionCircle;
+            case 'detailed_summary':
+                return faIdCard;
+            default:
+                return faCalendarAlt;
+        }
+    };
 
-import { FaFileAlt } from 'react-icons/fa'; // FontAwesome for document icon
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.loadingMessage}>Loading data...</p>;
+        }
 
-<button className={styles.togglePreviewButton} onClick={togglePreview}>
-    <FaFileAlt className={styles.togglePreviewButtonIcon} />
-    {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
-</button>
+        const selectedData = formData[selectedForm];
 
+        if (!selectedData) {
+            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
+        }
 
-
-
-
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import DocumentPreview from './DocumentPreview';
-import FormDisplay from './FormDisplay';
-import styles from './UploadDocuments.module.css';
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    const [selectedForm, setSelectedForm] = useState(null);
-    const [isPreviewVisible, setIsPreviewVisible] = useState(false); // State to manage toggle
-
-    const togglePreview = () => {
-        setIsPreviewVisible(!isPreviewVisible); // Toggle visibility
+        return (
+            <div className={styles.formDataSection}>
+                {Object.entries(selectedData).map(([key, value]) => (
+                    <div key={key}>
+                        <h2 className={styles.formDataTitle}>
+                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
+                            {key.replace(/_/g, ' ')}
+                        </h2>
+                        <p className={styles.formDataContent}>
+                            {Array.isArray(value) ? value.join(', ') : value}
+                        </p>
+                    </div>
+                ))}
+            </div>
+        );
     };
 
     return (
-        <div className={styles.container}>
-            {/* Sidebar and FormDisplay sections */}
-            <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-            <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-
-            {/* UploadDocuments section */}
-            <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
-                <h2 className={styles.documentHead}>Documents Review</h2>
-                {allDocuments.length > 0 ? (
-                    <div className={styles.reviewSection}>
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <p className={styles.noFile}>No document available</p>
-                )}
+        <div className={styles.formDisplay}>
+           
+<div className={styles.formSelection}>
+            <div
+                className={`${styles.formItem} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`}
+                onClick={() => handleFormSelect('claimassist-history-lambda')}
+            >
+                Verification Status
+                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`} />
             </div>
+            <div
+                className={`${styles.formItem} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`}
+                onClick={() => handleFormSelect('PAYMENT_DETAILS')}
+            >
+                Reviewer Insights
+                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`} />
+            </div>
+            <div
+                className={`${styles.formItem} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`}
+                onClick={() => handleFormSelect('LOST_POLICY_FORM')}
+            >
+                Checklist
+                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`} />
+            </div>
+        </div>
 
-            {/* Toggle Button */}
-            <button className={styles.togglePreviewButton} onClick={togglePreview}>
-                {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
-            </button>
+            {renderFormData()}
         </div>
     );
 };
 
-export default UploadDocuments;
+export default NewFormDisplay;
 
 
 
-.container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  max-width: 100%;
-  height: 100vh;
-  padding: 20px;
-  position: relative;
-  transition: all 0.5s ease;
-}
-
-.uploadDocuments {
-  flex: 2;
-  background:linear-gradient(135deg, #1e293b, #334155);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-  border-radius: 12px;
-  padding: 20px;
-  height: 100%;
-  overflow-y: auto;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%; /* Adjust as needed */
-  transform: translateX(100%); /* Initially off-screen */
-  transition: all 0.5s ease; /* Smooth transition */
-  opacity: 0; /* Start hidden */
-}
-
-/* Slide-in from the right */
-.slideIn {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* Slide-out to the right */
-.slideOut {
-  transform: translateX(100%);
-  opacity: 0;
-}
-
-.documentHead {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #fff;
-  text-align: center;
-}
-
-.reviewSection {
-  display: flex;
-  flex-direction: column;
-}
-
-.noFile {
-  color: #67748b;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.preview {
-  display: flex;
-  margin:auto;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.preview > * {
-  background-color: #e2e8f0;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.preview > *:hover {
-}
-
-/* Shrinking effect for Sidebar and FormDisplay */
-.shrink {
-  flex: 0.8; /* Shrinks when the preview is visible */
-  transition: all 0.5s ease;
-}
-
-.sidebar {
-  flex: 1;
-  max-width: 250px;
-  height: 100%;
-  transition: all 0.5s ease;
-}
-
+/* Main container */
 .formDisplay {
-  flex: 3;
-  height: 100%;
-  max-width: 600px;
-  overflow-y: auto;
-  transition: all 0.5s ease;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 30px;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding-top: 0;
 }
 
-/* Button to toggle document preview */
-.togglePreviewButton {
-  position: absolute;
-  right: 20px; /* Positioned on the right side */
-  top: 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Added a transform transition */
+/* Form selection section */
+.formSelection {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: 20px;
 }
 
-.togglePreviewButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.1); /* Slight scale on hover */
+/* Individual form button */
+.formItem {
+    background-color: #1f2937;
+    color: #f8fafc;
+    padding: 12px 20px;
+    padding-top: 6px;
+    border-radius: 0px 0px 8px 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.4s ease;
+    display: flex;
+    align-items: center;
+    /*gap: 10px;*/
 }
+
+.formItem:hover, .formItem.active {
+    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+    color: #1f2937;
+}
+
+.chevronIcon {
+    color: #f8fafc;
+    transition: transform 0.3s ease;
+    margin-left: 10px;
+}
+
+.chevronIcon:hover{
+        color: #000;
+}
+
+ .active{
+        color: #1f2937;
+ }
+
+.cardIcon{
+    margin-right: 10px;
+}
+
+.formItem:hover .chevronIcon {
+    transform: translateX(5px);
+}
+
+/* Consistent layout for form data */
+.formDataSection {
+    background-color: #f1f5f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #374151;
+}
+
+/* Titles for each section in form data */
+.formDataTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* Content in form data */
+.formDataContent {
+    font-size: .9rem;
+    color: #1f2937;
+    padding-left: 15px;
+    line-height: 1.6;
+}
+
+/* Hover effect */
+.formDataSection:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+}
+
+/* Loading and select messages */
+.loadingMessage,
+.selectMessage {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .formDisplay {
+        padding: 15px;
+    }
+
+    .formDataTitle {
+        font-size: 1rem;
+    }
+    
+    .formDataContent {
+        font-size: 0.9rem;
+    }
+}
+
