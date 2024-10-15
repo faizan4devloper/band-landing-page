@@ -61,31 +61,39 @@
   gap: 15px;
 }
 
-/* Normal sizes for Sidebar and FormDisplay */
-.sidebar {
-  width: 330px; /* Fixed width for sidebar */
-  height: 100%;
-  transition: all 0.5s ease;
+.preview > * {
+  background-color: #e2e8f0;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
-.formDisplay {
-  flex: 1; /* 100% width for FormDisplay */
-  height: 100%;
-  max-width: 600px;
-  overflow-y: auto;
-  transition: all 0.5s ease;
-}
-
-/* Shrinking effect for Sidebar and FormDisplay when preview is visible */
+/* Shrinking effect for Sidebar and FormDisplay */
 .shrinkSidebar {
-  width: 250px; /* Width for sidebar when preview is open */
+  width: 250px; /* Fixed width for sidebar when preview is open */
 }
 
 .shrinkFormDisplay {
   flex: 0.3; /* 30% width for FormDisplay when preview is open */
 }
 
-/* Button to toggle document preview */
+.sidebarNormal {
+  width: 330px; /* Normal width for sidebar */
+}
+
+.formDisplayNormal {
+  flex: 1; /* 100% width for FormDisplay */
+}
+
+.sidebar {
+  transition: all 0.5s ease;
+}
+
+.formDisplay {
+  transition: all 0.5s ease;
+}
+
 .togglePreviewButton {
   position: absolute;
   right: 50px;
@@ -103,6 +111,8 @@
 .togglePreviewButton:hover {
   background-color: #0056b3;
 }
+
+
 
 
 
@@ -135,11 +145,15 @@ const UploadDocuments = () => {
             {/* Sidebar and FormDisplay sections */}
             <Sidebar 
                 onSelectForm={setSelectedForm} 
-                className={`${isPreviewVisible ? styles.shrinkSidebar : ''}`} 
+                className={`
+                    ${isPreviewVisible ? styles.shrinkSidebar : styles.sidebarNormal}
+                `} 
             />
             <FormDisplay 
                 selectedForm={selectedForm} 
-                className={`${isPreviewVisible ? styles.shrinkFormDisplay : ''}`} 
+                className={`
+                    ${isPreviewVisible ? styles.shrinkFormDisplay : styles.formDisplayNormal}
+                `} 
             />
 
             {/* UploadDocuments section */}
