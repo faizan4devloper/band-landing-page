@@ -20,10 +20,10 @@ const NewFormDisplay = () => {
         setFormData(formDataJson);
     }, []);
 
-    const toggleExpanded = (sectionKey) => {
+    const toggleExpanded = (key) => {
         setExpanded((prev) => ({
             ...prev,
-            [sectionKey]: !prev[sectionKey],
+            [key]: !prev[key],
         }));
     };
 
@@ -72,9 +72,10 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.dashboardContainer}>
+            {/* Use unique keys for each card */}
             <div className={styles.card}>
                 <h3>Verification Status</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Verification Status'])}
+                {renderFormData('claimassist-history-lambda-verification-status', expanded['Verification Status'])}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('Verification Status')}>
                     {expanded['Verification Status'] ? 'View Less' : 'View All'}
                 </button>
@@ -82,7 +83,7 @@ const NewFormDisplay = () => {
 
             <div className={styles.card}>
                 <h3>Reviewer Insights</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Reviewer Insights'])}
+                {renderFormData('claimassist-history-lambda-reviewer-insights', expanded['Reviewer Insights'])}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('Reviewer Insights')}>
                     {expanded['Reviewer Insights'] ? 'View Less' : 'View All'}
                 </button>
@@ -90,7 +91,7 @@ const NewFormDisplay = () => {
 
             <div className={styles.card}>
                 <h3>Checklist</h3>
-                {renderFormData('claimassist-history-lambda', expanded['Checklist'])}
+                {renderFormData('claimassist-history-lambda-checklist', expanded['Checklist'])}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('Checklist')}>
                     {expanded['Checklist'] ? 'View Less' : 'View All'}
                 </button>
