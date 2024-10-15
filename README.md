@@ -25,10 +25,13 @@ const NewFormDisplay = () => {
     }, []);
 
     const toggleExpanded = (section) => {
+        // Update only the clicked section in the expanded state
         setExpanded((prev) => ({
             ...prev,
             [section]: !prev[section],
         }));
+        console.log(`Toggling section: ${section}`);
+        console.log('Current expanded state:', expanded);
     };
 
     const chooseIcon = (key) => {
