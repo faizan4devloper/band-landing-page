@@ -23,8 +23,11 @@ const UploadDocuments = () => {
 
     return (
         <div className={styles.container}>
+            {/* Sidebar and FormDisplay sections */}
             <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
             <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+
+            {/* UploadDocuments section */}
             <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
                 {allDocuments.length > 0 ? (
@@ -39,6 +42,8 @@ const UploadDocuments = () => {
                     <p className={styles.noFile}>No document available</p>
                 )}
             </div>
+
+            {/* Toggle Button */}
             <button className={styles.togglePreviewButton} onClick={togglePreview}>
                 {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
             </button>
@@ -50,58 +55,45 @@ export default UploadDocuments;
 
 
 
-
-
-/* Container layout */
 .container {
   display: flex;
   flex-direction: row;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 100%;
+  align-items: flex-start;
+  max-width: 100%;
   height: 100vh;
   padding: 20px;
-  gap: 20px;
-  box-sizing: border-box;
-}
-
-/* Sidebar styles */
-.sidebar {
-  flex: 0.2;
-  max-width: 220px;
-  background-color: #334155;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  overflow-y: auto;
+  position: relative;
   transition: all 0.5s ease;
 }
 
-/* FormDisplay styling */
-.formDisplay {
-  flex: 0.5;
-  background-color: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  height: 100%;
-  overflow-y: auto;
-  transition: all 0.5s ease;
-}
-
-/* UploadDocuments styles */
 .uploadDocuments {
-  flex: 0.3;
+  flex: 2;
   background: linear-gradient(135deg, #1e293b, #334155);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
   height: 100%;
   overflow-y: auto;
-  transition: all 0.5s ease;
-  transform: translateX(0);
+  position: absolute;
+  left: 0; /* Initially positioned off-screen to the left */
+  top: 0;
+  width: 100%; /* Adjust as needed */
+  transform: translateX(-100%); /* Initially off-screen */
+  transition: all 0.5s ease; /* Smooth transition */
+  opacity: 0; /* Start hidden */
+}
+
+/* Slide-in from the left */
+.slideIn {
+  transform: translateX(0); /* Move it in when visible */
   opacity: 1;
+}
+
+/* Slide-out to the left */
+.slideOut {
+  transform: translateX(-100%); /* Hide it off-screen to the left */
+  opacity: 0;
 }
 
 .documentHead {
@@ -111,7 +103,6 @@ export default UploadDocuments;
   text-align: center;
 }
 
-/* Review section */
 .reviewSection {
   display: flex;
   flex-direction: column;
@@ -125,10 +116,9 @@ export default UploadDocuments;
 
 .preview {
   display: flex;
+  margin: auto;
   flex-wrap: wrap;
   gap: 15px;
-  justify-content: center;
-  margin: 20px auto;
 }
 
 .preview > * {
@@ -139,25 +129,36 @@ export default UploadDocuments;
   transition: all 0.3s ease;
 }
 
-.preview > *:hover {
-  transform: scale(1.05);
+/* Shrinking effect for Sidebar and FormDisplay */
+.shrink {
+  flex: 0.8; /* Shrinks when the preview is visible */
+  transition: all 0.5s ease;
 }
 
-/* Shrinking effect */
-.shrink {
-  flex: 0.1;
+.sidebar {
+  flex: 1;
+  max-width: 250px;
+  height: 100%;
+  transition: all 0.5s ease;
+}
+
+.formDisplay {
+  flex: 3;
+  height: 100%;
+  max-width: 600px;
+  overflow-y: auto;
   transition: all 0.5s ease;
 }
 
 /* Button to toggle document preview */
 .togglePreviewButton {
   position: absolute;
-  right: 30px;
+  right: 50px;
   top: 30px;
-  background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
   color: #fff;
   border: none;
-  padding: 10px 18px;
+  padding: 8px 18px;
   border-radius: 6px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -166,4 +167,4 @@ export default UploadDocuments;
 
 .togglePreviewButton:hover {
   background-color: #0056b3;
-}
+} 
