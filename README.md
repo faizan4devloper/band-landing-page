@@ -1,15 +1,31 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import {
+    faChevronRight,
+    faSignature,
+    faIdCard,
+    faFileAlt,
+    faCalendarAlt,
+    faQuestionCircle,
+    faInfoCircle
+} from '@fortawesome/free-solid-svg-icons';
 import formDataJson from '../../../Json/NewEntities.json';
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
+    const [expanded, setExpanded] = useState({});
 
     useEffect(() => {
         setFormData(formDataJson);
     }, []);
+
+    const toggleExpanded = (key) => {
+        setExpanded((prev) => ({
+            ...prev,
+            [key]: !prev[key],
+        }));
+    };
 
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
@@ -28,14 +44,18 @@ const NewFormDisplay = () => {
         }
     };
 
-    const renderFormData = (formKey) => {
+    const renderFormData = (formKey, isExpanded) => {
         if (!formData || !formData[formKey]) return null;
 
         const selectedData = formData[formKey];
+        const entries = Object.entries(selectedData);
+
+        // Show fewer entries when collapsed
+        const displayedEntries = isExpanded ? entries : entries.slice(0, 3);
 
         return (
             <div className={styles.formDataSection}>
-                {Object.entries(selectedData).map(([key, value]) => (
+                {displayedEntries.map(([key, value]) => (
                     <div key={key} className={styles.dataRow}>
                         <h2 className={styles.formDataTitle}>
                             <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
@@ -54,17 +74,26 @@ const NewFormDisplay = () => {
         <div className={styles.dashboardContainer}>
             <div className={styles.card}>
                 <h3>Verification Status</h3>
-                {renderFormData('claimassist-history-lambda')}
+                {renderFormData('claimassist-history-lambda', expanded['Verification Status'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Verification Status')}>
+                    {expanded['Verification Status'] ? 'View Less' : 'View All'}
+                </button>
             </div>
 
             <div className={styles.card}>
                 <h3>Reviewer Insights</h3>
-                {renderFormData('claimassist-history-lambda')}
+                {renderFormData('claimassist-history-lambda', expanded['Reviewer Insights'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Reviewer Insights')}>
+                    {expanded['Reviewer Insights'] ? 'View Less' : 'View All'}
+                </button>
             </div>
 
             <div className={styles.card}>
                 <h3>Checklist</h3>
-                {renderFormData('claimassist-history-lambda')}
+                {renderFormData('claimassist-history-lambda', expanded['Checklist'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Checklist')}>
+                    {expanded['Checklist'] ? 'View Less' : 'View All'}
+                </button>
             </div>
         </div>
     );
@@ -80,7 +109,7 @@ export default NewFormDisplay;
     grid-gap: 20px;
     height: 100%;
     padding: 20px;
-    background:linear-gradient(135deg, #1e293b, #334155);
+    background: linear-gradient(135deg, #1e293b, #334155);
     margin: 0 auto;
 }
 
@@ -95,6 +124,15 @@ export default NewFormDisplay;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: height 0.3s ease, padding 0.3s ease;
+    height: auto;
+    max-height: 200px; /* When collapsed */
+    overflow: hidden;
+}
+
+.card.expanded {
+    max-height: none;
+    padding-bottom: 20px;
 }
 
 /* Card Header */
@@ -110,7 +148,7 @@ export default NewFormDisplay;
 }
 
 .formDataTitle {
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: #2563eb;
 }
@@ -124,6 +162,23 @@ export default NewFormDisplay;
 .cardIcon {
     margin-right: 8px;
     color: #6b7280;
+}
+
+/* View All button styling */
+.viewAllButton {
+    background-color: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.viewAllButton:hover {
+    background-color: #1d4ed8;
 }
 
 /* Responsive Layout */
