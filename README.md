@@ -15,20 +15,17 @@ const UploadDocuments = () => {
     ];
 
     const [selectedForm, setSelectedForm] = useState(null);
-    const [isPreviewVisible, setIsPreviewVisible] = useState(false); // State to manage toggle
-
-    const togglePreview = () => {
-        setIsPreviewVisible(!isPreviewVisible); // Toggle visibility
-    };
 
     return (
         <div className={styles.container}>
-            {/* Sidebar and FormDisplay sections */}
-            <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-            <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+            {/* Sidebar section */}
+            <Sidebar onSelectForm={setSelectedForm} />
+
+            {/* FormDisplay section */}
+            <FormDisplay selectedForm={selectedForm} />
 
             {/* UploadDocuments section */}
-            <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
+            <div className={styles.uploadDocuments}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
                 {allDocuments.length > 0 ? (
                     <div className={styles.reviewSection}>
@@ -42,11 +39,6 @@ const UploadDocuments = () => {
                     <p className={styles.noFile}>No document available</p>
                 )}
             </div>
-
-            {/* Toggle Button */}
-            <button className={styles.togglePreviewButton} onClick={togglePreview}>
-                {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
-            </button>
         </div>
     );
 };
@@ -54,16 +46,34 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
-
 .container {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  max-width: 100%;
+  width: 100%;
   height: 100vh;
   padding: 20px;
-  position: relative;
-  transition: all 0.5s ease;
+  gap: 20px; /* Add space between columns */
+}
+
+.sidebar {
+  flex: 1;
+  max-width: 250px;
+  height: 100%;
+  background-color: #1e293b;
+  color: #fff;
+  padding: 20px;
+}
+
+.formDisplay {
+  flex: 2;
+  max-width: 600px;
+  height: 100%;
+  overflow-y: auto;
+  background-color: #f9fafb;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
 }
 
 .uploadDocuments {
@@ -75,25 +85,6 @@ export default UploadDocuments;
   padding: 20px;
   height: 100%;
   overflow-y: auto;
-  position: absolute;
-  left: 0; /* Initially positioned off-screen to the left */
-  top: 0;
-  width: 100%; /* Adjust as needed */
-  transform: translateX(-100%); /* Initially off-screen */
-  transition: all 0.5s ease; /* Smooth transition */
-  opacity: 0; /* Start hidden */
-}
-
-/* Slide-in from the left */
-.slideIn {
-  transform: translateX(0); /* Move it in when visible */
-  opacity: 1;
-}
-
-/* Slide-out to the left */
-.slideOut {
-  transform: translateX(-100%); /* Hide it off-screen to the left */
-  opacity: 0;
 }
 
 .documentHead {
@@ -116,7 +107,6 @@ export default UploadDocuments;
 
 .preview {
   display: flex;
-  margin: auto;
   flex-wrap: wrap;
   gap: 15px;
 }
@@ -129,42 +119,6 @@ export default UploadDocuments;
   transition: all 0.3s ease;
 }
 
-/* Shrinking effect for Sidebar and FormDisplay */
-.shrink {
-  flex: 0.8; /* Shrinks when the preview is visible */
-  transition: all 0.5s ease;
+.preview > *:hover {
+  transform: scale(1.05);
 }
-
-.sidebar {
-  flex: 1;
-  max-width: 250px;
-  height: 100%;
-  transition: all 0.5s ease;
-}
-
-.formDisplay {
-  flex: 3;
-  height: 100%;
-  max-width: 600px;
-  overflow-y: auto;
-  transition: all 0.5s ease;
-}
-
-/* Button to toggle document preview */
-.togglePreviewButton {
-  position: absolute;
-  right: 50px;
-  top: 30px;
-  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-  color: #fff;
-  border: none;
-  padding: 8px 18px;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.togglePreviewButton:hover {
-  background-color: #0056b3;
-} 
