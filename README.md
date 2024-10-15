@@ -61,38 +61,31 @@
   gap: 15px;
 }
 
-.preview > * {
-  background-color: #e2e8f0;
-  border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-/* Shrinking effect for Sidebar and FormDisplay */
-.shrinkSidebar {
-  width: 250px; /* Fixed width for sidebar */
-}
-
-.shrinkFormDisplay {
-  flex: 0.3; /* 30% width for FormDisplay */
-}
-
+/* Normal sizes for Sidebar and FormDisplay */
 .sidebar {
-  flex: 1;
-  max-width: 250px;
+  width: 330px; /* Fixed width for sidebar */
   height: 100%;
   transition: all 0.5s ease;
 }
 
 .formDisplay {
-  flex: 3;
+  flex: 1; /* 100% width for FormDisplay */
   height: 100%;
   max-width: 600px;
   overflow-y: auto;
   transition: all 0.5s ease;
 }
 
+/* Shrinking effect for Sidebar and FormDisplay when preview is visible */
+.shrinkSidebar {
+  width: 250px; /* Width for sidebar when preview is open */
+}
+
+.shrinkFormDisplay {
+  flex: 0.3; /* 30% width for FormDisplay when preview is open */
+}
+
+/* Button to toggle document preview */
 .togglePreviewButton {
   position: absolute;
   right: 50px;
@@ -110,6 +103,7 @@
 .togglePreviewButton:hover {
   background-color: #0056b3;
 }
+
 
 
 
