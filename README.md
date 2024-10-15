@@ -8,7 +8,7 @@ import {
     faQuestionCircle,
     faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json'; // Make sure this path is correct
+import formDataJson from '../../../Json/NewEntities.json'; // Ensure this path is correct
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
@@ -23,7 +23,6 @@ const NewFormDisplay = () => {
         setFormData(formDataJson);
     }, []);
 
-    // Toggle expanded state for a specific section
     const toggleExpanded = (section) => {
         setExpanded((prev) => ({
             ...prev,
@@ -31,7 +30,6 @@ const NewFormDisplay = () => {
         }));
     };
 
-    // Chooses the correct icon based on the section name
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
             case 'approver1_focuses_on':
@@ -49,7 +47,6 @@ const NewFormDisplay = () => {
         }
     };
 
-    // Renders data for a specific section
     const renderFormData = (formKey, isExpanded) => {
         if (!formData || !formData[formKey]) return null;
 
@@ -78,7 +75,6 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.dashboardContainer}>
-            {/* Section 1: Verification Status */}
             <div className={styles.card}>
                 <h3>Verification Status</h3>
                 {renderFormData('verification_status', expanded.verificationStatus)} 
@@ -87,7 +83,6 @@ const NewFormDisplay = () => {
                 </button>
             </div>
 
-            {/* Section 2: Reviewer Insights */}
             <div className={styles.card}>
                 <h3>Reviewer Insights</h3>
                 {renderFormData('reviewer_insights', expanded.reviewerInsights)} 
@@ -96,7 +91,6 @@ const NewFormDisplay = () => {
                 </button>
             </div>
 
-            {/* Section 3: Checklist */}
             <div className={styles.card}>
                 <h3>Checklist</h3>
                 {renderFormData('checklist', expanded.checklist)} 
