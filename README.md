@@ -6,15 +6,10 @@ import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const [selectedForm, setSelectedForm] = useState('');
 
     useEffect(() => {
         setFormData(formDataJson);
     }, []);
-
-    const handleFormSelect = (formName) => {
-        setSelectedForm(formName);
-    };
 
     const chooseIcon = (key) => {
         switch (key.toLowerCase()) {
@@ -33,16 +28,10 @@ const NewFormDisplay = () => {
         }
     };
 
-    const renderFormData = () => {
-        if (!formData) {
-            return <p className={styles.loadingMessage}>Loading data...</p>;
-        }
+    const renderFormData = (formKey) => {
+        if (!formData || !formData[formKey]) return null;
 
-        const selectedData = formData[selectedForm];
-
-        if (!selectedData) {
-            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
-        }
+        const selectedData = formData[formKey];
 
         return (
             <div className={styles.formDataSection}>
@@ -63,38 +52,30 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.formDisplay}>
-           
-<div className={styles.formSelection}>
-            <div
-                className={`${styles.formItem} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`}
-                onClick={() => handleFormSelect('claimassist-history-lambda')}
-            >
-                Verification Status
-                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'claimassist-history-lambda' ? styles.active : ''}`} />
-            </div>
-            <div
-                className={`${styles.formItem} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`}
-                onClick={() => handleFormSelect('PAYMENT_DETAILS')}
-            >
-                Reviewer Insights
-                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'PAYMENT_DETAILS' ? styles.active : ''}`} />
-            </div>
-            <div
-                className={`${styles.formItem} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`}
-                onClick={() => handleFormSelect('LOST_POLICY_FORM')}
-            >
-                Checklist
-                <FontAwesomeIcon icon={faChevronRight} className={`${styles.chevronIcon} ${selectedForm === 'LOST_POLICY_FORM' ? styles.active : ''}`} />
-            </div>
-        </div>
+            <div className={styles.formColumns}>
+                {/* Verification Status */}
+                <div className={styles.formColumn}>
+                    <h3>Verification Status</h3>
+                    {renderFormData('claimassist-history-lambda')}
+                </div>
 
-            {renderFormData()}
+                {/* Reviewer Insights */}
+                <div className={styles.formColumn}>
+                    <h3>Reviewer Insights</h3>
+                    {renderFormData('PAYMENT_DETAILS')}
+                </div>
+
+                {/* Checklist */}
+                <div className={styles.formColumn}>
+                    <h3>Checklist</h3>
+                    {renderFormData('LOST_POLICY_FORM')}
+                </div>
+            </div>
         </div>
     );
 };
 
 export default NewFormDisplay;
-
 
 
 /* Main container */
@@ -103,80 +84,38 @@ export default NewFormDisplay;
     padding: 30px;
     height: 100%;
     width: 100%;
-    overflow-y: auto;
     font-family: 'Poppins', sans-serif;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    padding-top: 0;
-}
-
-/* Form selection section */
-.formSelection {
-    display: flex;
-    gap: 15px;
     justify-content: center;
-    flex-wrap: wrap;
-    padding-bottom: 20px;
-}
-
-/* Individual form button */
-.formItem {
-    background-color: #1f2937;
-    color: #f8fafc;
-    padding: 12px 20px;
-    padding-top: 6px;
-    border-radius: 0px 0px 8px 8px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.4s ease;
-    display: flex;
     align-items: center;
-    /*gap: 10px;*/
 }
 
-.formItem:hover, .formItem.active {
-    background: linear-gradient(135deg, #f2f2f2 -20%, #7ca2e1);
-    color: #1f2937;
+/* Side-by-side layout */
+.formColumns {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: space-between;
 }
 
-.chevronIcon {
-    color: #f8fafc;
-    transition: transform 0.3s ease;
-    margin-left: 10px;
-}
-
-.chevronIcon:hover{
-        color: #000;
-}
-
- .active{
-        color: #1f2937;
- }
-
-.cardIcon{
-    margin-right: 10px;
-}
-
-.formItem:hover .chevronIcon {
-    transform: translateX(5px);
-}
-
-/* Consistent layout for form data */
-.formDataSection {
+.formColumn {
     background-color: #f1f5f9;
     padding: 20px;
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 800px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 20px;
     color: #374151;
+}
+
+.formColumn h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 15px;
 }
 
 /* Titles for each section in form data */
@@ -195,31 +134,23 @@ export default NewFormDisplay;
 }
 
 /* Hover effect */
-.formDataSection:hover {
+.formColumn:hover {
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
 }
 
-/* Loading and select messages */
-.loadingMessage,
-.selectMessage {
-    font-size: 1.5rem;
-    color: #e2e8f0;
-    text-align: center;
-    margin-top: 20px;
+/* Card icon styling */
+.cardIcon {
+    margin-right: 10px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .formDisplay {
-        padding: 15px;
+    .formColumns {
+        flex-direction: column;
+        gap: 30px;
     }
 
-    .formDataTitle {
-        font-size: 1rem;
-    }
-    
-    .formDataContent {
-        font-size: 0.9rem;
+    .formColumn {
+        width: 100%;
     }
 }
-
