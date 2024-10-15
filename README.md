@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -64,7 +63,14 @@ const NewFormDisplay = () => {
                             {key.replace(/_/g, ' ')}
                         </h2>
                         {Array.isArray(value) ? (
-                            <p className={styles.formDataContent}>{value.join(', ')}</p>
+                            <ul className={styles.verificationList}>
+                                {value.map((item, index) => (
+                                    <li key={index} className={styles.verificationItem}>
+                                        <FontAwesomeIcon icon={faChevronRight} className={styles.listIcon} />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
                         ) : typeof value === 'object' ? (
                             renderNestedObject(value)
                         ) : (
@@ -87,8 +93,6 @@ const NewFormDisplay = () => {
                 <h3>Reviewer Insights</h3>
                 {renderFormData('claimassist-docextract-lambda')}
             </div>
-
-            {/* Removed Checklist section as it was not present in the JSON */}
         </div>
     );
 };
@@ -97,57 +101,36 @@ export default NewFormDisplay;
 
 
 
-/* Main container for the whole dashboard */
-.dashboardContainer {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-gap: 20px;
-    height: 100%;
-    padding: 20px;
-    background:linear-gradient(135deg, #1e293b, #334155);
-    margin: 0 auto;
+/* Additional styles for the Verification Status list */
+.verificationList {
+    list-style: none; /* Remove default bullet points */
+    padding-left: 0; /* Remove padding */
 }
 
-/* Styling each card (similar to widgets in the screenshot) */
-.card {
-    background-color: #fff;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 10px;
-    color: #374151;
+.verificationItem {
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    align-items: center; /* Align icon and text vertically */
+    margin-bottom: 8px; /* Space between items */
+    font-size: 0.8rem; /* Font size adjustment */
+    color: #4b5563; /* Text color for list items */
 }
 
-/* Card Header */
+.listIcon {
+    margin-right: 8px; /* Space between icon and text */
+}
+
+/* Additional styles for Reviewer Insights structured data */
+.nestedObject {
+    margin-top: 10px; /* Space between nested sections */
+}
+
+/* Style the card header */
 .card h3 {
     font-size: 1rem;
     color: #1f2937;
     margin-bottom: 10px;
-}
-
-/* Form Data Section */
-.formDataSection {
-    /*margin-top: 20px;*/
-}
-
-.formDataTitle {
-    font-size: .8rem;
-    font-weight: 600;
-    color: #2563eb;
-}
-
-.formDataContent {
-    font-size: 0.7rem;
-    color: #4b5563;
-}
-
-/* Icon styling */
-.cardIcon {
-    margin-right: 8px;
-    color: #6b7280;
+    border-bottom: 2px solid #2563eb; /* Add a bottom border for distinction */
+    padding-bottom: 5px; /* Space between text and border */
 }
 
 /* Responsive Layout */
