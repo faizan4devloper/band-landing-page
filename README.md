@@ -120,8 +120,6 @@ export default NewFormDisplay;
 
 
 
-
-
 /* Main container for the dashboard */
 .dashboardContainer {
     display: grid;
