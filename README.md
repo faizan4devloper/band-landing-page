@@ -1,162 +1,82 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight, faSignature, faIdCard, faFileAlt, faCalendarAlt, faQuestionCircle, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
-import styles from './NewFormDisplay.module.css';
-
-const NewFormDisplay = () => {
-    const [formData, setFormData] = useState(null);
-
-    useEffect(() => {
-        setFormData(formDataJson);
-    }, []);
-
-    const chooseIcon = (key) => {
-        switch (key.toLowerCase()) {
-            case 'approver1_focuses_on':
-                return faInfoCircle;
-            case 'approver2_focuses_on':
-                return faSignature;
-            case 'additional_information':
-                return faFileAlt;
-            case 'suggested_action_items':
-                return faQuestionCircle;
-            case 'detailed_summary':
-                return faIdCard;
-            default:
-                return faCalendarAlt;
+{
+  "claimassist-history-lambda": {
+    "Approver1_Focuses_On": [
+      "reason for lost policy",
+      "date of loss",
+      "police report or official documentation to support lost policy claim",
+      "details about circumstances of policy loss",
+      "copy of government issued photo ID"
+    ],
+    "Approver2_Focuses_On": [
+      "wet signature on form",
+      "matching signatures",
+      "specification of date of loss",
+      "confirmation of bank account ownership",
+      "clarity in circumstances of policy loss",
+      "matching account details"
+    ],
+    "Additional_Information": [
+      "Reason for lost policy with details",
+      "Date of loss",
+      "Police report for lost policy",
+      "Details on circumstances of policy loss",
+      "Photo identification of policyholder"
+    ],
+    "Suggested_Action_Items": [
+      "Resubmit form with wet signature",
+      "Resign form if signature mismatch",
+      "Provide date of loss",
+      "Confirm bank account details",
+      "Submit additional supporting documents"
+    ],
+    "Detailed_Summary": "The verification officers focus on different details to process the claims. Approver1 focuses more on reasons, dates, and documents related to lost policies, while Approver2 focuses on details related to signatures, dates, and account details in forms. Additional details on reasons, dates, documents, and identities would help process similar claims along with suggested actions to resubmit forms with corrections."
+  },
+  "claimassist-docextract-lambda": {
+    "Input_Payload": {
+      "filename": "claimassist%2Fclaimforms%2FCL17254323%2F1.Filled_L2065777+PIF+and+LPF.pdf",
+      "claimid": "CL17254323"
+    },
+    "Output_Response": {
+      "ExtractedData": {
+        "PAYMENT_INSTRUCTION_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr JC Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "PAYMENT_DETAILS": {
+          "BANK_NAME_AND_ADDRESS": "BARCLAYS BANK",
+          "ACCOUNT_HOLDERS_NAME": "J.C.MC Ghywon",
+          "ACCOUNT_NUMBER": "50614866",
+          "BANK_SORT_CODE": "20-57-40",
+          "SIGNED_FULL_NAME": "Mr Mcglynn, James Christopher",
+          "SIGNED_DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM": {
+          "STATEMENT_DATE": "12/06/2024",
+          "POLICY_NUMBER": "L2065777",
+          "POLICY_ON_THE_LIFE_OF": "Mr J C Mcglynn",
+          "POLICY_OWNER": "Mr JC Mcglynn"
+        },
+        "LOST_POLICY_FORM_SIGNED": {
+          "FULL_NAME": "Mr Mcglynn, James Christopher",
+          "DATE": "13/06/2024"
+        },
+        "LOST_POLICY_FORM_WITNESSED_BY": {
+          "FULL_NAME_OF_WITNESS": "SOPHIE PASSFIELD",
+          "DATE": "13/06/2024",
+          "ADDRESS_OF_WITNESS": "53 ORNE GARDENS, BOLBECIC PARK, MILTON KEYNES MK18 8PG",
+          "OFFICIAL_STAMP": "",
+          "DAY_TIME_TELEPHONE_NUMBER_OF_WITNESS": "07732883 700",
+          "OCCUPATION_OF_WITNESS": "Teacher"
         }
-    };
-
-    const renderFormData = (formKey) => {
-        if (!formData || !formData[formKey]) return null;
-
-        const selectedData = formData[formKey];
-
-        return (
-            <div className={styles.formDataSection}>
-                {Object.entries(selectedData).map(([key, value]) => (
-                    <div key={key} className={styles.dataRow}>
-                        <h2 className={styles.formDataTitle}>
-                            <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
-                            {key.replace(/_/g, ' ')}
-                        </h2>
-                        <p className={styles.formDataContent}>
-                            {Array.isArray(value) ? value.join(', ') : value}
-                        </p>
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
-    return (
-        <div className={styles.dashboardContainer}>
-            <div className={styles.card}>
-                <h3>Verification Status</h3>
-                {renderFormData('claimassist-history-lambda')}
-            </div>
-
-            <div className={styles.card}>
-                <h3>Reviewer Insights</h3>
-                {renderFormData('claimassist-docextract-lambda')}
-            </div>
-
-            <div className={styles.card}>
-                <h3>Checklist</h3>
-                {renderFormData('claimassist-checklist-lambda')}
-            </div>
-        </div>
-    );
-};
-
-export default NewFormDisplay;
-
-
-
-
-/* Main container for the whole dashboard */
-.dashboardContainer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 30px;
-    padding: 40px;
-    background-color: #f8fafc;
-    max-width: 1200px;
-    margin: 0 auto;
-    height: 100%;
-}
-
-/* Styling each card to look more like widgets */
-.card {
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15);
-}
-
-/* Card Header */
-.card h3 {
-    font-size: 1.2rem;
-    color: #1e293b;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #3b82f6;
-    padding-bottom: 10px;
-}
-
-/* Form Data Section */
-.formDataSection {
-    margin-top: 20px;
-}
-
-/* Form Data Title */
-.formDataTitle {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #1d4ed8;
-    display: flex;
-    align-items: center;
-}
-
-/* Form Data Content */
-.formDataContent {
-    font-size: 0.85rem;
-    color: #4b5563;
-    margin-left: 30px;
-    margin-top: 5px;
-}
-
-/* Icon styling */
-.cardIcon {
-    margin-right: 10px;
-    font-size: 1rem;
-    color: #6b7280;
-}
-
-/* Individual rows of data */
-.dataRow {
-    margin-bottom: 15px;
-}
-
-/* Responsive Layout */
-@media (max-width: 1024px) {
-    .dashboardContainer {
-        grid-template-columns: repeat(2, 1fr);
+      },
+      "rawtext": [
+        "claimassist/claimforms/CL17254323/1: 'Retirement, Investments, Insurance, AVIVA... etc.'"
+      ],
+      "keyvaluesText": [
+        "claimassist/claimforms/CL17254323/1: ['Key: Account holder's name, Value: J.C.MC Ghywon', 'Key: Policy Number:, Value: L2065777', ...etc.]"
+      ]
     }
-}
-
-@media (max-width: 768px) {
-    .dashboardContainer {
-        grid-template-columns: 1fr;
-    }
+  }
 }
