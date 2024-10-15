@@ -14,23 +14,20 @@ const UploadDocuments = () => {
         ...documents
     ];
 
-    const [selectedForm, setSelectedForm] = useState(null);
-    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
+    const [isPreviewVisible, setIsPreviewVisible] = useState(false); // State to manage toggle
 
     const togglePreview = () => {
-        setIsPreviewVisible(!isPreviewVisible); // Toggle visibility of UploadDocuments
+        setIsPreviewVisible(!isPreviewVisible); // Toggle visibility
     };
 
     return (
-        <div className={`${styles.container} ${isPreviewVisible ? styles.previewVisible : ''}`}>
-            {/* Sidebar section */}
-            <Sidebar onSelectForm={setSelectedForm} className={styles.sidebar} />
-
-            {/* FormDisplay section */}
-            <FormDisplay selectedForm={selectedForm} className={styles.formDisplay} />
+        <div className={`${styles.container} ${isPreviewVisible ? styles.previewOpen : ''}`}>
+            {/* Sidebar and FormDisplay sections */}
+            <Sidebar className={styles.sidebar} />
+            <FormDisplay className={styles.formDisplay} />
 
             {/* UploadDocuments section */}
-            <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : ''}`}>
+            <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
                 <h2 className={styles.documentHead}>Documents Review</h2>
                 {allDocuments.length > 0 ? (
                     <div className={styles.reviewSection}>
@@ -60,66 +57,42 @@ export default UploadDocuments;
 .container {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
   width: 100%;
   height: 100vh;
-  padding: 20px;
-  position: relative;
   transition: all 0.5s ease;
 }
 
 .sidebar {
-  flex: 1;
-  max-width: 250px;
-  height: 100%;
-  background-color: #1e293b;
-  color: #fff;
-  padding: 20px;
-  transition: all 0.5s ease; /* Smooth shrinking */
+  flex: 1; /* Initially taking full width */
+  transition: all 0.5s ease;
 }
 
 .formDisplay {
-  flex: 3;
+  flex: 2; /* Initially taking full width */
+  transition: all 0.5s ease;
   max-width: 600px;
-  height: 100%;
+  overflow-y: auto;
   background-color: #f9fafb;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  overflow-y: auto;
-  transition: all 0.5s ease; /* Smooth shrinking */
 }
 
 .uploadDocuments {
-  flex: 0;
+  position: absolute;
+  left: -100%; /* Initially off-screen */
+  top: 0;
+  bottom: 0;
+  width: 40%; /* Adjust this width as per your design */
   background: linear-gradient(135deg, #1e293b, #334155);
-  backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(10px);
   border-radius: 12px;
   padding: 20px;
   height: 100%;
-  width: 0;
   overflow-y: auto;
-  position: absolute;
-  left: 0;
-  top: 0;
-  transform: translateX(-100%);
+  transition: all 0.5s ease; /* Smooth transition */
   opacity: 0;
-  transition: all 0.5s ease;
-}
-
-.previewVisible .sidebar {
-  flex: 0.5; /* Shrink Sidebar */
-}
-
-.previewVisible .formDisplay {
-  flex: 2; /* Shrink FormDisplay */
-}
-
-.slideIn {
-  width: 30%; /* Visible size of UploadDocuments */
-  transform: translateX(0);
-  opacity: 1;
 }
 
 .documentHead {
@@ -151,18 +124,39 @@ export default UploadDocuments;
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.preview > *:hover {
+  transform: scale(1.05);
+}
+
+/* Slide-in effect for the UploadDocuments component */
+.previewOpen .uploadDocuments {
+  left: 0; /* Bring into view */
+  opacity: 1; /* Make visible */
+}
+
+.previewOpen .sidebar {
+  flex: 0.5; /* Shrinks when the preview is visible */
+}
+
+.previewOpen .formDisplay {
+  flex: 1; /* Shrinks when the preview is visible */
 }
 
 .togglePreviewButton {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background-color: #7ca2e1;
-  color: white;
+  right: 50px;
+  top: 30px;
+  background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+  color: #fff;
   border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 8px 18px;
+  border-radius: 6px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .togglePreviewButton:hover {
