@@ -14,16 +14,16 @@ import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
     const [formData, setFormData] = useState(null);
-    const [expandedSections, setExpandedSections] = useState({});
+    const [expanded, setExpanded] = useState({});
 
     useEffect(() => {
         setFormData(formDataJson);
     }, []);
 
-    const toggleExpanded = (sectionKey) => {
-        setExpandedSections((prevState) => ({
-            ...prevState,
-            [sectionKey]: !prevState[sectionKey],
+    const toggleExpanded = (key) => {
+        setExpanded((prev) => ({
+            ...prev,
+            [key]: !prev[key],
         }));
     };
 
@@ -54,14 +54,14 @@ const NewFormDisplay = () => {
         const displayedEntries = isExpanded ? entries : entries.slice(0, 3);
 
         return (
-            <div className={styles.formDataSection}>
+            <div className={styles.subCardContainer}>
                 {displayedEntries.map(([key, value]) => (
-                    <div key={key} className={styles.dataRow}>
-                        <h2 className={styles.formDataTitle}>
+                    <div key={key} className={styles.subCard}>
+                        <h2 className={styles.subCardTitle}>
                             <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
                             {key.replace(/_/g, ' ')}
                         </h2>
-                        <p className={styles.formDataContent}>
+                        <p className={styles.subCardContent}>
                             {Array.isArray(value) ? value.join(', ') : value}
                         </p>
                     </div>
@@ -72,24 +72,34 @@ const NewFormDisplay = () => {
 
     return (
         <div className={styles.dashboardContainer}>
-            {['Verification Status', 'Reviewer Insights', 'Checklist'].map((section, index) => (
-                <div key={section} className={styles.card}>
-                    <h3>{section}</h3>
-                    {renderFormData('claimassist-history-lambda', expandedSections[section])}
-                    <button
-                        className={styles.viewAllButton}
-                        onClick={() => toggleExpanded(section)}
-                    >
-                        {expandedSections[section] ? 'View Less' : 'View All'}
-                    </button>
-                </div>
-            ))}
+            <div className={styles.card}>
+                <h3>Verification Status</h3>
+                {renderFormData('claimassist-history-lambda', expanded['Verification Status'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Verification Status')}>
+                    {expanded['Verification Status'] ? 'View Less' : 'View All'}
+                </button>
+            </div>
+
+            <div className={styles.card}>
+                <h3>Reviewer Insights</h3>
+                {renderFormData('claimassist-history-lambda', expanded['Reviewer Insights'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Reviewer Insights')}>
+                    {expanded['Reviewer Insights'] ? 'View Less' : 'View All'}
+                </button>
+            </div>
+
+            <div className={styles.card}>
+                <h3>Checklist</h3>
+                {renderFormData('claimassist-history-lambda', expanded['Checklist'])}
+                <button className={styles.viewAllButton} onClick={() => toggleExpanded('Checklist')}>
+                    {expanded['Checklist'] ? 'View Less' : 'View All'}
+                </button>
+            </div>
         </div>
     );
 };
 
 export default NewFormDisplay;
-
 
 
 /* Main container for the whole dashboard */
@@ -99,64 +109,78 @@ export default NewFormDisplay;
     grid-gap: 20px;
     height: 100%;
     padding: 20px;
-    background:linear-gradient(135deg, #1e293b, #334155);
+    background: linear-gradient(135deg, #1e293b, #334155);
     margin: 0 auto;
 }
 
-/* Styling each card */
+/* Styling each card (like a widget) */
 .card {
     background-color: #fff;
     border: 1px solid #d1d5db;
     border-left: 5px solid #7ca2e1;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 15px;
     color: #374151;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 8px;
 }
 
-/* Card hover effect */
 .card:hover {
     transform: translateY(-5px);
-    background-color: #f0f7ff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
-/* Card Header */
-.card h3 {
-    font-size: 1.2rem;
-    color: #1f2937;
-    margin-bottom: 10px;
+/* Sub-card container */
+.subCardContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* Form Data Section */
-.formDataSection {
-    margin-top: 20px;
+/* Each sub-card for displaying individual sections */
+.subCard {
+    background: linear-gradient(135deg, #93c5fd, #2563eb);
+    border-radius: 8px;
+    padding: 10px;
+    color: white;
+    flex: 1 1 calc(50% - 10px);
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
-.formDataTitle {
-    font-size: .9rem;
+.subCard:hover {
+    background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+}
+
+/* Sub-card title */
+.subCardTitle {
+    font-size: 1rem;
     font-weight: 600;
-    color: #2563eb;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
 }
 
-.formDataContent {
-    font-size: 0.8rem;
-    color: #4b5563;
+/* Sub-card content */
+.subCardContent {
+    font-size: 0.85rem;
 }
 
 /* Icon styling */
 .cardIcon {
     margin-right: 8px;
-    color: #6b7280;
+    color: white;
+    font-size: 1.1rem;
 }
 
-/* View All / View Less Button */
+/* Button styling */
 .viewAllButton {
     background: none;
     font-size: 0.9rem;
     font-weight: 600;
+    margin-top: 20px;
     border: none;
     cursor: pointer;
     color: #2563eb;
@@ -171,5 +195,8 @@ export default NewFormDisplay;
 @media (max-width: 768px) {
     .dashboardContainer {
         grid-template-columns: 1fr;
+    }
+    .subCard {
+        flex: 1 1 100%;
     }
 }
