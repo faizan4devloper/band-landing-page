@@ -1,3 +1,56 @@
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import DocumentPreview from './DocumentPreview';
+import FormDisplay from './FormDisplay';
+import styles from './UploadDocuments.module.css';
+
+const UploadDocuments = () => {
+    const location = useLocation();
+    const { uploadedFile, documents = [] } = location.state || {};
+
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
+
+    const [selectedForm, setSelectedForm] = useState(null);
+    const [isPreviewVisible, setIsPreviewVisible] = useState(false); // State to manage toggle
+
+    const togglePreview = () => {
+        setIsPreviewVisible(!isPreviewVisible); // Toggle visibility
+    };
+
+    return (
+<div className={styles.container}>
+  <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+  <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+  <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
+    <h2 className={styles.documentHead}>Documents Review</h2>
+    {allDocuments.length > 0 ? (
+      <div className={styles.reviewSection}>
+        <div className={styles.preview}>
+          {allDocuments.map((doc, index) => (
+            <DocumentPreview key={index} document={doc} />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <p className={styles.noFile}>No document available</p>
+    )}
+  </div>
+  <button className={styles.togglePreviewButton} onClick={togglePreview}>
+    {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
+  </button>
+</div>    );
+};
+
+export default UploadDocuments;
+
+
+
+
+
 .container {
   display: flex;
   flex-direction: row;
@@ -107,29 +160,3 @@
 .togglePreviewButton:hover {
   background-color: #0056b3;
 }
-
-
-
-
-
-<div className={styles.container}>
-  <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-  <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
-  <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
-    <h2 className={styles.documentHead}>Documents Review</h2>
-    {allDocuments.length > 0 ? (
-      <div className={styles.reviewSection}>
-        <div className={styles.preview}>
-          {allDocuments.map((doc, index) => (
-            <DocumentPreview key={index} document={doc} />
-          ))}
-        </div>
-      </div>
-    ) : (
-      <p className={styles.noFile}>No document available</p>
-    )}
-  </div>
-  <button className={styles.togglePreviewButton} onClick={togglePreview}>
-    {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
-  </button>
-</div>
