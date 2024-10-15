@@ -51,25 +51,21 @@ const NewFormDisplay = () => {
     };
 
     return (
-        <div className={styles.formDisplay}>
-            <div className={styles.formColumns}>
-                {/* Verification Status */}
-                <div className={styles.formColumn}>
-                    <h3>Verification Status</h3>
-                    {renderFormData('claimassist-history-lambda')}
-                </div>
+        <div className={styles.dashboardContainer}>
+            {/* First Row */}
+            <div className={styles.card}>
+                <h3>Verification Status</h3>
+                {renderFormData('claimassist-history-lambda')}
+            </div>
 
-                {/* Reviewer Insights */}
-                <div className={styles.formColumn}>
-                    <h3>Reviewer Insights</h3>
-                    {renderFormData('PAYMENT_DETAILS')}
-                </div>
+            <div className={styles.card}>
+                <h3>Reviewer Insights</h3>
+                {renderFormData('PAYMENT_DETAILS')}
+            </div>
 
-                {/* Checklist */}
-                <div className={styles.formColumn}>
-                    <h3>Checklist</h3>
-                    {renderFormData('LOST_POLICY_FORM')}
-                </div>
+            <div className={styles.card}>
+                <h3>Checklist</h3>
+                {renderFormData('LOST_POLICY_FORM')}
             </div>
         </div>
     );
@@ -79,79 +75,61 @@ export default NewFormDisplay;
 
 
 
-/* Main container */
-.formDisplay {
-    background: linear-gradient(135deg, #1e293b, #334155);
-    padding: 30px;
-    height: 100%;
-    width: 100%;
-    font-family: 'Poppins', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Main container for the whole dashboard */
+.dashboardContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+    padding: 20px;
+    background-color: #f9fafb;
+    margin: 0 auto;
 }
 
-/* Side-by-side layout */
-.formColumns {
+/* Styling each card (similar to widgets in the screenshot) */
+.card {
+    background-color: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    color: #374151;
     display: flex;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
+    flex-direction: column;
     justify-content: space-between;
 }
 
-.formColumn {
-    background-color: #f1f5f9;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    color: #374151;
+/* Card Header */
+.card h3 {
+    font-size: 1.25rem;
+    color: #1f2937;
+    margin-bottom: 10px;
 }
 
-.formColumn h3 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #2563eb;
-    margin-bottom: 15px;
+/* Form Data Section */
+.formDataSection {
+    margin-top: 20px;
 }
 
-/* Titles for each section in form data */
 .formDataTitle {
     font-size: 1rem;
     font-weight: 600;
     color: #2563eb;
 }
 
-/* Content in form data */
 .formDataContent {
-    font-size: .9rem;
-    color: #1f2937;
-    padding-left: 15px;
-    line-height: 1.6;
+    font-size: 0.9rem;
+    color: #4b5563;
 }
 
-/* Hover effect */
-.formColumn:hover {
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
-}
-
-/* Card icon styling */
+/* Icon styling */
 .cardIcon {
-    margin-right: 10px;
+    margin-right: 8px;
+    color: #6b7280;
 }
 
-/* Responsive adjustments */
+/* Responsive Layout */
 @media (max-width: 768px) {
-    .formColumns {
-        flex-direction: column;
-        gap: 30px;
-    }
-
-    .formColumn {
-        width: 100%;
+    .dashboardContainer {
+        grid-template-columns: 1fr;
     }
 }
