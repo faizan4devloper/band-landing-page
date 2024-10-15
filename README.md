@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+    faChevronRight,
     faSignature,
     faIdCard,
     faFileAlt,
@@ -8,7 +9,7 @@ import {
     faQuestionCircle,
     faInfoCircle
 } from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json'; // Ensure this path is correct
+import formDataJson from '../../../Json/NewEntities.json';
 import styles from './NewFormDisplay.module.css';
 
 const NewFormDisplay = () => {
@@ -53,7 +54,7 @@ const NewFormDisplay = () => {
         const selectedData = formData[formKey];
         const entries = Object.entries(selectedData);
 
-        // Show first 3 entries if collapsed
+        // Show fewer entries when collapsed
         const displayedEntries = isExpanded ? entries : entries.slice(0, 3);
 
         return (
@@ -77,7 +78,7 @@ const NewFormDisplay = () => {
         <div className={styles.dashboardContainer}>
             <div className={styles.card}>
                 <h3>Verification Status</h3>
-                {renderFormData('verification_status', expanded.verificationStatus)} 
+                {renderFormData('verification_status', expanded.verificationStatus)}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('verificationStatus')}>
                     {expanded.verificationStatus ? 'View Less' : 'View All'}
                 </button>
@@ -85,7 +86,7 @@ const NewFormDisplay = () => {
 
             <div className={styles.card}>
                 <h3>Reviewer Insights</h3>
-                {renderFormData('reviewer_insights', expanded.reviewerInsights)} 
+                {renderFormData('reviewer_insights', expanded.reviewerInsights)}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('reviewerInsights')}>
                     {expanded.reviewerInsights ? 'View Less' : 'View All'}
                 </button>
@@ -93,7 +94,7 @@ const NewFormDisplay = () => {
 
             <div className={styles.card}>
                 <h3>Checklist</h3>
-                {renderFormData('checklist', expanded.checklist)} 
+                {renderFormData('checklist', expanded.checklist)}
                 <button className={styles.viewAllButton} onClick={() => toggleExpanded('checklist')}>
                     {expanded.checklist ? 'View Less' : 'View All'}
                 </button>
