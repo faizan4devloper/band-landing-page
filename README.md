@@ -78,6 +78,7 @@ const NewFormDisplay = () => {
 export default NewFormDisplay;
 
 
+
 /* Main container */
 .formDisplay {
     background: linear-gradient(135deg, #1e293b, #334155);
