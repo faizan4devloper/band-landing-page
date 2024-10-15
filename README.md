@@ -1,39 +1,39 @@
 .container {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  max-width: 100%;
+  align-items: stretch; /* Aligns all items to take full height */
+  width: 100%;
   height: 100vh;
   padding: 20px;
-  position: relative;
-  transition: all 0.5s ease;
-  gap: 20px; /* Add space between sections */
+  gap: 20px; /* Space between sections */
+  box-sizing: border-box; /* Ensures padding and border don't affect the width */
 }
 
 .sidebar {
-  flex: 0.2; /* Adjusted flex value for Sidebar */
+  flex: 0.2; /* Sidebar will take 20% of the available space */
   max-width: 220px;
-  height: 100%;
   background-color: #334155;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  overflow-y: auto;
   transition: all 0.5s ease;
 }
 
 .formDisplay {
-  flex: 0.6; /* Adjusted flex value for FormDisplay */
-  height: 100%;
+  flex: 0.5; /* FormDisplay will take 50% of the available space */
   background-color: #f8fafc;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 100%;
   overflow-y: auto;
   transition: all 0.5s ease;
 }
 
 .uploadDocuments {
-  flex: 0.8;
+  flex: 0.3; /* UploadDocuments will take 30% of the available space */
   background: linear-gradient(135deg, #1e293b, #334155);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
@@ -41,25 +41,9 @@
   padding: 20px;
   height: 100%;
   overflow-y: auto;
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 100%;
-  transform: translateX(100%);
   transition: all 0.5s ease;
-  opacity: 0;
-}
-
-/* Slide-in from the right */
-.slideIn {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-/* Slide-out to the right */
-.slideOut {
-  transform: translateX(100%);
-  opacity: 0;
+  transform: translateX(0); /* Initially visible */
+  opacity: 1; /* Initially visible */
 }
 
 .documentHead {
@@ -99,8 +83,9 @@
   transform: scale(1.05);
 }
 
+/* Shrinking effect for Sidebar and FormDisplay */
 .shrink {
-  flex: 0.1; /* Shrink Sidebar and FormDisplay when Preview is visible */
+  flex: 0.1; /* Shrink when preview is visible */
   transition: all 0.5s ease;
 }
 
@@ -122,3 +107,29 @@
 .togglePreviewButton:hover {
   background-color: #0056b3;
 }
+
+
+
+
+
+<div className={styles.container}>
+  <Sidebar onSelectForm={setSelectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+  <FormDisplay selectedForm={selectedForm} className={isPreviewVisible ? styles.shrink : ''} />
+  <div className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}>
+    <h2 className={styles.documentHead}>Documents Review</h2>
+    {allDocuments.length > 0 ? (
+      <div className={styles.reviewSection}>
+        <div className={styles.preview}>
+          {allDocuments.map((doc, index) => (
+            <DocumentPreview key={index} document={doc} />
+          ))}
+        </div>
+      </div>
+    ) : (
+      <p className={styles.noFile}>No document available</p>
+    )}
+  </div>
+  <button className={styles.togglePreviewButton} onClick={togglePreview}>
+    {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
+  </button>
+</div>
