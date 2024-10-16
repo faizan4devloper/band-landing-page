@@ -1,170 +1,79 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import DocumentPreview from './DocumentPreview';
-import FormDisplay from './FormDisplay';
-import styles from './UploadDocuments.module.css';
+// DocumentPreview.js
+import React from 'react';
+import styles from './DocumentPreview.module.css';
 
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    const [selectedForm, setSelectedForm] = useState(null);
-    const [isUploadVisible, setIsUploadVisible] = useState(false); // State to manage UploadDocuments visibility
-
-    const toggleUpload = () => {
-        setIsUploadVisible(prevState => !prevState); // Toggle visibility
+const DocumentPreview = ({ document, index }) => {
+    const getDocumentType = (doc) => {
+        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
+            return 'Image';
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+            return 'PDF';
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+            return 'DOCX';
+        } else {
+            return 'Other';
+        }
     };
 
     return (
-        <div className={styles.container}>
-            {/* Sidebar */}
-            <div className={styles.sidebar}>
-                <Sidebar onSelectForm={setSelectedForm} />
-            </div>
-
-            {/* FormDisplay */}
-            <div className={`${styles.formDisplay} ${isUploadVisible ? styles.reduceWidth : ''}`}>
-                <FormDisplay selectedForm={selectedForm} />
-            </div>
-
-            {/* UploadDocuments section */}
-            <div className={`${styles.uploadDocuments} ${isUploadVisible ? styles.slideIn : styles.slideOut}`}>
-                <h2 className={styles.documentHead}>Documents Review</h2>
-                <div className={styles.reviewSection}>
-                    {allDocuments.length > 0 ? (
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    ) : (
-                        <p className={styles.noFile}>No document available</p>
-                    )}
-                </div>
-            </div>
-
-            {/* Toggle Button */}
-            <button className={styles.togglePreviewButton} onClick={toggleUpload}>
-                {isUploadVisible ? 'Close Preview' : 'Open Preview'}
-            </button>
+        <div key={index} className={styles.previewItem}>
+            <p className={styles.documentType}>Type: {getDocumentType(document)}</p>
+            {document.type?.startsWith('image/') || document.url?.endsWith('.jpg') || document.url?.endsWith('.png') ? (
+                <img
+                    src={document.url ? document.url : URL.createObjectURL(document)}
+                    alt={document.name || "Document Preview"}
+                    className={styles.imagePreview}
+                />
+            ) : document.type === 'application/pdf' || document.url?.endsWith('.pdf') ? (
+                <iframe
+                    src={`${document.url ? document.url : URL.createObjectURL(document)}#toolbar=0&navpanes=0&scrollbar=0`}
+                    title={`PDF Preview ${index}`}
+                    className={styles.pdfPreview}
+                    width="400px"
+                    height="550px"
+                    frameBorder="0"
+                />
+            ) : (
+                <a
+                    href={document.url ? document.url : URL.createObjectURL(document)}
+                    download={document.name || document.name}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.documentLink}
+                >
+                    View Document
+                </a>
+            )}
         </div>
     );
 };
 
-export default UploadDocuments;
+export default DocumentPreview;
 
 
-
-
-.container {
-    display: flex;
-    flex-direction: row;
-    max-width: 100%;
-    height: 100vh; /* Full height of the viewport */
-    padding: 20px;
-    position: relative;
-}
-
-.sidebar {
-    flex: 0 0 250px; /* Fixed width for Sidebar */
-    height: 100%;
-}
-
-.formDisplay {
-    flex: 1; /* Takes remaining space */
-    height: 100%;
-    overflow-y: auto;
-    transition: flex 0.5s ease; /* Smooth transition for width adjustment */
-}
-
-/* When UploadDocuments is visible, reduce FormDisplay width */
-.reduceWidth {
-    flex: 0 0 30%; /* Adjust to desired width */
-}
-
-.uploadDocuments {
-    position: absolute; /* Position absolutely */
-    right: 0; /* Align to the right */
-    top: 0; /* Align to the top */
-    height: 100%; /* Full height */
-    width: 400px; /* Fixed width for UploadDocuments */
-    background: linear-gradient(135deg, #1e293b, #334155);
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
-    border-radius: 12px;
-    padding: 20px;
-    transform: translateX(100%); /* Start off-screen */
-    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition */
-    opacity: 0; /* Start hidden */
-    overflow-y: auto; /* Manage overflow */
-}
-
-/* Slide-in from the right */
-.slideIn {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* Slide-out to the right */
-.slideOut {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-.documentHead {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #fff;
-    text-align: center;
-}
-
-.reviewSection {
-    display: flex;
-    flex-direction: column;
-    height: calc(100% - 50px); /* Adjust height to account for header */
-    overflow-y: auto; /* Manage overflow */
-}
-
-.noFile {
-    color: #67748b;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.preview {
-    display: flex;
-    margin: auto;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.preview > * {
-    background-color: #e2e8f0;
-    border-radius: 8px;
+.previewItem {
+    margin-bottom: 20px;
     padding: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+    background: #ffffff;
 }
 
-.togglePreviewButton {
-    position: absolute;
-    right: 50px;
-    top: 30px;
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    color: #fff;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 6px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.3s ease;
+.imagePreview {
+    max-width: 100%;
+    height: auto;
+    /*border-radius: 8px;*/
 }
 
-.togglePreviewButton:hover {
-    background-color: #0056b3;
+.pdfPreview {
+    /*border-radius: 8px;*/
+}
+
+.documentLink {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+.documentType{
+    text-align: center;
+    margin:0px;
 }
