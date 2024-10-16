@@ -12,6 +12,135 @@ const DocumentPreview = ({ document, index }) => {
             const objectUrl = URL.createObjectURL(document);
             setDocUrl(objectUrl);
 
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+    }, [document]);
+
+    const getDocumentType = (doc) => {
+        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
+            return 'Image';
+        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
+            return 'PDF';
+        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
+            return 'DOCX';
+        } else {
+            return 'Other';
+        }
+    };
+
+    return (
+        <div key={index} className={styles.previewItem}>
+            <p className={styles.documentType}>Type: {getDocumentType(document)}</p>
+
+            {getDocumentType(document) === 'PDF' ? (
+                <div className={styles.iframeContainer}>
+                    <iframe
+                        ref={iframeRef}
+                        src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                        title={`PDF Preview ${index}`}
+                        className={styles.pdfPreview}
+                        width="400px"
+                        height="550px"
+                        frameBorder="0"
+                    />
+                </div>
+            ) : getDocumentType(document) === 'Image' ? (
+                <img
+                    src={docUrl}
+                    alt={document.name || "Document Preview"}
+                    className={styles.imagePreview}
+                />
+            ) : (
+                <a
+                    href={docUrl}
+                    download={document.name || "Document"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.documentLink}
+                >
+                    View Document
+                </a>
+            )}
+        </div>
+    );
+};
+
+export default DocumentPreview;
+
+
+
+/* Styles for the iframe scrollbar */
+.iframeContainer iframe::-webkit-scrollbar {
+    width: 12px;
+}
+
+.iframeContainer iframe::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+}
+
+.iframeContainer iframe::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+.iframeContainer iframe::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+/* For Firefox */
+.iframeContainer iframe {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* Other existing styles */
+.previewItem {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    background: #ffffff;
+}
+
+.imagePreview {
+    max-width: 100%;
+    height: auto;
+}
+
+.documentLink {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.documentType {
+    text-align: center;
+    margin: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useRef, useEffect } from 'react';
+import styles from './DocumentPreview.module.css';
+
+const DocumentPreview = ({ document, index }) => {
+    const iframeRef = useRef(null);
+    const [docUrl, setDocUrl] = useState('');
+
+    useEffect(() => {
+        if (document.url) {
+            setDocUrl(document.url);
+        } else {
+            const objectUrl = URL.createObjectURL(document);
+            setDocUrl(objectUrl);
+
             // Clean up the object URL to avoid memory leaks
             return () => URL.revokeObjectURL(objectUrl);
         }
