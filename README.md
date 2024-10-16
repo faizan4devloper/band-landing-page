@@ -168,4 +168,4 @@ export default UploadDocuments;
 .togglePreviewButton:hover {
     background-color: #0056b3;
 }
-make the open and close preview button more animated and live for the goin to the next or opening new window and after opening new window the icon will change accordingly
+make the open and close preview button more animated and live for the goin to the next or opening new window and after opening new window the icon will change accordingly i want beutiful styling if you can use button or not its okay its depends on you i want only the that open and close preview like good and guidence for the open and close the preview
