@@ -60,7 +60,6 @@ const UploadDocuments = () => {
 export default UploadDocuments;
 
 
-
 .container {
     display: flex;
     flex-direction: row;
@@ -84,7 +83,7 @@ export default UploadDocuments;
 
 /* When UploadDocuments is visible, reduce FormDisplay width */
 .reduceWidth {
-    flex: 0 0 30%; /* Reduce to 30% of available space */
+    flex: 0 0 50%; /* Reduce to 30% of available space */
 }
 
 .uploadDocuments {
