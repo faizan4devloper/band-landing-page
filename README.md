@@ -1,79 +1,4 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Sidebar from './Sidebar';
-import DocumentPreview from './DocumentPreview';
-import FormDisplay from './FormDisplay';
-import styles from './UploadDocuments.module.css';
-
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
-
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
-
-    const [selectedForm, setSelectedForm] = useState(null);
-    const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-
-    const togglePreview = () => {
-        setIsPreviewVisible(!isPreviewVisible);
-    };
-
-    return (
-        <div className={styles.container}>
-            {/* Sidebar with dynamic width */}
-            <div
-                style={{
-                    width: isPreviewVisible ? '250px' : '330px',
-                    transition: 'width 0.5s ease',
-                }}
-            >
-                <Sidebar onSelectForm={setSelectedForm} />
-            </div>
-
-            {/* FormDisplay with dynamic flex */}
-            <div
-                style={{
-                    flex: isPreviewVisible ? '0.3' : '1',
-                    transition: 'flex 0.5s ease',
-                }}
-            >
-                <FormDisplay selectedForm={selectedForm} />
-            </div>
-
-            {/* UploadDocuments section with slide effect */}
-            <div
-                className={`${styles.uploadDocuments} ${isPreviewVisible ? styles.slideIn : styles.slideOut}`}
-            >
-                <h2 className={styles.documentHead}>Documents Review</h2>
-                {allDocuments.length > 0 ? (
-                    <div className={styles.reviewSection}>
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    </div>
-                ) : (
-                    <p className={styles.noFile}>No document available</p>
-                )}
-            </div>
-
-            {/* Toggle Button */}
-            <button className={styles.togglePreviewButton} onClick={togglePreview}>
-                {isPreviewVisible ? 'Close Preview' : 'Open Preview'}
-            </button>
-        </div>
-    );
-};
-
-export default UploadDocuments;
-
-
-
-
+/* Container must be flex */
 .container {
   display: flex;
   width: 100%;
@@ -81,7 +6,29 @@ export default UploadDocuments;
   transition: all 0.5s ease;
 }
 
-/* UploadDocuments section */
+/* Shrinking effect for Sidebar */
+.shrinkSidebar {
+  flex-basis: 250px; /* Shrinks Sidebar when preview is open */
+  transition: flex-basis 0.5s ease;
+}
+
+.sidebarNormal {
+  flex-basis: 330px; /* Normal width for Sidebar */
+  transition: flex-basis 0.5s ease;
+}
+
+/* Shrinking effect for FormDisplay */
+.shrinkFormDisplay {
+  flex-basis: 30%; /* 30% width for FormDisplay when preview is open */
+  transition: flex-basis 0.5s ease;
+}
+
+.formDisplayNormal {
+  flex-basis: 100%; /* 70% width for FormDisplay when preview is closed */
+  transition: flex-basis 0.5s ease;
+}
+
+/* UploadDocuments section takes remaining space */
 .uploadDocuments {
   flex-grow: 1;
   background: linear-gradient(135deg, #1e293b, #334155);
