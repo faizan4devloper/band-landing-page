@@ -1,7 +1,7 @@
 import './App.css';
 import LoginPage from './components/Login/LoginPage';
 import Header from './components/Header/Header';
-import Dashboard from './components/Dashboard/Dashboard'; // New Dashboard component
+import Dashboard from './components/Personas/Personas'; // New Dashboard component
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 
@@ -21,14 +21,14 @@ function App() {
 
           {/* Route for the dashboard (accessible only if authenticated) */}
           <Route 
-            path="/dashboard" 
-            element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+            path="/personas" 
+            element={isAuthenticated ? <Personas /> : <Navigate to="/login" />} 
           />
 
           {/* Default route */}
           <Route 
             path="/" 
-            element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} 
+            element={<Navigate to={isAuthenticated ? "/personas" : "/login"} />} 
           />
         </Routes>
       </div>
@@ -64,7 +64,7 @@ const LoginPage = ({ setIsAuthenticated }) => {
     // Placeholder for actual authentication logic
     if (email === "user@example.com" && password === "password") {
       setIsAuthenticated(true);
-      navigate("/dashboard"); // Redirect to the dashboard
+      navigate("/personas"); // Redirect to the dashboard
     } else {
       alert("Invalid credentials");
     }
@@ -129,22 +129,22 @@ export default LoginPage;
 
 
 import React from 'react';
-import styles from './Dashboard.module.css';
+import styles from './Personas.module.css';
 
-const Dashboard = () => {
+const Personas = () => {
   return (
-    <div className={styles.dashboard}>
+    <div className={styles.Personas}>
       <h1>Welcome to the Dashboard</h1>
       <p>This is your post-login page. You can add more content here.</p>
     </div>
   );
 };
 
-export default Dashboard;
+export default Personas;
 
 
 
-.dashboard {
+.Personas {
   display: flex;
   flex-direction: column;
   align-items: center;
