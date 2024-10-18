@@ -1,3 +1,61 @@
+import React, { useState } from "react";
+import styles from "./Login.module.css";
+import backgroundImage from "../assets/LoginImg.jpg"; // Example path to image
+
+const Login = () => {
+  const [isLogin, setIsLogin] = useState(true);
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+  };
+
+  return (
+    <div className={styles.container}>
+      {/* Left side with image and overlay */}
+      <div
+        className={styles.leftSide}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className={styles.overlay}></div>
+        <div className={styles.overlayText}>
+          Welcome Back!
+        </div>
+      </div>
+
+      {/* Right side login form */}
+      <div className={styles.rightSide}>
+        <div className={styles.formContainer}>
+          <h2 className={styles.title}>{isLogin ? "Login" : "Register"}</h2>
+
+          <form>
+            <input
+              type="email"
+              className={styles.input}
+              placeholder="Enter your email"
+            />
+            <input
+              type="password"
+              className={styles.input}
+              placeholder="Enter your password"
+            />
+            <button className={styles.button}>
+              {isLogin ? "Login" : "Sign Up"}
+            </button>
+          </form>
+
+          <div className={styles.toggleText} onClick={toggleForm}>
+            {isLogin ? "Create an Account" : "Already have an account? Login"}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Login;
+
+
+
 /* Login.module.css */
 
 .container {
