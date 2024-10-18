@@ -1,20 +1,42 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+Uncaught TypeError: setIsAuthenticated is not a function
+    at handleLogin (LoginPage.js:22:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at invokeGuardedCallbackAndCatchFirstError (react-dom.development.js:4291:1)
+    at executeDispatch (react-dom.development.js:9041:1)
+    at processDispatchQueueItemsInOrder (react-dom.development.js:9073:1)
+    at processDispatchQueue (react-dom.development.js:9086:1)
+    at dispatchEventsForPlugins (react-dom.development.js:9097:1)
+    at react-dom.development.js:9288:1
+
+
+    import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // To navigate after login
 import styles from "./LoginPage.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
-import backgroundImage from "../assets/LoginImg.jpg"; // Path to image
+import backgroundImage from "../assets/LoginImg.jpg"; 
 
-const LoginPage = () => {
+const LoginPage = ({ setIsAuthenticated }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // For redirecting the user
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
   };
 
-  const handleNavigate = () => {
-    navigate("/personas"); // Navigate to the personas page
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Placeholder for actual authentication logic
+    if (email === "user@example.com" && password === "password") {
+      setIsAuthenticated(true);
+      navigate("/personas"); // Redirect to the dashboard
+    } else {
+      alert("Invalid credentials");
+    }
   };
 
   return (
@@ -24,20 +46,24 @@ const LoginPage = () => {
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className={styles.overlay}></div>
-        <div className={styles.overlayText}>Citizen Advisor</div>
+        <div className={styles.overlayText}>
+          Citizen Advisor
+        </div>
       </div>
 
       <div className={styles.rightSide}>
         <div className={styles.formContainer}>
           <h2 className={styles.title}>{isLogin ? "Login" : "Register"}</h2>
 
-          <form>
+          <form onSubmit={handleLogin}>
             <div className={styles.inputGroup}>
               <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />
               <input
                 type="email"
                 className={styles.input}
                 placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -47,6 +73,8 @@ const LoginPage = () => {
                 type="password"
                 className={styles.input}
                 placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -58,11 +86,6 @@ const LoginPage = () => {
           <div className={styles.toggleText} onClick={toggleForm}>
             {isLogin ? "Create an Account" : "Already have an account? Login"}
           </div>
-
-          {/* Add Button to navigate to Personas */}
-          <button className={styles.personasButton} onClick={handleNavigate}>
-            Go to Personas
-          </button>
         </div>
       </div>
     </div>
@@ -70,140 +93,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-
-
-
-
-
-
-/* LoginPage.module.css */
-.container {
-  display: flex;
-  height: 100vh;
-}
-
-.leftSide {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-}
-
-.overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.overlayText {
-  position: relative;
-  z-index: 2;
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  animation: fadeIn 1.5s ease-in-out;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.rightSide {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 50%;
-  padding: 2rem;
-  background-color: white;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  animation: slideIn 1.5s ease-in-out;
-}
-
-@keyframes slideIn {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.formContainer {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #4f46e5;
-  color: white;
-  font-weight: bold;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button:hover {
-  background-color: #4338ca;
-}
-
-.personasButton {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  width: 100%;
-  background-color: #4caf50;
-  color: white;
-  font-weight: bold;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  animation: bounce 1.2s infinite;
-}
-
-.personasButton:hover {
-  background-color: #388e3c;
-}
-
-/* Bounce animation */
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(-10px);
-  }
-  60% {
-    transform: translateY(-5px);
-  }
-}
-
-.toggleText {
-  margin-top: 1rem;
-  text-align: center;
-  color: #4f46e5;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-@media (min-width: 768px) {
-  .leftSide {
-    display: flex;
-  }
-}
