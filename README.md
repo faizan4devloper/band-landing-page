@@ -3,7 +3,6 @@
 .container {
   display: flex;
   height: 100vh;
-  background: rgb();
 }
 
 .leftSide {
@@ -11,18 +10,33 @@
   justify-content: center;
   align-items: center;
   width: 50%;
+  position: relative; /* This is important for the overlay to position correctly */
   background-image: url('../assets/LoginImg.jpg');
   background-size: cover;
   background-position: center;
 }
 
+/* Overlay layer */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Black color with 50% opacity */
+  z-index: 1; /* Ensure the overlay stays above the image */
+}
+
+/* Text on top of the overlay */
 .overlayText {
+  position: relative; /* Ensures the text stays on top of the overlay */
+  z-index: 2; /* Keep text on top of overlay */
   color: white;
   font-size: 2rem;
   font-weight: bold;
   padding: 1.5rem;
   text-align: center;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5); /* Darken the text background slightly */
   border-radius: 0.5rem;
 }
 
@@ -33,7 +47,6 @@
   width: 50%;
   padding: 2rem;
   background-color: white;
-  /*border-radius: 0.5rem;*/
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
