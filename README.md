@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import styles from "./LoginPage.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,8 +21,8 @@ const LoginPage = () => {
       >
         <div className={styles.overlay}></div>
         <div className={styles.overlayText}>
-          Welcome Back!
-        </div>
+Citize Advisor
+</div>
       </div>
 
       {/* Right side login form */}
@@ -65,3 +66,20 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+
+
+import './App.css';
+import LoginPage from './components/Login/LoginPage';
+import Header from './components/Header/Header';
+
+function App() {
+  return (
+    <div className="App">
+      <Header />
+      <LoginPage />
+    </div>
+  );
+}
+
+export default App;
