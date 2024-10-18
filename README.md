@@ -1,93 +1,166 @@
-import React from 'react';
-import styles from './Header.module.css';
-import logo from '../../assets/logo.png'; // Ensure this path points to your logo
+import React, { useState } from "react";
+import styles from "./LoginPage.module.css";
+import backgroundImage from "../assets/LoginImg.jpg"; // Example path to image
 
-const Header = () => {
+const LoginPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+  };
+
   return (
-    <header className={styles.header}>
-      <div className={styles.logoContainer}>
-        <img src={logo} alt="Logo" className={styles.logo} />
-        <h1 className={styles.logoText}>MyApp</h1>
+    <div className={styles.container}>
+      {/* Left side with image and overlay */}
+      <div
+        className={styles.leftSide}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className={styles.overlay}></div>
+        <div className={styles.overlayText}>
+          Welcome Back!
+        </div>
       </div>
-      <nav className={styles.navbar}>
-        <ul className={styles.navLinks}>
-          <li className={styles.navItem}><a href="#home">Home</a></li>
-          <li className={styles.navItem}><a href="#features">Features</a></li>
-          <li className={styles.navItem}><a href="#about">About</a></li>
-          <li className={styles.navItem}><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </header>
+
+      {/* Right side login form */}
+      <div className={styles.rightSide}>
+        <div className={styles.formContainer}>
+          <h2 className={styles.title}>{isLogin ? "Login" : "Register"}</h2>
+
+          <form>
+            <input
+              type="email"
+              className={styles.input}
+              placeholder="Enter your email"
+            />
+            <input
+              type="password"
+              className={styles.input}
+              placeholder="Enter your password"
+            />
+            <button className={styles.button}>
+              {isLogin ? "Login" : "Sign Up"}
+            </button>
+          </form>
+
+          <div className={styles.toggleText} onClick={toggleForm}>
+            {isLogin ? "Create an Account" : "Already have an account? Login"}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Header;
+export default LoginPage;
 
 
 
-/* Header.module.css */
 
-.header {
+/* Login.module.css */
+
+.container {
   display: flex;
-  justify-content: space-between;
+  height: 100vh;
+}
+
+.leftSide {
+  display: none;
+  justify-content: center;
   align-items: center;
-  padding: 1rem 2rem;
-  background-color: #4f46e5; /* Dark purple/navy background */
+  width: 50%;
+  position: relative; /* This is important for the overlay to position correctly */
+  background-image: url('../assets/LoginImg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Overlay layer */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Black color with 50% opacity */
+  z-index: 1; /* Ensure the overlay stays above the image */
+}
+
+/* Text on top of the overlay */
+.overlayText {
+  position: relative; /* Ensures the text stays on top of the overlay */
+  z-index: 2; /* Keep text on top of overlay */
   color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.logoContainer {
-  display: flex;
-  align-items: center;
-}
-
-.logo {
-  width: 50px;
-  height: 50px;
-  margin-right: 0.75rem;
-}
-
-.logoText {
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
-  letter-spacing: 1px;
+  padding: 1.5rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
 }
 
-.navbar {
+.rightSide {
   display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  padding: 2rem;
+  background-color: white;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
-.navLinks {
-  display: flex;
-  list-style: none;
-  gap: 1.5rem;
+.formContainer {
+  max-width: 400px;
+  margin: 0 auto;
 }
 
-.navItem a {
-  text-decoration: none;
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #4f46e5;
+  margin-bottom: 1.5rem;
+}
+
+.label {
+  font-weight: bold;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+}
+
+.button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #4f46e5;
   color: white;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  font-weight: bold;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.navItem a:hover {
-  color: #e0e7ff; /* Light shade on hover */
+.button:hover {
+  background-color: #4338ca;
 }
 
-
-
-import './App.css';
-import LoginPage from './components/Login/LoginPage';
-import Header from './components/Header/Header';
-
-function App() {
-  return (
-    <div className="App">
-      <Header />
-      <LoginPage />
-    </div>
-  );
+.toggleText {
+  margin-top: 1rem;
+  text-align: center;
+  color: #4f46e5;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-export default App;
+@media (min-width: 768px) {
+  .leftSide {
+    display: flex;
+  }
+}
