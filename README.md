@@ -8,8 +8,21 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
-        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">{isLogin ? "Login" : "Register"}</h2>
+    <div className="flex h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
+      {/* Left side - Image */}
+      <div className="hidden md:flex w-1/2 items-center justify-center bg-cover bg-center" 
+           style={{ backgroundImage: `url('https://source.unsplash.com/random/800x800?tech')` }}>
+        {/* You can replace the URL with your own image */}
+        <div className="text-white text-3xl font-bold p-6 text-center bg-black bg-opacity-50 rounded-md">
+          Welcome Back!
+        </div>
+      </div>
+
+      {/* Right side - Login form */}
+      <div className="flex flex-col justify-center w-full md:w-1/2 p-8 bg-white rounded-lg shadow-lg">
+        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">
+          {isLogin ? "Login" : "Register"}
+        </h2>
 
         <form>
           <div className="mb-4">
@@ -55,6 +68,7 @@ const Login = () => {
             {isLogin ? "Create an Account" : "Already have an account? Login"}
           </button>
         </div>
+      </div>
     </div>
   );
 };
