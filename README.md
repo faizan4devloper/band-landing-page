@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import styles from "./LoginPage.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
 import backgroundImage from "../assets/LoginImg.jpg"; // Example path to image
 
 const LoginPage = () => {
@@ -28,16 +30,26 @@ const LoginPage = () => {
           <h2 className={styles.title}>{isLogin ? "Login" : "Register"}</h2>
 
           <form>
-            <input
-              type="email"
-              className={styles.input}
-              placeholder="Enter your email"
-            />
-            <input
-              type="password"
-              className={styles.input}
-              placeholder="Enter your password"
-            />
+            {/* Email input with icon */}
+            <div className={styles.inputGroup}>
+              <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />
+              <input
+                type="email"
+                className={styles.input}
+                placeholder="Enter your email"
+              />
+            </div>
+
+            {/* Password input with icon */}
+            <div className={styles.inputGroup}>
+              <FontAwesomeIcon icon={faLock} className={styles.icon} />
+              <input
+                type="password"
+                className={styles.input}
+                placeholder="Enter your password"
+              />
+            </div>
+
             <button className={styles.button}>
               {isLogin ? "Login" : "Sign Up"}
             </button>
@@ -57,7 +69,7 @@ export default LoginPage;
 
 
 
-/* Login.module.css */
+/* LoginPage.module.css */
 
 .container {
   display: flex;
@@ -70,7 +82,6 @@ export default LoginPage;
   align-items: center;
   width: 50%;
   position: relative; /* This is important for the overlay to position correctly */
-  background-image: url('../assets/LoginImg.jpg');
   background-size: cover;
   background-position: center;
 }
@@ -91,12 +102,12 @@ export default LoginPage;
   position: relative; /* Ensures the text stays on top of the overlay */
   z-index: 2; /* Keep text on top of overlay */
   color: white;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
 }
 
 .rightSide {
@@ -104,9 +115,10 @@ export default LoginPage;
   flex-direction: column;
   justify-content: center;
   width: 50%;
-  padding: 2rem;
+  padding: 3rem;
   background-color: white;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 1rem;
 }
 
 .formContainer {
@@ -115,44 +127,57 @@ export default LoginPage;
 }
 
 .title {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   text-align: center;
   color: #4f46e5;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.label {
-  font-weight: bold;
-  color: #4a5568;
-  margin-bottom: 0.5rem;
+/* Input group to contain input and icon */
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.icon {
+  margin-right: 0.75rem;
+  color: #4f46e5;
+  font-size: 1.2rem;
 }
 
 .input {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  margin-bottom: 1.5rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
 }
 
 .button {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.85rem;
   background-color: #4f46e5;
   color: white;
   font-weight: bold;
   border-radius: 0.375rem;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .button:hover {
   background-color: #4338ca;
+  transform: translateY(-2px);
 }
 
 .toggleText {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   text-align: center;
   color: #4f46e5;
   font-weight: bold;
@@ -164,3 +189,5 @@ export default LoginPage;
     display: flex;
   }
 }
+
+npm install @fortawesome/react-fontawesome @fortawesome/free-solid-svg-icons @fortawesome/fontawesome-svg-core
