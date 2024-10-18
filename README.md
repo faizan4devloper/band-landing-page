@@ -1,168 +1,7 @@
-import React, { useState } from "react";
-import styles from "./Login.module.css"; // Import the CSS module
-
-const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
-
-  const toggleForm = () => {
-    setIsLogin(!isLogin);
-  };
-
-  return (
-    <div className={styles.container}>
-      {/* Left side - Image */}
-      <div className={styles.leftSide}>
-        <div className={styles.overlayText}>
-          Welcome Back!
-        </div>
-      </div>
-
-      {/* Right side - Login form */}
-      <div className={styles.rightSide}>
-        <div className={styles.formContainer}>
-          <h2 className={styles.title}>
-            {isLogin ? "Login" : "Register"}
-          </h2>
-
-          <form>
-            <div>
-              <label className={styles.label} htmlFor="email">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                className={styles.input}
-                placeholder="Enter your email"
-              />
-            </div>
-
-            <div>
-              <label className={styles.label} htmlFor="password">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                className={styles.input}
-                placeholder="Enter your password"
-              />
-            </div>
-
-            <div>
-              <button
-                type="button"
-                className={styles.button}
-              >
-                {isLogin ? "Login" : "Sign Up"}
-              </button>
-            </div>
-          </form>
-
-          <div className={styles.toggleText} onClick={toggleForm}>
-            {isLogin ? "Create an Account" : "Already have an account? Login"}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default Login;
-
-
-
-/* Login.module.css */
-
-.container {
-  display: flex;
-  height: 100vh;
-  background: linear-gradient(to right, #4f46e5, #7c3aed);
-}
-
-.leftSide {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  width: 50%;
-  background-image: url('https://source.unsplash.com/random/800x800?tech');
-  background-size: cover;
-  background-position: center;
-}
-
-.overlayText {
-  color: white;
-  font-size: 2rem;
-  font-weight: bold;
-  padding: 1.5rem;
-  text-align: center;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 0.5rem;
-}
-
-.rightSide {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-}
-
-.formContainer {
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-  text-align: center;
-  color: #4f46e5;
-  margin-bottom: 1.5rem;
-}
-
-.label {
-  font-weight: bold;
-  color: #4a5568;
-  margin-bottom: 0.5rem;
-}
-
-.input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.375rem;
-  margin-bottom: 1.5rem;
-}
-
-.button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #4f46e5;
-  color: white;
-  font-weight: bold;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.button:hover {
-  background-color: #4338ca;
-}
-
-.toggleText {
-  margin-top: 1rem;
-  text-align: center;
-  color: #4f46e5;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-@media (min-width: 768px) {
-  .leftSide {
-    display: flex;
-  }
-}
+ASEF      $       W h i t e  RGB ?€  ?€  ?€           B l a c k  RGB               À   "  P r i m a r y   P a l e t t e      ,  D a r k   P u r p l e  RGB >‚‚ƒ=  ¡?‚ƒ      ,  T e c h   P u r p l e  RGB >¾¾¿=ððñ?>¾¿      *  M i d   P u r p l e  RGB ?Œ>ÒÒÓ?pðñ      . 
+ L i g h t   P u r p l e  RGB ?9¹º?HÈÉ?€        ( 
+ D a r k   B l u e  RGB =pðñ>¾¾¿?\ÜÝ      ( 
+ T e c h   B l u e  RGB >pðñ?‘’?€        & 	 M i d   B l u e  RGB ?Œ?HÈÉ?zúû      *  L i g h t   B l u e  RGB ?IÉÊ?eåæ?€        ( 
+ T e c h   G r e y  RGB ?\ÜÝ?fæç?pðñ  À    À   &  S e c o n d a r y   c o l o u r s      *  D a r k   C o r a l  RGB ?CÃÄ>HÈÉ>¾¾¿         C o r a l  RGB ?€  >ððñ?›œ      ,  L i g h t   C o r a l  RGB ?€  ?>¾¿?W×Ø      ,  D a r k   Y e l l o w  RGB ?HÈÉ? ‡ˆ=  ¡      "   Y e l l o w  RGB ?€  ?MÍÎ>‚‚ƒ      . 
+ L i g h t   Y e l l o w  RGB ?€  ?fæç?4´µ      *  D a r k   G r e e n  RGB =pðñ?  ¡>ÒÒÓ         G r e e n  RGB ?‚ƒ?\ÜÝ>ææç      ,  L i g h t   G r e e n  RGB ?>¾¿?këì?4´µ      ( 
+ D a r k   T e a l  RGB     >ððñ>ææç        T e a l  RGB >––—?CÃÄ?/¯°      *  L i g h t   T e a l  RGB ?%¥¦?fæç?\ÜÝ  À    À   $  T e r t i a r y   P a l e t t e      "   B r o n z e  RGB ?W×Ø?>¾¿?4´µ         C r e a m  RGB ?zúû?pðñ?fæç      "   G r e y   1  RGB ?‚ƒ?‘’?  ¡      "   G r e y   2  RGB ?%¥¦?/¯°?>¾¿      "   G r e y   3  RGB ?HÈÉ?RÒÓ?]ÝÞ      "   G r e y   4  RGB ?fæç?këì?uõö      "   G r e y   5  RGB ?pðñ?ròó?xøù  À    
