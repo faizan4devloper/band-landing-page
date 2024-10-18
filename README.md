@@ -1,166 +1,92 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faChevronRight,
-    faSignature,
-    faIdCard,
-    faFileAlt,
-    faCalendarAlt,
-    faQuestionCircle,
-    faInfoCircle
-} from '@fortawesome/free-solid-svg-icons';
-import formDataJson from '../../../Json/NewEntities.json';
-import styles from './NewFormDisplay.module.css';
+import React from "react";
+import LoginPage from "./LoginPage";
 
-const NewFormDisplay = () => {
-    const [formData, setFormData] = useState(null);
-    const [expanded, setExpanded] = useState({});
+function App() {
+  return (
+    <div className="App">
+      <LoginPage />
+    </div>
+  );
+}
 
-    useEffect(() => {
-        setFormData(formDataJson);
-    }, []);
+export default App;
 
-    const toggleExpanded = (key) => {
-        setExpanded((prev) => ({
-            ...prev,
-            [key]: !prev[key],
-        }));
-    };
 
-    const chooseIcon = (key) => {
-        switch (key.toLowerCase()) {
-            case 'approver1_focuses_on':
-                return faInfoCircle;
-            case 'approver2_focuses_on':
-                return faSignature;
-            case 'additional_information':
-                return faFileAlt;
-            case 'suggested_action_items':
-                return faQuestionCircle;
-            case 'detailed_summary':
-                return faIdCard;
-            default:
-                return faCalendarAlt;
-        }
-    };
 
-    const renderFormData = (formKey, isExpanded) => {
-        if (!formData || !formData[formKey]) return null;
+import React, { useState } from "react";
+import { motion } from "framer-motion";
 
-        const selectedData = formData[formKey];
-        const entries = Object.entries(selectedData);
+const LoginPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
 
-        const displayedEntries = isExpanded ? entries : entries.slice(0, 2);
+  const containerVariants = {
+    hidden: { opacity: 0, x: "-100vw" },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.5, type: "spring", stiffness: 120 } },
+    exit: { opacity: 0, x: "100vw", transition: { ease: "easeInOut" } },
+  };
 
-        return (
-            <div className={styles.subCardContainer}>
-                {displayedEntries.map(([key, value]) => (
-                    <div key={key} className={styles.subCard}>
-                        <FontAwesomeIcon icon={chooseIcon(key)} className={styles.cardIcon} />
-                        <div>
-                            <h2 className={styles.subCardTitle}>{key.replace(/_/g, ' ')}</h2>
-                            <p className={styles.subCardContent}>
-                                {Array.isArray(value) ? value.join(', ') : value}
-                            </p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        );
-    };
+  const toggleForm = () => {
+    setIsLogin(!isLogin);
+  };
 
-    return (
-        <div className={styles.dashboardContainer}>
-            {['Verification Status', 'Reviewer Insights', 'Checklist'].map((section) => (
-                <div className={styles.card} key={section}>
-                    <h3>{section}</h3>
-                    {renderFormData('claimassist-history-lambda', expanded[section])}
-                    <button className={styles.viewAllButton} onClick={() => toggleExpanded(section)}>
-                        {expanded[section] ? 'View Less' : 'View All'}
-                    </button>
-                </div>
-            ))}
+  return (
+    <div className="flex justify-center items-center h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
+      <motion.div
+        className="bg-white p-8 rounded-lg shadow-lg w-80"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
+        <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">{isLogin ? "Login" : "Register"}</h2>
+
+        <form>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+              placeholder="Enter your email"
+            />
+          </div>
+
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500"
+              placeholder="Enter your password"
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              className="bg-indigo-500 text-white font-bold py-2 px-4 rounded focus:outline-none hover:bg-indigo-600 w-full"
+            >
+              {isLogin ? "Login" : "Sign Up"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            className="text-indigo-500 hover:text-indigo-700 font-semibold"
+            onClick={toggleForm}
+          >
+            {isLogin ? "Create an Account" : "Already have an account? Login"}
+          </button>
         </div>
-    );
+      </motion.div>
+    </div>
+  );
 };
 
-export default NewFormDisplay;
-
-
-
-
-/* Container */
-.dashboardContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 20px;
-    background: linear-gradient(135deg, #f2f2f2, #e5e7eb);
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* Card styling */
-.card {
-    background-color: #fff;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    border-radius: 10px;
-}
-
-/* Sub-card styling */
-.subCardContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.subCard {
-    display: flex;
-    align-items: flex-start;
-    background: #f1f5f9;
-    border-radius: 8px;
-    padding: 10px;
-}
-
-.subCardTitle {
-    font-size: 1rem;
-    font-weight: 600;
-}
-
-.subCardContent {
-    font-size: 0.875rem;
-    margin-top: 5px;
-}
-
-/* Icon styling */
-.cardIcon {
-    margin-right: 10px;
-    color: #3b82f6;
-    font-size: 1.25rem;
-}
-
-/* Button styling */
-.viewAllButton {
-    background-color: transparent;
-    border: none;
-    color: #3b82f6;
-    font-size: 0.875rem;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.viewAllButton:hover {
-    text-decoration: underline;
-}
-
-/* Responsive Layout */
-@media (min-width: 768px) {
-    .dashboardContainer {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-
-
+export default LoginPage;
