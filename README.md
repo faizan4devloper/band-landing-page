@@ -1,29 +1,7 @@
-import React from "react";
-import LoginPage from "./LoginPage";
-
-function App() {
-  return (
-    <div className="App">
-      <LoginPage />
-    </div>
-  );
-}
-
-export default App;
-
-
-
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 
-const LoginPage = () => {
+const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
-
-  const containerVariants = {
-    hidden: { opacity: 0, x: "-100vw" },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.5, type: "spring", stiffness: 120 } },
-    exit: { opacity: 0, x: "100vw", transition: { ease: "easeInOut" } },
-  };
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
@@ -31,13 +9,6 @@ const LoginPage = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-gradient-to-r from-indigo-500 to-purple-500">
-      <motion.div
-        className="bg-white p-8 rounded-lg shadow-lg w-80"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-      >
         <h2 className="text-3xl font-bold mb-6 text-center text-indigo-600">{isLogin ? "Login" : "Register"}</h2>
 
         <form>
@@ -84,9 +55,8 @@ const LoginPage = () => {
             {isLogin ? "Create an Account" : "Already have an account? Login"}
           </button>
         </div>
-      </motion.div>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;
