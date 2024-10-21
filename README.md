@@ -1,8 +1,25 @@
-// DocumentPreview.js
-import React from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import styles from './DocumentPreview.module.css';
 
-const DocumentPreview = ({ document, index }) => {
+const DocumentPreview = memo(({ document, index }) => {
+    const [docURL, setDocURL] = useState(null);
+
+    // Cache the document URL to prevent unnecessary re-renders
+    useEffect(() => {
+        if (document.url) {
+            setDocURL(document.url);
+        } else {
+            setDocURL(URL.createObjectURL(document));
+        }
+        
+        // Cleanup the URL object when the component unmounts
+        return () => {
+            if (!document.url) {
+                URL.revokeObjectURL(docURL);
+            }
+        };
+    }, [document, docURL]);
+
     const getDocumentType = (doc) => {
         if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
             return 'Image';
@@ -18,23 +35,24 @@ const DocumentPreview = ({ document, index }) => {
     return (
         <div key={index} className={styles.previewItem}>
             <p className={styles.documentType}>Type: {getDocumentType(document)}</p>
-            {document.type?.startsWith('image/') || document.url?.endsWith('.jpg') || document.url?.endsWith('.png') ? (
+            
+            {getDocumentType(document) === 'Image' ? (
                 <img
-                    src={document.url ? document.url : URL.createObjectURL(document)}
+                    src={docURL}
                     alt={document.name || "Document Preview"}
                     className={styles.imagePreview}
                 />
-            ) : document.type === 'application/pdf' || document.url?.endsWith('.pdf') ? (
+            ) : getDocumentType(document) === 'PDF' ? (
                 <iframe
-                    src={`${document.url ? document.url : URL.createObjectURL(document)}#toolbar=0&navpanes=0&scrollbar=0`}
+                    src={`${docURL}#toolbar=0&navpanes=0&scrollbar=0`}
                     title={`PDF Preview ${index}`}
                     className={styles.pdfPreview}
                     frameBorder="0"
                 />
             ) : (
                 <a
-                    href={document.url ? document.url : URL.createObjectURL(document)}
-                    download={document.name || document.name}
+                    href={docURL}
+                    download={document.name || "Document"}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.documentLink}
@@ -44,10 +62,6 @@ const DocumentPreview = ({ document, index }) => {
             )}
         </div>
     );
-};
-
-
-
+});
 
 export default DocumentPreview;
-
