@@ -1,151 +1,203 @@
-.previewItem {
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    background: #ffffff;
-    max-width: 100%; /* Ensures it does not exceed the parent width */
-    overflow: hidden; /* Prevent overflow */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Centers the content */
-}
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAnglesRight, faAnglesLeft } from '@fortawesome/free-solid-svg-icons';
+import Sidebar from './Sidebar';
+import DocumentPreview from './DocumentPreview';
+import FormDisplay from './FormDisplay';
+import styles from './UploadDocuments.module.css';
 
-.imagePreview {
-    width: 100%; /* Full width of the parent */
-    height: auto; /* Maintain aspect ratio */
-    max-height: 500px; /* Adjust to limit the height if needed */
-    object-fit: contain; /* Maintain aspect ratio */
-    border-radius: 8px; /* Optional: adds a nicer look */
-}
+const UploadDocuments = () => {
+    const location = useLocation();
+    const { uploadedFile, documents = [] } = location.state || {};
 
-.pdfPreview {
-    width: 100%; /* Full width of the parent */
-    height: 600px; /* Increase height for better visibility */
-}
+    const allDocuments = [
+        ...(uploadedFile ? [uploadedFile] : []),
+        ...documents
+    ];
 
-.documentLink {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: bold;
-    display: block;
-    text-align: center;
-    margin-top: 10px; /* Adds space above the link */
-}
+    const [selectedForm, setSelectedForm] = useState(null);
+    const [isUploadVisible, setIsUploadVisible] = useState(false);
 
-.documentType {
-    text-align: center;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
-
-
-
-
-
-
-
-import React, { useState, useRef, useEffect } from 'react';
-import styles from './DocumentPreview.module.css';
-
-const DocumentPreview = ({ document, index }) => {
-    const iframeRef = useRef(null);
-    const [docUrl, setDocUrl] = useState('');
-
-    useEffect(() => {
-        if (document.url) {
-            setDocUrl(document.url);
-        } else {
-            const objectUrl = URL.createObjectURL(document);
-            setDocUrl(objectUrl);
-
-            // Clean up the object URL to avoid memory leaks
-            return () => URL.revokeObjectURL(objectUrl);
-        }
-    }, [document]);
-
-    const getDocumentType = (doc) => {
-        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
-            return 'Image';
-        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
-            return 'PDF';
-        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
-            return 'DOCX';
-        } else {
-            return 'Other';
-        }
+    const toggleUpload = () => {
+        setIsUploadVisible(prevState => !prevState);
     };
 
     return (
-        <div key={index} className={styles.previewItem}>
-            <p className={styles.documentType}>Type: {getDocumentType(document)}</p>
+        <div className={styles.container}>
+            {/* Sidebar */}
+            <div className={styles.sidebar}>
+                <Sidebar onSelectForm={setSelectedForm} />
+            </div>
 
-            {getDocumentType(document) === 'PDF' ? (
-                <iframe
-                    ref={iframeRef}
-                    src={`${docUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                    title={`PDF Preview ${index}`}
-                    className={styles.pdfPreview}
-                    width="400px"
-                    height="550px"
-                    frameBorder="0"
+            {/* FormDisplay */}
+            <div className={`${styles.formDisplay} ${isUploadVisible ? styles.reduceWidth : ''}`}>
+                <FormDisplay selectedForm={selectedForm} />
+            </div>
+
+            {/* UploadDocuments section */}
+            <div className={`${styles.uploadDocuments} ${isUploadVisible ? styles.slideIn : styles.slideOut}`}>
+                <div className={styles.reviewSection}>
+                    {allDocuments.length > 0 ? (
+                        <div className={styles.preview}>
+                            {allDocuments.map((doc, index) => (
+                                <DocumentPreview key={index} document={doc} />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className={styles.noFile}>No document available</p>
+                    )}
+                </div>
+            </div>
+
+            {/* Toggle Button */}
+            <button className={`${styles.togglePreviewButton} ${isUploadVisible ? styles.open : ''}`} onClick={toggleUpload}>
+                <FontAwesomeIcon 
+                    icon={isUploadVisible ? faAnglesLeft : faAnglesRight} 
+                    className={styles.icon} 
                 />
-            ) : getDocumentType(document) === 'Image' ? (
-                <img
-                    src={docUrl}
-                    alt={document.name || "Document Preview"}
-                    className={styles.imagePreview}
-                />
-            ) : (
-                <a
-                    href={docUrl}
-                    download={document.name || "Document"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.documentLink}
-                >
-                    View Document
-                </a>
-            )}
+            </button>
         </div>
     );
 };
 
-export default DocumentPreview;
+export default UploadDocuments;
 
 
 
-
-.previewItem {
-    /*margin-bottom: 20px;*/
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    background: #ffffff;
-    padding-bottom: 0;
-    max-width: 100%; /* Ensure it does not exceed the parent width */
-    overflow: hidden; /* Prevent overflow */
-    
-}
-
-.imagePreview {
+.container {
+    display: flex;
+    flex-direction: row;
     max-width: 100%;
-    max-height: 200px; /* Limit the height for images */
-    object-fit: contain; /* Maintain aspect ratio */
-    border-radius: 8px; /* Optional: adds a nicer look */
+    height: 100vh; /* Full height of the viewport */
+    /*padding: 20px;*/
+    position: relative;
 }
 
-.pdfPreview {
-    width: 100%; /* Full width of the parent */
-    height: 400px; /* Limit the height for PDFs */
+.sidebar {
+    flex: 0 0 250px; /* Fixed width for Sidebar */
+    height: 100%;
 }
 
-.documentLink {
-    text-decoration: none;
-    color: #007bff;
+.formDisplay {
+    flex: 0 0 70%; /* Takes remaining space */
+    height: 100%;
+    overflow-y: auto;
+    transition: flex 0.5s ease; /* Smooth transition for width adjustment */
+}
+
+/* When UploadDocuments is visible, reduce FormDisplay width */
+.reduceWidth {
+    flex: 0 0 45%; /* Adjust to desired width */
+}
+
+.uploadDocuments {
+    right: 0; /* Align to the right */
+    top: 0; /* Align to the top */
+    height: 100%; /* Full height */
+    width: 400px; /* Fixed width for UploadDocuments */
+    /*background:linear-gradient(135deg, #334155, #1e293b);*/
+    background:rgba(0, 0, 0, 0.6);
+    /*box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);*/
+    /*padding: 20px;*/
+    transform: translateX(100%); /* Start off-screen */
+    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+    opacity: 0; /* Start hidden */
+    overflow-y: auto; /* Manage overflow */
+}
+
+/* Slide-in from the right */
+.slideIn {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Slide-out to the right */
+.slideOut {
+    transform: translateX(100%);
+    opacity: 0;
+}
+
+.documentHead {
+    font-size: 1.4rem;
+    margin:0;
     font-weight: bold;
-    display: block; /* Make it block level to fill available width */
-    text-align: center; /* Center text */
+    color: #fff;
+    text-align: center;
+} 
+
+.reviewSection {
+       display: flex;
+    /*margin-top: 30px;*/
+    flex-direction: column;
+    /* height: calc(100% - 50px); */
+    overflow-y: auto;
 }
 
-.documentType {
+.noFile {
+    color: #67748b;
+    font-size: 1.2rem;
     text-align: center;
-    margin: 0px;
 }
+
+.preview {
+    /*display: flex;*/
+    /*margin: auto;*/
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.preview > * {
+    background-color: #f1f5f9;
+    /*border-left: 4px solid #7ca2e1;*/
+    border:none;
+height: 100vh;
+    /*border-radius: 8px;*/
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.togglePreviewButton {
+        position: absolute;
+    right: 0px;
+    top: 280px;
+    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+    color: #fff;
+    border: none;
+    border-radius: 6px 0px 0px 6px;
+    padding: 12px 3px;
+    /* border-radius: 50px; */
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.togglePreviewButton span {
+    margin-right: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.togglePreviewButton .icon {
+    transition: transform 0.5s ease;
+    font-size: 1.1rem;
+}
+
+.togglePreviewButton.open .icon {
+    transform: rotate(0deg); /* Rotate icon when closing */
+}
+
+.togglePreviewButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.1); /* Slight scale effect on hover */
+}
+
+.togglePreviewButton:active {
+    transform: scale(0.95); /* Shrink slightly on click */
+}
+
+/* Smooth sliding for opening and closing */
+
