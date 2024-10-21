@@ -1,203 +1,258 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAnglesRight, faAnglesLeft } from '@fortawesome/free-solid-svg-icons';
-import Sidebar from './Sidebar';
-import DocumentPreview from './DocumentPreview';
-import FormDisplay from './FormDisplay';
-import styles from './UploadDocuments.module.css';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import formDataJson from '../../../Json/DocumentEntities.json'; // Import the JSON file
+import styles from './FormDisplay.module.css';
 
-const UploadDocuments = () => {
-    const location = useLocation();
-    const { uploadedFile, documents = [] } = location.state || {};
+const FormDisplay = ({ selectedForm }) => {
+    const [formData, setFormData] = useState(null);
+    const navigate = useNavigate(); // Create navigate function
 
-    const allDocuments = [
-        ...(uploadedFile ? [uploadedFile] : []),
-        ...documents
-    ];
+    useEffect(() => {
+        // Simulate fetching data from a JSON file
+        setFormData(formDataJson.extracted_data);
+    }, []);
 
-    const [selectedForm, setSelectedForm] = useState(null);
-    const [isUploadVisible, setIsUploadVisible] = useState(false);
+    // Function to handle "Next" button click
+    const handleNextClick = () => {
+        // Navigate to the Verification page
+        navigate('/New-page');
+    };
 
-    const toggleUpload = () => {
-        setIsUploadVisible(prevState => !prevState);
+    // Render form data based on selected form in a table format
+    const renderFormData = () => {
+        if (!formData) {
+            return <p className={styles.loadingMessage}>Loading data...</p>;
+        }
+
+        const selectedData = formData[selectedForm];
+
+        if (!selectedData) {
+            return <p className={styles.selectMessage}>Please select a form to view its data.</p>;
+        }
+
+        return (
+            <div className={styles.tableContainer}>
+                <h2 className={styles.formHead}>{selectedForm.replace(/_/g, ' ')}</h2>
+
+                <button className={styles.nextBtn} onClick={handleNextClick}> {/* Add onClick */}
+                    <FontAwesomeIcon icon={faArrowRight} className={styles.nextIcon}/>
+                </button>
+
+                <table className={styles.dataTable}>
+                    <thead>
+                        <tr>
+                            <th className={styles.tableHeader}>Field</th>
+                            <th className={styles.tableHeader}>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {Object.entries(selectedData).map(([key, value]) => (
+                            <tr key={key} className={styles.tableRow}>
+                                <td className={styles.tableCell}>
+                                    {key.replace(/_/g, ' ')}
+                                </td>
+                                <td className={styles.tableCell}>
+                                    {value}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        );
     };
 
     return (
-        <div className={styles.container}>
-            {/* Sidebar */}
-            <div className={styles.sidebar}>
-                <Sidebar onSelectForm={setSelectedForm} />
-            </div>
-
-            {/* FormDisplay */}
-            <div className={`${styles.formDisplay} ${isUploadVisible ? styles.reduceWidth : ''}`}>
-                <FormDisplay selectedForm={selectedForm} />
-            </div>
-
-            {/* UploadDocuments section */}
-            <div className={`${styles.uploadDocuments} ${isUploadVisible ? styles.slideIn : styles.slideOut}`}>
-                <div className={styles.reviewSection}>
-                    {allDocuments.length > 0 ? (
-                        <div className={styles.preview}>
-                            {allDocuments.map((doc, index) => (
-                                <DocumentPreview key={index} document={doc} />
-                            ))}
-                        </div>
-                    ) : (
-                        <p className={styles.noFile}>No document available</p>
-                    )}
-                </div>
-            </div>
-
-            {/* Toggle Button */}
-            <button className={`${styles.togglePreviewButton} ${isUploadVisible ? styles.open : ''}`} onClick={toggleUpload}>
-                <FontAwesomeIcon 
-                    icon={isUploadVisible ? faAnglesLeft : faAnglesRight} 
-                    className={styles.icon} 
-                />
-            </button>
+        <div className={styles.formDisplay}>
+            {renderFormData()}
         </div>
     );
 };
 
-export default UploadDocuments;
+export default FormDisplay;
 
 
 
-.container {
-    display: flex;
-    flex-direction: row;
-    max-width: 100%;
-    height: 100vh; /* Full height of the viewport */
-    /*padding: 20px;*/
-    position: relative;
-}
 
-.sidebar {
-    flex: 0 0 250px; /* Fixed width for Sidebar */
-    height: 100%;
-}
-
+/* Main container */
 .formDisplay {
-    flex: 0 0 70%; /* Takes remaining space */
-    height: 100%;
-    overflow-y: auto;
-    transition: flex 0.5s ease; /* Smooth transition for width adjustment */
-}
-
-/* When UploadDocuments is visible, reduce FormDisplay width */
-.reduceWidth {
-    flex: 0 0 45%; /* Adjust to desired width */
-}
-
-.uploadDocuments {
-    right: 0; /* Align to the right */
-    top: 0; /* Align to the top */
-    height: 100%; /* Full height */
-    width: 400px; /* Fixed width for UploadDocuments */
-    /*background:linear-gradient(135deg, #334155, #1e293b);*/
+    /*background: linear-gradient(135deg, #1e293b, #334155);*/
     background:rgba(0, 0, 0, 0.6);
+    /*padding: 30px;*/
+    /*border-radius: 16px;*/
     /*box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);*/
-    /*padding: 20px;*/
-    transform: translateX(100%); /* Start off-screen */
-    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition */
-    opacity: 0; /* Start hidden */
-    overflow-y: auto; /* Manage overflow */
-}
-
-/* Slide-in from the right */
-.slideIn {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-/* Slide-out to the right */
-.slideOut {
-    transform: translateX(100%);
-    opacity: 0;
-}
-
-.documentHead {
-    font-size: 1.4rem;
-    margin:0;
-    font-weight: bold;
-    color: #fff;
-    text-align: center;
-} 
-
-.reviewSection {
-       display: flex;
-    /*margin-top: 30px;*/
-    flex-direction: column;
-    /* height: calc(100% - 50px); */
+    height: 100%;
+    width: 100%;
     overflow-y: auto;
-}
-
-.noFile {
-    color: #67748b;
-    font-size: 1.2rem;
-    text-align: center;
-}
-
-.preview {
     /*display: flex;*/
-    /*margin: auto;*/
-    flex-wrap: wrap;
-    gap: 15px;
+    /*flex-direction: column;*/
+    gap: 20px;
+    font-family: 'Arial', sans-serif;
 }
-
-.preview > * {
+ 
+/* Loading and select messages */
+.loadingMessage,
+.selectMessage {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    text-align: center;
+    margin-top: 20px;
+}
+ 
+/* Form heading */
+.formHead {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #000;
+    text-align: left;
+    margin-bottom: 25px;
+    text-transform: capitalize;
+}
+ 
+/* Table container */
+.tableContainer {
+    /*margin-top: 20px;*/
+    
+    width: 100%;
+    height: 100%;
     background-color: #f1f5f9;
-    /*border-left: 4px solid #7ca2e1;*/
-    border:none;
-height: 100vh;
-    /*border-radius: 8px;*/
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #7ca2e1;
+    /*border-radius: 16px;*/
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Makes the table scrollable on small screens */
 }
-
-.togglePreviewButton {
-        position: absolute;
-    right: 0px;
-    top: 280px;
-    background: linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
-    color: #fff;
-    border: none;
-    border-radius: 6px 0px 0px 6px;
-    padding: 12px 3px;
-    /* border-radius: 50px; */
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+ 
+/* Table styles */
+.dataTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+border-radius: 6px;
+    /*border-radius: 12px;*/
+    overflow: hidden;
+    background-color: #ffffff;
 }
-
-.togglePreviewButton span {
-    margin-right: 8px;
+ 
+/* Table headers */
+.tableHeader {
     font-size: 1rem;
+    font-weight: bold;
+    color: #1f2937; /* Dark gray for headers */
+    background-color: #f9fafb; /* Light gray for header background */
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: capitalize;
+    white-space: nowrap; /* Prevents headers from wrapping */
+}
+ 
+/* Table rows */
+.tableRow:nth-child(even) {
+    background-color: #f9fafb; /* Light background for alternating rows */
+}
+ 
+.tableRow:nth-child(odd) {
+    background-color: #ffffff;
+}
+ 
+/* Table cells */
+.tableCell {
+    font-size: .7rem;
     font-weight: 600;
+    color: #374151; /* Medium gray for text */
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* Makes long text look good */
+    overflow: hidden; /* Hides overflow for long text */
+    max-width: 250px;
+    cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
 }
 
-.togglePreviewButton .icon {
-    transition: transform 0.5s ease;
-    font-size: 1.1rem;
+.tableCell:hover {
+  /* Hover effect styles */
+  
+  background-color: #f4f4f4; /* Subtle background color change on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a shadow to make the cell pop */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+  cursor: pointer; /* Indicates interactivity */
 }
 
-.togglePreviewButton.open .icon {
-    transform: rotate(0deg); /* Rotate icon when closing */
+
+/*.nextBtn{*/
+/*    position: absolute;*/
+/*    padding: 12px 15px 12px 15px;*/
+/*    top: -40px;*/
+/*    right: 30px;*/
+/*}*/
+
+/* NextButton.css */
+.nextBtn {
+    position: absolute;
+    top: -40px;
+    right: 40px;
+    align-items: center;
+    padding: 6px 12px;
+    font-size: 1rem;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+ 
+.nextBtn:hover {
+  background:linear-gradient(135deg, #F2F2F2 -20%, #7ca2e1);
+  transform: scale(1.05);
+}
+ 
+.nextIcon {
+  /*margin-left: 10px;*/
+  transition: transform 0.3s ease;
+}
+ 
+.nextBtn:hover .nextIcon {
+  transform: translateX(5px);
 }
 
-.togglePreviewButton:hover {
-    background-color: #0056b3;
-    transform: scale(1.1); /* Slight scale effect on hover */
+/* Hover effect for table rows */
+/*
+ 
+/* Table borders */
+.dataTable th,
+.dataTable td {
+    
+    border-bottom: 1px solid #e9e9e9; /* Subtle borders between rows */
 }
-
-.togglePreviewButton:active {
-    transform: scale(0.95); /* Shrink slightly on click */
+ 
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .dataTable {
+        display: block;
+        width: 100%;
+    }
+ 
+    .tableCell {
+        white-space: normal; /* Wrap text on smaller screens */
+    }
+ 
+    .tableHeader,
+    .tableCell {
+        padding: 10px;
+        font-size: 1rem;
+    }
+ 
+    .formHead {
+        font-size: 1.8rem;
+    }
 }
-
-/* Smooth sliding for opening and closing */
-
