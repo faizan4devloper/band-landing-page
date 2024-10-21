@@ -1,4 +1,34 @@
-useReduxContext.ts:17 Uncaught Error: could not find react-redux context value; please ensure the component is wrapped in a <Provider>
+
+
+
+
+
+
+
+.tableCell {
+  /* Default styles for the table cell */
+  padding: 10px;
+  border: 1px solid #ddd;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.tableCell:hover {
+  /* Hover effect styles */
+  background-color: #e0e7ff; /* Subtle background color change on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a shadow to make the cell pop */
+  transform: scale(1.05); /* Slight zoom effect on hover */
+  cursor: pointer; /* Indicates interactivity */
+}
+
+.tableCell:hover .tableCellText {
+  color: #4f46e5; /* Changes text color inside the cell on hover */
+}
+
+.tableCellText {
+  /* Text-specific styles */
+  font-weight: normal;
+  transition: color 0.3s ease;
+}useReduxContext.ts:17 Uncaught Error: could not find react-redux context value; please ensure the component is wrapped in a <Provider>
     at useReduxContext2 (useReduxContext.ts:17:1)
     at useSelector2 (useSelector.ts:175:1)
     at App (App.js:15:1)
