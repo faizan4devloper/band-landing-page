@@ -1,3 +1,115 @@
+/* Enhanced Styling for Table */
+
+/* Table container */
+.tableContainer {
+    width: 100%;
+    height: 100%;
+    background-color: #f1f5f9;
+    border-left: 4px solid #7ca2e1;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    overflow-x: auto; /* Makes the table scrollable on small screens */
+    border-radius: 12px;
+}
+
+/* Table styles */
+.dataTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Table headers */
+.tableHeader {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1f2937; /* Dark gray for headers */
+    background-color: #e2e8f0; /* Subtle light background */
+    padding: 16px 12px;
+    text-align: left;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: capitalize;
+    white-space: nowrap; /* Prevents headers from wrapping */
+    transition: background-color 0.3s ease;
+}
+
+.tableHeader:hover {
+    background-color: #7ca2e1; /* Interactive hover for headers */
+    color: #ffffff;
+}
+
+/* Table rows */
+.tableRow {
+    transition: all 0.3s ease-in-out;
+}
+
+.tableRow:hover {
+    background-color: #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Add subtle shadow on hover */
+    cursor: pointer; /* Indicate row is interactive */
+    transform: translateY(-2px); /* Slight hover lift effect */
+}
+
+/* Alternating row colors */
+.tableRow:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.tableRow:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* Table cells */
+.tableCell {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151; /* Medium gray for text */
+    padding: 16px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 250px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.tableCell:hover {
+    background-color: #e0f2fe; /* Light blue on hover */
+    transform: scale(1.05); /* Zoom effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Slight shadow on hover */
+}
+
+/* Responsive styling for mobile */
+@media (max-width: 768px) {
+    .tableCell {
+        white-space: normal; /* Wrap text on smaller screens */
+    }
+
+    .tableHeader,
+    .tableCell {
+        padding: 10px;
+        font-size: 1rem;
+    }
+
+    .formHead {
+        font-size: 1.8rem;
+    }
+}
+
+/* Add a subtle gradient to the entire table for better aesthetics */
+.dataTable {
+    background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+
+
+
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
