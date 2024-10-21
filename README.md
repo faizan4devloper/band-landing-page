@@ -1,3 +1,48 @@
+.previewItem {
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    background: #ffffff;
+    max-width: 100%; /* Ensures it does not exceed the parent width */
+    overflow: hidden; /* Prevent overflow */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers the content */
+}
+
+.imagePreview {
+    width: 100%; /* Full width of the parent */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 500px; /* Adjust to limit the height if needed */
+    object-fit: contain; /* Maintain aspect ratio */
+    border-radius: 8px; /* Optional: adds a nicer look */
+}
+
+.pdfPreview {
+    width: 100%; /* Full width of the parent */
+    height: 600px; /* Increase height for better visibility */
+}
+
+.documentLink {
+    text-decoration: none;
+    color: #007bff;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    margin-top: 10px; /* Adds space above the link */
+}
+
+.documentType {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+
+
+
+
+
+
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './DocumentPreview.module.css';
 
