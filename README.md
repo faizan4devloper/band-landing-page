@@ -1,58 +1,29 @@
-ERROR
-Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+react-dom.development.js:18704 The above error occurred in the <div> component:
+
+    at div
+    at MainContainer (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:463:3)
+    at div
+    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42:74)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+react-dom.development.js:28478 Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
 Check the render method of `MainContainer`.
-Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `MainContainer`.
-    at createFiberFromTypeAndProps (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36770:21)
-    at createFiberFromElement (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36791:19)
-    at createChild (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:23863:32)
-    at reconcileChildrenArray (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24103:29)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24445:20)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28865:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:29516:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30968:18)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:15926:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:15970:20)
-ERROR
-Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `MainContainer`.
-Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `MainContainer`.
-    at createFiberFromTypeAndProps (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36770:21)
-    at createFiberFromElement (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36791:19)
-    at createChild (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:23863:32)
-    at reconcileChildrenArray (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24103:29)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24445:20)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28865:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:29516:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30968:18)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:15926:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:15970:20)
-ERROR
-Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `MainContainer`.
-Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `MainContainer`.
-    at createFiberFromTypeAndProps (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36770:21)
-    at createFiberFromElement (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:36791:19)
-    at createChild (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:23863:32)
-    at reconcileChildrenArray (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24103:29)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:24445:20)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28865:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:29516:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:30968:18)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35903:18)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:35173:16)
+    at createFiberFromTypeAndProps (react-dom.development.js:28478:1)
+    at createFiberFromElement (react-dom.development.js:28504:1)
+    at createChild (react-dom.development.js:13345:1)
+    at reconcileChildrenArray (react-dom.development.js:13640:1)
+    at reconcileChildFibers (react-dom.development.js:14057:1)
+    at reconcileChildren (react-dom.development.js:19186:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at beginWork$1 (react-dom.development.js:27465:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+﻿
 
 
-
-    import React, { useState } from "react";
+import React, { useState } from "react";
 import { ChatScreen } from "./ChatScreen";
 import { Topics } from "./Topics";
 import { Insights } from "./Insights";
