@@ -104,11 +104,11 @@ export default FormDisplay;
  
 /* Form heading */
 .formHead {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: #000;
-    text-align: left;
-    margin-bottom: 25px;
+    text-align: center;
+    /*margin-bottom: 25px;*/
     text-transform: capitalize;
 }
  
@@ -119,7 +119,7 @@ export default FormDisplay;
     width: 100%;
     height: 100%;
     background-color: #f1f5f9;
-    border-left: 4px solid #7ca2e1;
+    /*border-left: 4px solid #7ca2e1;*/
     /*border-radius: 16px;*/
     padding: 20px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -140,15 +140,14 @@ border-radius: 6px;
  
 /* Table headers */
 .tableHeader {
-    font-size: 1rem;
+       font-size: 1rem;
     font-weight: bold;
-    color: #1f2937; /* Dark gray for headers */
-    background-color: #f9fafb; /* Light gray for header background */
-    padding: 16px 12px;
+    color: #000;
+    padding: 14px 12px;
     text-align: left;
     border-bottom: 2px solid #e5e7eb;
     text-transform: capitalize;
-    white-space: nowrap; /* Prevents headers from wrapping */
+    white-space: nowrap;
 }
  
 /* Table rows */
@@ -181,7 +180,7 @@ border-radius: 6px;
   
   background-color: #f4f4f4; /* Subtle background color change on hover */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds a shadow to make the cell pop */
-  transform: scale(1.05); /* Slight zoom effect on hover */
+  transform: scale(1.02); /* Slight zoom effect on hover */
   cursor: pointer; /* Indicates interactivity */
 }
 
