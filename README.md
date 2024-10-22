@@ -1,58 +1,16 @@
-import React from 'react';
-import styles from './Header.module.css';
-import logo from '../assets/HCLTechLogoWhite.png'; // Ensure this path points to your logo
-import { useNavigate } from "react-router-dom";
-
-
-
-const Header = () => {
-  
-  const navigate = useNavigate();
-
-  const handleImageClick = () => {
-    navigate("/");
-  };
-  
-  return (
-    <header className={styles.header}>
-      <div className={styles.logoContainer} onClick={handleImageClick}>
-        <img src={logo} alt="Logo" className={styles.logo}/>
-      </div>
-      
-      <div>
-        Citizen Advisor
-      </div>
-      
-    </header>
-  );
-};
-
-export default Header;
-
-
-
-
-/* Header.module.css */
-
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 6rem;
-/*background: linear-gradient(rgb(26, 26, 46), rgb(22, 33, 62)) 0% 0% repeat rgba(0, 0, 0, 0) ;*/
-/*background:#411482;*/
-/*background:#4c189e;*/
-background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%) 0% 0% repeat rgba(0, 0, 0, 0);
-    border-bottom: 0.1px solid rgb(62, 62, 62);
-transition-duration: 0.5s;
-    transition-timing-function: ease-in-out;
-    transition-property: transform;
-color: white;
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  border-bottom: 0.1px solid rgb(62, 62, 62);
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  transition-property: transform;
+  color: white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-
-    
 
 .logoContainer {
   display: flex;
@@ -65,10 +23,13 @@ color: white;
   margin-right: 0.75rem;
 }
 
-.logoText {
-  font-size: 1.5rem;
-  font-weight: bold;
-  letter-spacing: 1px;
+.citizenAdvisor {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase; /* Optional: makes it more logo-like */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); /* Adds depth */
 }
 
 .navbar {
