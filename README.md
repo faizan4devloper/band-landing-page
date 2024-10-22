@@ -1,145 +1,104 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icon
+import styles from './MainContent.module.css';
 
-const personas = [
+const contentData = [
   {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding: Elevating your experience from disjointed information to directed guidance in placements, appeals, and transfers.',
-    themeColor: '#E2D9FB',
-    route: '/education',
+    question: 'What is the best way to start learning new skills?',
+    answer: 'Start with identifying your interests, then find online courses, books, or mentors in that field.',
   },
   {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#D3F9D8',
-    route: '/job',
+    question: 'How can I find job opportunities?',
+    answer: 'Use job search platforms, attend career fairs, and network with professionals in your field.',
   },
   {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#FCE8E6',
-    route: '/health',
+    question: 'How can I manage my health records efficiently?',
+    answer: 'You can use digital health apps or online portals provided by your healthcare provider.',
+  },
+  {
+    question: 'What are the latest trends in technology?',
+    answer: 'AI, blockchain, and quantum computing are currently revolutionizing the tech industry.',
   },
 ];
 
-const Personas = () => {
-  const navigate = useNavigate();
-  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+const MainContent = () => {
+  const [openQuestion, setOpenQuestion] = useState(null);
 
-  const handleClick = (route) => {
-    navigate(route);
+  const toggleAnswer = (index) => {
+    setOpenQuestion(openQuestion === index ? null : index);
   };
 
   return (
-    <div className={styles.Personas}>
-      <h1>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
+    <div className={styles.mainContent}>
+      {contentData.map((item, index) => (
+        <div key={index} className={styles.questionBlock}>
           <div
-            key={index}
-            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
+            className={styles.question}
+            onClick={() => toggleAnswer(index)}
           >
-            <h2>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </div>
+            {item.question}
           </div>
-        ))}
-      </div>
+          {openQuestion === index && (
+            <div className={styles.answer}>
+              {item.answer}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
 };
 
-export default Personas;
+export default MainContent;
 
 
 
-
-.Personas {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+.mainContent {
+  flex-grow: 1;
+  padding: 30px;
+  background-color: #f7f9fc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 2rem;
+.questionBlock {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
 }
 
-.personaCards {
-  display: flex;
-  gap: 2rem;
-  justify-content: center;
-  position: relative;
+.questionBlock:hover {
+  background-color: #f1f1f1;
 }
 
-.personaCard {
-  width: 220px;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  color: #000;
-  text-align: center;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+.question {
+  font-size: 1.2em;
+  padding: 15px;
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.personaCard:hover {
-  transform: translateY(-8px);
-  background-color: #000;
-  color: white;
-  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
-}
-
-.personaCard h2 {
-  font-size: 1.6rem;
-  margin-bottom: 1rem;
-}
-
-.personaCard .description {
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.personaCard:hover .description {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.rightIcon {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  position: absolute;
-  bottom: 1rem;
-  right: 1.5rem;
-  font-size: 1.5rem;
+  font-weight: bold;
   color: #333;
-  opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.personaCard:hover .rightIcon {
-  opacity: 1;
-  transform: translateX(5px); /* Slide in effect for the icon */
+.answer {
+  padding: 15px;
+  background-color: #f8f9fa;
+  font-size: 1em;
+  line-height: 1.6;
+  color: #555;
 }
 
-.rightIcon:hover {
-  color: #fff;
-  transition: color 0.3s ease;
+.questionBlock .answer {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  100% {
+    max-height: 500px;
+    opacity: 1;
+  }
 }
