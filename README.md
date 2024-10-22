@@ -1,6 +1,7 @@
+// Sidebar.js
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'; // Import chevron icon
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'; // Add chevron icon
 import styles from './Sidebar.module.css';
 
 const topics = [
@@ -28,7 +29,7 @@ const Sidebar = ({ setActiveTopic }) => {
             className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
             onClick={() => handleClick(topic.id)}
           >
-            <span className={styles.topicName}>{topic.name}</span>
+            <span>{topic.name}</span>
             <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
           </li>
         ))}
@@ -40,14 +41,15 @@ const Sidebar = ({ setActiveTopic }) => {
 export default Sidebar;
 
 
+/* Sidebar.module.css */
+
 .sidebar {
   width: 250px;
-  background-color: rgba(44, 62, 80, 0.9); /* Semi-transparent background */
-  border-right: 1px solid rgba(255, 255, 255, 0.1); /* Light border */
-  color: #fff; /* White text color */
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
   padding: 20px;
   height: 100vh;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  background-color: #f4f6f8; /* Light background for HCLTech theme */
 }
 
 .sidebar ul {
@@ -57,34 +59,31 @@ export default Sidebar;
 
 .sidebar li {
   display: flex;
-  justify-content: space-between; /* Space between text and icon */
+  justify-content: space-between; /* Aligns text and icon */
   align-items: center;
-  padding: 10px;
+  padding: 12px 15px; /* Adjust padding for a cleaner look */
   cursor: pointer;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  transition: background-color 0.3s, color 0.3s; /* Transition for color change */
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
 }
 
 .sidebar li:hover {
-  background-color: rgba(52, 73, 94, 0.8); /* Hover color with transparency */
-  color: #fff; /* Ensure text remains white on hover */
+  background-color: rgba(46, 139, 87, 0.1); /* HCLTech theme hover color */
+  color: #2e8b57; /* HCLTech theme text color on hover */
 }
 
 .sidebar li.active {
-  background-color: rgba(41, 128, 185, 0.9); /* Active topic color */
-  color: #fff; /* White text for active topic */
-}
-
-.topicName {
-  font-size: 1.1em; /* Slightly larger text for topic names */
+  background-color: rgba(46, 139, 87, 0.3); /* HCLTech theme active color */
+  color: #fff; /* White text for active state */
 }
 
 .chevron {
-  font-size: 1.2em; /* Adjust chevron size */
-  transition: transform 0.3s; /* Transition for chevron icon */
+  font-size: 1em; /* Chevron size */
+  margin-left: auto; /* Push chevron to the right */
+  transition: transform 0.3s; /* Add transition for animations */
 }
 
 .sidebar li:hover .chevron {
-  transform: translateX(5px); /* Slight movement on hover */
+  transform: translateX(5px); /* Move chevron on hover */
 }
