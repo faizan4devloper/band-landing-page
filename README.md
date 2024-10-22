@@ -1,119 +1,202 @@
-import React, { useState } from 'react';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome chevron icons
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux'; // For Redux
+import { useAuthContext } from '../../context/AuthContext'; // For Context API
+import styles from "./LoginPage.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faLock } from "@fortawesome/free-solid-svg-icons";
+import backgroundImage from "../assets/LoginImg.jpg";
 
-const contentData = [
-  {
-    question: 'What is the best way to start learning new skills?',
-    answer: 'Start with identifying your interests, then find online courses, books, or mentors in that field.',
-  },
-  {
-    question: 'How can I find job opportunities?',
-    answer: 'Use job search platforms, attend career fairs, and network with professionals in your field.',
-  },
-  {
-    question: 'How can I manage my health records efficiently?',
-    answer: 'You can use digital health apps or online portals provided by your healthcare provider.',
-  },
-  {
-    question: 'What are the latest trends in technology?',
-    answer: 'AI, blockchain, and quantum computing are currently revolutionizing the tech industry.',
-  },
-];
+const LoginPage = ({ setIsAuthenticated }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Redux dispatch
+  const { dispatch: contextDispatch } = useAuthContext(); // Context API dispatch
 
-const MainContent = () => {
-  const [openQuestion, setOpenQuestion] = useState(null);
-
-  const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (email === "admin" && password === "1111") {
+      setIsAuthenticated(); // This triggers Redux login
+      contextDispatch({ type: 'SET_USER', payload: { email } }); // Set user context
+      navigate("/personas");
+    } else {
+      alert("Invalid credentials");
+    }
   };
 
   return (
-    <div className={styles.mainContent}>
-      {contentData.map((item, index) => (
-        <div key={index} className={styles.questionBlock}>
-          <div
-            className={styles.question}
-            onClick={() => toggleAnswer(index)}
-          >
-            {item.question}
-            <FontAwesomeIcon
-              icon={openQuestion === index ? faChevronUp : faChevronDown}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openQuestion === index && (
-            <div className={styles.answer}>
-              {item.answer}
-            </div>
-          )}
+    <div className={styles.container}>
+      <div
+        className={styles.leftSide}
+        style={{ backgroundImage: `url(${backgroundImage})` }}
+      >
+        <div className={styles.overlay}></div>
+        <div className={styles.overlayText}>
+          Citizen Advisor
         </div>
-      ))}
+        <p>An experiance transformation from disconnected silos information to an intuitive. personalized revelations</p>
+      </div>
+
+      <div className={styles.rightSide}>
+        <div className={styles.formContainer}>
+          <h2 className={styles.title}>Login</h2>
+
+          <form onSubmit={handleLogin}>
+            <div className={styles.inputGroup}>
+              <FontAwesomeIcon icon={faEnvelope} className={styles.icon} />
+              <input
+                type="text"
+                className={styles.input}
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <FontAwesomeIcon icon={faLock} className={styles.icon} />
+              <input
+                type="password"
+                className={styles.input}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </div>
+
+            <button className={styles.button}>
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
 
-export default MainContent;
+export default LoginPage;
 
 
 
-.mainContent {
-  flex-grow: 1;
-  padding: 35px;
-  background-color: #f7f9fc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+/* LoginPage.module.css */
 
-.questionBlock {
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  transition: background-color 0.3s ease;
-}
-
-.questionBlock:hover {
-  background-color: #f1f1f1;
-}
-
-.question {
-  font-size: 1.1em;
-  padding: 10px;
-  cursor: pointer;
-  /*font-weight: bold;*/
-  color: #333;
+.container {
   display: flex;
-  justify-content: space-between; /* This will move the chevron to the right */
-  align-items: center; /* This centers the text and icon vertically */
+  height: 100vh;
 }
 
-.chevronIcon {
-  font-size: 1em;
-  color: #888;
-  transition: transform 0.3s ease;
+.leftSide {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  position: relative; /* This is important for the overlay to position correctly */
+  background-size: cover;
+  background-position: center;
 }
 
-.answer {
-  padding: 15px;
-  background-color: #f8f9fa;
-  font-size: 1em;
-  line-height: 1.6;
-  color: #555;
+/* Overlay layer */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Black color with 50% opacity */
+  z-index: 1; /* Ensure the overlay stays above the image */
 }
 
-.questionBlock .answer {
-  animation: slideDown 0.4s ease-out;
+/* Text on top of the overlay */
+.overlayText {
+  position: relative; /* Ensures the text stays on top of the overlay */
+  z-index: 2; /* Keep text on top of overlay */
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 0.75rem;
 }
 
-@keyframes slideDown {
-  0% {
-    max-height: 0;
-    opacity: 0;
-  }
-  100% {
-    max-height: 500px;
-    opacity: 1;
+.rightSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  padding: 3rem;
+  background-color: transparent;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: 1rem;
+}
+
+.formContainer {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #4f46e5;
+  margin-bottom: 2rem;
+}
+
+/* Input group to contain input and icon */
+.inputGroup {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #e2e8f0;
+}
+
+.icon {
+  margin-right: 0.75rem;
+  color: #4f46e5;
+  font-size: 1.2rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 1rem;
+}
+
+.button {
+  width: 100%;
+  padding: 0.85rem;
+  background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%) 0% 0% repeat rgba(0, 0, 0, 0);
+  color: white;
+  font-weight: bold;
+  border:none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+  background-color: #4338ca;
+  transform: translateY(-2px);
+}
+
+.toggleText {
+  margin-top: 1.5rem;
+  text-align: center;
+  color: #4f46e5;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .leftSide {
+    display: flex;
   }
 }
