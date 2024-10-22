@@ -1,63 +1,41 @@
-// Sidebar.js
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBriefcase, faHeartbeat, faLaptopCode, faGraduationCap } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
-
-const topics = [
-  { id: 1, name: 'Courses', icon: faGraduationCap },
-  { id: 2, name: 'Jobs', icon: faBriefcase },
-  { id: 3, name: 'Health', icon: faHeartbeat },
-  { id: 4, name: 'Technology', icon: faLaptopCode },
-  { id: 5, name: 'Education', icon: faBook },
-];
-
-const Sidebar = ({ setActiveTopic }) => {
-  const [active, setActive] = useState(1); // Default active topic
-
-  const handleClick = (id) => {
-    setActive(id);
-    setActiveTopic(id); // Pass the active topic to the parent component
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <ul>
-        {topics.map((topic) => (
-          <li
-            key={topic.id}
-            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
-            onClick={() => handleClick(topic.id)}
-          >
-            <FontAwesomeIcon icon={topic.icon} className={styles.icon} />
-            <span>{topic.name}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default Sidebar;
-
-
-
 // MainContent.js
 import React from 'react';
 import styles from './MainContent.module.css';
 
 const contentData = {
-  1: 'Here you can explore various courses to enhance your knowledge.',
-  2: 'Explore job opportunities to advance your career.',
-  3: 'Manage your health records and access health services.',
-  4: 'Stay updated with the latest in technology and innovations.',
-  5: 'Find education resources and tools for academic success.',
+  1: {
+    title: "Education Resources",
+    description: "Detailed educational content...",
+  },
+  2: {
+    title: "Job Opportunities",
+    description: "Explore job listings...",
+  },
+  3: {
+    title: "Health Services",
+    description: "Manage your health records...",
+  },
+  4: {
+    title: "Technology Innovations",
+    description: "Learn about tech advancements...",
+  },
+  5: {
+    title: "Learning Platforms",
+    description: "Access learning resources...",
+  },
 };
 
 const MainContent = ({ activeTopic }) => {
+  if (!activeTopic) {
+    return <div className={styles.mainContent}>Please select a topic from the sidebar.</div>;
+  }
+
+  const content = contentData[activeTopic];
+
   return (
     <div className={styles.mainContent}>
-      <h2>{contentData[activeTopic]}</h2>
+      <h1>{content.title}</h1>
+      <p>{content.description}</p>
     </div>
   );
 };
@@ -65,33 +43,39 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
-// App.js
-import React, { useState } from 'react';
-import Sidebar from './components/Sidebar/Sidebar';
-import MainContent from './components/MainContent/MainContent';
-import styles from './App.module.css';
 
-function App() {
-  const [activeTopic, setActiveTopic] = useState(1); // Default active topic
+import React, { useState } from 'react';
+import Sidebar from '../Sidebar/Sidebar'; // Sidebar component
+import MainContent from '../MainContent/MainContent'; // MainContent component
+import styles from './EducationPage.module.css';
+
+const EducationPage = () => {
+  const [activeTopic, setActiveTopic] = useState(null); // Track the active topic
 
   return (
-    <div className={styles.container}>
-      <Sidebar setActiveTopic={setActiveTopic} />
-      <MainContent activeTopic={activeTopic} />
+    <div className={styles.educationPage}>
+      <Sidebar setActiveTopic={setActiveTopic} /> {/* Pass setActiveTopic to Sidebar */}
+      <MainContent activeTopic={activeTopic} /> {/* Pass activeTopic to MainContent */}
     </div>
   );
+};
+
+export default EducationPage;
+
+
+/* EducationPage.module.css */
+.educationPage {
+  display: flex;
+  height: 100vh;
 }
 
-export default App;
-
-
-
+/* Sidebar.module.css */
 .sidebar {
   width: 250px;
-  background-color: #2c3e50;
+  background-color: #f7f7f7;
   padding: 20px;
-  height: 100vh;
-  color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar ul {
@@ -100,24 +84,28 @@ export default App;
 }
 
 .sidebar li {
-  display: flex;
-  align-items: center;
-  padding: 10px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
   cursor: pointer;
-  border-radius: 5px;
-  margin-bottom: 15px;
-  transition: background-color 0.3s;
-}
-
-.sidebar li:hover {
-  background-color: #34495e;
+  transition: background-color 0.3s ease;
 }
 
 .sidebar li.active {
-  background-color: #2980b9;
+  background-color: #e2d9fb;
+}
+
+.sidebar li:hover {
+  background-color: #ddd;
 }
 
 .icon {
   margin-right: 10px;
-  font-size: 1.5em;
 }
+
+/* MainContent.module.css */
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+}
+
