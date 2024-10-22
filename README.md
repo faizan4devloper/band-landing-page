@@ -1,123 +1,97 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import styles from './Breadcrumbs.module.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './Personas.module.css';
 
-const Breadcrumbs = () => {
-  const location = useLocation();
-  const paths = location.pathname.split('/').filter((path) => path);
+const personas = [
+  {
+    title: 'Education',
+    description: 'Streamlined Academic Pathfinding: Elavating your exprience from disjointed information to directed guidence an placements, appeals, and transfers',
+    themeColor: '#E2D9FB', // Example color for education
+    route: '/education',
+  },
+  {
+    title: 'Job',
+    description: 'Find job opportunities and career development tools.',
+    themeColor: '#fcfcfc', // Example color for jobs
+    route: '/job',
+  },
+  {
+    title: 'Health',
+    description: 'Manage health records and access health services.',
+    themeColor: '#fcfcfc', // Example color for health
+    route: '/health',
+  },
+];
+
+const Personas = () => {
+  const navigate = useNavigate();
+
+  const handleClick = (route) => {
+    navigate(route);
+  };
 
   return (
-    <nav className={styles.breadcrumbs}>
-      <ul>
-        <li>
-          <Link to="/">🏠 Home</Link>
-        </li>
-        {paths.map((path, index) => {
-          const fullPath = `/${paths.slice(0, index + 1).join('/')}`;
-          return (
-            <li key={index}>
-              <Link to={fullPath}>
-                {path.charAt(0).toUpperCase() + path.slice(1)}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+    <div className={styles.Personas}>
+      <h1>Your Personas</h1>
+      <div className={styles.personaCards}>
+        {personas.map((persona, index) => (
+          <div
+            key={index}
+            className={styles.personaCard}
+            style={{ backgroundColor: persona.themeColor }}
+            onClick={() => handleClick(persona.route)}
+          >
+            <h2>{persona.title}</h2>
+            <p>{persona.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default Breadcrumbs;
-
-
-
-
-.breadcrumbs {
-  padding: 10px 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.breadcrumbs ul {
-  list-style: none;
-  display: flex;
-  gap: 10px;
-}
-
-.breadcrumbs li {
-  font-size: 16px;
-}
-
-.breadcrumbs a {
-  text-decoration: none;
-  color: #007bff;
-}
-
-.breadcrumbs a:hover {
-  text-decoration: underline;
-}
-
-.breadcrumbs li::after {
-  content: '>';
-  margin-left: 10px;
-}
-
-.breadcrumbs li:last-child::after {
-  content: '';
-}
-
-
-
+export default Personas;
 
 
 
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import styles from './App.module.css';
-import Personas from './components/Personas/Personas';
-import EducationPage from './components/Pages/Education/EducationPage';
-import JobPage from './components/Pages/Job/JobPage';
-import HealthPage from './components/Pages/Health/HealthPage';
-import LoginPage from './components/Login/LoginPage';
-import Header from './components/Header/Header';
-import Breadcrumbs from './components/Breadcrumbs/Breadcrumbs'; // Import Breadcrumbs
-import store from './redux/store'; 
-import { AuthProvider } from './context/AuthContext';
 
-function App() {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const dispatch = useDispatch();
-
+const EducationPage = () => {
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <Router>
-          <div className={styles.App}>
-            <Header />
-            <Breadcrumbs /> {/* Add Breadcrumbs component */}
-            <Routes>
-              <Route
-                path="/"
-                element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />}
-              />
-              {isAuthenticated ? (
-                <>
-                  <Route path="/personas" element={<Personas />} />
-                  <Route path="/education" element={<EducationPage />} />
-                  <Route path="/job" element={<JobPage />} />
-                  <Route path="/health" element={<HealthPage />} />
-                </>
-              ) : (
-                <Route path="*" element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />} />
-              )}
-            </Routes>
-          </div>
-        </Router>
-      </AuthProvider>
-    </Provider>
+    <div>
+      <h1>Education</h1>
+      <p>Welcome to the Education section. Here you can find educational resources.</p>
+    </div>
   );
-}
+};
 
-export default App;
+export default EducationPage;
+
+
+import React from 'react';
+
+const HealthPage = () => {
+  return (
+    <div>
+      <h1>Health</h1>
+      <p>Welcome to the Health section. Here you can manage your health records.</p>
+    </div>
+  );
+};
+
+export default HealthPage;
+
+
+import React from 'react';
+
+const JobPage = () => {
+  return (
+    <div>
+      <h1>Job</h1>
+      <p>Welcome to the Job section. Here you can find job opportunities.</p>
+    </div>
+  );
+};
+
+export default JobPage;
+
