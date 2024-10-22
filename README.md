@@ -1,136 +1,47 @@
 import React, { useState } from 'react';
 import styles from './MainContent.module.css';
 
-const contentData = {
-  1: {
-    title: 'Education Resources',
-    questions: [
-      {
-        question: 'What are the available courses?',
-        answer: 'You can explore various online and offline courses related to different subjects.',
-      },
-      {
-        question: 'How to enroll in a course?',
-        answer: 'You can enroll by visiting the course details and clicking on the enroll button.',
-      },
-      {
-        question: 'What is the duration of the courses?',
-        answer: 'Course durations vary. Most of them are between 4-12 weeks.',
-      },
-      {
-        question: 'Are there any certifications?',
-        answer: 'Yes, certificates are provided upon successful completion of the courses.',
-      },
-    ],
+const contentData = [
+  {
+    question: 'What is the best way to start learning new skills?',
+    answer: 'Start with identifying your interests, then find online courses, books, or mentors in that field.',
   },
-  2: {
-    title: 'Job Opportunities',
-    questions: [
-      {
-        question: 'How to search for job listings?',
-        answer: 'You can use the search bar to filter jobs by title, location, and experience level.',
-      },
-      {
-        question: 'How to apply for a job?',
-        answer: 'Visit the job details page and click the "Apply" button to submit your application.',
-      },
-      {
-        question: 'What are the requirements for a job?',
-        answer: 'Each job listing will have specific qualifications and requirements mentioned.',
-      },
-      {
-        question: 'Is remote work available?',
-        answer: 'Many job listings offer remote work options depending on the employer.',
-      },
-    ],
+  {
+    question: 'How can I find job opportunities?',
+    answer: 'Use job search platforms, attend career fairs, and network with professionals in your field.',
   },
-  3: {
-    title: 'Health Services',
-    questions: [
-      {
-        question: 'How to access health records?',
-        answer: 'You can access your health records by visiting the Health Records section.',
-      },
-      {
-        question: 'What health services are available?',
-        answer: 'Various services like consultations, check-ups, and telemedicine are available.',
-      },
-      {
-        question: 'How to book an appointment?',
-        answer: 'You can book an appointment directly from the health service provider’s page.',
-      },
-      {
-        question: 'Is health insurance required?',
-        answer: 'Health insurance is recommended but not mandatory for some services.',
-      },
-    ],
+  {
+    question: 'How can I manage my health records efficiently?',
+    answer: 'You can use digital health apps or online portals provided by your healthcare provider.',
   },
-  4: {
-    title: 'Technology Innovations',
-    questions: [
-      {
-        question: 'What are the latest tech trends?',
-        answer: 'Latest trends include AI, blockchain, cloud computing, and IoT.',
-      },
-      {
-        question: 'How to stay updated?',
-        answer: 'You can subscribe to newsletters and attend webinars to stay updated.',
-      },
-      {
-        question: 'Are there any innovation workshops?',
-        answer: 'Yes, workshops are held regularly on different technological advancements.',
-      },
-      {
-        question: 'How to participate in tech communities?',
-        answer: 'You can join forums and attend meetups to be part of tech communities.',
-      },
-    ],
+  {
+    question: 'What are the latest trends in technology?',
+    answer: 'AI, blockchain, and quantum computing are currently revolutionizing the tech industry.',
   },
-  5: {
-    title: 'Learning Platforms',
-    questions: [
-      {
-        question: 'Which platforms are available?',
-        answer: 'Platforms like Coursera, Udemy, and edX offer a variety of learning resources.',
-      },
-      {
-        question: 'How to choose the right platform?',
-        answer: 'It depends on your learning style and the courses available on each platform.',
-      },
-      {
-        question: 'Are the courses free?',
-        answer: 'Some courses are free, while others require payment.',
-      },
-      {
-        question: 'Can I get a refund?',
-        answer: 'Refund policies depend on the platform. Check their terms for more information.',
-      },
-    ],
-  },
-};
+];
 
-const MainContent = ({ activeTopic }) => {
+const MainContent = () => {
   const [openQuestion, setOpenQuestion] = useState(null);
 
-  const toggleQuestion = (index) => {
+  const toggleAnswer = (index) => {
     setOpenQuestion(openQuestion === index ? null : index);
   };
 
-  if (!activeTopic) {
-    return <div className={styles.mainContent}>Please select a topic from the sidebar.</div>;
-  }
-
-  const content = contentData[activeTopic];
-
   return (
     <div className={styles.mainContent}>
-      <h2>{content.title}</h2>
-      {content.questions.map((q, index) => (
-        <div key={index} className={styles.question}>
-          <div onClick={() => toggleQuestion(index)} className={styles.questionTitle}>
-            {q.question}
+      {contentData.map((item, index) => (
+        <div key={index} className={styles.questionBlock}>
+          <div
+            className={styles.question}
+            onClick={() => toggleAnswer(index)}
+          >
+            {item.question}
           </div>
-          {openQuestion === index && <div className={styles.answer}>{q.answer}</div>}
+          {openQuestion === index && (
+            <div className={styles.answer}>
+              {item.answer}
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -144,54 +55,50 @@ export default MainContent;
 .mainContent {
   flex-grow: 1;
   padding: 30px;
-  background-color: #f7f9fb;
-  color: #2c3e50;
+  background-color: #f7f9fc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.questionBlock {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
   transition: background-color 0.3s ease;
 }
 
-.mainContent h2 {
-  font-size: 2.5em;
-  margin-bottom: 30px;
-  color: #34495e;
-  text-align: center;
-  font-weight: 600;
-  border-bottom: 2px solid #ecf0f1;
-  padding-bottom: 10px;
+.questionBlock:hover {
+  background-color: #f1f1f1;
 }
 
 .question {
-  margin-bottom: 20px;
-  padding: 20px;
-  background-color: #ffffff;
-  border: 1px solid #dcdde1;
-  border-radius: 10px;
+  font-size: 1.2em;
+  padding: 15px;
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.question:hover {
-  background-color: #ecf0f1;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-.questionTitle {
-  font-size: 1.5em;
   font-weight: bold;
-  color: #2980b9;
+  color: #333;
 }
 
 .answer {
-  margin-top: 15px;
-  font-size: 1.2em;
-  color: #7f8c8d;
-  padding-left: 10px;
-  border-left: 3px solid #2980b9;
+  padding: 15px;
+  background-color: #f8f9fa;
+  font-size: 1em;
+  line-height: 1.6;
+  color: #555;
 }
 
-.answer:before {
-  content: 'Answer: ';
-  font-weight: bold;
-  color: #2c3e50;
+.questionBlock .answer {
+  animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    max-height: 0;
+    opacity: 0;
+  }
+  100% {
+    max-height: 500px;
+    opacity: 1;
+  }
 }
