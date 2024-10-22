@@ -60,7 +60,7 @@ export default MainContent;
 
 .mainContent {
   flex-grow: 1;
-  padding: 30px;
+  padding: 35px;
   background-color: #f7f9fc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -79,10 +79,10 @@ export default MainContent;
 }
 
 .question {
-  font-size: 1.2em;
-  padding: 15px;
+  font-size: 1.1em;
+  padding: 10px;
   cursor: pointer;
-  font-weight: bold;
+  /*font-weight: bold;*/
   color: #333;
   display: flex;
   justify-content: space-between; /* This will move the chevron to the right */
@@ -90,7 +90,7 @@ export default MainContent;
 }
 
 .chevronIcon {
-  font-size: 1.2em;
+  font-size: 1em;
   color: #888;
   transition: transform 0.3s ease;
 }
