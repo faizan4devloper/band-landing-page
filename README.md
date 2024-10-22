@@ -39,3 +39,46 @@ const Sidebar = ({ setActiveTopic }) => {
 };
 
 export default Sidebar;
+
+
+
+.sidebar {
+  width: 250px;
+  /*background-color: #2c3e50;*/
+  border-right: 1px solid blue;
+  color: #000;
+  padding: 20px;
+  height: 100vh;
+  color: white;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  display: flex;
+  align-items: center;
+  color: #000;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  transition: background-color 0.3s;
+}
+
+.sidebar li:hover {
+  background-color: #34495e;
+  color: #fff;
+}
+
+.sidebar li.active {
+  background-color: #2980b9;
+  color: #fff;
+}
+
+.icon {
+  margin-right: 10px;
+  font-size: 1.5em;
+}
