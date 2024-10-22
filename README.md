@@ -1,67 +1,50 @@
-import React, { memo, useState, useEffect } from 'react';
-import styles from './DocumentPreview.module.css';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import styles from './App.module.css';
+import Personas from './components/Personas/Personas';
+import EducationPage from './components/Pages/Education/EducationPage';
+import JobPage from './components/Pages/Job/JobPage';
+import HealthPage from './components/Pages/Health/HealthPage';
+import LoginPage from './components/Login/LoginPage';
+import Header from './components/Header/Header';
+import store from './redux/store'; // Import your Redux store
+import { AuthProvider } from './context/AuthContext'; // Import Context Provider
 
-const DocumentPreview = memo(({ document, index }) => {
-    const [docURL, setDocURL] = useState(null);
 
-    // Cache the document URL to prevent unnecessary re-renders
-    useEffect(() => {
-        if (document.url) {
-            setDocURL(document.url);
-        } else {
-            setDocURL(URL.createObjectURL(document));
-        }
-        
-        // Cleanup the URL object when the component unmounts
-        return () => {
-            if (!document.url) {
-                URL.revokeObjectURL(docURL);
-            }
-        };
-    }, [document, docURL]);
 
-    const getDocumentType = (doc) => {
-        if (doc.type?.startsWith('image/') || doc.url?.endsWith('.jpg') || doc.url?.endsWith('.png')) {
-            return 'Image';
-        } else if (doc.type === 'application/pdf' || doc.url?.endsWith('.pdf')) {
-            return 'PDF';
-        } else if (doc.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || doc.url?.endsWith('.docx')) {
-            return 'DOCX';
-        } else {
-            return 'Other';
-        }
-    };
+function App() {
+  // Use Redux state for authentication
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useDispatch(); // To dispatch actions
 
-    return (
-        <div key={index} className={styles.previewItem}>
-            <p className={styles.documentType}>Type: {getDocumentType(document)}</p>
-            
-            {getDocumentType(document) === 'Image' ? (
-                <img
-                    src={docURL}
-                    alt={document.name || "Document Preview"}
-                    className={styles.imagePreview}
-                />
-            ) : getDocumentType(document) === 'PDF' ? (
-                <iframe
-                    src={`${docURL}#toolbar=0&navpanes=0&scrollbar=0`}
-                    title={`PDF Preview ${index}`}
-                    className={styles.pdfPreview}
-                    frameBorder="0"
-                />
-            ) : (
-                <a
-                    href={docURL}
-                    download={document.name || "Document"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.documentLink}
-                >
-                    View Document
-                </a>
-            )}
-        </div>
-    );
-});
+  return (
+    <Provider store={store}>
+      <AuthProvider>
+        <Router>
+          <div className={styles.App}>
+            <Header />
+            <Routes>
+              <Route
+                path="/"
+                element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />}
+              />
+              {isAuthenticated ? (
+                <>
+                  <Route path="/personas" element={<Personas />} />
+                  <Route path="/education" element={<EducationPage />} />
+                  <Route path="/job" element={<JobPage />} />
+                  <Route path="/health" element={<HealthPage />} />
+                </>
+              ) : (
+                <Route path="*" element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />} />
+              )}
+            </Routes>
+          </div>
+        </Router>
+      </AuthProvider>
+    </Provider>
+  );
+}
 
-export default DocumentPreview;
+export default App;
