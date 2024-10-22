@@ -1,16 +1,39 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import styles from './App.module.css';
-import Personas from './components/Personas/Personas';
-import EducationPage from './components/Pages/Education/EducationPage';
-import JobPage from './components/Pages/Job/JobPage';
-import HealthPage from './components/Pages/Health/HealthPage';
-import LoginPage from './components/Login/LoginPage';
-import Header from './components/Header/Header';
-import Breadcrumbs from './components/BreadCrumbs/BreadCrumbs'; // Import Breadcrumbs
-import store from './redux/store'; 
-import { AuthProvider } from './context/AuthContext';
+import { Link, useLocation } from 'react-router-dom';
+import styles from './Breadcrumbs.module.css'; // Assuming you are using CSS modules
+
+const Breadcrumbs = () => {
+  const location = useLocation();
+  const pathnames = location.pathname.split('/').filter((x) => x);
+
+  return (
+    <nav className={styles.breadcrumbs}>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        {pathnames.map((value, index) => {
+          const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+
+          // Customize the name to display 'Personas' or other specific values
+          const breadcrumbName = (value === 'education') ? 'Education' : 
+                                (value === 'job') ? 'Job' : 
+                                (value === 'health') ? 'Health' : 
+                                (value === 'personas') ? 'Personas' : value;
+
+          return (
+            <li key={to}>
+              <Link to={to}>{breadcrumbName}</Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+};
+
+export default Breadcrumbs;
+
 
 function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -22,7 +45,7 @@ function App() {
         <Router>
           <div className={styles.App}>
             <Header />
-            <Breadcrumbs /> {/* Add Breadcrumbs component */}
+            {isAuthenticated && <Breadcrumbs />} {/* Only show breadcrumbs when authenticated */}
             <Routes>
               <Route
                 path="/"
