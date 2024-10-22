@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome chevron icons
 
 const contentData = [
   {
@@ -36,6 +38,10 @@ const MainContent = () => {
             onClick={() => toggleAnswer(index)}
           >
             {item.question}
+            <FontAwesomeIcon
+              icon={openQuestion === index ? faChevronUp : faChevronDown}
+              className={styles.chevronIcon}
+            />
           </div>
           {openQuestion === index && (
             <div className={styles.answer}>
@@ -78,6 +84,15 @@ export default MainContent;
   cursor: pointer;
   font-weight: bold;
   color: #333;
+  display: flex;
+  justify-content: space-between; /* This will move the chevron to the right */
+  align-items: center; /* This centers the text and icon vertically */
+}
+
+.chevronIcon {
+  font-size: 1.2em;
+  color: #888;
+  transition: transform 0.3s ease;
 }
 
 .answer {
