@@ -1,75 +1,44 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-const MainContent = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
+  if (input.trim() === '') return;
 
-  // Handle form submission and fetch answer from the API
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (input.trim() === '') return;
+  // Add user's question to the conversation
+  const userMessage = { type: 'user', text: input };
+  setMessages([...messages, userMessage]);
 
-    // Add user's question to the conversation
-    const userMessage = { type: 'user', text: input };
-    setMessages([...messages, userMessage]);
+  try {
+    // Send POST request to the API
+    const response = await axios.post('dummy', {
+      question: input
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
 
-    try {
-      // Send POST request to the API
-      const response = await axios.post('dummy', {
-        question: input
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
+    // Log the response for debugging
+    console.log('API Response:', response.data);
 
-      // Parse the response and extract the answer
-      const parsedBody = JSON.parse(response.data.body);
+    // Since the response body is a JSON string, we need to parse it
+    const parsedBody = JSON.parse(response.data.body);
 
-      // Add chatbot's response to the conversation
-      const botMessage = {
-        type: 'bot',
-        text: parsedBody.answer?.textual || 'No answer available for this question.'
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    }
+    // Extract the answer from the parsed response
+    const answer = parsedBody.answer?.textual || 'No answer available for this question.';
 
-    // Clear input field
-    setInput('');
-  };
+    // Add chatbot's response to the conversation
+    const botMessage = {
+      type: 'bot',
+      text: answer
+    };
+    setMessages((prevMessages) => [...prevMessages, botMessage]);
 
-  return (
-    <div className={styles.chatbotContainer}>
-      <div className={styles.chatWindow}>
-        {messages.length > 0 ? (
-          messages.map((message, index) => (
-            <div key={index} className={message.type === 'user' ? styles.userMessage : styles.botMessage}>
-              {message.text}
-            </div>
-          ))
-        ) : (
-          <div className={styles.emptyChat}>Ask a question to get started!</div>
-        )}
-      </div>
-      <form onSubmit={handleSubmit} className={styles.inputForm}>
-        <input
-          type="text"
-          className={styles.inputField}
-          placeholder="Type your question..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button type="submit" className={styles.sendButton}>Send</button>
-      </form>
-    </div>
-  );
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+    setMessages((prevMessages) => [...prevMessages, errorMessage]);
+  }
+
+  // Clear input field
+  setInput('');
 };
-
-export default MainContent;
