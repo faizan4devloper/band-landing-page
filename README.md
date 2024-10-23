@@ -1,73 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+const fetchData = async () => {
+  try {
+    const response = await axios.post('dummy', {
+      question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    });
 
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(null);
+    console.log('API Response:', response.data); // Check the structure of the response
 
-  // Fetch data from API using POST request
-  const fetchData = async () => {
-    try {
-      const response = await axios.post('dummy', {
-        question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-      
-      console.log('API Response:', response.data); // Log the API response
-      // Assuming response.data.answer is a string containing the answer.
-      const formattedData = [
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: response.data.answer // Update this based on the structure of your API response
-        }
-      ];
-      setContentData(formattedData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+    // Parse the response correctly
+    const parsedResponse = JSON.parse(response.data.body);
+    const llmAnswer = parsedResponse.answer; // This is where the answer is retrieved
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.answerBlock}>
-                <p>{item.answer || 'No Answer Available'}</p>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div>No data available</div>
-      )}
-    </div>
-  );
+    const formattedData = [
+      {
+        question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+        answer: llmAnswer || 'No Answer Available' // Fallback in case answer is not available
+      }
+    ];
+    
+    setContentData(formattedData);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
 };
-
-export default MainContent;
