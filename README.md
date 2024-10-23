@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome chevron icons
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const contentData = [
   {
@@ -26,7 +26,7 @@ const MainContent = () => {
   const [openQuestion, setOpenQuestion] = useState(null);
 
   const toggleAnswer = (index) => {
-    // If the same question is clicked again, it will collapse (toggle behavior)
+    // When the same question is clicked again, collapse it, otherwise open the new one and hide others
     setOpenQuestion(openQuestion === index ? null : index);
   };
 
@@ -44,6 +44,7 @@ const MainContent = () => {
               className={styles.chevronIcon}
             />
           </div>
+          {/* Only the answer of the open question is shown */}
           {openQuestion === index && (
             <div className={styles.answer}>
               {item.answer}
