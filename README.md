@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ClipLoader from 'react-spinners/ClipLoader'; // Import the spinner
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
+  const [loading, setLoading] = useState(true); // New loading state
   const [openQuestion, setOpenQuestion] = useState(0); // Default first question open
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true, // Textual Response open by default
@@ -46,8 +48,10 @@ const MainContent = () => {
       ];
 
       setContentData(formattedData);
+      setLoading(false); // Set loading to false after data is fetched
     } catch (error) {
       console.error('Error fetching data:', error);
+      setLoading(false); // Set loading to false in case of error
     }
   };
 
@@ -79,7 +83,12 @@ const MainContent = () => {
 
   return (
     <div className={styles.mainContent}>
-      {Array.isArray(contentData) && contentData.length > 0 ? (
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          {/* Spinner while data is loading */}
+          <ClipLoader color="#36d7b7" loading={loading} size={50} />
+        </div>
+      ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
             <div
