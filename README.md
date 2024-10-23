@@ -1,3 +1,69 @@
+
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Personas.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+
+const personas = [
+  {
+    title: 'Education',
+    description: 'Streamlined Academic Pathfinding...',
+    themeColor: '#e6ebf5',
+    route: '/education',
+  },
+  {
+    title: 'Job',
+    description: 'Find job opportunities and career development tools.',
+    themeColor: '#e6ebf5',
+    route: '/job',
+  },
+  {
+    title: 'Health',
+    description: 'Manage health records and access health services.',
+    themeColor: '#e6ebf5',
+    route: '/health',
+  },
+];
+
+const Personas = () => {
+  const navigate = useNavigate();
+  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+
+  const handleClick = (route) => {
+    navigate(route);
+  };
+
+  return (
+    <div className={styles.Personas}>
+      <h1 className={styles.gradientText}>Your Personas</h1>
+
+      <div className={styles.personaCards}>
+        {personas.map((persona, index) => (
+          <div
+            key={index}
+            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
+            style={{ backgroundColor: persona.themeColor }}
+            onClick={() => handleClick(persona.route)}
+          >
+            <FontAwesomeIcon icon={persona.icon} className={styles.personaIcon} /> {/* Displaying Icon */}
+            <h2 className={styles.cardHead}>{persona.title}</h2>
+            <p className={styles.description}>{persona.description}</p>
+            <div className={styles.rightIcon}>
+              <span className={styles.goText}>Explore</span>
+              <FontAwesomeIcon icon={faArrowRight} className={styles.arrow} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Personas;
+
+
+
 .Personas {
   display: flex;
   flex-direction: column;
@@ -87,6 +153,7 @@
   left: -1rem; /* Set to left to start on the left side */
   font-size: .8rem;
   transition: color 0.3s ease;
+  
   white-space: nowrap;
 }
 
@@ -99,7 +166,7 @@
 .goText {
   opacity: 0; /* Initially hidden */
   font-size: 1rem;
-  transform: translateY(20px); /* Initially moved down */
+  transform: translateX(-110px); /* Initially moved to the left */
   transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
   color: white; /* Change text color */
 }
@@ -107,14 +174,15 @@
 /* Text appears on hover with sliding effect */
 .personaCard:hover .goText {
   opacity: 1; /* Makes text visible */
-  transform: translateY(0); /* Moves text to its original position */
+  transform: translateX(70px); /* Moves text to its original position */
 }
 
 /* Move the arrow to the right on hover */
 .personaCard:hover .arrow {
-  transform: translateX(10px); /* Adjust to create a sliding effect */
+  transform: translateX(80px); /* Adjust to create a sliding effect */
 }
 
-.personaCard:hover .gradientText {
-  background: #fff; /* Change gradient text background on hover */
+
+.personaCard:hover .gradientText{
+  background:#fff;
 }
