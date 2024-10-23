@@ -26,32 +26,44 @@ const MainContent = () => {
   const [openQuestion, setOpenQuestion] = useState(null);
 
   const toggleAnswer = (index) => {
-    // When the same question is clicked again, collapse it, otherwise open the new one and hide others
     setOpenQuestion(openQuestion === index ? null : index);
   };
 
   return (
     <div className={styles.mainContent}>
-      {contentData.map((item, index) => (
-        <div key={index} className={styles.questionBlock}>
+      {/* If no question is open, show all questions. If a question is open, show only that question and its answer */}
+      {openQuestion === null ? (
+        contentData.map((item, index) => (
+          <div key={index} className={styles.questionBlock}>
+            <div
+              className={styles.question}
+              onClick={() => toggleAnswer(index)}
+            >
+              {item.question}
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className={styles.questionBlock}>
           <div
             className={styles.question}
-            onClick={() => toggleAnswer(index)}
+            onClick={() => toggleAnswer(openQuestion)}
           >
-            {item.question}
+            {contentData[openQuestion].question}
             <FontAwesomeIcon
-              icon={openQuestion === index ? faChevronUp : faChevronDown}
+              icon={faChevronUp}
               className={styles.chevronIcon}
             />
           </div>
-          {/* Only the answer of the open question is shown */}
-          {openQuestion === index && (
-            <div className={styles.answer}>
-              {item.answer}
-            </div>
-          )}
+          <div className={styles.answer}>
+            {contentData[openQuestion].answer}
+          </div>
         </div>
-      ))}
+      )}
     </div>
   );
 };
