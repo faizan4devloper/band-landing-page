@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(null);
 
   // Fetch data from API using POST request
   const fetchData = async () => {
     try {
-      // Sending the question as a query parameter
       const response = await axios.post('dummy', {
         question: 'what are the average class sizes and student-teacher ratios in the local schools?'
       }, {
@@ -19,7 +15,7 @@ const MainContent = () => {
           'Content-Type': 'application/json'
         },
       });
-      
+
       console.log('API Response:', response.data); // Log the API response
       setContentData(response.data);
     } catch (error) {
@@ -31,92 +27,31 @@ const MainContent = () => {
     fetchData();
   }, []);
 
-  const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
-  };
-
   return (
     <div className={styles.mainContent}>
       {Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && ( // Show answer only for the open question
-              <div className={styles.answerBlock}>
-                <div className={styles.gridAnswer}>
-                  <div className={styles.gridItem}>
-                    <h3>Textual Response</h3>
-                    <p>{item.answer?.textual || 'No Textual Response Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Citizen Experience</h3>
-                    <p>{item.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Factual Info</h3>
-                    <p>{item.answer?.factualInfo || 'No Factual Info Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Contextual</h3>
-                    <p>{item.answer?.contextual || 'No Contextual Info Available'}</p>
-                  </div>
-                </div>
-              </div>
-            )}
+          <div key={index} className={styles.answerBlock}>
+            <h3 className={styles.answerTitle}>Answer {index + 1}</h3>
+            <p className={styles.answerText}>
+              {item.answer?.textual || 'No Textual Response Available'}
+            </p>
+            <p className={styles.answerText}>
+              {item.answer?.citizenExperience || 'No Citizen Experience Available'}
+            </p>
+            <p className={styles.answerText}>
+              {item.answer?.factualInfo || 'No Factual Info Available'}
+            </p>
+            <p className={styles.answerText}>
+              {item.answer?.contextual || 'No Contextual Info Available'}
+            </p>
           </div>
         ))
       ) : (
-        <div>No data available</div> // Handling case where contentData is empty
+        <div className={styles.noData}>No data available</div>
       )}
     </div>
   );
 };
 
 export default MainContent;
-
-
-/* MainContent.module.css */
-.mainContent {
-  padding: 20px;
-}
-
-.questionBlock {
-  margin-bottom: 10px;
-}
-
-.question {
-  cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-}
-
-.answerBlock {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-top: 5px;
-}
-
-.gridAnswer {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.gridItem {
-  background-color: #fff;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
