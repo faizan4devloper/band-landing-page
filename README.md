@@ -1,44 +1,20 @@
-const handleSubmit = async (e) => {
-  e.preventDefault();
+ return {
+            'statusCode': 200,
+            'body': json.dumps({
+                "answer": llm_answer,
+                "source": "N/A"
+            })
+        }
 
-  if (input.trim() === '') return;
+    # Step 8: Format PDF link and return the LLM answer with source
+    pdf_link = format_pdf_link(metadata.get('pdf_link', 'N/A'))
+    location_info = f"Page: {metadata.get('page_number', 'N/A')}, Document Link: {pdf_link}"
 
-  // Add user's question to the conversation
-  const userMessage = { type: 'user', text: input };
-  setMessages([...messages, userMessage]);
-
-  try {
-    // Send POST request to the API
-    const response = await axios.post('dummy', {
-      question: input
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    });
-
-    // Log the response for debugging
-    console.log('API Response:', response.data);
-
-    // Since the response body is a JSON string, we need to parse it
-    const parsedBody = JSON.parse(response.data.body);
-
-    // Extract the answer from the parsed response
-    const answer = parsedBody.answer?.textual || 'No answer available for this question.';
-
-    // Add chatbot's response to the conversation
-    const botMessage = {
-      type: 'bot',
-      text: answer
-    };
-    setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-    setMessages((prevMessages) => [...prevMessages, errorMessage]);
-  }
-
-  // Clear input field
-  setInput('');
-};
+    # Return the response, ensuring 'page_number' and 'pdf_link' are in the metadata
+    return {
+        'statusCode': 200,
+        'body': json.dumps({
+            "answer": llm_answer,
+            "source": location_info
+        })
+    }
