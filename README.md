@@ -6,7 +6,8 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(null);
+  const [openQuestion, setOpenQuestion] = useState(0); // Default to first question open
+  const [openGridItems, setOpenGridItems] = useState({}); // State to track open grid items
 
   const fetchData = async () => {
     try {
@@ -21,14 +22,15 @@ const MainContent = () => {
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
 
-      // Assuming different response types
       const formattedData = [
         {
           question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          textualResponse: llmAnswer || 'No textual response available',
-          citizenExperience: 'This is a citizen experience related to the question',
-          factualInfo: 'This is factual information about the question',
-          contextualInfo: 'This is contextual information about the question'
+          answer: {
+            textualResponse: llmAnswer || 'No Answer Available',
+            citizenExperience: 'Citizen experience response goes here.',
+            factualInfo: 'Factual information goes here.',
+            contextual: 'Contextual information goes here.'
+          }
         }
       ];
 
@@ -43,7 +45,14 @@ const MainContent = () => {
   }, []);
 
   const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
+    setOpenQuestion(openQuestion === index ? null : index); // Collapse if same question is clicked
+  };
+
+  const toggleGridItem = (section) => {
+    setOpenGridItems(prevState => ({
+      ...prevState,
+      [section]: !prevState[section]
+    }));
   };
 
   return (
@@ -63,21 +72,44 @@ const MainContent = () => {
             </div>
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
-                <div className={styles.gridItem}>
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.textualResponse ? '' : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('textualResponse')}
+                >
                   <h3>Textual Response</h3>
-                  <p>{item.textualResponse}</p>
+                  {openGridItems.textualResponse && <p>{item.answer.textualResponse}</p>}
                 </div>
-                <div className={styles.gridItem}>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? '' : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('citizenExperience')}
+                >
                   <h3>Citizen Experience</h3>
-                  <p>{item.citizenExperience}</p>
+                  {openGridItems.citizenExperience && <p>{item.answer.citizenExperience}</p>}
                 </div>
-                <div className={styles.gridItem}>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? '' : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('factualInfo')}
+                >
                   <h3>Factual Info</h3>
-                  <p>{item.factualInfo}</p>
+                  {openGridItems.factualInfo && <p>{item.answer.factualInfo}</p>}
                 </div>
-                <div className={styles.gridItem}>
-                  <h3>Contextual Info</h3>
-                  <p>{item.contextualInfo}</p>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? '' : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('contextual')}
+                >
+                  <h3>Contextual</h3>
+                  {openGridItems.contextual && <p>{item.answer.contextual}</p>}
                 </div>
               </div>
             )}
@@ -153,12 +185,14 @@ export default MainContent;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  max-height: 250px;
-  overflow-y: auto;
+  max-height: 60px; /* Collapsed height */
+  overflow: hidden;
+  cursor: pointer;
 }
 
-.gridItem:hover {
-  transform: translateY(-5px);
+.gridItem.expanded {
+  max-height: 250px; /* Expanded height */
+  overflow-y: auto;
 }
 
 .gridItem h3 {
@@ -173,6 +207,15 @@ export default MainContent;
   line-height: 1.6;
 }
 
+.collapsed {
+  max-height: 60px; /* Keep collapsed by default */
+}
+
+.gridItem:hover {
+  transform: translateY(-5px);
+}
+
+/* Optional: Add a subtle scrollbar style for better UI */
 .gridItem::-webkit-scrollbar {
   width: 8px;
 }
