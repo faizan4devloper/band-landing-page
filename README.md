@@ -86,24 +86,26 @@
   right: 1rem;
   font-size: 1.5rem;
   color: #888;
-  opacity: 1; /* Always visible */
   transition: transform 0.3s ease, color 0.3s ease;
+  white-space: nowrap;
+}
+
+/* Icon should move to the right smoothly on hover */
+.personaCard:hover .rightIcon {
+  transform: translateX(15px); /* Moves the icon smoothly to the right */
+  color: white; /* Change icon color */
 }
 
 .goText {
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   opacity: 0;
-  transform: translateX(-15px); /* Initially hide the text and position it off-screen */
+  transform: translateX(-20px); /* Initially off-screen */
   transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
   color: white;
 }
 
-.personaCard:hover .rightIcon {
-  transform: translateX(10px); /* Move arrow to the right on hover */
-  color: white; /* Change arrow color */
-}
-
+/* Text slides in smoothly on hover */
 .personaCard:hover .goText {
-  opacity: 1; /* Show text */
-  transform: translateX(0); /* Bring text in smoothly from left */
+  opacity: 1; /* Makes text visible */
+  transform: translateX(0); /* Slides text to its normal position */
 }
