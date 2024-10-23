@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css'; // Assuming your CSS module for styling
@@ -8,21 +7,19 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [openQuestion, setOpenQuestion] = useState(null);
-      // const [userInput, setUserInput] = useState("what are the average class sizes and student-teacher ratios in the local schools?");
 
+  // New message to send in the query parameter
+  const newMessage = 'what are the average class sizes and student-teacher ratios in the local schools?';
 
   // Fetch data from API using GET request
   const fetchData = async () => {
-                const newMessage = 'what are the average class sizes and student-teacher ratios in the local schools?';
-
     try {
-      const response = await axios.get('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', {
-       
-                          question: newMessage.text,
-
-headers: {
-                        'Content-Type': 'application/json'
-                  },
+      // Sending the question as a query parameter
+      const response = await axios.get('https://your-api-gateway-url', { 
+        params: { question: newMessage }, // 'question' is sent as a URL query parameter
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       setContentData(response.data); // Assuming the API response is structured as expected
     } catch (error) {
