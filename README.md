@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css'; // Assuming your CSS module for styling
@@ -15,7 +16,7 @@ const MainContent = () => {
   const fetchData = async () => {
     try {
       // Sending the question as a query parameter
-      const response = await axios.get('https://your-api-gateway-url', { 
+      const response = await axios.get('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', { 
         params: { question: newMessage }, // 'question' is sent as a URL query parameter
         headers: {
           'Content-Type': 'application/json'
