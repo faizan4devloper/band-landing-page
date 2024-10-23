@@ -1,4 +1,3 @@
-
 .Personas {
   display: flex;
   flex-direction: column;
@@ -88,7 +87,6 @@
   left: -1rem; /* Set to left to start on the left side */
   font-size: .8rem;
   transition: color 0.3s ease;
-  
   white-space: nowrap;
 }
 
@@ -101,7 +99,7 @@
 .goText {
   opacity: 0; /* Initially hidden */
   font-size: 1rem;
-  transform: translateX(-110px); /* Initially moved to the left */
+  transform: translateY(20px); /* Initially moved down */
   transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
   color: white; /* Change text color */
 }
@@ -109,15 +107,14 @@
 /* Text appears on hover with sliding effect */
 .personaCard:hover .goText {
   opacity: 1; /* Makes text visible */
-  transform: translateX(70px); /* Moves text to its original position */
+  transform: translateY(0); /* Moves text to its original position */
 }
 
 /* Move the arrow to the right on hover */
 .personaCard:hover .arrow {
-  transform: translateX(80px); /* Adjust to create a sliding effect */
+  transform: translateX(10px); /* Adjust to create a sliding effect */
 }
 
-
-.personaCard:hover .gradientText{
-  background:#fff;
+.personaCard:hover .gradientText {
+  background: #fff; /* Change gradient text background on hover */
 }
