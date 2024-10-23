@@ -1,11 +1,8 @@
-API Response: {statusCode: 200, body: '{"answer": "Based on the information provided:\\n\\n…advisor/persona-education/serpellps_website.pdf"}'} 
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
@@ -15,7 +12,7 @@ const MainContent = () => {
   const fetchData = async () => {
     try {
       // Sending the question as a query parameter
-      const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', {
+      const response = await axios.post('dummy', {
         question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
       }, {
         headers: {
@@ -24,7 +21,12 @@ const MainContent = () => {
       });
       
       console.log('API Response:', response.data); // Log the API response
-      setContentData(response.data);
+
+      // Parse the response body if it is a JSON string
+      const parsedBody = JSON.parse(response.data.body);
+
+      // Assuming 'parsedBody' contains the necessary answer structure
+      setContentData([parsedBody]); // Wrapping in an array to fit map logic
     } catch (error) {
       console.error('Error fetching data:', error);
     }
@@ -47,7 +49,8 @@ const MainContent = () => {
               className={styles.question}
               onClick={() => toggleAnswer(index)}
             >
-              {item.question}
+              {/* Example: If the API doesn't return a 'question', adjust the key accordingly */}
+              <span>Question {index + 1}</span>
               <FontAwesomeIcon
                 icon={faChevronDown}
                 className={styles.chevronIcon}
@@ -85,6 +88,10 @@ const MainContent = () => {
 };
 
 export default MainContent;
+
+
+
+
 
 
 
@@ -126,7 +133,7 @@ export default MainContent;
   transition: transform 0.3s ease;
 }
 
-/* Grid styling for the first question */
+/* Grid styling for the answer block */
 .gridAnswer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
