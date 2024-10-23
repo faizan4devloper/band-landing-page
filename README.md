@@ -11,7 +11,6 @@ const MainContent = () => {
   // Fetch data from API using POST request
   const fetchData = async () => {
     try {
-      // Sending the question as a query parameter
       const response = await axios.post('dummy', {
         question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
       }, {
@@ -24,11 +23,13 @@ const MainContent = () => {
 
       // Parse the response body if it is a JSON string
       const parsedBody = JSON.parse(response.data.body);
+      
+      // Assuming parsedBody contains the necessary structure for contentData
+      setContentData([parsedBody]); // Wrap in an array to fit map logic
 
-      // Assuming 'parsedBody' contains the necessary answer structure
-      setContentData([parsedBody]); // Wrapping in an array to fit map logic
     } catch (error) {
       console.error('Error fetching data:', error);
+      setContentData([{ answer: { textual: 'Error fetching answer', citizenExperience: '', factualInfo: '', contextual: '' }}]); // Handle error gracefully
     }
   };
 
@@ -49,7 +50,6 @@ const MainContent = () => {
               className={styles.question}
               onClick={() => toggleAnswer(index)}
             >
-              {/* Example: If the API doesn't return a 'question', adjust the key accordingly */}
               <span>Question {index + 1}</span>
               <FontAwesomeIcon
                 icon={faChevronDown}
@@ -88,6 +88,3 @@ const MainContent = () => {
 };
 
 export default MainContent;
-
-
-
