@@ -1,4 +1,4 @@
-Access to XMLHttpRequest at 'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2?question=what+are+the+average+class+sizes+and+student-teacher+ratios+in+the+local+schools%3F' from origin 'https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Access to XMLHttpRequest at 'https://dummy?question=what+are+the+average+class+sizes+and+student-teacher+ratios+in+the+local+schools%3F' from origin 'https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
 MainContent.js:22 Error fetching data: AxiosError {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}
 fetchData @ MainContent.js:22
 await in fetchData
@@ -20,4 +20,4 @@ Show less
 MainContent.js:15 
         
         
-       GET https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2?question=what+are+the+average+class+sizes+and+student-teacher+ratios+in+the+local+schools%3F net::ERR_FAILED 200 (OK)
+       GET https://dummy?question=what+are+the+average+class+sizes+and+student-teacher+ratios+in+the+local+schools%3F net::ERR_FAILED 200 (OK)
