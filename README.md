@@ -8,25 +8,21 @@ const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [openQuestion, setOpenQuestion] = useState(null);
 
-  // New message to send in the query parameter
-  // const newMessage = {
-  //     question : 'what are the average class sizes and student-teacher ratios in the local schools?',
-  // };
-
-  // Fetch data from API using GET request
+  // Fetch data from API using POST request
   const fetchData = async () => {
     try {
       // Sending the question as a query parameter
-      const response = await axios.post('dummy', { question: 'what are the average class sizes and student-teacher ratios in the local schools?' }, {
+      const response = await axios.post('dummy', {
+        question: 'what are the average class sizes and student-teacher ratios in the local schools?'
+      }, {
         headers: {
-
           'Content-Type': 'application/json'
-
         },
       });
+      
+      console.log('API Response:', response.data); // Log the API response
       setContentData(response.data);
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
@@ -41,7 +37,7 @@ const MainContent = () => {
 
   return (
     <div className={styles.mainContent}>
-      {Array.isArray(contentData) && openQuestion === null ? (
+      {Array.isArray(contentData) && contentData.length > 0 ? ( // Check if contentData is not empty
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
             <div
@@ -57,9 +53,9 @@ const MainContent = () => {
           </div>
         ))
       ) : (
-        <div>No data available</div> // Handling case where contentData is not an array
+        <div>No data available</div> // Handling case where contentData is empty
       )}
-      {openQuestion !== null && (
+      {openQuestion !== null && contentData[openQuestion] && ( // Ensure contentData exists for openQuestion
         <div className={styles.questionBlock}>
           <div
             className={styles.question}
@@ -71,7 +67,7 @@ const MainContent = () => {
               className={styles.chevronIcon}
             />
           </div>
-          {openQuestion === 0 ? (
+          {openQuestion === 0 ? ( // Check for specific answer structure
             <div className={styles.gridAnswer}>
               <div className={styles.gridItem}>
                 <h3>Textual Response</h3>
