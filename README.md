@@ -48,7 +48,7 @@
 .personaCard h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-background: -webkit-gradient(linear, left top, right top, 
+  background: -webkit-gradient(linear, left top, right top, 
     color-stop(-19.51%, #7abef7), 
     color-stop(36.51%, #4080f5), 
     to(#572ac2));
@@ -56,7 +56,13 @@ background: -webkit-gradient(linear, left top, right top,
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
-  
+}
+
+/* Change gradient text to white on hover */
+.personaCard:hover h2 {
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  color: white; /* Change text color to white */
 }
 
 .personaCard .description {
@@ -92,4 +98,3 @@ background: -webkit-gradient(linear, left top, right top,
   color: #fff;
   transform: translateX(5px); /* Slide in effect */
 }
-
