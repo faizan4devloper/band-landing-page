@@ -1,100 +1,95 @@
+// Sidebar.js
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'; // Add chevron icon
+import styles from './Sidebar.module.css';
 
-// Import your images
-import educationImg from './assets/education.png'; // Update path as necessary
-import jobImg from './assets/job.png'; // Update path as necessary
-import healthImg from './assets/health.png'; // Update path as necessary
-
-const personas = [
-  {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding...',
-    themeColor: '#e6ebf5',
-    route: '/education',
-    img: educationImg,
-  },
-  {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#e6ebf5',
-    route: '/job',
-    img: jobImg,
-  },
-  {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#e6ebf5',
-    route: '/health',
-    img: healthImg,
-  },
+const topics = [
+  { id: 1, name: 'Topic 1' },
+  { id: 2, name: 'Topic 2' },
+  { id: 3, name: 'Topic 3' },
+  { id: 4, name: 'Topic 4' },
+  { id: 5, name: 'Topic 5' },
 ];
 
-const Personas = () => {
-  const navigate = useNavigate();
+const Sidebar = ({ setActiveTopic }) => {
+  const [active, setActive] = useState(1); // Default active topic
 
-  const handleClick = (route) => {
-    navigate(route);
+  const handleClick = (id) => {
+    setActive(id);
+    setActiveTopic(id); // Pass the active topic to the parent component
   };
 
   return (
-    <div className={styles.Personas}>
-      <h1 className={styles.gradientText}>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
-          <div
-            key={index}
-            className={styles.personaCard}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
+    <div className={styles.sidebar}>
+      <div className={styles.sidebarHeads}>Suggested Topics</div>
+      <ul>
+        {topics.map((topic) => (
+          <li
+            key={topic.id}
+            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
+            onClick={() => handleClick(topic.id)}
           >
-            <img src={persona.img} alt={persona.title} className={styles.personaImage} /> {/* Displaying Image */}
-            <h2 className={styles.cardHead}>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <span className={styles.goText}>Explore</span>
-              <FontAwesomeIcon icon={faArrowRight} className={styles.arrow} />
-            </div>
-          </div>
+            <span>{topic.name}</span>
+            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };
 
-export default Personas;
+export default Sidebar;
 
 
-.personaCard {
-  /* Existing styles */
-  position: relative; /* Required to position the image absolutely */
-  overflow: hidden; /* Ensure the image stays within the card */
+
+/* Sidebar.module.css */
+
+.sidebar {
+  width: 250px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+  padding: 20px;
+  height: 100vh;
 }
 
-.personaImage {
-  width: 100%; /* Adjust size as needed */
-  height: auto; /* Maintain aspect ratio */
-  border-radius: 0.75rem; /* Match card's border radius */
-  object-fit: cover; /* Ensure image covers the area */
-  position: absolute; /* Allow for overlapping with other elements */
-  top: 0; /* Position it at the top */
-  left: 0; /* Align to the left */
-  right: 0; /* Stretch to the right */
-  bottom: 50%; /* Cover half the height for a nice effect */
-  transition: transform 0.3s ease; /* Smooth transition effect */
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
 }
 
-.personaCard:hover .personaImage {
-  transform: scale(1.1); /* Scale up on hover for an effect */
+.sidebarHeads{
+  text-align: center;
+  font-size: 1rem;
 }
 
-.personaCard h2,
-.personaCard p,
-.rightIcon {
-  position: relative; /* Ensure these are on top of the image */
-  z-index: 1; /* Layering so that text is above the image */
+.sidebar li {
+  display: flex;
+  justify-content: space-around; /* Aligns text and icon */
+  align-items: center;
+  padding: 12px 20px; /* Adjust padding for a cleaner look */
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar li:hover {
+  background:rgba(255,255,255,.3); /* HCLTech theme hover color */
+  color: #2e8b57; /* HCLTech theme text color on hover */
+}
+
+.sidebar li.active {
+    background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%) 0% 0% repeat rgba(0, 0, 0, 0);
+  color: #fff; /* White text for active state */
+}
+
+.chevron {
+  font-size: 1em; /* Chevron size */
+  margin-left: auto; /* Push chevron to the right */
+  transition: transform 0.3s; /* Add transition for animations */
+}
+
+.sidebar li:hover .chevron {
+  transform: translateX(5px); /* Move chevron on hover */
 }
