@@ -37,7 +37,7 @@ const MainContent = () => {
 
   return (
     <div className={styles.mainContent}>
-      {Array.isArray(contentData) && contentData.length > 0 ? ( // Check if contentData is not empty
+      {Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
             <div
@@ -46,7 +46,7 @@ const MainContent = () => {
             >
               {item.question}
               <FontAwesomeIcon
-                icon={faChevronDown}
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
                 className={styles.chevronIcon}
               />
             </div>
@@ -82,3 +82,41 @@ const MainContent = () => {
 };
 
 export default MainContent;
+
+
+/* MainContent.module.css */
+.mainContent {
+  padding: 20px;
+}
+
+.questionBlock {
+  margin-bottom: 10px;
+}
+
+.question {
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+}
+
+.answerBlock {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.gridAnswer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.gridItem {
+  background-color: #fff;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
