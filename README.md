@@ -63,22 +63,22 @@ const MainContent = () => {
               className={styles.chevronIcon}
             />
           </div>
-          {/* Display multi-layout for the first question */}
+          {/* Display grid layout for the first question */}
           {openQuestion === 0 ? (
-            <div className={styles.multiLayoutAnswer}>
-              <div className={styles.answerSection}>
+            <div className={styles.gridAnswer}>
+              <div className={styles.gridItem}>
                 <h3>Textual Response</h3>
                 <p>{contentData[0].answer.textual}</p>
               </div>
-              <div className={styles.answerSection}>
+              <div className={styles.gridItem}>
                 <h3>Citizen Experience</h3>
                 <p>{contentData[0].answer.citizenExperience}</p>
               </div>
-              <div className={styles.answerSection}>
+              <div className={styles.gridItem}>
                 <h3>Factual Info</h3>
                 <p>{contentData[0].answer.factualInfo}</p>
               </div>
-              <div className={styles.answerSection}>
+              <div className={styles.gridItem}>
                 <h3>Contextual</h3>
                 <p>{contentData[0].answer.contextual}</p>
               </div>
@@ -95,6 +95,7 @@ const MainContent = () => {
 };
 
 export default MainContent;
+
 
 
 .mainContent {
@@ -134,28 +135,39 @@ export default MainContent;
   transition: transform 0.3s ease;
 }
 
-/* Styling for the multi-layout sections */
-.multiLayoutAnswer {
-  padding: 20px;
+/* Grid styling for the first question */
+.gridAnswer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
   background-color: #f8f9fa;
+  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.answerSection {
-  margin-bottom: 20px;
+.gridItem {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.answerSection h3 {
+.gridItem:hover {
+  transform: translateY(-5px);
+}
+
+.gridItem h3 {
   font-size: 1.2em;
-  color: #333;
   margin-bottom: 10px;
+  color: #333;
 }
 
-.answerSection p {
+.gridItem p {
   font-size: 1em;
-  line-height: 1.6;
   color: #555;
+  line-height: 1.6;
 }
 
 .answer {
@@ -164,15 +176,4 @@ export default MainContent;
   font-size: 1em;
   line-height: 1.6;
   color: #555;
-}
-
-@keyframes slideDown {
-  0% {
-    max-height: 0;
-    opacity: 0;
-  }
-  100% {
-    max-height: 500px;
-    opacity: 1;
-  }
 }
