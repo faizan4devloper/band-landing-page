@@ -1,199 +1,145 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import ClipLoader from 'react-spinners/ClipLoader'; // Import the spinner
-import styles from './MainContent.module.css';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Personas.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icon
 
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [loading, setLoading] = useState(true); // New loading state
-  const [openQuestion, setOpenQuestion] = useState(0); // Default first question open
-  const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true, // Textual Response open by default
-    citizenExperience: false,
-    factualInfo: false,
-    contextual: false,
-  });
+const personas = [
+  {
+    title: 'Education',
+    description: 'Streamlined Academic Pathfinding: Elevating your experience from disjointed information to directed guidance in placements, appeals, and transfers.',
+    themeColor: '#d0e2ff', // Soft blue to match the gradient
+    route: '/education',
+  },
+  {
+    title: 'Job',
+    description: 'Find job opportunities and career development tools.',
+    themeColor: '#cce1ff', // Slightly lighter shade of blue
+    route: '/job',
+  },
+  {
+    title: 'Health',
+    description: 'Manage health records and access health services.',
+    themeColor: '#e6e0ff', // Lavender to match the purple tone in the gradient
+    route: '/health',
+  },
+];
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        'dummy',
-        {
-          question:
-            'what are the average class sizes and student-teacher ratios in the local schools react?',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
 
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
+const Personas = () => {
+  const navigate = useNavigate();
+  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
 
-      const formattedData = [
-        {
-          question:
-            'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: {
-            textualResponse: llmAnswer || 'No Answer Available',
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-      ];
-
-      setContentData(formattedData);
-      setLoading(false); // Set loading to false after data is fetched
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setLoading(false); // Set loading to false in case of error
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the question if clicked again
-    } else {
-      setOpenQuestion(index); // Open the new question
-      // Expand only textualResponse for the new question
-      setOpenGridItems({
-        textualResponse: true, // Default expand Textual Response
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
-  };
-
-  const toggleGridItem = (section) => {
-    setOpenGridItems((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
+  const handleClick = (route) => {
+    navigate(route);
   };
 
   return (
-    <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          {/* Spinner while data is loading */}
-          <ClipLoader color="#36d7b7" loading={loading} size={50} />
-        </div>
-      ) : Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
+    <div className={styles.Personas}>
+      <h1>Your Personas</h1>
+
+      <div className={styles.personaCards}>
+        {personas.map((persona, index) => (
+          <div
+            key={index}
+            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
+            style={{ backgroundColor: persona.themeColor }}
+            onClick={() => handleClick(persona.route)}
+          >
+            <h2 className={styles.cardHead}>{persona.title}</h2>
+            <p className={styles.description}>{persona.description}</p>
+            <div className={styles.rightIcon}>
+              <FontAwesomeIcon icon={faArrowRight} />
             </div>
-            {openQuestion === index && (
-              <div className={styles.gridAnswer}>
-                {/* Textual Response expanded by default */}
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse
-                      ? styles.expanded
-                      : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('textualResponse')}
-                >
-                  <h3>Textual Response</h3>
-                  <FontAwesomeIcon
-                    icon={
-                      openGridItems.textualResponse
-                        ? faCaretUp
-                        : faCaretDown
-                    }
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.textualResponse && (
-                    <p>{item.answer.textualResponse}</p>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience
-                      ? styles.expanded
-                      : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('citizenExperience')}
-                >
-                  <h3>Citizen Experience</h3>
-                  <FontAwesomeIcon
-                    icon={
-                      openGridItems.citizenExperience
-                        ? faCaretUp
-                        : faCaretDown
-                    }
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.citizenExperience && (
-                    <p>{item.answer.citizenExperience}</p>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo
-                      ? styles.expanded
-                      : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('factualInfo')}
-                >
-                  <h3>Factual Info</h3>
-                  <FontAwesomeIcon
-                    icon={
-                      openGridItems.factualInfo ? faCaretUp : faCaretDown
-                    }
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.factualInfo && (
-                    <p>{item.answer.factualInfo}</p>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual
-                      ? styles.expanded
-                      : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('contextual')}
-                >
-                  <h3>Contextual</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.contextual && (
-                    <p>{item.answer.contextual}</p>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
-        ))
-      ) : (
-        <div>No data available</div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };
 
-export default MainContent;
+export default Personas;
+
+
+
+.Personas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 1); /* Keeping white background */
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: rgb(95, 30, 193); /* Using purple from the gradient */
+  margin-bottom: 2rem;
+}
+
+.personaCards {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  position: relative;
+}
+
+.personaCard {
+  width: 240px;
+  padding: 2rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  background-color: #f2f2f2; /* Updated based on persona theme */
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+}
+
+.personaCard:hover {
+  transform: translateY(-8px);
+  background-color: rgb(95, 30, 193); /* Consistent hover with header's color */
+  color: white;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+.personaCard h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333; /* Visible in normal state */
+}
+
+.personaCard .description {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  color: #555;
+}
+
+.personaCard:hover .description, .cardHead {
+  opacity: 1;
+  transform: translateY(0);
+  color: white;
+}
+
+.rightIcon {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  color: #888;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.personaCard:hover .rightIcon {
+  opacity: 1;
+  color: #fff;
+  transform: translateX(5px); /* Slide in effect */
+}
