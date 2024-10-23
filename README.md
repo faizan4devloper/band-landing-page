@@ -10,7 +10,7 @@ const MainContent = () => {
 
   const fetchData = async () => {
     try {
-      const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', {
+      const response = await axios.post('dummy', {
         question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
       }, {
         headers: {
@@ -21,10 +21,14 @@ const MainContent = () => {
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
 
+      // Assuming different response types
       const formattedData = [
         {
           question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: llmAnswer || 'No Answer Available'
+          textualResponse: llmAnswer || 'No textual response available',
+          citizenExperience: 'This is a citizen experience related to the question',
+          factualInfo: 'This is factual information about the question',
+          contextualInfo: 'This is contextual information about the question'
         }
       ];
 
@@ -57,9 +61,24 @@ const MainContent = () => {
                 className={styles.chevronIcon}
               />
             </div>
-            {openQuestion === index && ( // Show answer only for the open question
-              <div className={styles.answer}>
-                <p>{item.answer}</p>
+            {openQuestion === index && (
+              <div className={styles.gridAnswer}>
+                <div className={styles.gridItem}>
+                  <h3>Textual Response</h3>
+                  <p>{item.textualResponse}</p>
+                </div>
+                <div className={styles.gridItem}>
+                  <h3>Citizen Experience</h3>
+                  <p>{item.citizenExperience}</p>
+                </div>
+                <div className={styles.gridItem}>
+                  <h3>Factual Info</h3>
+                  <p>{item.factualInfo}</p>
+                </div>
+                <div className={styles.gridItem}>
+                  <h3>Contextual Info</h3>
+                  <p>{item.contextualInfo}</p>
+                </div>
               </div>
             )}
           </div>
@@ -85,8 +104,8 @@ export default MainContent;
   width: 800px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex; /* Use flexbox to manage layout */
-  flex-direction: column; /* Stack items vertically */
+  display: flex;
+  flex-direction: column;
 }
 
 .questionBlock {
@@ -95,7 +114,7 @@ export default MainContent;
   border-radius: 8px;
   background-color: #fff;
   transition: background-color 0.3s ease;
-  overflow: hidden; /* Prevent content overflow */
+  overflow: hidden;
 }
 
 .questionBlock:hover {
@@ -103,8 +122,8 @@ export default MainContent;
 }
 
 .question {
-  font-size: 1.2em; /* Increased font size for better readability */
-  padding: 15px; /* Adjusted padding */
+  font-size: 1.2em;
+  padding: 15px;
   cursor: pointer;
   color: #333;
   display: flex;
@@ -116,14 +135,6 @@ export default MainContent;
   font-size: 1em;
   color: #888;
   transition: transform 0.3s ease;
-}
-
-.answer {
-  padding: 20px; /* Increased padding for answer block */
-  background-color: #f8f9fa; /* Light background for answer */
-  font-size: 1em; /* Consistent font size */
-  line-height: 1.6;
-  color: #555;
 }
 
 .gridAnswer {
@@ -142,8 +153,8 @@ export default MainContent;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease;
-  max-height: 250px; /* Fixed height to limit long content */
-  overflow-y: auto; /* Enable scrolling for overflow content */
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .gridItem:hover {
@@ -151,18 +162,17 @@ export default MainContent;
 }
 
 .gridItem h3 {
-  font-size: 1.2em; /* Keep consistent font size */
+  font-size: 1.2em;
   margin-bottom: 10px;
   color: #333;
 }
 
 .gridItem p {
-  font-size: 1em; /* Keep consistent font size */
+  font-size: 1em;
   color: #555;
   line-height: 1.6;
 }
 
-/* Optional: Add a subtle scrollbar style for better UI */
 .gridItem::-webkit-scrollbar {
   width: 8px;
 }
@@ -181,4 +191,3 @@ export default MainContent;
 .gridItem::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
-
