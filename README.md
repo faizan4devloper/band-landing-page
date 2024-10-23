@@ -1,44 +1,57 @@
-API : https://dummy
-payload : 
-{
-"question": "what are the averages?"
-}
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
-const contentData = [
-  {
-    question: 'What is the best way to start learning new skills?',
-    answer: {
-      textual: 'Start with identifying your interests, then find online courses, books, or mentors in that field.',
-      citizenExperience: 'Many citizens have shared success stories after using online platforms like Coursera, Udemy, and LinkedIn Learning.',
-      factualInfo: 'According to research, individuals who continue learning new skills are 60% more likely to stay relevant in their jobs.',
-      contextual: 'In the digital age, learning has become a continuous process that is easily accessible and adaptable to personal needs. ',
-    }
-  },
-  {
-    question: 'How can I find job opportunities?',
-    answer: 'Use job search platforms, attend career fairs, and network with professionals in your field.',
-  },
-  {
-    question: 'How can I manage my health records efficiently?',
-    answer: 'You can use digital health apps or online portals provided by your healthcare provider.',
-  },
-  {
-    question: 'What are the latest trends in technology?',
-    answer: 'AI, blockchain, and quantum computing are currently revolutionizing the tech industry.',
-  },
-];
-
 const MainContent = () => {
+  const [contentData, setContentData] = useState([]);
   const [openQuestion, setOpenQuestion] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Function to fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://dummy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: 'what are the averages?',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      setContentData(data);  // Assuming the API returns the array of questions and answers
+      setLoading(false);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
+  // Fetch data when the component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const toggleAnswer = (index) => {
     setOpenQuestion(openQuestion === index ? null : index);
   };
+
+  // If loading or error states occur
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className={styles.mainContent}>
@@ -69,24 +82,24 @@ const MainContent = () => {
               className={styles.chevronIcon}
             />
           </div>
-          {/* Display grid layout for the first question */}
-          {openQuestion === 0 ? (
+          {/* Display grid layout for the first question if answer is an object */}
+          {typeof contentData[openQuestion].answer === 'object' ? (
             <div className={styles.gridAnswer}>
               <div className={styles.gridItem}>
                 <h3>Textual Response</h3>
-                <p>{contentData[0].answer.textual}</p>
+                <p>{contentData[openQuestion].answer.textual}</p>
               </div>
               <div className={styles.gridItem}>
                 <h3>Citizen Experience</h3>
-                <p>{contentData[0].answer.citizenExperience}</p>
+                <p>{contentData[openQuestion].answer.citizenExperience}</p>
               </div>
               <div className={styles.gridItem}>
                 <h3>Factual Info</h3>
-                <p>{contentData[0].answer.factualInfo}</p>
+                <p>{contentData[openQuestion].answer.factualInfo}</p>
               </div>
               <div className={styles.gridItem}>
                 <h3>Contextual</h3>
-                <p>{contentData[0].answer.contextual}</p>
+                <p>{contentData[openQuestion].answer.contextual}</p>
               </div>
             </div>
           ) : (
