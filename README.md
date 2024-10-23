@@ -1,59 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import styles from './MainContent.module.css';
 
 const MainContent = () => {
-  const [contentData, setContentData] = useState(null);
-  const [openQuestion, setOpenQuestion] = useState(false);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
 
-  // Fetch data from API using POST request
-  const fetchData = async () => {
+  // Handle form submission and fetch answer from the API
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (input.trim() === '') return;
+
+    // Add user's question to the conversation
+    const userMessage = { type: 'user', text: input };
+    setMessages([...messages, userMessage]);
+
     try {
+      // Send POST request to the API
       const response = await axios.post('dummy', {
-        question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
+        question: input
       }, {
         headers: {
           'Content-Type': 'application/json'
         },
       });
 
+      // Parse the response and extract the answer
       const parsedBody = JSON.parse(response.data.body);
 
-      setContentData(parsedBody);
+      // Add chatbot's response to the conversation
+      const botMessage = {
+        type: 'bot',
+        text: parsedBody.answer?.textual || 'No answer available for this question.'
+      };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
     } catch (error) {
       console.error('Error fetching data:', error);
+      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
-  };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const toggleAnswer = () => {
-    setOpenQuestion(!openQuestion);
+    // Clear input field
+    setInput('');
   };
 
   return (
-    <div>
-      {contentData ? (
-        <div>
-          {/* Question */}
-          <div onClick={toggleAnswer} style={{ cursor: 'pointer', marginBottom: '10px', fontWeight: 'bold' }}>
-            Question: What are the average class sizes and student-teacher ratios in the local schools?
-          </div>
-
-          {/* Answer (shown only when the question is expanded) */}
-          {openQuestion && (
-            <div>
-              <p><strong>Textual Response:</strong> {contentData.answer?.textual || 'No Textual Response Available'}</p>
-              <p><strong>Citizen Experience:</strong> {contentData.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
-              <p><strong>Factual Info:</strong> {contentData.answer?.factualInfo || 'No Factual Info Available'}</p>
-              <p><strong>Contextual:</strong> {contentData.answer?.contextual || 'No Contextual Info Available'}</p>
+    <div className={styles.chatbotContainer}>
+      <div className={styles.chatWindow}>
+        {messages.length > 0 ? (
+          messages.map((message, index) => (
+            <div key={index} className={message.type === 'user' ? styles.userMessage : styles.botMessage}>
+              {message.text}
             </div>
-          )}
-        </div>
-      ) : (
-        <div>No data available</div>
-      )}
+          ))
+        ) : (
+          <div className={styles.emptyChat}>Ask a question to get started!</div>
+        )}
+      </div>
+      <form onSubmit={handleSubmit} className={styles.inputForm}>
+        <input
+          type="text"
+          className={styles.inputField}
+          placeholder="Type your question..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+        <button type="submit" className={styles.sendButton}>Send</button>
+      </form>
     </div>
   );
 };
