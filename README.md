@@ -1,81 +1,3 @@
-.gradientText {
-  background: -webkit-gradient(linear, left top, right top, 
-    color-stop(-19.51%, #7abef7), 
-    color-stop(36.51%, #4080f5), 
-    to(#572ac2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
-}
-
-
-
-
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icon
-
-const personas = [
-  {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding: Elevating your experience from disjointed information to directed guidance in placements, appeals, and transfers.',
-    themeColor: '#d0e2ff', // Soft blue to match the gradient
-    route: '/education',
-  },
-  {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#cce1ff', // Slightly lighter shade of blue
-    route: '/job',
-  },
-  {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#e6e0ff', // Lavender to match the purple tone in the gradient
-    route: '/health',
-  },
-];
-
-
-const Personas = () => {
-  const navigate = useNavigate();
-  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
-
-  const handleClick = (route) => {
-    navigate(route);
-  };
-
-  return (
-    <div className={styles.Personas}>
-      <h1>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
-          <div
-            key={index}
-            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
-          >
-            <h2 className={styles.cardHead}>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Personas;
-
-
-
 .Personas {
   display: flex;
   flex-direction: column;
@@ -85,10 +7,15 @@ export default Personas;
   background-color: rgba(255, 255, 255, 1); /* Keeping white background */
 }
 
-h1 {
-  font-size: 2.5rem;
-  color: rgb(95, 30, 193); /* Using purple from the gradient */
-  margin-bottom: 2rem;
+.gradientText {
+  background: -webkit-gradient(linear, left top, right top, 
+    color-stop(-19.51%, #7abef7), 
+    color-stop(36.51%, #4080f5), 
+    to(#572ac2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
 }
 
 .personaCards {
@@ -113,7 +40,7 @@ h1 {
 
 .personaCard:hover {
   transform: translateY(-8px);
-  background-color: rgb(95, 30, 193); /* Consistent hover with header's color */
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
   color: white;
   box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
 }
@@ -121,7 +48,15 @@ h1 {
 .personaCard h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  color: #333; /* Visible in normal state */
+background: -webkit-gradient(linear, left top, right top, 
+    color-stop(-19.51%, #7abef7), 
+    color-stop(36.51%, #4080f5), 
+    to(#572ac2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
+  
 }
 
 .personaCard .description {
@@ -157,3 +92,4 @@ h1 {
   color: #fff;
   transform: translateX(5px); /* Slide in effect */
 }
+
