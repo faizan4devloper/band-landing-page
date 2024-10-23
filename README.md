@@ -1,104 +1,185 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faWandSparkles, faTrashAlt, faComments, faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faUser } from '@fortawesome/free-regular-svg-icons';
+import { BeatLoader } from 'react-spinners';
+import styles from './Chatbot.module.css';
+import BotProfile from "./chatbotprofile.jpg";
 
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(null);
+const Chatbot = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [showClearChat, setShowClearChat] = useState(false);
+  
+  const messagesEndRef = useRef(null);
 
-  // New message to send in the query parameter
-  // const newMessage = {
-  //     question : 'what are the average class sizes and student-teacher ratios in the local schools?',
-  // };
-
-  // Fetch data from API using GET request
-  const fetchData = async () => {
-    try {
-      // Sending the question as a query parameter
-      const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', { question: 'what are the average class sizes and student-teacher ratios in the local schoolsssss?' }, {
-        headers: {
-
-          'Content-Type': 'application/json'
-
-        },
-      });
-      setContentData(response.data);
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      setMessages([{ text: 'Hello! How can I assist you today?', sender: 'bot' }]);
     }
-    catch (error) {
-      console.error('Error fetching data:', error);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  const toggleChatbot = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const minimizeChatbot = () => {
+    setIsOpen(false);
+  };
+
+  const sendMessage = async () => {
+    if (input.trim() === '') return;
+
+    const userMessage = { text: input, sender: 'user' };
+    setMessages([...messages, userMessage]);
+    setInput('');
+    setLoading(true);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: '', sender: 'bot', loading: true },
+    ]);
+
+    try {
+      const response = await axios.post('dummy', // Replace with your actual endpoint
+        { query: input },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const botMessage = { text: response.data.text, sender: 'bot' };
+
+      setMessages((prevMessages) =>
+        prevMessages.map((msg, index) =>
+          index === prevMessages.length - 1 ? botMessage : msg
+        )
+      );
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot' },
+      ]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const handleClearChat = () => {
+    setMessages([]);
+    setShowClearChat(false);
+  };
 
-  const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
+  const linkify = (text) => {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return text.split(urlPattern).map((part, index) =>
+      urlPattern.test(part) ? (
+        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
+          {part}
+        </a>
+      ) : (
+        part
+      )
+    );
   };
 
   return (
-    <div className={styles.mainContent}>
-      {Array.isArray(contentData) && openQuestion === null ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
-              <FontAwesomeIcon
-                icon={faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-          </div>
-        ))
-      ) : (
-        <div>No data available</div> // Handling case where contentData is not an array
-      )}
-      {openQuestion !== null && (
-        <div className={styles.questionBlock}>
-          <div
-            className={styles.question}
-            onClick={() => toggleAnswer(openQuestion)}
-          >
-            {contentData[openQuestion]?.question}
-            <FontAwesomeIcon
-              icon={faChevronUp}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openQuestion === 0 ? (
-            <div className={styles.gridAnswer}>
-              <div className={styles.gridItem}>
-                <h3>Textual Response</h3>
-                <p>{contentData[0]?.answer?.textual || 'No Textual Response Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Citizen Experience</h3>
-                <p>{contentData[0]?.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Factual Info</h3>
-                <p>{contentData[0]?.answer?.factualInfo || 'No Factual Info Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Contextual</h3>
-                <p>{contentData[0]?.answer?.contextual || 'No Contextual Info Available'}</p>
+    <>
+      <div className={styles.chatbotIcon} onClick={toggleChatbot} title="AI Ninja Chat">
+        <FontAwesomeIcon icon={faComments} />
+      </div>
+
+      {isOpen && (
+        <div className={`${styles.chatbotContainer} ${isOpen ? styles.open : ''}`}>
+          <div className={styles.chatbotHeader}>
+            <div className={styles.botProfile}>
+              <img src={BotProfile} className={styles.botImage} />
+              <div className={styles.botInfo}>
+                <div className={styles.botName}>AI Ninja</div>
+                <div className={styles.botStatus}>
+                  <span className={styles.onlineDot}></span> Online
+                </div>
               </div>
             </div>
-          ) : (
-            <div className={styles.answer}>
-              {contentData[openQuestion]?.answer || 'No answer available'}
+            <div className={styles.headerActions}>
+              <button onClick={() => setShowClearChat(true)} className={styles.clearChatButton} title="Clear Chat">
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </button>
+              <button onClick={minimizeChatbot} className={styles.minimizeButton} title="Minimize Chat">
+                <FontAwesomeIcon icon={faChevronDown} onClick={minimizeChatbot}/>
+              </button>
+            </div>
+          </div>
+
+          <div className={styles.chatbotMessages}>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={
+                  message.sender === 'user' ? styles.userMessage : styles.botMessage
+                }
+              >
+                <FontAwesomeIcon
+                  icon={message.sender === 'user' ? faUser : faWandSparkles}
+                  className={styles.icon}
+                />
+                <div className={styles.messageText}>
+                  {message.loading ? (
+                    <BeatLoader color="#5f1ec1" size={8} />
+                  ) : (
+                    linkify(message.text)
+                  )}
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {showClearChat && (
+            <div className={styles.clearChatWindow}>
+              <p>Are you sure you want to clear the chat?</p>
+              <button onClick={handleClearChat} className={styles.confirmButton}>
+                Yes, Clear Chat
+              </button>
+              <button onClick={() => setShowClearChat(false)} className={styles.cancelButton}>
+                Cancel
+              </button>
             </div>
           )}
+
+          <div className={styles.chatbotInput}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  sendMessage();
+                }
+              }}
+              placeholder="Type your message and hit Enter..."
+              disabled={loading}
+            />
+            <button onClick={sendMessage} disabled={loading} className={styles.sendButton} title="Send">
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
-export default MainContent;
+export default Chatbot;
