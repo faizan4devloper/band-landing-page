@@ -50,48 +50,32 @@ const MainContent = () => {
                 className={styles.chevronIcon}
               />
             </div>
+            {openQuestion === index && ( // Show answer only for the open question
+              <div className={styles.answerBlock}>
+                <div className={styles.gridAnswer}>
+                  <div className={styles.gridItem}>
+                    <h3>Textual Response</h3>
+                    <p>{item.answer?.textual || 'No Textual Response Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Citizen Experience</h3>
+                    <p>{item.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Factual Info</h3>
+                    <p>{item.answer?.factualInfo || 'No Factual Info Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Contextual</h3>
+                    <p>{item.answer?.contextual || 'No Contextual Info Available'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         ))
       ) : (
         <div>No data available</div> // Handling case where contentData is empty
-      )}
-      {openQuestion !== null && contentData[openQuestion] && ( // Ensure contentData exists for openQuestion
-        <div className={styles.questionBlock}>
-          <div
-            className={styles.question}
-            onClick={() => toggleAnswer(openQuestion)}
-          >
-            {contentData[openQuestion]?.question}
-            <FontAwesomeIcon
-              icon={faChevronUp}
-              className={styles.chevronIcon}
-            />
-          </div>
-          {openQuestion === 0 ? ( // Check for specific answer structure
-            <div className={styles.gridAnswer}>
-              <div className={styles.gridItem}>
-                <h3>Textual Response</h3>
-                <p>{contentData[0]?.answer?.textual || 'No Textual Response Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Citizen Experience</h3>
-                <p>{contentData[0]?.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Factual Info</h3>
-                <p>{contentData[0]?.answer?.factualInfo || 'No Factual Info Available'}</p>
-              </div>
-              <div className={styles.gridItem}>
-                <h3>Contextual</h3>
-                <p>{contentData[0]?.answer?.contextual || 'No Contextual Info Available'}</p>
-              </div>
-            </div>
-          ) : (
-            <div className={styles.answer}>
-              {contentData[openQuestion]?.answer || 'No answer available'}
-            </div>
-          )}
-        </div>
       )}
     </div>
   );
