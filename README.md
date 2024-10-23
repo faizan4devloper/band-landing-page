@@ -1,99 +1,113 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faUser } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './MainContent.module.css';
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
 
-const MainContent = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
+}
 
-  // Scroll to the end of the messages
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+.messages::-webkit-scrollbar {
+  width: 8px;
+}
 
-  // Function to send the user's question to the API
-  const sendMessage = async () => {
-    if (input.trim() === '') return;
+.messages::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 4px;
+}
 
-    const userMessage = { text: input, sender: 'user' };
-    setMessages([...messages, userMessage]);
-    setInput('');
-    setLoading(true);
+.userMessage,
+.botMessage {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  max-width: 70%;
+}
 
-    // Bot loading placeholder
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: '', sender: 'bot', loading: true },
-    ]);
+.userMessage {
+  align-self: flex-end;
+  background-color: #4a90e2;
+  color: white;
+  border-radius: 10px 10px 0 10px;
+}
 
-    try {
-      const response = await axios.post('dummy', { question: input }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+.botMessage {
+  align-self: flex-start;
+  background-color: #e0e0e0;
+  color: #333;
+  border-radius: 10px 10px 10px 0;
+}
 
-      const botMessage = { text: response.data.answer, sender: 'bot' };
+.messageText {
+  padding: 10px 15px;
+  font-size: 1rem;
+}
 
-      // Update the bot message in the chat
-      setMessages((prevMessages) =>
-        prevMessages.map((msg, index) =>
-          index === prevMessages.length - 1 ? botMessage : msg
-        )
-      );
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot' },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
+.icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+  color: #5f1ec1;
+}
 
-  return (
-    <div className={styles.mainContent}>
-      <div className={styles.messages}>
-        {messages.map((message, index) => (
-          <div key={index} className={message.sender === 'user' ? styles.userMessage : styles.botMessage}>
-            <FontAwesomeIcon icon={message.sender === 'user' ? faUser : faWandSparkles} className={styles.icon} />
-            <div className={styles.messageText}>
-              {message.loading ? (
-                <BeatLoader color="#5f1ec1" size={8} />
-              ) : (
-                message.text
-              )}
-            </div>
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
+.inputContainer {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  background-color: #fff;
+}
 
-      <div className={styles.inputContainer}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') sendMessage();
-          }}
-          placeholder="Ask a question..."
-          disabled={loading}
-        />
-        <button onClick={sendMessage} disabled={loading} className={styles.sendButton} title="Send">
-          <FontAwesomeIcon icon={faPaperPlane} />
-        </button>
-      </div>
-    </div>
-  );
-};
+input {
+  flex: 1;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
+  margin-right: 10px;
+  background-color: #f1f1f1;
+}
 
-export default MainContent;
+input:focus {
+  border-color: #5f1ec1;
+}
+
+.sendButton {
+  background-color: #5f1ec1;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.sendButton:hover {
+  background-color: #4a1ba0;
+}
+
+.sendButton:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.sendButton:disabled:hover {
+  background-color: #999;
+}
