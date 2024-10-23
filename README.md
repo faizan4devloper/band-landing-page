@@ -1,9 +1,88 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+
+const MainContent = () => {
+  const [contentData, setContentData] = useState([]);
+  const [openQuestion, setOpenQuestion] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', {
+        question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer;
+
+      const formattedData = [
+        {
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          answer: llmAnswer || 'No Answer Available'
+        }
+      ];
+
+      setContentData(formattedData);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const toggleAnswer = (index) => {
+    setOpenQuestion(openQuestion === index ? null : index);
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {Array.isArray(contentData) && contentData.length > 0 ? (
+        contentData.map((item, index) => (
+          <div key={index} className={styles.questionBlock}>
+            <div
+              className={styles.question}
+              onClick={() => toggleAnswer(index)}
+            >
+              {item.question}
+              <FontAwesomeIcon
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
+            {openQuestion === index && ( // Show answer only for the open question
+              <div className={styles.answer}>
+                <p>{item.answer}</p>
+              </div>
+            )}
+          </div>
+        ))
+      ) : (
+        <div>No data available</div>
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+
 .mainContent {
   flex-grow: 1;
   height: 100vh;
   padding: 35px;
   padding-top: 60px;
   background-color: #f7f9fc;
+  overflow-y: auto;
+  width: 800px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex; /* Use flexbox to manage layout */
@@ -103,81 +182,3 @@
   background-color: #555;
 }
 
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(null);
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.post('dummy', {
-        question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      });
-
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
-
-      const formattedData = [
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: llmAnswer || 'No Answer Available'
-        }
-      ];
-
-      setContentData(formattedData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index);
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && ( // Show answer only for the open question
-              <div className={styles.answer}>
-                <p>{item.answer}</p>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div>No data available</div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
