@@ -1,3 +1,68 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Personas.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icon
+
+const personas = [
+  {
+    title: 'Education',
+    description: 'Streamlined Academic Pathfinding: Elevating your experience from disjointed information to directed guidance in placements, appeals, and transfers.',
+    themeColor: '#e6ebf5', // Soft blue to match the gradient
+    route: '/education',
+  },
+  {
+    title: 'Job',
+    description: 'Find job opportunities and career development tools.',
+    themeColor: '#e6ebf5', // Slightly lighter shade of blue
+    route: '/job',
+  },
+  {
+    title: 'Health',
+    description: 'Manage health records and access health services.',
+    themeColor: '#e6ebf5', // Lavender to match the purple tone in the gradient
+    route: '/health',
+  },
+];
+
+
+const Personas = () => {
+  const navigate = useNavigate();
+  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+
+  const handleClick = (route) => {
+    navigate(route);
+  };
+
+  return (
+    <div className={styles.Personas}>
+      <h1 className={styles.gradientText}>Your Personas</h1>
+
+      <div className={styles.personaCards}>
+        {personas.map((persona, index) => (
+          <div
+            key={index}
+            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
+            style={{ backgroundColor: persona.themeColor }}
+            onClick={() => handleClick(persona.route)}
+          >
+            <h2 className={styles.cardHead}>{persona.title}</h2>
+            <p className={styles.description}>{persona.description}</p>
+            <div className={styles.rightIcon}>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Personas;
+
+
+
+
 .Personas {
   display: flex;
   flex-direction: column;
@@ -60,8 +125,8 @@
 
 /* Change gradient text to white on hover */
 .personaCard:hover h2 {
-  -webkit-background-clip: unset;
-  background-clip: unset;
+  /*-webkit-background-clip: unset;*/
+  /*background-clip: unset;*/
   color: white; /* Change text color to white */
 }
 
