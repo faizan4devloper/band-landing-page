@@ -73,7 +73,7 @@ export default Personas;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 1);
+  background-color: rgba(255, 255, 255, 1); /* Keeping white background */
 }
 
 .gradientText {
@@ -84,7 +84,7 @@ export default Personas;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
+  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
 }
 
 .personaCards {
@@ -96,19 +96,15 @@ export default Personas;
 
 .personaCard {
   width: 240px;
-  height: 300px; /* Fixed height */
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 0.75rem;
   text-align: center;
-  background-color: #f2f2f2;
+  background-color: #f2f2f2; /* Updated based on persona theme */
   box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   overflow: hidden;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Space between icon, title, and description */
 }
 
 .personaCard:hover {
@@ -119,8 +115,8 @@ export default Personas;
 }
 
 .personaCard h2 {
-  font-size: 1.5rem;
-  margin: 0.5rem 0;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
   background: -webkit-gradient(linear, left top, right top, 
     color-stop(-19.51%, #7abef7), 
     color-stop(36.51%, #4080f5), 
@@ -128,63 +124,46 @@ export default Personas;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-fill-color: transparent;
+  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
 }
 
+/* Change gradient text to white on hover */
 .personaCard:hover h2 {
-  color: white;
+  /*-webkit-background-clip: unset;*/
+  /*background-clip: unset;*/
+  color: white; /* Change text color to white */
 }
 
 .personaCard .description {
   font-size: 1rem;
-  margin: 1rem 0;
+  margin-bottom: 1rem;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
   color: #555;
 }
 
-.personaCard:hover .description {
+.personaCard:hover .description, .cardHead {
   opacity: 1;
   transform: translateY(0);
   color: white;
 }
 
-.personaIcon {
-  font-size: 2.5rem;
-  color: #888;
-  transition: color 0.3s ease;
-}
-
-.personaCard:hover .personaIcon {
-  color: white;
-}
-
 .rightIcon {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   position: absolute;
   bottom: 1rem;
-  right: 1.5rem;
+  right: 1rem;
   font-size: 1.5rem;
   color: #888;
-  opacity: 1;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.goText {
-  margin-left: 0.5rem;
   opacity: 0;
-  transform: translateX(-10px);
   transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.personaCard:hover .goText {
-  opacity: 1;
-  transform: translateX(5px);
 }
 
 .personaCard:hover .rightIcon {
-  transform: translateX(5px);
-  color: white;
+  opacity: 1;
+  color: #fff;
+  transform: translateX(5px); /* Slide in effect */
 }
