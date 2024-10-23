@@ -1,7 +1,6 @@
-// Sidebar.js
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons'; // Add chevron icon
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
 
 const topics = [
@@ -22,7 +21,7 @@ const Sidebar = ({ setActiveTopic }) => {
 
   return (
     <div className={styles.sidebar}>
-      <div className={styles.sidebarHeads}>Suggested Topics</div>
+      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
       <ul>
         {topics.map((topic) => (
           <li
@@ -30,7 +29,7 @@ const Sidebar = ({ setActiveTopic }) => {
             className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
             onClick={() => handleClick(topic.id)}
           >
-            <span>{topic.name}</span>
+            <span className={styles.topicName}>{topic.name}</span>
             <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
           </li>
         ))}
@@ -42,15 +41,21 @@ const Sidebar = ({ setActiveTopic }) => {
 export default Sidebar;
 
 
-
-/* Sidebar.module.css */
-
 .sidebar {
   width: 250px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: #333;
   padding: 20px;
   height: 100vh;
+  background: #f7f9fc; /* Light background for contrast */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.sidebarHeads {
+  text-align: center;
+  font-size: 1.5rem; /* Increased size for better visibility */
+  color: #2e8b57; /* HCLTech theme color */
+  margin-bottom: 20px; /* Spacing below header */
 }
 
 .sidebar ul {
@@ -58,38 +63,39 @@ export default Sidebar;
   padding: 0;
 }
 
-.sidebarHeads{
-  text-align: center;
-  font-size: 1rem;
-}
-
-.sidebar li {
+.topic {
   display: flex;
-  justify-content: space-around; /* Aligns text and icon */
+  justify-content: space-between; /* Aligns text and icon */
   align-items: center;
   padding: 12px 20px; /* Adjust padding for a cleaner look */
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 8px; /* More rounded corners for a modern feel */
   margin-bottom: 10px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Added transform transition */
 }
 
-.sidebar li:hover {
-  background:rgba(255,255,255,.3); /* HCLTech theme hover color */
+.topic:hover {
+  background: rgba(255, 255, 255, 0.3); /* HCLTech theme hover color */
   color: #2e8b57; /* HCLTech theme text color on hover */
+  transform: translateY(-2px); /* Slight lift effect on hover */
 }
 
-.sidebar li.active {
-    background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%) 0% 0% repeat rgba(0, 0, 0, 0);
+.active {
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
   color: #fff; /* White text for active state */
 }
 
 .chevron {
-  font-size: 1em; /* Chevron size */
+  font-size: 1.2em; /* Chevron size */
   margin-left: auto; /* Push chevron to the right */
   transition: transform 0.3s; /* Add transition for animations */
 }
 
-.sidebar li:hover .chevron {
+.topic:hover .chevron {
   transform: translateX(5px); /* Move chevron on hover */
+}
+
+/* Optional: Add a transition for active topic change */
+.topic.active {
+  transition: background-color 0.3s ease;
 }
