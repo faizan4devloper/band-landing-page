@@ -1,155 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ChatWindow.css'; // Assuming you have some custom styling
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
-const ChatWindow = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
+const MainContent = () => {
+  const [contentData, setContentData] = useState([]);
+  const [openQuestion, setOpenQuestion] = useState(null);
 
-  const handleSendMessage = async () => {
-    if (input.trim() === "") return;
+  // New message to send in the query parameter
+  // const newMessage = {
+  //     question : 'what are the average class sizes and student-teacher ratios in the local schools?',
+  // };
 
-    // Add user message to the messages array
-    setMessages(prevMessages => [
-      ...prevMessages,
-      { text: input, isBot: false }
-    ]);
-
-    setInput("");
-    setLoading(true);
-
+  // Fetch data from API using GET request
+  const fetchData = async () => {
     try {
-      const response = await axios.post('your-lambda-url', { message: input });
-      
-      // Debug: Log response data
-      console.log(response.data);
+      // Sending the question as a query parameter
+      const response = await axios.post('dummy', { question: 'what are the average class sizes and student-teacher ratios in the local schools?' }, {
+        headers: {
 
-      // Check for valid bot answer
-      if (response.data && response.data.answer) {
-        setMessages(prevMessages => [
-          ...prevMessages,
-          { text: response.data.answer, isBot: true }
-        ]);
-      } else {
-        // Handle if the response doesn't contain an answer
-        setMessages(prevMessages => [
-          ...prevMessages,
-          { text: "I'm sorry, I didn't understand that.", isBot: true }
-        ]);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { text: "An error occurred. Please try again.", isBot: true }
-      ]);
-    } finally {
-      setLoading(false);
+          'Content-Type': 'application/json'
+
+        },
+      });
+      setContentData(response.data);
+    }
+    catch (error) {
+      console.error('Error fetching data:', error);
     }
   };
 
-  const handleInputChange = (e) => {
-    setInput(e.target.value);
-  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
+  const toggleAnswer = (index) => {
+    setOpenQuestion(openQuestion === index ? null : index);
   };
 
   return (
-    <div className="chat-window">
-      <div className="chat-window-messages">
-        {messages.map((msg, index) => (
-          <div 
-            key={index} 
-            className={`chat-message ${msg.isBot ? 'bot-message' : 'user-message'}`}
-          >
-            {msg.text}
+    <div className={styles.mainContent}>
+      {Array.isArray(contentData) && openQuestion === null ? (
+        contentData.map((item, index) => (
+          <div key={index} className={styles.questionBlock}>
+            <div
+              className={styles.question}
+              onClick={() => toggleAnswer(index)}
+            >
+              {item.question}
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
           </div>
-        ))}
-        {loading && <div className="chat-message bot-message">Bot is typing...</div>}
-      </div>
-      <div className="chat-window-input">
-        <input
-          type="text"
-          value={input}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          placeholder="Type your message..."
-        />
-        <button onClick={handleSendMessage}>Send</button>
-      </div>
+        ))
+      ) : (
+        <div>No data available</div> // Handling case where contentData is not an array
+      )}
+      {openQuestion !== null && (
+        <div className={styles.questionBlock}>
+          <div
+            className={styles.question}
+            onClick={() => toggleAnswer(openQuestion)}
+          >
+            {contentData[openQuestion]?.question}
+            <FontAwesomeIcon
+              icon={faChevronUp}
+              className={styles.chevronIcon}
+            />
+          </div>
+          {openQuestion === 0 ? (
+            <div className={styles.gridAnswer}>
+              <div className={styles.gridItem}>
+                <h3>Textual Response</h3>
+                <p>{contentData[0]?.answer?.textual || 'No Textual Response Available'}</p>
+              </div>
+              <div className={styles.gridItem}>
+                <h3>Citizen Experience</h3>
+                <p>{contentData[0]?.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
+              </div>
+              <div className={styles.gridItem}>
+                <h3>Factual Info</h3>
+                <p>{contentData[0]?.answer?.factualInfo || 'No Factual Info Available'}</p>
+              </div>
+              <div className={styles.gridItem}>
+                <h3>Contextual</h3>
+                <p>{contentData[0]?.answer?.contextual || 'No Contextual Info Available'}</p>
+              </div>
+            </div>
+          ) : (
+            <div className={styles.answer}>
+              {contentData[openQuestion]?.answer || 'No answer available'}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-export default ChatWindow;
-
-
-.chat-window {
-  width: 400px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.chat-window-messages {
-  flex: 1;
-  padding: 10px;
-  background-color: #f5f5f5;
-  overflow-y: auto;
-}
-
-.chat-message {
-  margin: 10px 0;
-  padding: 8px 12px;
-  border-radius: 20px;
-  max-width: 70%;
-  word-wrap: break-word;
-}
-
-.user-message {
-  background-color: #0084ff;
-  color: white;
-  align-self: flex-end;
-}
-
-.bot-message {
-  background-color: #e0e0e0;
-  color: black;
-  align-self: flex-start;
-}
-
-.chat-window-input {
-  display: flex;
-  padding: 10px;
-  background-color: #fff;
-  border-top: 1px solid #ddd;
-}
-
-.chat-window-input input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-
-.chat-window-input button {
-  padding: 8px 15px;
-  background-color: #0084ff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.chat-window-input button:hover {
-  background-color: #006bb3;
-}
+export default MainContent;
