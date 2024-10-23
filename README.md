@@ -1,80 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
+  const [contentData, setContentData] = useState([]);
+  const [openQuestion, setOpenQuestion] = useState(null);
 
-  // Handle form submission to send a question
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    // Add user's question to the conversation
-    const userMessage = { type: 'user', text: input };
-    setMessages([...messages, userMessage]);
-
+  // Fetch data from API using POST request
+  const fetchData = async () => {
     try {
-      // Send POST request to the API
+      // Sending the question as a query parameter
       const response = await axios.post('dummy', {
-        question: input
+        question: 'what are the average class sizes and student-teacher ratios in the local schools react?'
       }, {
         headers: {
           'Content-Type': 'application/json'
         },
       });
+      
+      console.log('API Response:', response.data); // Log the API response
 
-      console.log('Full API Response:', response);
-
-      // Parse the stringified body to extract answer and source
+      // Parse the response body if it is a JSON string
       const parsedBody = JSON.parse(response.data.body);
 
-      // Extract answer and source
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
-
-      // Add chatbot's response to the conversation
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-
+      // Assuming 'parsedBody' contains the necessary answer structure
+      setContentData([parsedBody]); // Wrapping in an array to fit map logic
     } catch (error) {
       console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     }
+  };
 
-    // Clear input field
-    setInput('');
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const toggleAnswer = (index) => {
+    setOpenQuestion(openQuestion === index ? null : index);
   };
 
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.chatWindow}>
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-          >
-            {message.text}
+    <div className={styles.mainContent}>
+      {Array.isArray(contentData) && contentData.length > 0 ? ( // Check if contentData is not empty
+        contentData.map((item, index) => (
+          <div key={index} className={styles.questionBlock}>
+            <div
+              className={styles.question}
+              onClick={() => toggleAnswer(index)}
+            >
+              {/* Example: If the API doesn't return a 'question', adjust the key accordingly */}
+              <span>Question {index + 1}</span>
+              <FontAwesomeIcon
+                icon={faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
+            {openQuestion === index && ( // Show answer only for the open question
+              <div className={styles.answerBlock}>
+                <div className={styles.gridAnswer}>
+                  <div className={styles.gridItem}>
+                    <h3>Textual Response</h3>
+                    <p>{item.answer?.textual || 'No Textual Response Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Citizen Experience</h3>
+                    <p>{item.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Factual Info</h3>
+                    <p>{item.answer?.factualInfo || 'No Factual Info Available'}</p>
+                  </div>
+                  <div className={styles.gridItem}>
+                    <h3>Contextual</h3>
+                    <p>{item.answer?.contextual || 'No Contextual Info Available'}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        ))}
-      </div>
-      <form onSubmit={handleSubmit} className={styles.inputForm}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question..."
-          className={styles.inputField}
-        />
-        <button type="submit" className={styles.submitButton}>Send</button>
-      </form>
+        ))
+      ) : (
+        <div>No data available</div> // Handling case where contentData is empty
+      )}
     </div>
   );
 };
 
 export default MainContent;
+
+
+
