@@ -1,113 +1,180 @@
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100vh;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
+import React, { useState } from 'react';
+import axios from 'axios';
+import './ChatWindow.css'; // Assuming you have some custom styling
 
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  padding-right: 10px;
-  margin-bottom: 20px;
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 transparent;
-}
+const ChatWindow = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
-.messages::-webkit-scrollbar {
-  width: 8px;
-}
+  const handleSendMessage = async () => {
+    if (input.trim() === "") return;
 
-.messages::-webkit-scrollbar-thumb {
-  background-color: #c1c1c1;
-  border-radius: 4px;
-}
+    // Add user message to the messages array
+    setMessages(prevMessages => [
+      ...prevMessages,
+      { text: input, isBot: false }
+    ]);
 
-.userMessage,
-.botMessage {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 15px;
-  max-width: 70%;
-}
+    setInput("");
+    setLoading(true);
 
-.userMessage {
-  align-self: flex-end;
-  background-color: #4a90e2;
-  color: white;
-  border-radius: 10px 10px 0 10px;
-}
+    try {
+      const response = await axios.post('your-lambda-url', { message: input });
+      
+      // Debug: Log response data
+      console.log(response.data);
 
-.botMessage {
-  align-self: flex-start;
-  background-color: #e0e0e0;
-  color: #333;
-  border-radius: 10px 10px 10px 0;
-}
+      // Check for valid bot answer
+      if (response.data && response.data.answer) {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: response.data.answer, isBot: true }
+        ]);
+      } else {
+        // Handle if the response doesn't contain an answer
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: "I'm sorry, I didn't understand that.", isBot: true }
+        ]);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { text: "An error occurred. Please try again.", isBot: true }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-.messageText {
-  padding: 10px 15px;
-  font-size: 1rem;
-}
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
 
-.icon {
-  margin-right: 10px;
-  font-size: 1.2rem;
-  color: #5f1ec1;
-}
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
 
-.inputContainer {
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-top: 1px solid #ccc;
-  background-color: #fff;
-}
+  return (
+    <div className="chat-window">
+      <div className="chat-window-messages">
+        {messages.map((msg, index) => (
+          <div 
+            key={index} 
+            className={`chat-message ${msg.isBot ? 'bot-message' : 'user-message'}`}
+          >
+            {msg.text}
+          </div>
+        ))}
+        {loading && <div className="chat-message bot-message">Bot is typing...</div>}
+      </div>
+      <div className="chat-window-input">
+        <input
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
+    </div>
+  );
+};
 
-input {
-  flex: 1;
-  padding: 10px;
-  font-size: 1rem;
-  border-radius: 25px;
-  border: 1px solid #ccc;
-  outline: none;
-  margin-right: 10px;
-  background-color: #f1f1f1;
-}
+export default ChatWindow;
 
-input:focus {
-  border-color: #5f1ec1;
-}
 
-.sendButton {
-  background-color: #5f1ec1;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-}
+import React, { useState } from 'react';
+import axios from 'axios';
+import './ChatWindow.css'; // Assuming you have some custom styling
 
-.sendButton:hover {
-  background-color: #4a1ba0;
-}
+const ChatWindow = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
-.sendButton:disabled {
-  background-color: #999;
-  cursor: not-allowed;
-}
+  const handleSendMessage = async () => {
+    if (input.trim() === "") return;
 
-.sendButton:disabled:hover {
-  background-color: #999;
-}
+    // Add user message to the messages array
+    setMessages(prevMessages => [
+      ...prevMessages,
+      { text: input, isBot: false }
+    ]);
+
+    setInput("");
+    setLoading(true);
+
+    try {
+      const response = await axios.post('your-lambda-url', { message: input });
+      
+      // Debug: Log response data
+      console.log(response.data);
+
+      // Check for valid bot answer
+      if (response.data && response.data.answer) {
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: response.data.answer, isBot: true }
+        ]);
+      } else {
+        // Handle if the response doesn't contain an answer
+        setMessages(prevMessages => [
+          ...prevMessages,
+          { text: "I'm sorry, I didn't understand that.", isBot: true }
+        ]);
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { text: "An error occurred. Please try again.", isBot: true }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
+  };
+
+  return (
+    <div className="chat-window">
+      <div className="chat-window-messages">
+        {messages.map((msg, index) => (
+          <div 
+            key={index} 
+            className={`chat-message ${msg.isBot ? 'bot-message' : 'user-message'}`}
+          >
+            {msg.text}
+          </div>
+        ))}
+        {loading && <div className="chat-message bot-message">Bot is typing...</div>}
+      </div>
+      <div className="chat-window-input">
+        <input
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your message..."
+        />
+        <button onClick={handleSendMessage}>Send</button>
+      </div>
+    </div>
+  );
+};
+
+export default ChatWindow;
