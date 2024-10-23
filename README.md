@@ -6,8 +6,8 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
-  const [openQuestion, setOpenQuestion] = useState(0); // Default to first question open
-  const [openGridItems, setOpenGridItems] = useState({}); // State to track open grid items
+  const [openQuestion, setOpenQuestion] = useState(0); // Default first question open
+  const [openGridItems, setOpenGridItems] = useState({ textualResponse: true }); // Textual Response open by default
 
   const fetchData = async () => {
     try {
@@ -72,9 +72,10 @@ const MainContent = () => {
             </div>
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
+                {/* Textual Response expanded by default */}
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? '' : styles.collapsed
+                    openGridItems.textualResponse ? styles.expanded : ''
                   }`}
                   onClick={() => toggleGridItem('textualResponse')}
                 >
@@ -82,9 +83,10 @@ const MainContent = () => {
                   {openGridItems.textualResponse && <p>{item.answer.textualResponse}</p>}
                 </div>
 
+                {/* Collapsible components */}
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? '' : styles.collapsed
+                    openGridItems.citizenExperience ? styles.expanded : ''
                   }`}
                   onClick={() => toggleGridItem('citizenExperience')}
                 >
@@ -94,7 +96,7 @@ const MainContent = () => {
 
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? '' : styles.collapsed
+                    openGridItems.factualInfo ? styles.expanded : ''
                   }`}
                   onClick={() => toggleGridItem('factualInfo')}
                 >
@@ -104,7 +106,7 @@ const MainContent = () => {
 
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.contextual ? '' : styles.collapsed
+                    openGridItems.contextual ? styles.expanded : ''
                   }`}
                   onClick={() => toggleGridItem('contextual')}
                 >
@@ -184,15 +186,9 @@ export default MainContent;
   background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  max-height: 60px; /* Collapsed height */
+  transition: max-height 0.3s ease, padding 0.3s ease;
   overflow: hidden;
   cursor: pointer;
-}
-
-.gridItem.expanded {
-  max-height: 250px; /* Expanded height */
-  overflow-y: auto;
 }
 
 .gridItem h3 {
@@ -207,12 +203,17 @@ export default MainContent;
   line-height: 1.6;
 }
 
-.collapsed {
-  max-height: 60px; /* Keep collapsed by default */
+.expanded {
+  max-height: none; /* Let the height adjust to the content */
 }
 
-.gridItem:hover {
-  transform: translateY(-5px);
+.collapsed {
+  max-height: 60px; /* Keep collapsed by default */
+  padding: 20px;
+}
+
+.gridItem.expanded {
+  max-height: none; /* Allow expanded items to take as much space as needed */
 }
 
 /* Optional: Add a subtle scrollbar style for better UI */
