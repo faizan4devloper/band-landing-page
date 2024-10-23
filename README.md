@@ -1,72 +1,3 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { faGraduationCap, faBriefcase, faHeartbeat } from '@fortawesome/free-solid-svg-icons'; // Import icons
-
-const personas = [
-  {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding...',
-    themeColor: '#e6ebf5',
-    route: '/education',
-    icon: faGraduationCap, // Icon for education
-  },
-  {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#e6ebf5',
-    route: '/job',
-    icon: faBriefcase, // Icon for job
-  },
-  {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#e6ebf5',
-    route: '/health',
-    icon: faHeartbeat, // Icon for health
-  },
-];
-
-const Personas = () => {
-  const navigate = useNavigate();
-  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
-
-  const handleClick = (route) => {
-    navigate(route);
-  };
-
-  return (
-    <div className={styles.Personas}>
-      <h1 className={styles.gradientText}>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
-          <div
-            key={index}
-            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
-          >
-            <FontAwesomeIcon icon={persona.icon} className={styles.personaIcon} /> {/* Displaying Icon */}
-            <h2 className={styles.cardHead}>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <FontAwesomeIcon icon={faArrowRight} />
-              <span className={styles.goText}>Go to next page</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Personas;
-
-
-
 .Personas {
   display: flex;
   flex-direction: column;
@@ -129,8 +60,6 @@ export default Personas;
 
 /* Change gradient text to white on hover */
 .personaCard:hover h2 {
-  /*-webkit-background-clip: unset;*/
-  /*background-clip: unset;*/
   color: white; /* Change text color to white */
 }
 
@@ -143,7 +72,7 @@ export default Personas;
   color: #555;
 }
 
-.personaCard:hover .description, .cardHead {
+.personaCard:hover .description {
   opacity: 1;
   transform: translateY(0);
   color: white;
@@ -151,19 +80,30 @@ export default Personas;
 
 .rightIcon {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   position: absolute;
   bottom: 1rem;
   right: 1rem;
   font-size: 1.5rem;
   color: #888;
+  opacity: 1; /* Always visible */
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.goText {
+  margin-left: 0.5rem;
   opacity: 0;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateX(-15px); /* Initially hide the text and position it off-screen */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
+  color: white;
 }
 
 .personaCard:hover .rightIcon {
-  opacity: 1;
-  color: #fff;
-  transform: translateX(5px); /* Slide in effect */
+  transform: translateX(10px); /* Move arrow to the right on hover */
+  color: white; /* Change arrow color */
+}
+
+.personaCard:hover .goText {
+  opacity: 1; /* Show text */
+  transform: translateX(0); /* Bring text in smoothly from left */
 }
