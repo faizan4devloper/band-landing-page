@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
@@ -20,16 +20,16 @@ const MainContent = () => {
       });
       
       console.log('API Response:', response.data); // Log the API response
-
-      // Parse the response body if it is a JSON string
-      const parsedBody = JSON.parse(response.data.body);
-      
-      // Assuming parsedBody contains the necessary structure for contentData
-      setContentData([parsedBody]); // Wrap in an array to fit map logic
-
+      // Assuming response.data.answer is a string containing the answer.
+      const formattedData = [
+        {
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          answer: response.data.answer // Update this based on the structure of your API response
+        }
+      ];
+      setContentData(formattedData);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setContentData([{ answer: { textual: 'Error fetching answer', citizenExperience: '', factualInfo: '', contextual: '' }}]); // Handle error gracefully
     }
   };
 
@@ -43,45 +43,28 @@ const MainContent = () => {
 
   return (
     <div className={styles.mainContent}>
-      {Array.isArray(contentData) && contentData.length > 0 ? ( // Check if contentData is not empty
+      {Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
             <div
               className={styles.question}
               onClick={() => toggleAnswer(index)}
             >
-              <span>Question {index + 1}</span>
+              {item.question}
               <FontAwesomeIcon
-                icon={faChevronDown}
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
                 className={styles.chevronIcon}
               />
             </div>
-            {openQuestion === index && ( // Show answer only for the open question
+            {openQuestion === index && (
               <div className={styles.answerBlock}>
-                <div className={styles.gridAnswer}>
-                  <div className={styles.gridItem}>
-                    <h3>Textual Response</h3>
-                    <p>{item.answer?.textual || 'No Textual Response Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Citizen Experience</h3>
-                    <p>{item.answer?.citizenExperience || 'No Citizen Experience Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Factual Info</h3>
-                    <p>{item.answer?.factualInfo || 'No Factual Info Available'}</p>
-                  </div>
-                  <div className={styles.gridItem}>
-                    <h3>Contextual</h3>
-                    <p>{item.answer?.contextual || 'No Contextual Info Available'}</p>
-                  </div>
-                </div>
+                <p>{item.answer || 'No Answer Available'}</p>
               </div>
             )}
           </div>
         ))
       ) : (
-        <div>No data available</div> // Handling case where contentData is empty
+        <div>No data available</div>
       )}
     </div>
   );
