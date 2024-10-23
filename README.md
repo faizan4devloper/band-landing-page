@@ -1,3 +1,4 @@
+
 .Personas {
   display: flex;
   flex-direction: column;
@@ -83,30 +84,24 @@
   display: flex;
   align-items: center;
   position: absolute;
-  bottom: 1rem;
-  left: 1rem; /* Set to left to start on the left side */
-  font-size: 1.5rem;
+  bottom: .8rem;
+  left: -1rem; /* Set to left to start on the left side */
+  font-size: .8rem;
   transition: color 0.3s ease;
+  
   white-space: nowrap;
-  background: -webkit-gradient(linear, left top, right top, 
-    color-stop(-19.51%, #7abef7), 
-    color-stop(36.51%, #4080f5), 
-    to(#572ac2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-fill-color: transparent; /* For compatibility with non-Webkit browsers */
 }
 
 /* Arrow will move on hover */
 .rightIcon .arrow {
-  margin-left: 0.5rem; /* Space between text and arrow */
+  margin-left: 0.3rem; /* Space between text and arrow */
   transition: transform 0.3s ease; /* Smooth transition */
 }
 
 .goText {
   opacity: 0; /* Initially hidden */
-  transform: translateX(-20px); /* Initially moved to the left */
+  font-size: 1rem;
+  transform: translateX(-110px); /* Initially moved to the left */
   transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
   color: white; /* Change text color */
 }
@@ -114,15 +109,15 @@
 /* Text appears on hover with sliding effect */
 .personaCard:hover .goText {
   opacity: 1; /* Makes text visible */
-  transform: translateX(0); /* Moves text to its original position */
+  transform: translateX(70px); /* Moves text to its original position */
 }
 
 /* Move the arrow to the right on hover */
 .personaCard:hover .arrow {
-  transform: translateX(10px); /* Adjust to create a sliding effect */
+  transform: translateX(80px); /* Adjust to create a sliding effect */
 }
 
-/* Change icon color on hover */
-.personaCard:hover .rightIcon {
-  color: white; /* Change icon color to white on hover */
+
+.personaCard:hover .gradientText{
+  background:#fff;
 }
