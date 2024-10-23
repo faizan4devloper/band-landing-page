@@ -97,78 +97,23 @@
 .goText {
   margin-left: 0.5rem; /* Space between text and arrow */
   opacity: 0; /* Initially hidden */
-  transition: opacity 0.3s ease; /* Smooth transition */
+  transform: translateX(-10px); /* Initially moved to the left */
+  transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
   color: white; /* Change text color on hover */
 }
 
-/* Text appears on hover */
+/* Text appears on hover with sliding effect */
 .personaCard:hover .goText {
   opacity: 1; /* Makes text visible */
+  transform: translateX(0); /* Moves text to its original position */
 }
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { faGraduationCap, faBriefcase, faHeartbeat } from '@fortawesome/free-solid-svg-icons'; // Import icons
+/* Arrow's initial position on hover */
+.rightIcon .arrow {
+  transition: transform 0.3s ease;
+}
 
-const personas = [
-  {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding...',
-    themeColor: '#e6ebf5',
-    route: '/education',
-    icon: faGraduationCap, // Icon for education
-  },
-  {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#e6ebf5',
-    route: '/job',
-    icon: faBriefcase, // Icon for job
-  },
-  {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#e6ebf5',
-    route: '/health',
-    icon: faHeartbeat, // Icon for health
-  },
-];
-
-const Personas = () => {
-  const navigate = useNavigate();
-  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
-
-  const handleClick = (route) => {
-    navigate(route);
-  };
-
-  return (
-    <div className={styles.Personas}>
-      <h1 className={styles.gradientText}>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
-          <div
-            key={index}
-            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
-          >
-            <FontAwesomeIcon icon={persona.icon} className={styles.personaIcon} /> {/* Displaying Icon */}
-            <h2 className={styles.cardHead}>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <span className={styles.goText}>Go to next page</span>
-              <FontAwesomeIcon icon={faArrowRight} />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Personas;
+/* Move the arrow slightly to the right on hover */
+.personaCard:hover .arrow {
+  transform: translateX(10px); /* Adjust to create a sliding effect */
+}
