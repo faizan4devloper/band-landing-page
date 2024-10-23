@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
@@ -9,25 +10,14 @@ const MainContent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Function to fetch data from the API
+  // Function to fetch data from the API using axios
   const fetchData = async () => {
     try {
-      const response = await fetch('https://dummy', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          question: 'what are the averages?',
-        }),
+      const response = await axios.post('https://dummy', {
+        question: 'what are the averages?',
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      const data = await response.json();
-      setContentData(data);  // Assuming the API returns the array of questions and answers
+      setContentData(response.data); // Assuming the API returns the array of questions and answers
       setLoading(false);
     } catch (error) {
       setError(error.message);
