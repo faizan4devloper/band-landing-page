@@ -1,102 +1,150 @@
-.mainContent {
-  flex-grow: 1;
-  padding: 35px;
-  padding-top: 60px;
-  background-color: #f7f9fc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
+linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%)
 
-.questionBlock {
-  margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  transition: background-color 0.3s ease;
-}
 
-.questionBlock:hover {
-  background-color: #f1f1f1;
-}
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './Personas.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome icon
 
-.question {
-  font-size: 1.1em;
-  padding: 10px;
-  cursor: pointer;
-  color: #333;
+const personas = [
+  {
+    title: 'Education',
+    description: 'Streamlined Academic Pathfinding: Elevating your experience from disjointed information to directed guidance in placements, appeals, and transfers.',
+    themeColor: '#f2f2f2',
+    route: '/education',
+  },
+  {
+    title: 'Job',
+    description: 'Find job opportunities and career development tools.',
+    themeColor: '#f2f2f2',
+    route: '/job',
+  },
+  {
+    title: 'Health',
+    description: 'Manage health records and access health services.',
+    themeColor: '#f2f2f2',
+    route: '/health',
+  },
+];
+
+const Personas = () => {
+  const navigate = useNavigate();
+  const [currentPersonaIndex, setCurrentPersonaIndex] = useState(0);
+
+  const handleClick = (route) => {
+    navigate(route);
+  };
+
+  return (
+    <div className={styles.Personas}>
+      <h1>Your Personas</h1>
+
+      <div className={styles.personaCards}>
+        {personas.map((persona, index) => (
+          <div
+            key={index}
+            className={`${styles.personaCard} ${index === currentPersonaIndex ? styles.active : ''}`}
+            style={{ backgroundColor: persona.themeColor }}
+            onClick={() => handleClick(persona.route)}
+          >
+            <h2 className={styles.cardHead}>{persona.title}</h2>
+            <p className={styles.description}>{persona.description}</p>
+            <div className={styles.rightIcon}>
+              <FontAwesomeIcon icon={faArrowRight} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Personas;
+
+
+
+
+.Personas {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-.chevronIcon {
-  font-size: 1em;
-  color: #888;
-  transition: transform 0.3s ease;
-}
-
-/* Grid styling for the first question */
-.gridAnswer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  background-color: #f8f9fa;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.gridItem {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  max-height: 250px; /* Fixed height to limit long content */
-  overflow-y: auto; /* Enable scrolling for overflow content */
-  position: relative; /* Ensure inner elements are properly positioned */
-}
-
-.gridItem:hover {
-  transform: translateY(-5px);
-}
-
-.gridItem h3 {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+h1 {
+  font-size: 2.5rem;
   color: #333;
+  margin-bottom: 2rem;
 }
 
-.gridItem p {
-  font-size: 1em;
-  color: #555;
-  line-height: 1.6;
+.personaCards {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  position: relative;
 }
 
-/* Optional: Add a subtle scrollbar style for better UI */
-.gridItem::-webkit-scrollbar {
-  width: 8px;
+.personaCard {
+  width: 220px;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  color: #000;
+  text-align: center;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.gridItem::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 8px;
+.personaCard:hover {
+  transform: translateY(-8px);
+  background-color: #000;
+  color: white;
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
 }
 
-.gridItem::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 8px;
-  border: 2px solid #f1f1f1;
+.personaCard h2 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
 }
 
-.gridItem::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+.personaCard .description {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.answer {
-  padding: 15px;
-  background-color: #f8f9fa;
-  font-size: 1em;
-  line-height: 1.6;
-  color: #555;
+.personaCard:hover .description, .cardHead {
+  opacity: 1;
+  transform: translateY(0);
+  color: #000;
+}
+
+.rightIcon {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  position: absolute;
+  bottom: 1rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  color: #333;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.personaCard:hover .rightIcon {
+  opacity: 1;
+  color: #000;
+  transform: translateX(5px); /* Slide in effect for the icon */
+}
+
+.rightIcon:hover {
+  color: #fff;
+  transition: color 0.3s ease;
 }
