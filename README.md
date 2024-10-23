@@ -90,14 +90,14 @@
   white-space: nowrap;
 }
 
-/* Icon should move to the right smoothly on hover */
+/* Arrow should be on the left, moving to the right on hover */
 .personaCard:hover .rightIcon {
   transform: translateX(15px); /* Moves the icon smoothly to the right */
   color: white; /* Change icon color */
 }
 
 .goText {
-  margin-right: 0.5rem;
+  margin-left: 0.5rem; /* Space between arrow and text */
   opacity: 0;
   transform: translateX(-20px); /* Initially off-screen */
   transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition */
