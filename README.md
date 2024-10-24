@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0);
+  const [openQuestion, setOpenQuestion] = useState(null); // Update: null to indicate no question is open initially
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -16,19 +16,15 @@ const MainContent = () => {
     contextual: false,
   });
 
-  const questionsList = [
-    'What are the average class sizes and student-teacher ratios in the local schools?',
-    'What are the admission criteria for the schools in this area? How do they prioritize applications?',
-    'What extracurricular activities are offered in the local schools?',
-    'How do local schools support students with special needs or learning disabilities?',
-  ];
-
-  const fetchDataForQuestion = async (question) => {
+  const fetchData = async () => {
     try {
       const response = await axios.post(
-        'dummy', // Replace 'dummy' with your actual API endpoint
+        'dummy',
         {
-          question: `${question}:- hi`,
+          // First question payload
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          // Second question payload
+          question2: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
         },
         {
           headers: {
@@ -38,59 +34,53 @@ const MainContent = () => {
       );
 
       const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
+      const llmAnswer1 = parsedResponse.answer1;
+      const llmAnswer2 = parsedResponse.answer2;
 
-      // Split answer into lines based on '-' hyphen
-      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
+      const formattedAnswer1 = llmAnswer1.split('-').map(line => line.trim()).filter(line => line);
+      const formattedAnswer2 = llmAnswer2.split('-').map(line => line.trim()).filter(line => line);
 
-      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      return ['No Answer Available'];
-    }
-  };
-
-  const fetchAllData = async () => {
-    try {
-      const formattedData = await Promise.all(
-        questionsList.map(async (question) => {
-          const answer = await fetchDataForQuestion(question);
-          return {
-            question,
-            answer: {
-              textualResponse: answer,
-              citizenExperience: 'Citizen experience response goes here.',
-              factualInfo: 'Factual information goes here.',
-              contextual: 'Contextual information goes here.',
-            },
-          };
-        })
-      );
+      const formattedData = [
+        {
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          answer: {
+            textualResponse: formattedAnswer1.length > 0 ? formattedAnswer1 : ['No Answer Available'],
+            citizenExperience: 'Citizen experience response goes here.',
+            factualInfo: 'Factual information goes here.',
+            contextual: 'Contextual information goes here.',
+          },
+        },
+        {
+          question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
+          answer: {
+            textualResponse: formattedAnswer2.length > 0 ? formattedAnswer2 : ['No Answer Available'],
+            citizenExperience: 'Citizen experience response goes here.',
+            factualInfo: 'Factual information goes here.',
+            contextual: 'Contextual information goes here.',
+          },
+        },
+      ];
 
       setContentData(formattedData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data for all questions:', error);
+      console.error('Error fetching data:', error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAllData();
+    fetchData();
   }, []);
 
   const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null);
-    } else {
-      setOpenQuestion(index);
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
+    setOpenQuestion(openQuestion === index ? null : index); // Toggle the current question
+    setOpenGridItems({
+      textualResponse: true,
+      citizenExperience: false,
+      factualInfo: false,
+      contextual: false,
+    });
   };
 
   const toggleGridItem = (section) => {
