@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question is open
+  const [openQuestion, setOpenQuestion] = useState(null); // Use `null` to track no open question initially
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -81,7 +81,7 @@ const MainContent = () => {
     if (openQuestion === index) {
       setOpenQuestion(null); // Collapse the currently open question if clicked again
     } else {
-      setOpenQuestion(index); // Open the new question and close the others
+      setOpenQuestion(index); // Open the new question and hide others
       setOpenGridItems({
         textualResponse: true,
         citizenExperience: false,
@@ -106,7 +106,8 @@ const MainContent = () => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          openQuestion === index && ( // Only render the currently opened question
+          // Show only the open question or all if no question is open
+          (openQuestion === index || openQuestion === null) && (
             <div key={index} className={styles.questionBlock}>
               <div className={styles.question} onClick={() => toggleAnswer(index)}>
                 {item.question}
