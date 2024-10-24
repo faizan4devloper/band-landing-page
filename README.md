@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Use `null` to track no open question initially
+  const [openQuestion, setOpenQuestion] = useState(null); // Track the currently open question
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -16,15 +16,12 @@ const MainContent = ({ activeTopic }) => {
     contextual: false,
   });
 
-  // Map questions to different topics
   const topicQuestions = {
     1: [
       'What are the average class sizes and student-teacher ratios in the local schools?',
       'What are the admission criteria for the schools in this area?',
     ],
-    2: [
-      'Topic 2 Question 1', 'Topic 1 Question 2'
-    ],
+    2: ['Topic 2 Question 1', 'Topic 1 Question 2'],
     3: ['Topic 3 Question 1', 'Topic 3 Question 2'],
     4: ['Topic 4 Question 1', 'Topic 4 Question 2'],
     5: ['Topic 5 Question 1', 'Topic 5 Question 2'],
@@ -47,7 +44,6 @@ const MainContent = ({ activeTopic }) => {
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
 
-      // Split answer into lines based on '-' hyphen
       const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
       return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
@@ -59,7 +55,7 @@ const MainContent = ({ activeTopic }) => {
 
   const fetchAllData = async (topicId) => {
     try {
-      const questionsList = topicQuestions[topicId] || []; // Fetch questions based on active topic
+      const questionsList = topicQuestions[topicId] || [];
 
       const formattedData = await Promise.all(
         questionsList.map(async (question) => {
@@ -86,12 +82,12 @@ const MainContent = ({ activeTopic }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchAllData(activeTopic); // Fetch data based on active topic
+    fetchAllData(activeTopic);
   }, [activeTopic]);
 
   const toggleAnswer = (index) => {
     if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the currently open question if clicked again
+      setOpenQuestion(null); // Collapse if the same question is clicked again
     } else {
       setOpenQuestion(index); // Open the new question and hide others
       setOpenGridItems({
@@ -118,6 +114,7 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
+          openQuestion === index && ( // Only show the expanded question
           <div key={index} className={styles.questionBlock}>
             <div className={styles.question} onClick={() => toggleAnswer(index)}>
               {item.question}
@@ -129,9 +126,7 @@ const MainContent = ({ activeTopic }) => {
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
                 <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                  }`}
+                  className={`${styles.gridItem} ${openGridItems.textualResponse ? styles.expanded : styles.collapsed}`}
                   onClick={() => toggleGridItem('textualResponse')}
                 >
                   <h3>Textual Response</h3>
@@ -149,9 +144,7 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                  }`}
+                  className={`${styles.gridItem} ${openGridItems.citizenExperience ? styles.expanded : styles.collapsed}`}
                   onClick={() => toggleGridItem('citizenExperience')}
                 >
                   <h3>Citizen Experience</h3>
@@ -167,9 +160,7 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                  }`}
+                  className={`${styles.gridItem} ${openGridItems.factualInfo ? styles.expanded : styles.collapsed}`}
                   onClick={() => toggleGridItem('factualInfo')}
                 >
                   <h3>Factual Info</h3>
@@ -185,9 +176,7 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual ? styles.expanded : styles.collapsed
-                  }`}
+                  className={`${styles.gridItem} ${openGridItems.contextual ? styles.expanded : styles.collapsed}`}
                   onClick={() => toggleGridItem('contextual')}
                 >
                   <h3>Contextual</h3>
@@ -204,6 +193,7 @@ const MainContent = ({ activeTopic }) => {
               </div>
             )}
           </div>
+          )
         ))
       ) : (
         <div>No Questions Available</div>
