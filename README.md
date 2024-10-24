@@ -1,3 +1,52 @@
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+
+const topics = [
+  { id: 1, name: 'Topic 1' },
+  { id: 2, name: 'Topic 2' },
+  { id: 3, name: 'Topic 3' },
+  { id: 4, name: 'Topic 4' },
+  { id: 5, name: 'Topic 5' },
+];
+
+const Sidebar = ({ setActiveTopic }) => {
+  const [active, setActive] = useState(1); // Default active topic
+
+  const handleClick = (id) => {
+    setActive(id);
+    setActiveTopic(id); // Pass the active topic to the parent component
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
+      <ul>
+        {topics.map((topic) => (
+          <li
+            key={topic.id}
+            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
+            onClick={() => handleClick(topic.id)}
+          >
+            <span className={styles.topicName}>{topic.name}</span>
+            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -19,31 +68,36 @@ const MainContent = () => {
   const fetchData = async () => {
     try {
       const response = await axios.post(
-        'dummy', // Your API endpoint
+        'dummy',
         {
-          question: 'Your question or dynamically generated question goes here',
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?:- hi',
+          // question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
+          question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
         },
         {
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
         }
       );
 
-      // Parsing response
       const parsedResponse = JSON.parse(response.data.body);
-      const { question, answer } = parsedResponse; // Fetch both question and answer
+      const llmAnswer = parsedResponse.answer;
+
+      // Split answer into lines based on '-' hyphen
+      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
       const formattedData = [
         {
-          question: question || 'No question available', // Dynamically add question
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          // question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
           answer: {
-            textualResponse: answer.llmAnswer || 'No Answer Available',
+            textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
             citizenExperience: 'Citizen experience response goes here.',
             factualInfo: 'Factual information goes here.',
             contextual: 'Contextual information goes here.',
-          }
-        }
+          },
+        },
       ];
 
       setContentData(formattedData);
@@ -89,7 +143,7 @@ const MainContent = () => {
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
             <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question} {/* Dynamically render question */}
+              {item.question}
               <FontAwesomeIcon
                 icon={openQuestion === index ? faChevronUp : faChevronDown}
                 className={styles.chevronIcon}
@@ -110,7 +164,9 @@ const MainContent = () => {
                   />
                   {openGridItems.textualResponse && (
                     <ul className={styles.answerList}>
-                      <li>{item.answer.textualResponse}</li>
+                      {item.answer.textualResponse.map((line, idx) => (
+                        <li key={idx}>- {line}</li>
+                      ))}
                     </ul>
                   )}
                 </div>
