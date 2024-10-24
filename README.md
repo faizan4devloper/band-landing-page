@@ -79,9 +79,9 @@ const MainContent = () => {
 
   const toggleAnswer = (index) => {
     if (openQuestion === index) {
-      setOpenQuestion(null);
+      setOpenQuestion(null); // Collapse the currently open question if clicked again
     } else {
-      setOpenQuestion(index);
+      setOpenQuestion(index); // Open the new question and close the others
       setOpenGridItems({
         textualResponse: true,
         citizenExperience: false,
