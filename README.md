@@ -1,189 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropagateLoader from 'react-spinners/PropagateLoader';
-import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
-
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0);
-  const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true,
-    citizenExperience: false,
-    factualInfo: false,
-    contextual: false,
-  });
-
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        'dummy',
-        {
-          question:
-            'what are the average class sizes and student-teacher ratios in the local schools react?',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
-
-      const formattedData = [
-        {
-          question:
-            'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: {
-            textualResponse: llmAnswer || 'No Answer Available',
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-      ];
-
-      setContentData(formattedData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null);
-    } else {
-      setOpenQuestion(index);
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
-  };
-
-  const toggleGridItem = (section) => {
-    setOpenGridItems((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
-        </div>
-      ) : Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.gridAnswer}>
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('textualResponse')}
-                >
-                  <h3>Textual Response</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.textualResponse && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.textualResponse}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('citizenExperience')}
-                >
-                  <h3>Citizen Experience</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.citizenExperience && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.citizenExperience}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('factualInfo')}
-                >
-                  <h3>Factual Info</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.factualInfo && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.factualInfo}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('contextual')}
-                >
-                  <h3>Contextual</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.contextual && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.contextual}</li>
-                    </ul>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div>No data available</div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
 .mainContent {
   flex-grow: 1;
   height: 100vh;
@@ -201,36 +15,43 @@ export default MainContent;
 .questionBlock {
   margin-bottom: 15px;
   border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  transition: background-color 0.3s ease;
+  border-radius: 10px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
 }
 
 .questionBlock:hover {
-  background-color: #f1f1f1;
+  background-color: #f0f0f0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .question {
-  font-size: 1em;
-  padding: 15px;
+  font-size: 1.1em;
+  font-weight: bold;
+  padding: 18px;
   cursor: pointer;
-  color: #333;
+  color: #2a2a2a;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: color 0.3s ease;
+}
+
+.question:hover {
+  color: #0073e6;
 }
 
 .chevronIcon {
-  font-size: 1em;
+  font-size: 1.2em;
   color: #888;
   margin-left: 10px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .gridAnswer {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Independent columns */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 20px;
   background-color: #f8f9fa;
   padding: 20px;
@@ -249,71 +70,65 @@ export default MainContent;
   line-height: 1.8;
 }
 
-ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-li {
-  font-size: 1em;
-  color: #444;
-}
-
 .gridItem {
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: padding 0.3s ease, max-height 0.3s ease; /* Smooth transitions */
-  overflow: hidden;
+  padding: 25px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  min-height: 80px;
+  max-height: 80px;
+  overflow: hidden;
   position: relative;
-  min-height: 60px;
-  max-height: 60px; /* Initially collapsed height */
+  text-align: center;
 }
 
 .gridItem h3 {
-  font-size: 1.2em;
-  margin-left: 10px;
-  margin-bottom: 8px;
-  color: #333;
+  font-size: 1.4em;
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 .gridItem p {
   font-size: 1em;
-  color: #555;
+  color: #7f8c8d;
   line-height: 1.6;
   margin: 0;
 }
 
+.gridItem:hover {
+  background-color: #ecf0f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+}
+
+.gridItem h3:hover {
+  color: #0073e6;
+}
+
 .expanded {
-  max-height: 200px; /* Expanded height */
-  overflow-y: auto;  /* Scroll when content exceeds max height */
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .collapsed {
-  max-height: 60px; /* Collapsed height */
+  max-height: 80px;
   overflow: hidden;
 }
 
-.loaderWrapper{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
+/* Custom scrollbar */
 .gridItem::-webkit-scrollbar {
   width: 8px;
 }
 
 .gridItem::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 8px;
 }
 
 .gridItem::-webkit-scrollbar-thumb {
@@ -326,17 +141,39 @@ li {
   background-color: #555;
 }
 
-/* Adjust spacing between gridItems inside the gridAnswer */
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+li {
+  font-size: 1em;
+  color: #444;
+}
+
 .gridAnswer > .gridItem {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-/* Optional hover effect on gridItem for better UX */
+/* Additional hover effect for grid items */
 .gridItem:hover {
-  background-color: #f9f9f9;
+  background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);
+  color: white;
 }
 
-/* Optional: Better visual feedback when the gridItem is expanded */
+.gridItem:hover h3, .gridItem:hover p {
+  color: #fff;
+}
+
+/* Optional hover effect for better UI feedback when grid item is expanded */
 .gridItem.expanded:hover {
   background-color: #fff;
+  color: #2a2a2a;
 }
