@@ -1,124 +1,215 @@
 import React, { useState, useEffect } from 'react';
-import styles from './Header.module.css';
-import logo from '../assets/HCLTechLogoWhite.png'; // Ensure this path points to your logo
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
-const Header = () => {
-  const [prevScrollPos, setPrevScrollPos] = useState(window.pageYOffset);
-  const [visible, setVisible] = useState(true);
-  const [headerClass, setHeaderClass] = useState(styles.headerVisible); // Default class for visible state
-  const navigate = useNavigate();
+const MainContent = ({ activeTopic }) => {
+  const [contentData, setContentData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [openQuestion, setOpenQuestion] = useState(null); // Use `null` to track no open question initially
+  const [openGridItems, setOpenGridItems] = useState({
+    textualResponse: true,
+    citizenExperience: false,
+    factualInfo: false,
+    contextual: false,
+  });
 
-  const handleImageClick = () => {
-    navigate("/");
+  // Map questions to different topics
+  const topicQuestions = {
+    1: [
+      'What are the average class sizes and student-teacher ratios in the local schools?',
+      'What are the admission criteria for the schools in this area?',
+    ],
+    2: [
+      'Topic 2 Question 1', 'Topic 1 Question 2'
+    ],
+    3: ['Topic 3 Question 1', 'Topic 3 Question 2'],
+    4: ['Topic 4 Question 1', 'Topic 4 Question 2'],
+    5: ['Topic 5 Question 1', 'Topic 5 Question 2'],
+  };
+
+  const fetchDataForQuestion = async (question) => {
+    try {
+      const response = await axios.post(
+        'dummy', // Replace 'dummy' with your actual API endpoint
+        {
+          question: `${question}:- hi`,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer;
+
+      // Split answer into lines based on '-' hyphen
+      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
+
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return ['No Answer Available'];
+    }
+  };
+
+  const fetchAllData = async (topicId) => {
+    try {
+      const questionsList = topicQuestions[topicId] || []; // Fetch questions based on active topic
+
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here.',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
+
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data for all questions:', error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollPos = window.pageYOffset;
-      const isScrollingUp = prevScrollPos > currentScrollPos;
+    setLoading(true);
+    fetchAllData(activeTopic); // Fetch data based on active topic
+  }, [activeTopic]);
 
-      setVisible(isScrollingUp || currentScrollPos < 100); // Header is visible if scrolling up or near the top
+  const toggleAnswer = (index) => {
+    if (openQuestion === index) {
+      setOpenQuestion(null); // Collapse the currently open question if clicked again
+    } else {
+      setOpenQuestion(index); // Open the new question and hide others
+      setOpenGridItems({
+        textualResponse: true,
+        citizenExperience: false,
+        factualInfo: false,
+        contextual: false,
+      });
+    }
+  };
 
-      setPrevScrollPos(currentScrollPos);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    
-    // Cleanup the event listener on component unmount
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [prevScrollPos]);
-
-  // Update header class based on visibility state
-  useEffect(() => {
-    setHeaderClass(visible ? styles.headerVisible : styles.headerHidden);
-  }, [visible]);
+  const toggleGridItem = (section) => {
+    setOpenGridItems((prevState) => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
 
   return (
-    <header className={`${styles.header} ${headerClass}`}>
-      <div className={styles.logoContainer} onClick={handleImageClick}>
-        <img src={logo} alt="Logo" className={styles.logo} />
-      </div>
-      <div className={styles.citizenAdvisor} onClick={handleImageClick}>
-        CitizenAdvisor
-      </div>
-    </header>
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
+        </div>
+      ) : Array.isArray(contentData) && contentData.length > 0 ? (
+        contentData.map((item, index) => (
+          <div key={index} className={styles.questionBlock}>
+            <div className={styles.question} onClick={() => toggleAnswer(index)}>
+              {item.question}
+              <FontAwesomeIcon
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
+            {openQuestion === index && (
+              <div className={styles.gridAnswer}>
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('textualResponse')}
+                >
+                  <h3>Textual Response</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.textualResponse && (
+                    <ul className={styles.answerList}>
+                      {item.answer.textualResponse.map((line, idx) => (
+                        <li key={idx}>- {line}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('citizenExperience')}
+                >
+                  <h3>Citizen Experience</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.citizenExperience && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.citizenExperience}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('factualInfo')}
+                >
+                  <h3>Factual Info</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.factualInfo && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.factualInfo}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('contextual')}
+                >
+                  <h3>Contextual</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.contextual && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.contextual}</li>
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        ))
+      ) : (
+        <div>No Questions Available</div>
+      )}
+    </div>
   );
 };
 
-export default Header;
-
-
-
-
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 6rem;
-  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
-  border-bottom: 0.1px solid rgb(62, 62, 62);
-  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-  color: white;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  position: fixed;
-  width: 100%;
-  top: 0;
-  left: 0;
-}
-
-.headerVisible {
-  transform: translateY(0); /* Visible state */
-  opacity: 1;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Regular shadow */
-  z-index: 10;
-}
-
-.headerHidden {
-  transform: translateY(-100%); /* Hide header by moving it up */
-  opacity: 0;
-  box-shadow: none; /* Remove shadow when hidden */
-  z-index: -1; /* Lower z-index when hidden */
-}
-
-.logoContainer {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.logo {
-  width: 100px;
-  margin-right: 0.75rem;
-}
-
-.citizenAdvisor {
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.05rem;
-  cursor: pointer;
-}
-
-.navbar {
-  display: flex;
-}
-
-.navLinks {
-  display: flex;
-  list-style: none;
-  gap: 1.5rem;
-}
-
-.navItem a {
-  text-decoration: none;
-  color: white;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-.navItem a:hover {
-  color: #e0e7ff; /* Light shade on hover */
-}
+export default MainContent;
