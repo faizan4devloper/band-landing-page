@@ -1,3 +1,10 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,10 +39,10 @@ const MainContent = () => {
           question:
             'What are the average class sizes and student-teacher ratios in the local schools?',
           answer: {
-            textualResponse: llmAnswer || '<ul><li>No data available for average class sizes</li></ul>',
-            citizenExperience: '<ul><li>Citizen experience response 1</li><li>Experience response 2</li></ul>',
-            factualInfo: '<ul><li>Factual info point 1</li><li>Factual info point 2</li></ul>',
-            contextual: '<ol><li>Contextual info step 1</li><li>Contextual info step 2</li></ol>',
+            textualResponse: llmAnswer || 'No Answer Available',
+            citizenExperience: 'Citizen experience response goes here.',
+            factualInfo: 'Factual information goes here.',
+            contextual: 'Contextual information goes here.',
           },
         },
       ];
@@ -54,9 +61,9 @@ const MainContent = () => {
 
   const toggleAnswer = (index) => {
     if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the question if clicked again
+      setOpenQuestion(null);
     } else {
-      setOpenQuestion(index); // Open the new question
+      setOpenQuestion(index);
       setOpenGridItems({
         textualResponse: true,
         citizenExperience: false,
@@ -93,49 +100,37 @@ const MainContent = () => {
               <div className={styles.gridAnswer}>
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.textualResponse
-                      ? styles.expanded
-                      : styles.collapsed
+                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
                   }`}
                   onClick={() => toggleGridItem('textualResponse')}
                 >
                   <h3>Textual Response</h3>
                   <FontAwesomeIcon
-                    icon={
-                      openGridItems.textualResponse ? faCaretUp : faCaretDown
-                    }
+                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
                     className={styles.chevronIcon}
                   />
                   {openGridItems.textualResponse && (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.answer.textualResponse,
-                      }}
-                    />
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.textualResponse}</li>
+                    </ul>
                   )}
                 </div>
 
                 <div
                   className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience
-                      ? styles.expanded
-                      : styles.collapsed
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
                   }`}
                   onClick={() => toggleGridItem('citizenExperience')}
                 >
                   <h3>Citizen Experience</h3>
                   <FontAwesomeIcon
-                    icon={
-                      openGridItems.citizenExperience ? faCaretUp : faCaretDown
-                    }
+                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
                     className={styles.chevronIcon}
                   />
                   {openGridItems.citizenExperience && (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.answer.citizenExperience,
-                      }}
-                    />
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.citizenExperience}</li>
+                    </ul>
                   )}
                 </div>
 
@@ -151,11 +146,9 @@ const MainContent = () => {
                     className={styles.chevronIcon}
                   />
                   {openGridItems.factualInfo && (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.answer.factualInfo,
-                      }}
-                    />
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.factualInfo}</li>
+                    </ul>
                   )}
                 </div>
 
@@ -171,11 +164,9 @@ const MainContent = () => {
                     className={styles.chevronIcon}
                   />
                   {openGridItems.contextual && (
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: item.answer.contextual,
-                      }}
-                    />
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.contextual}</li>
+                    </ul>
                   )}
                 </div>
               </div>
@@ -192,29 +183,123 @@ const MainContent = () => {
 export default MainContent;
 
 
+.mainContent {
+  flex-grow: 1;
+  height: 100vh;
+  padding: 35px;
+  padding-top: 60px;
+  background-color: #f7f9fc;
+  overflow-y: auto;
+  width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
 
-.gridItem ul,
-.gridItem ol {
+.questionBlock {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+}
+
+.questionBlock:hover {
+  background-color: #f1f1f1;
+}
+
+.question {
+  font-size: 1em;
+  padding: 15px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chevronIcon {
+  font-size: 1em;
+  color: #888;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.gridAnswer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.gridItem {
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: padding 0.3s ease, max-height 0.3s ease;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  position: relative;
+  min-height: 60px;
+  max-height: 60px;
+}
+
+.gridItem h3 {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.gridItem p {
+  font-size: 1em;
+  color: #555;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.answerList {
   padding-left: 20px;
-  margin: 10px 0;
-}
-
-.gridItem ul {
-  list-style-type: disc; /* Bullet points for unordered lists */
-}
-
-.gridItem ol {
-  list-style-type: decimal; /* Numbered lists for ordered lists */
-}
-
-.gridItem ul li,
-.gridItem ol li {
-  margin-bottom: 5px; /* Space between list items */
+  font-size: 1em;
   color: #555;
 }
 
-.gridItem p, .gridItem li {
+.answerList li {
+  margin-bottom: 10px;
+  line-height: 1.8;
+}
+
+.expanded {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.collapsed {
+  max-height: 60px;
+}
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+ul {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+li {
   font-size: 1em;
-  line-height: 1.5;
-  color: #333;
+  color: #444;
 }
