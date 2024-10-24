@@ -16,12 +16,19 @@ const MainContent = () => {
     contextual: false,
   });
 
-  const fetchData = async () => {
+  const questionsList = [
+    'What are the average class sizes and student-teacher ratios in the local schools?',
+    'What are the admission criteria for the schools in this area? How do they prioritize applications?',
+    'What extracurricular activities are offered in the local schools?',
+    'How do local schools support students with special needs or learning disabilities?',
+  ];
+
+  const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
         'dummy', // Replace 'dummy' with your actual API endpoint
         {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?:- hi',
+          question: `${question}:- hi`,
         },
         {
           headers: {
@@ -36,55 +43,40 @@ const MainContent = () => {
       // Split answer into lines based on '-' hyphen
       const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
-      const formattedData = [
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: {
-            textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-        {
-          question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
-          answer: {
-            textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-        {
-          question: 'What extracurricular activities are offered in the local schools?',
-          answer: {
-            textualResponse: ['Extracurricular activities include sports, music, art, and drama.'],
-            citizenExperience: 'The schools provide ample opportunities for student involvement in extracurriculars.',
-            factualInfo: 'Most schools offer after-school programs, including competitive sports teams and arts clubs.',
-            contextual: 'Participation in extracurricular activities is encouraged as part of the holistic development approach.',
-          },
-        },
-        {
-          question: 'How do local schools support students with special needs or learning disabilities?',
-          answer: {
-            textualResponse: ['Schools have specialized support programs for students with learning disabilities.'],
-            citizenExperience: 'Parents have reported positive experiences with the special education programs.',
-            factualInfo: 'Schools offer individualized education programs (IEPs) and provide access to trained professionals.',
-            contextual: 'The inclusion programs are well-funded, ensuring adequate resources for students with special needs.',
-          },
-        },
-      ];
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return ['No Answer Available'];
+    }
+  };
+
+  const fetchAllData = async () => {
+    try {
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here.',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
 
       setContentData(formattedData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data for all questions:', error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchAllData();
   }, []);
 
   const toggleAnswer = (index) => {
