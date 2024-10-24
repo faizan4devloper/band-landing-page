@@ -1,48 +1,3 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
-
-const topics = [
-  { id: 1, name: 'Topic 1', question: 'What are the average class sizes and student-teacher ratios in the local schools?' },
-  { id: 2, name: 'Topic 2', question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?' },
-  { id: 3, name: 'Topic 3', question: 'What extracurricular activities are available in the local schools?' },
-  { id: 4, name: 'Topic 4', question: 'What are the key achievements of the schools in this area?' },
-  { id: 5, name: 'Topic 5', question: 'How are the schools in this area addressing diversity and inclusion?' },
-];
-
-const Sidebar = ({ setActiveTopic }) => {
-  const [active, setActive] = useState(1); // Default active topic
-
-  const handleClick = (id, question) => {
-    setActive(id);
-    setActiveTopic(question); // Pass the question to the parent component
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
-      <ul>
-        {topics.map((topic) => (
-          <li
-            key={topic.id}
-            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
-            onClick={() => handleClick(topic.id, topic.question)}
-          >
-            <span className={styles.topicName}>{topic.name}</span>
-            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default Sidebar;
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -50,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
-const MainContent = ({ activeQuestion }) => {
+const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestion, setOpenQuestion] = useState(0);
@@ -64,9 +19,11 @@ const MainContent = ({ activeQuestion }) => {
   const fetchData = async () => {
     try {
       const response = await axios.post(
-        'dummy',  // Replace with your actual API
+        'dummy',
         {
-          question: activeQuestion,  // Use the activeQuestion passed from Sidebar
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?:- hi',
+          // question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
+          question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
         },
         {
           headers: {
@@ -78,11 +35,13 @@ const MainContent = ({ activeQuestion }) => {
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
 
+      // Split answer into lines based on '-' hyphen
       const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
       const formattedData = [
         {
-          question: activeQuestion,
+          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
+          // question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
           answer: {
             textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
             citizenExperience: 'Citizen experience response goes here.',
@@ -101,10 +60,8 @@ const MainContent = ({ activeQuestion }) => {
   };
 
   useEffect(() => {
-    if (activeQuestion) {
-      fetchData();
-    }
-  }, [activeQuestion]);
+    fetchData();
+  }, []);
 
   const toggleAnswer = (index) => {
     if (openQuestion === index) {
@@ -165,7 +122,59 @@ const MainContent = ({ activeQuestion }) => {
                   )}
                 </div>
 
-                {/* The other sections (citizenExperience, factualInfo, contextual) remain unchanged */}
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('citizenExperience')}
+                >
+                  <h3>Citizen Experience</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.citizenExperience && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.citizenExperience}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('factualInfo')}
+                >
+                  <h3>Factual Info</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.factualInfo && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.factualInfo}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('contextual')}
+                >
+                  <h3>Contextual</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.contextual && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.contextual}</li>
+                    </ul>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -178,4 +187,3 @@ const MainContent = ({ activeQuestion }) => {
 };
 
 export default MainContent;
-
