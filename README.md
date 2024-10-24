@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0);
+  const [openQuestion, setOpenQuestion] = useState(null); // Set to null initially
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -78,17 +78,14 @@ const MainContent = () => {
   }, []);
 
   const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the currently open question if clicked again
-    } else {
-      setOpenQuestion(index); // Open the new question and close the others
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
+    // Set the open question to the clicked index, or null to collapse if already open
+    setOpenQuestion(openQuestion === index ? null : index);
+    setOpenGridItems({
+      textualResponse: true,
+      citizenExperience: false,
+      factualInfo: false,
+      contextual: false,
+    });
   };
 
   const toggleGridItem = (section) => {
@@ -106,92 +103,95 @@ const MainContent = () => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.gridAnswer}>
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('textualResponse')}
-                >
-                  <h3>Textual Response</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.textualResponse && (
-                    <ul className={styles.answerList}>
-                      {item.answer.textualResponse.map((line, idx) => (
-                        <li key={idx}>- {line}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('citizenExperience')}
-                >
-                  <h3>Citizen Experience</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.citizenExperience && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.citizenExperience}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('factualInfo')}
-                >
-                  <h3>Factual Info</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.factualInfo && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.factualInfo}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('contextual')}
-                >
-                  <h3>Contextual</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.contextual && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.contextual}</li>
-                    </ul>
-                  )}
-                </div>
+          // Conditionally render only the open question
+          openQuestion === index ? (
+            <div key={index} className={styles.questionBlock}>
+              <div className={styles.question} onClick={() => toggleAnswer(index)}>
+                {item.question}
+                <FontAwesomeIcon
+                  icon={openQuestion === index ? faChevronUp : faChevronDown}
+                  className={styles.chevronIcon}
+                />
               </div>
-            )}
-          </div>
+              {openQuestion === index && (
+                <div className={styles.gridAnswer}>
+                  <div
+                    className={`${styles.gridItem} ${
+                      openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                    }`}
+                    onClick={() => toggleGridItem('textualResponse')}
+                  >
+                    <h3>Textual Response</h3>
+                    <FontAwesomeIcon
+                      icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
+                      className={styles.chevronIcon}
+                    />
+                    {openGridItems.textualResponse && (
+                      <ul className={styles.answerList}>
+                        {item.answer.textualResponse.map((line, idx) => (
+                          <li key={idx}>- {line}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div
+                    className={`${styles.gridItem} ${
+                      openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                    }`}
+                    onClick={() => toggleGridItem('citizenExperience')}
+                  >
+                    <h3>Citizen Experience</h3>
+                    <FontAwesomeIcon
+                      icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
+                      className={styles.chevronIcon}
+                    />
+                    {openGridItems.citizenExperience && (
+                      <ul className={styles.answerList}>
+                        <li>{item.answer.citizenExperience}</li>
+                      </ul>
+                    )}
+                  </div>
+
+                  <div
+                    className={`${styles.gridItem} ${
+                      openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                    }`}
+                    onClick={() => toggleGridItem('factualInfo')}
+                  >
+                    <h3>Factual Info</h3>
+                    <FontAwesomeIcon
+                      icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
+                      className={styles.chevronIcon}
+                    />
+                    {openGridItems.factualInfo && (
+                      <ul className={styles.answerList}>
+                        <li>{item.answer.factualInfo}</li>
+                      </ul>
+                    )}
+                  </div>
+
+                  <div
+                    className={`${styles.gridItem} ${
+                      openGridItems.contextual ? styles.expanded : styles.collapsed
+                    }`}
+                    onClick={() => toggleGridItem('contextual')}
+                  >
+                    <h3>Contextual</h3>
+                    <FontAwesomeIcon
+                      icon={openGridItems.contextual ? faCaretUp : faCaretDown}
+                      className={styles.chevronIcon}
+                    />
+                    {openGridItems.contextual && (
+                      <ul className={styles.answerList}>
+                        <li>{item.answer.contextual}</li>
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null // Hide other questions if they are not open
         ))
       ) : (
         <div>No data available</div>
