@@ -1,260 +1,88 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
+import React from 'react';
+import styles from './Header.module.css';
+import logo from '../assets/HCLTechLogoWhite.png'; // Ensure this path points to your logo
+import { useNavigate } from "react-router-dom";
 
-const topics = [
-  { id: 1, name: 'Topic 1' },
-  { id: 2, name: 'Topic 2' },
-  { id: 3, name: 'Topic 3' },
-  { id: 4, name: 'Topic 4' },
-  { id: 5, name: 'Topic 5' },
-];
 
-const Sidebar = ({ setActiveTopic }) => {
-  const [active, setActive] = useState(1); // Default active topic
 
-  const handleClick = (id) => {
-    setActive(id);
-    setActiveTopic(id); // Pass the active topic to the parent component
+const Header = () => {
+  
+  const navigate = useNavigate();
+
+  const handleImageClick = () => {
+    navigate("/");
   };
-
+  
   return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
-      <ul>
-        {topics.map((topic) => (
-          <li
-            key={topic.id}
-            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
-            onClick={() => handleClick(topic.id)}
-          >
-            <span className={styles.topicName}>{topic.name}</span>
-            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <header className={styles.header}>
+      <div className={styles.logoContainer} onClick={handleImageClick}>
+        <img src={logo} alt="Logo" className={styles.logo}/>
+      </div>
+      
+      <div className={styles.citizenAdvisor} onClick={handleImageClick}>
+        CitizenAdvisor
+      </div>
+      
+    </header>
   );
 };
 
-export default Sidebar;
+export default Header;
 
 
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropagateLoader from 'react-spinners/PropagateLoader';
-import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
-const MainContent = ({ activeTopic }) => {
-  const [contentData, setContentData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Use `null` to track no open question initially
-  const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true,
-    citizenExperience: false,
-    factualInfo: false,
-    contextual: false,
-  });
 
-  // Map questions to different topics
-  const topicQuestions = {
-    1: [
-      'What are the average class sizes and student-teacher ratios in the local schools?',
-      'What are the admission criteria for the schools in this area?',
-    ],
-    2: [
-      'How do schools in the area handle special needs education?',
-      'What extracurricular activities are offered?',
-    ],
-    3: ['Topic 3 Question 1', 'Topic 3 Question 2'],
-    4: ['Topic 4 Question 1', 'Topic 4 Question 2'],
-    5: ['Topic 5 Question 1', 'Topic 5 Question 2'],
-  };
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 6rem;
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  border-bottom: 0.1px solid rgb(62, 62, 62);
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+  transition-property: transform;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-  const fetchDataForQuestion = async (question) => {
-    try {
-      const response = await axios.post(
-        'dummy', // Replace 'dummy' with your actual API endpoint
-        {
-          question: `${question}:- hi`,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+.logoContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
 
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
+.logo {
+  width: 100px;
+  margin-right: 0.75rem;
+}
 
-      // Split answer into lines based on '-' hyphen
-      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
+.citizenAdvisor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.05rem;
+  cursor: pointer;
+}
 
-      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      return ['No Answer Available'];
-    }
-  };
+.navbar {
+  display: flex;
+}
 
-  const fetchAllData = async (topicId) => {
-    try {
-      const questionsList = topicQuestions[topicId] || []; // Fetch questions based on active topic
+.navLinks {
+  display: flex;
+  list-style: none;
+  gap: 1.5rem;
+}
 
-      const formattedData = await Promise.all(
-        questionsList.map(async (question) => {
-          const answer = await fetchDataForQuestion(question);
-          return {
-            question,
-            answer: {
-              textualResponse: answer,
-              citizenExperience: 'Citizen experience response goes here.',
-              factualInfo: 'Factual information goes here.',
-              contextual: 'Contextual information goes here.',
-            },
-          };
-        })
-      );
+.navItem a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
 
-      setContentData(formattedData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data for all questions:', error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    setLoading(true);
-    fetchAllData(activeTopic); // Fetch data based on active topic
-  }, [activeTopic]);
-
-  const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the currently open question if clicked again
-    } else {
-      setOpenQuestion(index); // Open the new question and hide others
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
-  };
-
-  const toggleGridItem = (section) => {
-    setOpenGridItems((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
-        </div>
-      ) : Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.gridAnswer}>
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('textualResponse')}
-                >
-                  <h3>Textual Response</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.textualResponse && (
-                    <ul className={styles.answerList}>
-                      {item.answer.textualResponse.map((line, idx) => (
-                        <li key={idx}>- {line}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('citizenExperience')}
-                >
-                  <h3>Citizen Experience</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.citizenExperience && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.citizenExperience}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('factualInfo')}
-                >
-                  <h3>Factual Info</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.factualInfo && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.factualInfo}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('contextual')}
-                >
-                  <h3>Contextual</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.contextual && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.contextual}</li>
-                    </ul>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div>No Questions Available</div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
+.navItem a:hover {
+  color: #e0e7ff; /* Light shade on hover */
+}
