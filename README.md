@@ -1,3 +1,48 @@
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+
+const topics = [
+  { id: 1, name: 'Topic 1' },
+  { id: 2, name: 'Topic 2' },
+  { id: 3, name: 'Topic 3' },
+  { id: 4, name: 'Topic 4' },
+  { id: 5, name: 'Topic 5' },
+];
+
+const Sidebar = ({ setActiveTopic }) => {
+  const [active, setActive] = useState(1); // Default active topic
+
+  const handleClick = (id) => {
+    setActive(id);
+    setActiveTopic(id); // Pass the active topic to the parent component
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
+      <ul>
+        {topics.map((topic) => (
+          <li
+            key={topic.id}
+            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
+            onClick={() => handleClick(topic.id)}
+          >
+            <span className={styles.topicName}>{topic.name}</span>
+            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
