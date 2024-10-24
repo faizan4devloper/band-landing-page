@@ -2,15 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropagateLoader from 'react-spinners/PropagateLoader'; // Import the spinner
+import PropagateLoader from 'react-spinners/PropagateLoader';
 import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
-    const [loading, setLoading] = useState(true); // New loading state
-  const [openQuestion, setOpenQuestion] = useState(0); // Default first question open
+  const [loading, setLoading] = useState(true);
+  const [openQuestion, setOpenQuestion] = useState(0);
   const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true, // Textual Response open by default
+    textualResponse: true,
     citizenExperience: false,
     factualInfo: false,
     contextual: false,
@@ -19,39 +19,38 @@ const MainContent = () => {
   const fetchData = async () => {
     try {
       const response = await axios.post(
-        'dummy',
+        'dummy', // Your API endpoint
         {
-          question:
-            'what are the average class sizes and student-teacher ratios in the local schools react?',
+          question: 'Your question or dynamically generated question goes here',
         },
         {
           headers: {
             'Content-Type': 'application/json',
-          },
+          }
         }
       );
 
+      // Parsing response
       const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
+      const { question, answer } = parsedResponse; // Fetch both question and answer
 
       const formattedData = [
         {
-          question:
-            'What are the average class sizes and student-teacher ratios in the local schools?',
+          question: question || 'No question available', // Dynamically add question
           answer: {
-            textualResponse: llmAnswer || 'No Answer Available',
+            textualResponse: answer.llmAnswer || 'No Answer Available',
             citizenExperience: 'Citizen experience response goes here.',
             factualInfo: 'Factual information goes here.',
             contextual: 'Contextual information goes here.',
-          },
-        },
+          }
+        }
       ];
 
       setContentData(formattedData);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -61,12 +60,11 @@ const MainContent = () => {
 
   const toggleAnswer = (index) => {
     if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the question if clicked again
+      setOpenQuestion(null);
     } else {
-      setOpenQuestion(index); // Open the new question
-      // Expand only textualResponse for the new question
+      setOpenQuestion(index);
       setOpenGridItems({
-        textualResponse: true, // Default expand Textual Response
+        textualResponse: true,
         citizenExperience: false,
         factualInfo: false,
         contextual: false,
@@ -82,20 +80,16 @@ const MainContent = () => {
   };
 
   return (
-     <div className={styles.mainContent}>
+    <div className={styles.mainContent}>
       {loading ? (
         <div className={styles.loaderWrapper}>
-          {/* Spinner while data is loading */}
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
-            <div
-              className={styles.question}
-              onClick={() => toggleAnswer(index)}
-            >
-              {item.question}
+            <div className={styles.question} onClick={() => toggleAnswer(index)}>
+              {item.question} {/* Dynamically render question */}
               <FontAwesomeIcon
                 icon={openQuestion === index ? faChevronUp : faChevronDown}
                 className={styles.chevronIcon}
@@ -103,77 +97,64 @@ const MainContent = () => {
             </div>
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
-                {/* Textual Response expanded by default */}
                 <div
-                  className={${styles.gridItem} ${
-                    openGridItems.textualResponse
-                      ? styles.expanded
-                      : styles.collapsed
-                  }}
+                  className={`${styles.gridItem} ${
+                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('textualResponse')}
                 >
                   <h3>Textual Response</h3>
                   <FontAwesomeIcon
-                    icon={
-                      openGridItems.textualResponse
-                        ? faCaretUp
-                        : faCaretDown
-                    }
+                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
                     className={styles.chevronIcon}
                   />
                   {openGridItems.textualResponse && (
-                    <p>{item.answer.textualResponse}</p>
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.textualResponse}</li>
+                    </ul>
                   )}
                 </div>
 
                 <div
-                  className={${styles.gridItem} ${
-                    openGridItems.citizenExperience
-                      ? styles.expanded
-                      : styles.collapsed
-                  }}
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('citizenExperience')}
                 >
                   <h3>Citizen Experience</h3>
                   <FontAwesomeIcon
-                    icon={
-                      openGridItems.citizenExperience
-                        ? faCaretUp
-                        : faCaretDown
-                    }
+                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
                     className={styles.chevronIcon}
                   />
                   {openGridItems.citizenExperience && (
-                    <p>{item.answer.citizenExperience}</p>
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.citizenExperience}</li>
+                    </ul>
                   )}
                 </div>
 
                 <div
-                  className={${styles.gridItem} ${
-                    openGridItems.factualInfo
-                      ? styles.expanded
-                      : styles.collapsed
-                  }}
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('factualInfo')}
                 >
                   <h3>Factual Info</h3>
                   <FontAwesomeIcon
-                    icon={
-                      openGridItems.factualInfo ? faCaretUp : faCaretDown
-                    }
+                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
                     className={styles.chevronIcon}
                   />
                   {openGridItems.factualInfo && (
-                    <p>{item.answer.factualInfo}</p>
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.factualInfo}</li>
+                    </ul>
                   )}
                 </div>
 
                 <div
-                  className={${styles.gridItem} ${
-                    openGridItems.contextual
-                      ? styles.expanded
-                      : styles.collapsed
-                  }}
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('contextual')}
                 >
                   <h3>Contextual</h3>
@@ -182,7 +163,9 @@ const MainContent = () => {
                     className={styles.chevronIcon}
                   />
                   {openGridItems.contextual && (
-                    <p>{item.answer.contextual}</p>
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.contextual}</li>
+                    </ul>
                   )}
                 </div>
               </div>
