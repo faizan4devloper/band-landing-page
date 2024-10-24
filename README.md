@@ -1,186 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PropagateLoader from 'react-spinners/PropagateLoader';
-import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+.mainContent {
+  flex-grow: 1;
+  height: 100vh;
+  padding: 35px;
+  padding-top: 60px;
+  background-color: #f5f7fa;
+  overflow-y: auto;
+  width: 900px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
 
-const MainContent = () => {
-  const [contentData, setContentData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0);
-  const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true,
-    citizenExperience: false,
-    factualInfo: false,
-    contextual: false,
-  });
+.questionBlock {
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        'dummy-url',
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools react?',
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+.questionBlock:hover {
+  background-color: #f8f8f8;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
+.question {
+  font-size: 1.2em;
+  padding: 15px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-      // Split answer into lines based on '-' hyphen
-      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
+.chevronIcon {
+  font-size: 1em;
+  color: #888;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
 
-      const formattedData = [
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: {
-            textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-      ];
+.gridAnswer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  background-color: #f1f2f6;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-      setContentData(formattedData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      setLoading(false);
-    }
-  };
+.answerList {
+  padding-left: 20px;
+  font-size: 1em;
+  color: #555;
+}
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+.answerList li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+  font-size: 1.1em;
+  color: #333;
+}
 
-  const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null);
-    } else {
-      setOpenQuestion(index);
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
-  };
+.gridItem {
+  padding: 20px;
+  background-color: #fefefe;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: padding 0.3s ease, max-height 0.3s ease, background-color 0.3s ease;
+}
 
-  const toggleGridItem = (section) => {
-    setOpenGridItems((prevState) => ({
-      ...prevState,
-      [section]: !prevState[section],
-    }));
-  };
+.gridItem h3 {
+  margin: 0;
+  font-size: 1.2em;
+  font-weight: 600;
+  color: #2d2d2d;
+}
 
-  return (
-    <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
-        </div>
-      ) : Array.isArray(contentData) && contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.gridAnswer}>
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('textualResponse')}
-                >
-                  <h3>Textual Response</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.textualResponse && (
-                    <ul className={styles.answerList}>
-                      {item.answer.textualResponse.map((line, idx) => (
-                        <li key={idx}>- {line}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+.gridItem.expanded {
+  padding: 30px;
+  max-height: 1000px;
+  background-color: #f9fafb;
+}
 
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('citizenExperience')}
-                >
-                  <h3>Citizen Experience</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.citizenExperience && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.citizenExperience}</li>
-                    </ul>
-                  )}
-                </div>
+.gridItem.collapsed {
+  max-height: 0;
+  padding: 0 20px;
+  overflow: hidden;
+}
 
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('factualInfo')}
-                >
-                  <h3>Factual Info</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.factualInfo && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.factualInfo}</li>
-                    </ul>
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.gridItem} ${
-                    openGridItems.contextual ? styles.expanded : styles.collapsed
-                  }`}
-                  onClick={() => toggleGridItem('contextual')}
-                >
-                  <h3>Contextual</h3>
-                  <FontAwesomeIcon
-                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                    className={styles.chevronIcon}
-                  />
-                  {openGridItems.contextual && (
-                    <ul className={styles.answerList}>
-                      <li>{item.answer.contextual}</li>
-                    </ul>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        ))
-      ) : (
-        <div>No data available</div>
-      )}
-    </div>
-  );
-};
-
-export default MainContent;
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
