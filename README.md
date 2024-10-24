@@ -20,7 +20,7 @@ const MainContent = () => {
   const fetchData = async () => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
+        'dummy',
         {
           question:
             'what are the average class sizes and student-teacher ratios in the local schools react?',
