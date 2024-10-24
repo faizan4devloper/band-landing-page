@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Update: null to indicate no question is open initially
+  const [openQuestion, setOpenQuestion] = useState(0);
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -16,15 +16,17 @@ const MainContent = () => {
     contextual: false,
   });
 
-  const fetchData = async () => {
+  const questionsList = [
+    'What are the average class sizes and student-teacher ratios in the local schools?',
+    'What are the admission criteria for the schools in this area? How do they prioritize applications ?',
+  ];
+
+  const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'dummy',
+        'dummy', // Replace 'dummy' with your actual API endpoint
         {
-          // First question payload
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          // Second question payload
-          question2: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
+          question: `${question}:- hi`,
         },
         {
           headers: {
@@ -34,53 +36,59 @@ const MainContent = () => {
       );
 
       const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer1 = parsedResponse.answer1;
-      const llmAnswer2 = parsedResponse.answer2;
+      const llmAnswer = parsedResponse.answer;
 
-      const formattedAnswer1 = llmAnswer1.split('-').map(line => line.trim()).filter(line => line);
-      const formattedAnswer2 = llmAnswer2.split('-').map(line => line.trim()).filter(line => line);
+      // Split answer into lines based on '-' hyphen
+      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
-      const formattedData = [
-        {
-          question: 'What are the average class sizes and student-teacher ratios in the local schools?',
-          answer: {
-            textualResponse: formattedAnswer1.length > 0 ? formattedAnswer1 : ['No Answer Available'],
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-        {
-          question: 'What are the admission criteria for the schools in this area? How do they prioritize applications?',
-          answer: {
-            textualResponse: formattedAnswer2.length > 0 ? formattedAnswer2 : ['No Answer Available'],
-            citizenExperience: 'Citizen experience response goes here.',
-            factualInfo: 'Factual information goes here.',
-            contextual: 'Contextual information goes here.',
-          },
-        },
-      ];
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return ['No Answer Available'];
+    }
+  };
+
+  const fetchAllData = async () => {
+    try {
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here.',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
 
       setContentData(formattedData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data for all questions:', error);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchAllData();
   }, []);
 
   const toggleAnswer = (index) => {
-    setOpenQuestion(openQuestion === index ? null : index); // Toggle the current question
-    setOpenGridItems({
-      textualResponse: true,
-      citizenExperience: false,
-      factualInfo: false,
-      contextual: false,
-    });
+    if (openQuestion === index) {
+      setOpenQuestion(null);
+    } else {
+      setOpenQuestion(index);
+      setOpenGridItems({
+        textualResponse: true,
+        citizenExperience: false,
+        factualInfo: false,
+        contextual: false,
+      });
+    }
   };
 
   const toggleGridItem = (section) => {
@@ -94,7 +102,7 @@ const MainContent = () => {
     <div className={styles.mainContent}>
       {loading ? (
         <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
