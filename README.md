@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = () => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Set to null initially
+  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question is open
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -78,14 +78,17 @@ const MainContent = () => {
   }, []);
 
   const toggleAnswer = (index) => {
-    // Set the open question to the clicked index, or null to collapse if already open
-    setOpenQuestion(openQuestion === index ? null : index);
-    setOpenGridItems({
-      textualResponse: true,
-      citizenExperience: false,
-      factualInfo: false,
-      contextual: false,
-    });
+    if (openQuestion === index) {
+      setOpenQuestion(null); // Collapse the currently open question if clicked again
+    } else {
+      setOpenQuestion(index); // Open the new question and close the others
+      setOpenGridItems({
+        textualResponse: true,
+        citizenExperience: false,
+        factualInfo: false,
+        contextual: false,
+      });
+    }
   };
 
   const toggleGridItem = (section) => {
@@ -103,8 +106,7 @@ const MainContent = () => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          // Conditionally render only the open question
-          openQuestion === index ? (
+          openQuestion === index && ( // Only render the currently opened question
             <div key={index} className={styles.questionBlock}>
               <div className={styles.question} onClick={() => toggleAnswer(index)}>
                 {item.question}
@@ -191,7 +193,7 @@ const MainContent = () => {
                 </div>
               )}
             </div>
-          ) : null // Hide other questions if they are not open
+          )
         ))
       ) : (
         <div>No data available</div>
