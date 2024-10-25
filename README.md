@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -27,7 +28,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'dummy', // Replace 'dummy' with your actual API endpoint
+        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', // Replace 'dummy' with your actual API endpoint
         { question: `${question}:- hi` },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -97,23 +98,13 @@ const MainContent = ({ activeTopic }) => {
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
-            {openQuestion === index ? (
-              <div className={styles.question} onClick={() => toggleAnswer(index)}>
-                {item.question}
-                <FontAwesomeIcon
-                  icon={faChevronUp}
-                  className={styles.chevronIcon}
-                />
-              </div>
-            ) : (
-              <div className={styles.question} onClick={() => toggleAnswer(index)}>
-                {item.question}
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  className={styles.chevronIcon}
-                />
-              </div>
-            )}
+            <div className={styles.question} onClick={() => toggleAnswer(index)}>
+              {item.question}
+              <FontAwesomeIcon
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
+                className={styles.chevronIcon}
+              />
+            </div>
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
                 <div
