@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // No question is expanded by default
+  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
   });
@@ -27,7 +27,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
+        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', 
         { question: `${question}:- hi` },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -75,9 +75,9 @@ const MainContent = ({ activeTopic }) => {
   }, [activeTopic]);
 
   const toggleAnswer = (index) => {
-    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+    setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
     setOpenGridItems({
-      textualResponse: true,
+      textualResponse: true, 
     });
   };
 
@@ -96,19 +96,21 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          <div key={index} className={styles.questionBlock}>
-            {openQuestion === index ? (
-              <>
-                <div className={styles.question} onClick={() => toggleAnswer(index)}>
-                  {item.question}
-                  <FontAwesomeIcon
-                    icon={faChevronUp}
-                    className={styles.chevronIcon}
-                  />
-                </div>
+          (openQuestion === null || openQuestion === index) && ( // Only display either all or the expanded question
+            <div key={index} className={styles.questionBlock}>
+              <div className={styles.question} onClick={() => toggleAnswer(index)}>
+                {item.question}
+                <FontAwesomeIcon
+                  icon={openQuestion === index ? faChevronUp : faChevronDown}
+                  className={styles.chevronIcon}
+                />
+              </div>
+              {openQuestion === index && (
                 <div className={styles.gridAnswer}>
                   <div
-                    className={`${styles.gridItem} ${openGridItems.textualResponse ? styles.expanded : styles.collapsed}`}
+                    className={`${styles.gridItem} ${
+                      openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                    }`}
                     onClick={() => toggleGridItem('textualResponse')}
                   >
                     <h3>Textual Response</h3>
@@ -126,7 +128,9 @@ const MainContent = ({ activeTopic }) => {
                   </div>
 
                   <div
-                    className={`${styles.gridItem} ${openGridItems.citizenExperience ? styles.expanded : styles.collapsed}`}
+                    className={`${styles.gridItem} ${
+                      openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                    }`}
                     onClick={() => toggleGridItem('citizenExperience')}
                   >
                     <h3>Citizen Experience</h3>
@@ -142,7 +146,9 @@ const MainContent = ({ activeTopic }) => {
                   </div>
 
                   <div
-                    className={`${styles.gridItem} ${openGridItems.factualInfo ? styles.expanded : styles.collapsed}`}
+                    className={`${styles.gridItem} ${
+                      openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                    }`}
                     onClick={() => toggleGridItem('factualInfo')}
                   >
                     <h3>Factual Info</h3>
@@ -158,7 +164,9 @@ const MainContent = ({ activeTopic }) => {
                   </div>
 
                   <div
-                    className={`${styles.gridItem} ${openGridItems.contextual ? styles.expanded : styles.collapsed}`}
+                    className={`${styles.gridItem} ${
+                      openGridItems.contextual ? styles.expanded : styles.collapsed
+                    }`}
                     onClick={() => toggleGridItem('contextual')}
                   >
                     <h3>Contextual</h3>
@@ -173,17 +181,9 @@ const MainContent = ({ activeTopic }) => {
                     )}
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className={styles.question} onClick={() => toggleAnswer(index)}>
-                {item.question}
-                <FontAwesomeIcon
-                  icon={faChevronDown}
-                  className={styles.chevronIcon}
-                />
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )
         ))
       ) : (
         <div>No Questions Available</div>
