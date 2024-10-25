@@ -191,4 +191,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
