@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -8,7 +9,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0); // First question expanded by default
+  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
   });
@@ -27,7 +28,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
+        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', 
         { question: `${question}:- hi` },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -77,7 +78,7 @@ const MainContent = ({ activeTopic }) => {
   const toggleAnswer = (index) => {
     setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
     setOpenGridItems({
-      textualResponse: true, // Textual response always expanded initially
+      textualResponse: true, 
     });
   };
 
@@ -96,7 +97,7 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          openQuestion === index && (
+          (openQuestion === null || openQuestion === index) && ( // Only display either all or the expanded question
             <div key={index} className={styles.questionBlock}>
               <div className={styles.question} onClick={() => toggleAnswer(index)}>
                 {item.question}
