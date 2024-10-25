@@ -8,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0); // Set to 0 to expand the first question initially
+  const [openQuestion, setOpenQuestion] = useState(0); // Default expand first question
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
     citizenExperience: false,
@@ -16,7 +16,6 @@ const MainContent = ({ activeTopic }) => {
     contextual: false,
   });
 
-  // Map questions to different topics
   const topicQuestions = {
     1: [
       'What are the average class sizes and student-teacher ratios in the local schools?',
@@ -32,19 +31,12 @@ const MainContent = ({ activeTopic }) => {
     try {
       const response = await axios.post(
         'dummy', // Replace 'dummy' with your actual API endpoint
-        {
-          question: `${question}:- hi`,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        { question: `${question}:- hi` },
+        { headers: { 'Content-Type': 'application/json' } }
       );
 
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
-
       const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
 
       return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
@@ -57,7 +49,6 @@ const MainContent = ({ activeTopic }) => {
   const fetchAllData = async (topicId) => {
     try {
       const questionsList = topicQuestions[topicId] || [];
-
       const formattedData = await Promise.all(
         questionsList.map(async (question) => {
           const answer = await fetchDataForQuestion(question);
@@ -83,21 +74,17 @@ const MainContent = ({ activeTopic }) => {
 
   useEffect(() => {
     setLoading(true);
-    fetchAllData(activeTopic); // Fetch data based on active topic
+    fetchAllData(activeTopic);
   }, [activeTopic]);
 
   const toggleAnswer = (index) => {
-    if (openQuestion === index) {
-      setOpenQuestion(null); // Collapse the currently open question if clicked again
-    } else {
-      setOpenQuestion(index); // Open the new question and hide others
-      setOpenGridItems({
-        textualResponse: true,
-        citizenExperience: false,
-        factualInfo: false,
-        contextual: false,
-      });
-    }
+    setOpenQuestion((prevIndex) => (prevIndex === index ? null : index)); // Single expand mode
+    setOpenGridItems({
+      textualResponse: true,
+      citizenExperience: false,
+      factualInfo: false,
+      contextual: false,
+    });
   };
 
   const toggleGridItem = (section) => {
