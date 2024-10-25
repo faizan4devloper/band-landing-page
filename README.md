@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -27,7 +28,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
+        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', // Replace 'dummy' with your actual API endpoint
         { question: `${question}:- hi` },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -74,12 +75,19 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
+  // const toggleAnswer = (index) => {
+  //   setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
+  //   setOpenGridItems({
+  //     textualResponse: true, // Textual response always expanded initially
+  //   });
+  // };
+  
   const toggleAnswer = (index) => {
-    setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
-    setOpenGridItems({
-      textualResponse: true, // Textual response always expanded initially
-    });
-  };
+  setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
+  setOpenGridItems({
+    textualResponse: true, // Textual response always expanded initially
+  });
+};
 
   const toggleGridItem = (section) => {
     setOpenGridItems((prevState) => ({
@@ -107,7 +115,9 @@ const MainContent = ({ activeTopic }) => {
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
                 <div
-                  className={`${styles.gridItem} ${openGridItems.textualResponse ? styles.expanded : styles.collapsed}`}
+                  className={`${styles.gridItem} ${
+                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('textualResponse')}
                 >
                   <h3>Textual Response</h3>
@@ -125,7 +135,9 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${openGridItems.citizenExperience ? styles.expanded : styles.collapsed}`}
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('citizenExperience')}
                 >
                   <h3>Citizen Experience</h3>
@@ -141,7 +153,9 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${openGridItems.factualInfo ? styles.expanded : styles.collapsed}`}
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('factualInfo')}
                 >
                   <h3>Factual Info</h3>
@@ -157,7 +171,9 @@ const MainContent = ({ activeTopic }) => {
                 </div>
 
                 <div
-                  className={`${styles.gridItem} ${openGridItems.contextual ? styles.expanded : styles.collapsed}`}
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? styles.expanded : styles.collapsed
+                  }`}
                   onClick={() => toggleGridItem('contextual')}
                 >
                   <h3>Contextual</h3>
