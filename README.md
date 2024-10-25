@@ -1,32 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PropagateLoader from 'react-spinners/PropagateLoader';
-import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import QuestionBlock from './QuestionBlock';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null);
-  const [openGridItems, setOpenGridItems] = useState({
-    textualResponse: true,
-  });
+  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
 
   const topicQuestions = {
     1: [
       'What are the average class sizes and student-teacher ratios in the local schools?',
       'What are the admission criteria for the schools in this area?',
     ],
-    // Add other topic questions here...
+    2: ['Topic 2 Question 1', 'Topic 2 Question 2'],
+    // Add more topics as needed...
   };
 
   const fetchDataForQuestion = async (question) => {
     try {
-      const response = await axios.post('dummy', { question: `${question}:- hi` });
+      const response = await axios.post(
+        'dummy',
+        { question: `${question}:- hi` },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
-      const formattedAnswer = llmAnswer.split('-').map((line) => line.trim()).filter(line => line);
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
       return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -41,13 +44,22 @@ const MainContent = ({ activeTopic }) => {
       const formattedData = await Promise.all(
         questionsList.map(async (question) => {
           const answer = await fetchDataForQuestion(question);
-          return { question, answer: { textualResponse: answer } };
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here.',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
         })
       );
+
       setContentData(formattedData);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error('Error fetching data for all questions:', error);
       setLoading(false);
     }
   };
@@ -56,9 +68,7 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const toggleAnswer = (index) => {
-    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
-  };
+  const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
 
   return (
     <div className={styles.mainContent}>
@@ -66,25 +76,18 @@ const MainContent = ({ activeTopic }) => {
         <div className={styles.loaderWrapper}>
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
-      ) : (
+      ) : contentData.length > 0 ? (
         contentData.map((item, index) => (
-          <div
+          <QuestionBlock
             key={index}
-            className={`${styles.questionBlock} ${index % 2 === 0 ? styles.even : styles.odd}`}
-          >
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              <FontAwesomeIcon icon={faChevronDown} />
-              <span>{item.question}</span>
-              <FontAwesomeIcon icon={openQuestion === index ? faChevronUp : faChevronDown} />
-            </div>
-            {openQuestion === index && (
-              <div className={styles.answerContainer}>
-                <p>{item.answer.textualResponse.join(', ')}</p>
-                {/* Add action buttons here */}
-              </div>
-            )}
-          </div>
+            question={item.question}
+            answerData={item.answer}
+            isOpen={openQuestion === index}
+            toggle={() => toggleAnswer(index)}
+          />
         ))
+      ) : (
+        <div>No Questions Available</div>
       )}
     </div>
   );
@@ -94,55 +97,100 @@ export default MainContent;
 
 
 
-.mainContent {
-  padding: 30px;
-  background-color: #f7f9fc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 800px;
-}
 
-.questionBlock {
-  border-radius: 10px;
-  margin-bottom: 15px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import styles from './QuestionBlock.module.css';
+import GridAnswer from './GridAnswer';
 
-.questionBlock:hover {
-  background-color: #f1f4f9;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
+const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+  <div className={styles.questionBlock}>
+    <div className={styles.question} onClick={toggle}>
+      {question}
+      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
+    </div>
+    {isOpen && <GridAnswer answerData={answerData} />}
+  </div>
+);
 
-.even {
-  background-color: #ffffff;
-}
+export default QuestionBlock;
 
-.odd {
-  background-color: #f8fafc;
-}
 
-.question {
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 14px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #2a2a2a;
-}
 
-.answerContainer {
-  padding: 10px;
-  background-color: #eff0f7;
-  border-radius: 8px;
-  margin-top: 10px;
-  color: #555;
-}
 
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
+
+
+
+
+import React, { useState } from 'react';
+import styles from './GridAnswer.module.css';
+import GridItem from './GridItem';
+
+const GridAnswer = ({ answerData }) => {
+  const [openGridItems, setOpenGridItems] = useState({
+    textualResponse: true,
+  });
+
+  const toggleGridItem = (section) => {
+    setOpenGridItems(prevState => ({
+      ...prevState,
+      [section]: !prevState[section],
+    }));
+  };
+
+  return (
+    <div className={styles.gridAnswer}>
+      <GridItem
+        title="Textual Response"
+        isOpen={openGridItems.textualResponse}
+        toggle={() => toggleGridItem('textualResponse')}
+        content={answerData.textualResponse}
+      />
+      <GridItem
+        title="Citizen Experience"
+        isOpen={openGridItems.citizenExperience}
+        toggle={() => toggleGridItem('citizenExperience')}
+        content={[answerData.citizenExperience]}
+      />
+      <GridItem
+        title="Factual Info"
+        isOpen={openGridItems.factualInfo}
+        toggle={() => toggleGridItem('factualInfo')}
+        content={[answerData.factualInfo]}
+      />
+      <GridItem
+        title="Contextual"
+        isOpen={openGridItems.contextual}
+        toggle={() => toggleGridItem('contextual')}
+        content={[answerData.contextual]}
+      />
+    </div>
+  );
+};
+
+export default GridAnswer;
+
+
+
+
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
+import styles from './GridItem.module.css';
+
+const GridItem = ({ title, isOpen, toggle, content }) => (
+  <div className={`${styles.gridItem} ${isOpen ? styles.expanded : styles.collapsed}`} onClick={toggle}>
+    <h3>{title}</h3>
+    <FontAwesomeIcon icon={isOpen ? faCaretUp : faCaretDown} className={styles.chevronIcon} />
+    {isOpen && (
+      <ul className={styles.answerList}>
+        {content.map((line, index) => (
+          <li key={index}>{line}</li>
+        ))}
+      </ul>
+    )}
+  </div>
+);
+
+export default GridItem;
