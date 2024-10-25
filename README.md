@@ -97,13 +97,23 @@ const MainContent = ({ activeTopic }) => {
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
           <div key={index} className={styles.questionBlock}>
-            <div className={styles.question} onClick={() => toggleAnswer(index)}>
-              {item.question}
-              <FontAwesomeIcon
-                icon={openQuestion === index ? faChevronUp : faChevronDown}
-                className={styles.chevronIcon}
-              />
-            </div>
+            {openQuestion === index ? (
+              <div className={styles.question} onClick={() => toggleAnswer(index)}>
+                {item.question}
+                <FontAwesomeIcon
+                  icon={faChevronUp}
+                  className={styles.chevronIcon}
+                />
+              </div>
+            ) : (
+              <div className={styles.question} onClick={() => toggleAnswer(index)}>
+                {item.question}
+                <FontAwesomeIcon
+                  icon={faChevronDown}
+                  className={styles.chevronIcon}
+                />
+              </div>
+            )}
             {openQuestion === index && (
               <div className={styles.gridAnswer}>
                 <div
