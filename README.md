@@ -8,12 +8,9 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0); // Default expand first question
+  const [openQuestion, setOpenQuestion] = useState(0); // First question expanded by default
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
-    citizenExperience: false,
-    factualInfo: false,
-    contextual: false,
   });
 
   const topicQuestions = {
@@ -78,12 +75,9 @@ const MainContent = ({ activeTopic }) => {
   }, [activeTopic]);
 
   const toggleAnswer = (index) => {
-    setOpenQuestion((prevIndex) => (prevIndex === index ? null : index)); // Single expand mode
+    setOpenQuestion(prevIndex => (prevIndex === index ? null : index)); // Toggle the selected question
     setOpenGridItems({
-      textualResponse: true,
-      citizenExperience: false,
-      factualInfo: false,
-      contextual: false,
+      textualResponse: true, // Textual response always expanded initially
     });
   };
 
@@ -197,3 +191,4 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
+
