@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -9,7 +8,7 @@ import { faChevronDown, faChevronUp, faCaretDown, faCaretUp } from '@fortawesome
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(0); // Initially no question expanded
+  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
   const [openGridItems, setOpenGridItems] = useState({
     textualResponse: true,
   });
@@ -28,7 +27,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async (question) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', 
+        'dummy', 
         { question: `${question}:- hi` },
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -97,94 +96,92 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : Array.isArray(contentData) && contentData.length > 0 ? (
         contentData.map((item, index) => (
-          (openQuestion === null || openQuestion === index) && ( // Only display either all or the expanded question
-            <div key={index} className={styles.questionBlock}>
-              <div className={styles.question} onClick={() => toggleAnswer(index)}>
-                {item.question}
-                <FontAwesomeIcon
-                  icon={openQuestion === index ? faChevronUp : faChevronDown}
-                  className={styles.chevronIcon}
-                />
-              </div>
-              {openQuestion === index && (
-                <div className={styles.gridAnswer}>
-                  <div
-                    className={`${styles.gridItem} ${
-                      openGridItems.textualResponse ? styles.expanded : styles.collapsed
-                    }`}
-                    onClick={() => toggleGridItem('textualResponse')}
-                  >
-                    <h3>Textual Response</h3>
-                    <FontAwesomeIcon
-                      icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
-                      className={styles.chevronIcon}
-                    />
-                    {openGridItems.textualResponse && (
-                      <ul className={styles.answerList}>
-                        {item.answer.textualResponse.map((line, idx) => (
-                          <li key={idx}>- {line}</li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-
-                  <div
-                    className={`${styles.gridItem} ${
-                      openGridItems.citizenExperience ? styles.expanded : styles.collapsed
-                    }`}
-                    onClick={() => toggleGridItem('citizenExperience')}
-                  >
-                    <h3>Citizen Experience</h3>
-                    <FontAwesomeIcon
-                      icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
-                      className={styles.chevronIcon}
-                    />
-                    {openGridItems.citizenExperience && (
-                      <ul className={styles.answerList}>
-                        <li>{item.answer.citizenExperience}</li>
-                      </ul>
-                    )}
-                  </div>
-
-                  <div
-                    className={`${styles.gridItem} ${
-                      openGridItems.factualInfo ? styles.expanded : styles.collapsed
-                    }`}
-                    onClick={() => toggleGridItem('factualInfo')}
-                  >
-                    <h3>Factual Info</h3>
-                    <FontAwesomeIcon
-                      icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
-                      className={styles.chevronIcon}
-                    />
-                    {openGridItems.factualInfo && (
-                      <ul className={styles.answerList}>
-                        <li>{item.answer.factualInfo}</li>
-                      </ul>
-                    )}
-                  </div>
-
-                  <div
-                    className={`${styles.gridItem} ${
-                      openGridItems.contextual ? styles.expanded : styles.collapsed
-                    }`}
-                    onClick={() => toggleGridItem('contextual')}
-                  >
-                    <h3>Contextual</h3>
-                    <FontAwesomeIcon
-                      icon={openGridItems.contextual ? faCaretUp : faCaretDown}
-                      className={styles.chevronIcon}
-                    />
-                    {openGridItems.contextual && (
-                      <ul className={styles.answerList}>
-                        <li>{item.answer.contextual}</li>
-                      </ul>
-                    )}
-                  </div>
-                </div>
-              )}
+          <div key={index} className={styles.questionBlock}>
+            <div className={styles.question} onClick={() => toggleAnswer(index)}>
+              {item.question}
+              <FontAwesomeIcon
+                icon={openQuestion === index ? faChevronUp : faChevronDown}
+                className={styles.chevronIcon}
+              />
             </div>
-          )
+            {openQuestion === index && (
+              <div className={styles.gridAnswer}>
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.textualResponse ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('textualResponse')}
+                >
+                  <h3>Textual Response</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.textualResponse ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.textualResponse && (
+                    <ul className={styles.answerList}>
+                      {item.answer.textualResponse.map((line, idx) => (
+                        <li key={idx}>- {line}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.citizenExperience ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('citizenExperience')}
+                >
+                  <h3>Citizen Experience</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.citizenExperience ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.citizenExperience && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.citizenExperience}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.factualInfo ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('factualInfo')}
+                >
+                  <h3>Factual Info</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.factualInfo ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.factualInfo && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.factualInfo}</li>
+                    </ul>
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.gridItem} ${
+                    openGridItems.contextual ? styles.expanded : styles.collapsed
+                  }`}
+                  onClick={() => toggleGridItem('contextual')}
+                >
+                  <h3>Contextual</h3>
+                  <FontAwesomeIcon
+                    icon={openGridItems.contextual ? faCaretUp : faCaretDown}
+                    className={styles.chevronIcon}
+                  />
+                  {openGridItems.contextual && (
+                    <ul className={styles.answerList}>
+                      <li>{item.answer.contextual}</li>
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         ))
       ) : (
         <div>No Questions Available</div>
@@ -194,8 +191,6 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
-
 
 
 .mainContent {
@@ -262,7 +257,6 @@ export default MainContent;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
 .answerList {
   padding-left: 20px;
   list-style: none;
@@ -272,139 +266,56 @@ export default MainContent;
 
 .answerList li {
   margin-bottom: 10px;
-  line-height: 1.6;
-  font-size: .9rem;
-  font-weight: 500;
-  color: #333;
+  line-height: 1.5;
 }
-
 
 .gridItem {
-  padding: 25px 10px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 80px;
-  max-height: 80px;
-  overflow: hidden;
-  position: relative;
-  text-align: center;
-}
-
-.gridItem h3 {
-  font-size: 1.4em;
-  color: #2c3e50;
-  font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.gridItem p {
-  font-size: 1em;
-  color: #7f8c8d;
-  line-height: 1.6;
-  margin: 0;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .gridItem:hover {
-  /*background-color: #ecf0f1;*/
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  transform: translateY(-3px);
-}
-
-.gridItem h3:hover {
-  color: #0073e6;
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .expanded {
-  max-height: 250px;
-  overflow-y: auto;
-}
-
-.collapsed {
-  max-height: 80px;
+  max-height: 300px; /* Adjust to desired height */
   overflow: hidden;
 }
 
-/* Custom scrollbar */
-.gridAnswer::-webkit-scrollbar{
-  width: 8px;
-}
-
-.gridAnswer::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.gridAnswer::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 8px;
-  border: 2px solid #f1f1f1;
-}
-
-.gridAnswer::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
-}
-
-
-
-
-
-.gridItem::-webkit-scrollbar {
-  width: 8px;
-}
-
-.gridItem::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.gridItem::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 8px;
-  border: 2px solid #f1f1f1;
-}
-
-.gridItem::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+.collapsed {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
 }
 
 .loaderWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 60vh;
+  height: 100%;
 }
 
-ul {
-  /*list-style-type: disc;*/
-  padding-left: 20px;
-}
+@media (max-width: 768px) {
+  .mainContent {
+    width: 100%;
+    padding: 20px;
+  }
 
-li {
-  font-size: 1em;
-  color: #444;
-}
+  .question {
+    font-size: 0.9rem;
+  }
 
-.gridAnswer > .gridItem {
-  margin-bottom: 20px;
-}
+  .gridItem {
+    padding: 8px;
+  }
 
-/* Additional hover effect for grid items */
-.gridItem:hover {
-  /*background: linear-gradient(135deg, #74ebd5 0%, #acb6e5 100%);*/
-  /*color: white;*/
-}
-
-.gridItem:hover h3, .gridItem:hover p {
-  /*color: #fff;*/  
-}
-
-/* Optional hover effect for better UI feedback when grid item is expanded */
-.gridItem.expanded:hover {
-  background-color: #fff;
-  color: #2a2a2a;
+  .answerList {
+    font-size: 0.9em;
+  }
 }
