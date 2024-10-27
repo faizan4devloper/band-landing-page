@@ -72,3 +72,4 @@
   background-color: #f8f9fa; /* Light background for selected question */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
 }
+
