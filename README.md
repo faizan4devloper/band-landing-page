@@ -7,7 +7,7 @@ import QuestionBlock from './QuestionBlock';
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuestion, setSelectedQuestion] = useState(null); // To store the selected question
+  const [selectedQuestion, setSelectedQuestion] = useState(null); // Track the selected question
 
   const topicQuestions = {
     1: [
@@ -68,8 +68,8 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const handleQuestionSelect = (item) => {
-    setSelectedQuestion(item); // Set the selected question
+  const handleQuestionClick = (index) => {
+    setSelectedQuestion(contentData[index]); // Set the selected question
   };
 
   return (
@@ -78,27 +78,25 @@ const MainContent = ({ activeTopic }) => {
         <div className={styles.loaderWrapper}>
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
+      ) : selectedQuestion ? (
+        // Render selected question's data in full screen
+        <div className={styles.fullScreenContent}>
+          <h2>{selectedQuestion.question}</h2>
+          <div>{selectedQuestion.answer.textualResponse.join(', ')}</div>
+          {/* Add additional data display as needed */}
+          <button onClick={() => setSelectedQuestion(null)}>Back</button>
+        </div>
       ) : contentData.length > 0 ? (
         contentData.map((item, index) => (
           <QuestionBlock
             key={index}
             question={item.question}
             answerData={item.answer}
-            onSelect={() => handleQuestionSelect(item)} // Pass the item to the select handler
+            toggle={() => handleQuestionClick(index)} // Change toggle to handleQuestionClick
           />
         ))
       ) : (
         <div>No Questions Available</div>
-      )}
-
-      {/* Render selected question data if exists */}
-      {selectedQuestion && (
-        <div className={styles.selectedQuestionContainer}>
-          <h2>{selectedQuestion.question}</h2>
-          <div>{selectedQuestion.answer.textualResponse.join(', ')}</div>
-          {/* Add more answer data rendering as needed */}
-          <button onClick={() => setSelectedQuestion(null)}>Back to Questions</button>
-        </div>
       )}
     </div>
   );
@@ -108,18 +106,19 @@ export default MainContent;
 
 
 
-
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import styles from './QuestionBlock.module.css';
+import GridAnswer from './GridAnswer';
 
-const QuestionBlock = ({ question, answerData, onSelect }) => (
-  <div className={styles.questionBlock} onClick={onSelect}>
-    <div className={styles.question}>
+const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+  <div className={styles.questionBlock}>
+    <div className={styles.question} onClick={toggle}>
       {question}
-      <FontAwesomeIcon icon={faChevronDown} className={styles.chevronIcon} />
+      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
     </div>
+    {isOpen && <GridAnswer answerData={answerData} />}
   </div>
 );
 
@@ -127,19 +126,20 @@ export default QuestionBlock;
 
 
 
-.selectedQuestionContainer {
-  position: fixed; /* Cover the full screen */
+
+.fullScreenContent {
+  position: fixed; /* Position it over the existing content */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent background */
-  padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content exceeds screen */
-  z-index: 1000; /* Ensure it’s on top of other content */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* White background for contrast */
+  padding: 20px; /* Padding around the content */
+  z-index: 100; /* Ensure it appears above other content */
+  overflow-y: auto; /* Allow scrolling if content is large */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
 }
 
-.selectedQuestionContainer h2 {
-  margin-top: 0; /* Remove margin from the top */
+.fullScreenContent h2 {
+  margin-top: 0; /* Remove margin for header */
 }
