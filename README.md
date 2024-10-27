@@ -1,18 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
+import QuestionBlock from './QuestionBlock';
 import styles from './FaqDropdown.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import QuestionBlock from './QuestionBlock';
 
-const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selectedAnswer }) => {
-  const [isFaqOpen, setIsFaqOpen] = React.useState(false); // Initially closed
+const FaqDropdown = ({ contentData, onSelect }) => {
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
 
   const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
-
-  const handleQuestionSelect = (question, answer) => {
-    onQuestionSelect(question, answer);
-    setIsFaqOpen(false); // Close dropdown after selection
-  };
 
   return (
     <div className={styles.faqDropdown}>
@@ -23,23 +18,48 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
       {isFaqOpen && (
         <div className={styles.dropdownContent}>
           {contentData.map((item, index) => (
-            <div key={index} onClick={() => handleQuestionSelect(item.question, item.answer)} className={styles.questionBlock}>
-              <span>{item.question}</span>
-            </div>
+            <QuestionBlock
+              key={index}
+              question={item.question}
+              answerData={item.answer}
+              onSelect={onSelect}
+            />
           ))}
         </div>
-      )}
-      {selectedQuestion && (
-        <QuestionBlock
-          question={selectedQuestion}
-          answerData={selectedAnswer}
-        />
       )}
     </div>
   );
 };
 
 export default FaqDropdown;
+
+
+
+
+import React from 'react';
+import styles from './QuestionBlock.module.css';
+
+const QuestionBlock = ({ question, answerData, onSelect, isActive }) => (
+  <div 
+    className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}
+    onClick={() => onSelect(question)}
+  >
+    <div className={styles.question}>
+      {question}
+    </div>
+    {isActive && (
+      <div className={styles.answer}>
+        <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
+        <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
+        <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
+        <p><strong>Contextual:</strong> {answerData.contextual}</p>
+      </div>
+    )}
+  </div>
+);
+
+export default QuestionBlock;
+
 
 
 
@@ -53,7 +73,6 @@ const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   const topicQuestions = {
     1: [
@@ -110,9 +129,8 @@ const MainContent = ({ activeTopic }) => {
     }
   };
 
-  const handleQuestionSelect = (question, answer) => {
+  const handleQuestionSelect = (question) => {
     setSelectedQuestion(question);
-    setSelectedAnswer(answer);
   };
 
   useEffect(() => {
@@ -126,12 +144,13 @@ const MainContent = ({ activeTopic }) => {
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : (
-        <FaqDropdown
-          contentData={contentData}
-          onQuestionSelect={handleQuestionSelect}
-          selectedQuestion={selectedQuestion}
-          selectedAnswer={selectedAnswer}
-        />
+        <FaqDropdown contentData={contentData} onSelect={handleQuestionSelect} />
+      )}
+      {selectedQuestion && (
+        <div className={styles.selectedQuestion}>
+          <h2>Selected Question:</h2>
+          <p>{selectedQuestion}</p>
+        </div>
       )}
     </div>
   );
@@ -139,3 +158,62 @@ const MainContent = ({ activeTopic }) => {
 
 export default MainContent;
 
+
+
+.faqDropdown {
+  border: 1px solid #ddd;
+  margin-top: 20px;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #0073e6;
+  color: #fff;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px 5px 0 0;
+}
+
+.dropdownContent {
+  padding: 10px 15px;
+  border-top: 1px solid #ddd;
+}
+
+
+
+
+.questionBlock {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 5px;
+}
+
+.questionBlock:hover {
+  background-color: #e0e7ff; /* Light blue on hover */
+}
+
+.active {
+  background-color: #0073e6; /* Active question background color */
+  color: #fff; /* Change text color when active */
+}
+
+.question {
+  font-size: 1rem;
+  font-weight: bold;
+  color: inherit; /* Inherit color for active */
+}
+
+.answer {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fafafa;
+  border-left: 4px solid #0073e6;
+  border-radius: 5px;
+}
