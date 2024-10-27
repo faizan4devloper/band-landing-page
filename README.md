@@ -20,7 +20,7 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
         <span>Frequently Asked Questions</span>
         <FontAwesomeIcon icon={isFaqOpen ? faChevronUp : faChevronDown} />
       </div>
-      
+
       {isFaqOpen && (
         <div className={styles.dropdownContent}>
           {contentData.map((item, index) => (
@@ -34,6 +34,35 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
           ))}
         </div>
       )}
+    </div>
+  );
+};
+
+export default FaqDropdown;
+
+
+
+import React, { useState } from 'react';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock'; // Importing QuestionBlock if needed
+
+const FaqSection = ({ contentData }) => {
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  const onQuestionSelect = (question, answer) => {
+    setSelectedQuestion(question);
+    setSelectedAnswer(answer);
+  };
+
+  return (
+    <div>
+      <FaqDropdown 
+        contentData={contentData}
+        onQuestionSelect={onQuestionSelect}
+        selectedQuestion={selectedQuestion}
+        selectedAnswer={selectedAnswer}
+      />
 
       {selectedQuestion && (
         <div className={styles.selectedQuestionBlock}>
@@ -47,55 +76,9 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
   );
 };
 
-export default FaqDropdown;
+export default FaqSection;
 
 
-
-.faqDropdown {
-  border: 1px solid #ddd;
-  margin-top: 20px;
-  border-radius: 10px; /* More rounded corners for a modern look */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
-  background-color: #ffffff; /* White background for the whole dropdown */
-}
-
-.dropdownHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; /* Center align items vertically */
-  padding: 15px;
-  background-color: #0073e6; /* Blue header background */
-  color: #ffffff; /* White text color for contrast */
-  font-weight: bold;
-  border-radius: 10px 10px 0 0; /* Rounded top corners */
-  cursor: pointer;
-}
-
-.dropdownContent {
-  padding: 10px 15px;
-  border-top: 1px solid #ddd; /* Separator line between header and content */
-  border-radius: 0 0 10px 10px; /* Rounded bottom corners */
-}
-
-.questionBlock {
-  padding: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  border-radius: 5px; /* Slightly rounded corners */
-  margin-bottom: 8px; /* Space between items */
-  background-color: #f9f9f9; /* Light grey background for question items */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Light shadow */
-}
-
-.questionBlock:hover {
-  background-color: #e6f7ff; /* Light blue on hover */
-}
-
-.activeQuestion {
-  background-color: #cce5ff; /* Highlight active question */
-  font-weight: bold; /* Emphasize selected question */
-  border: 2px solid #0073e6; /* Border to indicate active state */
-}
 
 .selectedQuestionBlock {
   padding: 20px;
@@ -105,4 +88,3 @@ export default FaqDropdown;
   background-color: #f8f9fa; /* Light background for selected question */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
-
