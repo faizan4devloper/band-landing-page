@@ -41,7 +41,6 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
 export default FaqDropdown;
 
 
-
 import React, { useState } from 'react';
 import FaqDropdown from './FaqDropdown';
 import QuestionBlock from './QuestionBlock'; // Importing QuestionBlock if needed
@@ -80,11 +79,38 @@ export default FaqSection;
 
 
 
-.selectedQuestionBlock {
-  padding: 20px;
-  margin-top: 20px; /* Increased space between dropdown and selected question */
-  border: 2px solid #0073e6; /* Blue border to denote active selection */
-  border-radius: 10px; /* Rounded corners */
-  background-color: #f8f9fa; /* Light background for selected question */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for depth */
-}
+import React, { useState } from 'react';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock'; // Importing QuestionBlock if needed
+
+const FaqSection = ({ contentData }) => {
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  const onQuestionSelect = (question, answer) => {
+    setSelectedQuestion(question);
+    setSelectedAnswer(answer);
+  };
+
+  return (
+    <div>
+      <FaqDropdown 
+        contentData={contentData}
+        onQuestionSelect={onQuestionSelect}
+        selectedQuestion={selectedQuestion}
+        selectedAnswer={selectedAnswer}
+      />
+
+      {selectedQuestion && (
+        <div className={styles.selectedQuestionBlock}>
+          <QuestionBlock
+            question={selectedQuestion}
+            answerData={selectedAnswer}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FaqSection;
