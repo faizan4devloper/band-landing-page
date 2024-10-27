@@ -1,13 +1,49 @@
+import React, { useState } from 'react';
+import QuestionBlock from './QuestionBlock';
+import styles from './FaqDropdown.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+
+const FaqDropdown = ({ contentData }) => {
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
+  const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
+
+  return (
+    <div className={styles.faqDropdown}>
+      <div className={styles.dropdownHeader} onClick={toggleFaq}>
+        <h2>Frequently Asked Questions</h2>
+        <FontAwesomeIcon icon={isFaqOpen ? faChevronUp : faChevronDown} />
+      </div>
+      {isFaqOpen && (
+        <div className={styles.dropdownContent}>
+          {contentData.map((item, index) => (
+            <QuestionBlock
+              key={index}
+              question={item.question}
+              answerData={item.answer}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FaqDropdown;
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
-import QuestionBlock from './QuestionBlock';
+import FaqDropdown from './FaqDropdown';
+import styles from './MainContent.module.css';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null);
 
   const topicQuestions = {
     1: [
@@ -68,8 +104,6 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
-
   return (
     <div className={styles.mainContent}>
       {loading ? (
@@ -77,17 +111,7 @@ const MainContent = ({ activeTopic }) => {
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : (
-        <div>
-          {contentData.map((item, index) => (
-            <QuestionBlock
-              key={index}
-              question={item.question}
-              answerData={item.answer}
-              isOpen={openQuestion === index}
-              toggle={() => toggleAnswer(index)}
-            />
-          ))}
-        </div>
+        <FaqDropdown contentData={contentData} />
       )}
     </div>
   );
@@ -96,24 +120,20 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
-
-
 import React from 'react';
 import styles from './QuestionBlock.module.css';
 
-const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+const QuestionBlock = ({ question, answerData }) => (
   <div className={styles.questionBlock}>
-    <div className={styles.question} onClick={toggle}>
+    <div className={styles.question}>
       {question}
     </div>
-    {isOpen && (
-      <div className={styles.answer}>
-        <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
-        <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
-        <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
-        <p><strong>Contextual:</strong> {answerData.contextual}</p>
-      </div>
-    )}
+    <div className={styles.answer}>
+      <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
+      <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
+      <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
+      <p><strong>Contextual:</strong> {answerData.contextual}</p>
+    </div>
   </div>
 );
 
@@ -121,26 +141,24 @@ export default QuestionBlock;
 
 
 
-.questionBlock {
+.faqDropdown {
+  border: 1px solid #ddd;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
   padding: 15px;
-  border-bottom: 1px solid #ddd;
+  background-color: #f5f5f5;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.questionBlock:hover {
-  background-color: #f0f0f0;
-}
-
-.question {
-  font-size: 1rem;
   font-weight: bold;
-  color: #2a2a2a;
+  border-bottom: 1px solid #ddd;
 }
 
-.answer {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #fafafa;
-  border-left: 4px solid #0073e6;
+.dropdownContent {
+  padding: 10px 15px;
 }
+
+
