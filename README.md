@@ -1,26 +1,57 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Poppins:wght@400;500;700&display=swap');
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import styles from './QuestionBlock.module.css';
+import GridAnswer from './GridAnswer';
+
+const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+  <div className={styles.questionBlock}>
+    <div className={styles.question} onClick={toggle}>
+      {question}
+      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
+    </div>
+    {isOpen && <GridAnswer answerData={answerData} />}
+  </div>
+);
+
+export default QuestionBlock;
 
 
-body {
-  margin: 0;
-  font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: rgba(255, 255, 255);
-  overflow: auto;
+
+
+.questionBlock {
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Poppins', sans-serif;
+.questionBlock:hover {
+  background-color: #f0f0f0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.question {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 14px;
+  cursor: pointer;
+  color: #2a2a2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s ease;
 }
 
-body::-webkit-scrollbar {
-  display: none;
+.question:hover {
+  color: #0073e6;
+}
+
+.chevronIcon {
+  font-size: 1rem;
+  color: #888;
+  margin-left: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
