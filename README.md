@@ -4,7 +4,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import QuestionBlock from './QuestionBlock';
 
-const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selectedAnswer, isFaqOpen, toggleFaq }) => {
+const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selectedAnswer }) => {
+  const [isFaqOpen, setIsFaqOpen] = React.useState(false); // Initially closed
+
+  const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
+
+  const handleQuestionSelect = (question, answer) => {
+    onQuestionSelect(question, answer);
+    setIsFaqOpen(false); // Close dropdown after selection
+  };
+
   return (
     <div className={styles.faqDropdown}>
       <div className={styles.dropdownHeader} onClick={toggleFaq}>
@@ -14,11 +23,7 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
       {isFaqOpen && (
         <div className={styles.dropdownContent}>
           {contentData.map((item, index) => (
-            <div 
-              key={index} 
-              onClick={() => onQuestionSelect(item.question, item.answer)} 
-              className={styles.questionBlock}
-            >
+            <div key={index} onClick={() => handleQuestionSelect(item.question, item.answer)} className={styles.questionBlock}>
               <span>{item.question}</span>
             </div>
           ))}
@@ -37,6 +42,7 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
 export default FaqDropdown;
 
 
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
@@ -48,7 +54,6 @@ const MainContent = ({ activeTopic }) => {
   const [loading, setLoading] = useState(true);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [isFaqOpen, setIsFaqOpen] = useState(false); // Manage dropdown open/close state
 
   const topicQuestions = {
     1: [
@@ -108,23 +113,11 @@ const MainContent = ({ activeTopic }) => {
   const handleQuestionSelect = (question, answer) => {
     setSelectedQuestion(question);
     setSelectedAnswer(answer);
-    setIsFaqOpen(false); // Close dropdown after selection
-  };
-
-  const toggleFaq = () => {
-    setIsFaqOpen(!isFaqOpen);
   };
 
   useEffect(() => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
-
-  useEffect(() => {
-    // Open dropdown when a new question is selected
-    if (selectedQuestion) {
-      setIsFaqOpen(true);
-    }
-  }, [selectedQuestion]);
 
   return (
     <div className={styles.mainContent}>
@@ -138,8 +131,6 @@ const MainContent = ({ activeTopic }) => {
           onQuestionSelect={handleQuestionSelect}
           selectedQuestion={selectedQuestion}
           selectedAnswer={selectedAnswer}
-          isFaqOpen={isFaqOpen} // Pass open/close state
-          toggleFaq={toggleFaq} // Pass toggle function
         />
       )}
     </div>
@@ -147,3 +138,4 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
+
