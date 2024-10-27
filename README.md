@@ -8,6 +8,7 @@ const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
+  const [showFAQ, setShowFAQ] = useState(false); // Controls visibility of FAQ section
 
   const topicQuestions = {
     1: [
@@ -69,6 +70,7 @@ const MainContent = ({ activeTopic }) => {
   }, [activeTopic]);
 
   const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+  const toggleFAQ = () => setShowFAQ((prevShowFAQ) => !prevShowFAQ);
 
   return (
     <div className={styles.mainContent}>
@@ -76,18 +78,27 @@ const MainContent = ({ activeTopic }) => {
         <div className={styles.loaderWrapper}>
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
-      ) : contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <QuestionBlock
-            key={index}
-            question={item.question}
-            answerData={item.answer}
-            isOpen={openQuestion === index}
-            toggle={() => toggleAnswer(index)}
-          />
-        ))
       ) : (
-        <div>No Questions Available</div>
+        <>
+          <button onClick={toggleFAQ} className={styles.faqButton}>
+            {showFAQ ? 'Hide FAQ' : 'Show FAQ'}
+          </button>
+          {showFAQ && (
+            contentData.length > 0 ? (
+              contentData.map((item, index) => (
+                <QuestionBlock
+                  key={index}
+                  question={item.question}
+                  answerData={item.answer}
+                  isOpen={openQuestion === index}
+                  toggle={() => toggleAnswer(index)}
+                />
+              ))
+            ) : (
+              <div>No Questions Available</div>
+            )
+          )}
+        </>
       )}
     </div>
   );
@@ -96,82 +107,17 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
-
-.mainContent {
-  flex-grow: 1;
-  height: 100vh;
-  padding: 35px;
-  padding-top: 60px;
-  background-color: #f7f9fc;
-  overflow-y: auto;
-  width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import styles from './QuestionBlock.module.css';
-import GridAnswer from './GridAnswer';
-
-const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
-  <div className={styles.questionBlock}>
-    <div className={styles.question} onClick={toggle}>
-      {question}
-      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
-    </div>
-    {isOpen && <GridAnswer answerData={answerData} />}
-  </div>
-);
-
-export default QuestionBlock;
-
-
-.questionBlock {
+.faqButton {
+  padding: 10px 20px;
   margin-bottom: 15px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  background-color: #ffffff;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-}
-
-.questionBlock:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-}
-
-.question {
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 14px;
+  background-color: #0073e6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  color: #2a2a2a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: color 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
-.question:hover {
-  color: #0073e6;
-}
-
-.chevronIcon {
-  font-size: 1rem;
-  color: #888;
-  margin-left: 10px;
-  transition: transform 0.3s ease, color 0.3s ease;
+.faqButton:hover {
+  background-color: #005bb5;
 }
