@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import FaqDropdown from './FaqDropdown';
-import QuestionBlock from './QuestionBlock'; // Import QuestionBlock here
+import QuestionBlock from './QuestionBlock';
 import styles from './MainContent.module.css';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuestion, setSelectedQuestion] = useState(null);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedData, setSelectedData] = useState({}); // Use an object to store selected question and answer by topic
 
   const topicQuestions = {
     1: [
@@ -67,13 +66,23 @@ const MainContent = ({ activeTopic }) => {
   };
 
   const handleQuestionSelect = (question, answer) => {
-    setSelectedQuestion(question);
-    setSelectedAnswer(answer);
+    // Update selected data for the active topic
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
   };
 
   useEffect(() => {
     fetchAllData(activeTopic);
+    // Reset selected data when the active topic changes
+    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
   }, [activeTopic]);
+
+  const selectedQuestionData = selectedData[activeTopic] || {};
 
   return (
     <div className={styles.mainContent}>
@@ -86,14 +95,14 @@ const MainContent = ({ activeTopic }) => {
           <FaqDropdown
             contentData={contentData}
             onQuestionSelect={handleQuestionSelect}
-            selectedQuestion={selectedQuestion}
-            selectedAnswer={selectedAnswer}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
           />
-          {selectedQuestion && selectedAnswer && (
+          {selectedQuestionData.question && selectedQuestionData.answer && (
             <div className={styles.selectedQuestionBlock}>
               <QuestionBlock
-                question={selectedQuestion}
-                answerData={selectedAnswer}
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
               />
             </div>
           )}
@@ -104,47 +113,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
-
-
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
-
-const topics = [
-  { id: 1, name: 'Topic 1' },
-  { id: 2, name: 'Topic 2' },
-  { id: 3, name: 'Topic 3' },
-  { id: 4, name: 'Topic 4' },
-  { id: 5, name: 'Topic 5' },
-];
-
-const Sidebar = ({ setActiveTopic }) => {
-  const [active, setActive] = useState(1); // Default active topic
-
-  const handleClick = (id) => {
-    setActive(id);
-    setActiveTopic(id); // Pass the active topic to the parent component
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.sidebarHeads}>Suggested Topics</h2>
-      <ul>
-        {topics.map((topic) => (
-          <li
-            key={topic.id}
-            className={`${styles.topic} ${active === topic.id ? styles.active : ''}`}
-            onClick={() => handleClick(topic.id)}
-          >
-            <span className={styles.topicName}>{topic.name}</span>
-            <FontAwesomeIcon icon={faChevronRight} className={styles.chevron} />
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
-
-export default Sidebar;
