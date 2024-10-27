@@ -1,24 +1,40 @@
 import React from 'react';
-import styles from './QuestionBlock.module.css';
+import styles from './FaqDropdown.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import QuestionBlock from './QuestionBlock';
 
-const QuestionBlock = ({ question, answerData, onReset }) => (
-  <div className={styles.questionBlock}>
-    <div className={styles.question}>
-      {question}
-    </div>
-    <div className={styles.answer}>
-      <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
-      <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
-      <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
-      <p><strong>Contextual:</strong> {answerData.contextual}</p>
-    </div>
-    <button className={styles.resetButton} onClick={onReset}>
-      Choose Different Question
-    </button>
-  </div>
-);
+const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selectedAnswer }) => {
+  const [isFaqOpen, setIsFaqOpen] = React.useState(true); // Keep dropdown open
 
-export default QuestionBlock;
+  const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
+
+  return (
+    <div className={styles.faqDropdown}>
+      <div className={styles.dropdownHeader} onClick={toggleFaq}>
+        <span>Frequently Asked Questions</span>
+        <FontAwesomeIcon icon={isFaqOpen ? faChevronUp : faChevronDown} />
+      </div>
+      {isFaqOpen && (
+        <div className={styles.dropdownContent}>
+          {contentData.map((item, index) => (
+            <div key={index} onClick={() => onQuestionSelect(item.question, item.answer)} className={styles.questionBlock}>
+              <span>{item.question}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {selectedQuestion && (
+        <QuestionBlock
+          question={selectedQuestion}
+          answerData={selectedAnswer}
+        />
+      )}
+    </div>
+  );
+};
+
+export default FaqDropdown;
 
 
 
@@ -26,7 +42,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import FaqDropdown from './FaqDropdown';
-import QuestionBlock from './QuestionBlock';
 import styles from './MainContent.module.css';
 
 const MainContent = ({ activeTopic }) => {
@@ -45,20 +60,54 @@ const MainContent = ({ activeTopic }) => {
   };
 
   const fetchDataForQuestion = async (question) => {
-    // ... existing code for fetching question data
+    try {
+      const response = await axios.post(
+        'dummy',
+        { question: `${question}:- hi` },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer;
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return ['No Answer Available'];
+    }
   };
 
   const fetchAllData = async (topicId) => {
-    // ... existing code for fetching all data
+    setLoading(true);
+    try {
+      const questionsList = topicQuestions[topicId] || [];
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here.',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
+
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data for all questions:', error);
+      setLoading(false);
+    }
   };
 
-  const handleQuestionSelect = async (question) => {
-    // ... existing code for handling question selection
-  };
-
-  const handleResetSelection = () => {
-    setSelectedQuestion(null);
-    setSelectedAnswer(null);
+  const handleQuestionSelect = (question, answer) => {
+    setSelectedQuestion(question);
+    setSelectedAnswer(answer);
   };
 
   useEffect(() => {
@@ -72,17 +121,12 @@ const MainContent = ({ activeTopic }) => {
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : (
-        <>
-          {selectedQuestion ? (
-            <QuestionBlock
-              question={selectedQuestion}
-              answerData={selectedAnswer}
-              onReset={handleResetSelection} // Pass the reset function
-            />
-          ) : (
-            <FaqDropdown contentData={contentData} onQuestionSelect={handleQuestionSelect} />
-          )}
-        </>
+        <FaqDropdown
+          contentData={contentData}
+          onQuestionSelect={handleQuestionSelect}
+          selectedQuestion={selectedQuestion}
+          selectedAnswer={selectedAnswer}
+        />
       )}
     </div>
   );
