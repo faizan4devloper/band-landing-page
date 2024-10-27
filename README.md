@@ -54,7 +54,9 @@ export default FaqDropdown;
 .faqDropdown {
   border: 1px solid #ddd;
   margin-top: 20px;
-  border-radius: 5px;
+  border-radius: 10px; /* More rounded corners for a modern look */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  background-color: #ffffff; /* White background for the whole dropdown */
 }
 
 .dropdownHeader {
@@ -62,21 +64,27 @@ export default FaqDropdown;
   justify-content: space-between;
   align-items: center; /* Center align items vertically */
   padding: 15px;
-  background-color: #f5f5f5;
-  cursor: pointer;
+  background-color: #0073e6; /* Blue header background */
+  color: #ffffff; /* White text color for contrast */
   font-weight: bold;
-  border-bottom: 1px solid #ddd;
+  border-radius: 10px 10px 0 0; /* Rounded top corners */
+  cursor: pointer;
 }
 
 .dropdownContent {
   padding: 10px 15px;
+  border-top: 1px solid #ddd; /* Separator line between header and content */
+  border-radius: 0 0 10px 10px; /* Rounded bottom corners */
 }
 
 .questionBlock {
-  padding: 10px;
+  padding: 12px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  border-radius: 4px; /* Rounded corners */
+  border-radius: 5px; /* Slightly rounded corners */
+  margin-bottom: 8px; /* Space between items */
+  background-color: #f9f9f9; /* Light grey background for question items */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Light shadow */
 }
 
 .questionBlock:hover {
@@ -86,12 +94,15 @@ export default FaqDropdown;
 .activeQuestion {
   background-color: #cce5ff; /* Highlight active question */
   font-weight: bold; /* Emphasize selected question */
+  border: 2px solid #0073e6; /* Border to indicate active state */
 }
 
 .selectedQuestionBlock {
   padding: 20px;
-  margin-top: 15px; /* Space between dropdown and selected question */
-  border: 1px solid #0073e6; /* Blue border to denote active selection */
-  border-radius: 5px;
+  margin-top: 20px; /* Increased space between dropdown and selected question */
+  border: 2px solid #0073e6; /* Blue border to denote active selection */
+  border-radius: 10px; /* Rounded corners */
   background-color: #f8f9fa; /* Light background for selected question */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for depth */
 }
+
