@@ -1,18 +1,15 @@
-// MainContent.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import QuestionBlock from './QuestionBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null);
-  const [showFAQDropdown, setShowFAQDropdown] = useState(false);
+  const [activeQuestion, setActiveQuestion] = useState(null);
 
   const topicQuestions = {
     1: [
@@ -73,11 +70,7 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const toggleAnswer = (index) => {
-    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
-    setShowFAQDropdown(false); // Close dropdown after selecting a question
-  };
-  const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
+  const handleQuestionClick = (index) => setActiveQuestion(prevIndex => (prevIndex === index ? null : index));
 
   return (
     <div className={styles.mainContent}>
@@ -87,30 +80,25 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : (
         <>
-          <div className={styles.dropdown}>
-            <button onClick={toggleFAQDropdown} className={styles.dropdownButton}>
-              FAQ
-              <FontAwesomeIcon icon={showFAQDropdown ? faChevronUp : faChevronDown} className={styles.dropdownIcon} />
-            </button>
-            {showFAQDropdown && (
-              <div className={styles.dropdownContent}>
-                {contentData.length > 0 ? (
-                  contentData.map((item, index) => (
-                    <QuestionBlock
-                      key={index}
-                      question={item.question}
-                      answerData={item.answer}
-                      isOpen={openQuestion === index}
-                      toggle={() => toggleAnswer(index)}
-                      isActive={openQuestion === index} // New prop to mark active question
-                    />
-                  ))
-                ) : (
-                  <div>No Questions Available</div>
-                )}
-              </div>
+          <div className={styles.questionList}>
+            {contentData.length > 0 ? (
+              contentData.map((item, index) => (
+                <QuestionBlock
+                  key={index}
+                  question={item.question}
+                  answerData={item.answer}
+                  isOpen={activeQuestion === index}
+                  toggle={() => handleQuestionClick(index)}
+                />
+              ))
+            ) : (
+              <div>No Questions Available</div>
             )}
           </div>
+          <button onClick={() => setActiveQuestion(null)} className={styles.faqButton}>
+            FAQ
+            <FontAwesomeIcon icon={faChevronDown} className={styles.faqIcon} />
+          </button>
         </>
       )}
     </div>
@@ -118,70 +106,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
-
-
-
-// QuestionBlock.js
-
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import styles from './QuestionBlock.module.css';
-import GridAnswer from './GridAnswer';
-
-const QuestionBlock = ({ question, answerData, isOpen, toggle, isActive }) => (
-  <div className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}>
-    <div className={styles.question} onClick={toggle}>
-      {question}
-      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
-    </div>
-    {isOpen && <GridAnswer answerData={answerData} />}
-  </div>
-);
-
-export default QuestionBlock;
-
-
-
-/* QuestionBlock.module.css */
-
-.questionBlock {
-  margin: 0;
-  border: none;
-  background-color: transparent;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.questionBlock:hover {
-  background-color: #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.question {
-  font-size: 1rem;
-  font-weight: bold;
-  padding: 10px 14px;
-  cursor: pointer;
-  color: #2a2a2a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: color 0.3s ease;
-}
-
-.question:hover {
-  color: #0073e6;
-}
-
-.chevronIcon {
-  font-size: 1rem;
-  color: #888;
-  margin-left: 10px;
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.active {
-  background-color: #e0f3ff;
-  border-left: 4px solid #0073e6;
-}
