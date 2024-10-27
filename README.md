@@ -106,3 +106,119 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
+
+
+
+.mainContent {
+  flex-grow: 1;
+  height: 100vh;
+  padding: 35px;
+  padding-top: 60px;
+  background-color: #f7f9fc;
+  overflow-y: auto;
+  width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.questionList {
+  flex-grow: 1;
+}
+
+.faqButton {
+  margin-top: auto;
+  padding: 10px 20px;
+  background-color: #0073e6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.faqButton:hover {
+  background-color: #005bb5;
+}
+
+.faqIcon {
+  margin-left: 8px;
+}
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+
+
+
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import styles from './QuestionBlock.module.css';
+import GridAnswer from './GridAnswer';
+
+const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+  <div
+    className={`${styles.questionBlock} ${isOpen ? styles.active : ''}`}
+    onClick={toggle}
+  >
+    <div className={styles.question}>
+      {question}
+      <FontAwesomeIcon icon={faChevronDown} className={styles.chevronIcon} />
+    </div>
+    {isOpen && <GridAnswer answerData={answerData} />}
+  </div>
+);
+
+export default QuestionBlock;
+
+
+
+.questionBlock {
+  margin: 0;
+  background-color: transparent;
+  transition: background-color 0.3s ease;
+}
+
+.questionBlock.active {
+  background-color: #f0f8ff; /* Light blue for active state */
+}
+
+.questionBlock:hover {
+  background-color: #f0f0f0;
+}
+
+.question {
+  font-weight: bold;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s ease;
+}
+
+.question:hover {
+  color: #0073e6;
+}
+
+.chevronIcon {
+  color: #888;
+  transition: transform 0.3s ease;
+}
+
+.gridAnswer {
+  padding: 10px;
+  background-color: #fafafa;
+  border-top: 1px solid #ddd;
+}
+
