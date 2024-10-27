@@ -1,18 +1,13 @@
-// MainContent.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import QuestionBlock from './QuestionBlock';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openQuestion, setOpenQuestion] = useState(null);
-  const [showFAQDropdown, setShowFAQDropdown] = useState(false);
 
   const topicQuestions = {
     1: [
@@ -73,11 +68,7 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const toggleAnswer = (index) => {
-    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
-    setShowFAQDropdown(false); // Close dropdown after selecting a question
-  };
-  const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
+  const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
 
   return (
     <div className={styles.mainContent}>
@@ -86,32 +77,17 @@ const MainContent = ({ activeTopic }) => {
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : (
-        <>
-          <div className={styles.dropdown}>
-            <button onClick={toggleFAQDropdown} className={styles.dropdownButton}>
-              FAQ
-              <FontAwesomeIcon icon={showFAQDropdown ? faChevronUp : faChevronDown} className={styles.dropdownIcon} />
-            </button>
-            {showFAQDropdown && (
-              <div className={styles.dropdownContent}>
-                {contentData.length > 0 ? (
-                  contentData.map((item, index) => (
-                    <QuestionBlock
-                      key={index}
-                      question={item.question}
-                      answerData={item.answer}
-                      isOpen={openQuestion === index}
-                      toggle={() => toggleAnswer(index)}
-                      isActive={openQuestion === index} // New prop to mark active question
-                    />
-                  ))
-                ) : (
-                  <div>No Questions Available</div>
-                )}
-              </div>
-            )}
-          </div>
-        </>
+        <div>
+          {contentData.map((item, index) => (
+            <QuestionBlock
+              key={index}
+              question={item.question}
+              answerData={item.answer}
+              isOpen={openQuestion === index}
+              toggle={() => toggleAnswer(index)}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
@@ -121,21 +97,23 @@ export default MainContent;
 
 
 
-// QuestionBlock.js
 
 import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import styles from './QuestionBlock.module.css';
-import GridAnswer from './GridAnswer';
 
-const QuestionBlock = ({ question, answerData, isOpen, toggle, isActive }) => (
-  <div className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}>
+const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
+  <div className={styles.questionBlock}>
     <div className={styles.question} onClick={toggle}>
       {question}
-      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
     </div>
-    {isOpen && <GridAnswer answerData={answerData} />}
+    {isOpen && (
+      <div className={styles.answer}>
+        <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
+        <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
+        <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
+        <p><strong>Contextual:</strong> {answerData.contextual}</p>
+      </div>
+    )}
   </div>
 );
 
@@ -143,44 +121,26 @@ export default QuestionBlock;
 
 
 
-/* QuestionBlock.module.css */
-
 .questionBlock {
-  margin: 0;
-  border: none;
-  background-color: transparent;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .questionBlock:hover {
   background-color: #f0f0f0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .question {
   font-size: 1rem;
   font-weight: bold;
-  padding: 10px 14px;
-  cursor: pointer;
   color: #2a2a2a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: color 0.3s ease;
 }
 
-.question:hover {
-  color: #0073e6;
-}
-
-.chevronIcon {
-  font-size: 1rem;
-  color: #888;
-  margin-left: 10px;
-  transition: transform 0.3s ease, color 0.3s ease;
-}
-
-.active {
-  background-color: #e0f3ff;
+.answer {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #fafafa;
   border-left: 4px solid #0073e6;
 }
