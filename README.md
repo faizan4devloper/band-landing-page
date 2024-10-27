@@ -3,12 +3,14 @@ import axios from 'axios';
 import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import QuestionBlock from './QuestionBlock';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openQuestion, setOpenQuestion] = useState(null); // Initially no question expanded
-  const [showFAQ, setShowFAQ] = useState(false); // Controls visibility of FAQ section
+  const [openQuestion, setOpenQuestion] = useState(null);
+  const [showFAQDropdown, setShowFAQDropdown] = useState(false);
 
   const topicQuestions = {
     1: [
@@ -70,7 +72,7 @@ const MainContent = ({ activeTopic }) => {
   }, [activeTopic]);
 
   const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
-  const toggleFAQ = () => setShowFAQ((prevShowFAQ) => !prevShowFAQ);
+  const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
 
   return (
     <div className={styles.mainContent}>
@@ -80,24 +82,29 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : (
         <>
-          <button onClick={toggleFAQ} className={styles.faqButton}>
-            {showFAQ ? 'Hide FAQ' : 'Show FAQ'}
-          </button>
-          {showFAQ && (
-            contentData.length > 0 ? (
-              contentData.map((item, index) => (
-                <QuestionBlock
-                  key={index}
-                  question={item.question}
-                  answerData={item.answer}
-                  isOpen={openQuestion === index}
-                  toggle={() => toggleAnswer(index)}
-                />
-              ))
-            ) : (
-              <div>No Questions Available</div>
-            )
-          )}
+          <div className={styles.dropdown}>
+            <button onClick={toggleFAQDropdown} className={styles.dropdownButton}>
+              FAQ
+              <FontAwesomeIcon icon={showFAQDropdown ? faChevronUp : faChevronDown} className={styles.dropdownIcon} />
+            </button>
+            {showFAQDropdown && (
+              <div className={styles.dropdownContent}>
+                {contentData.length > 0 ? (
+                  contentData.map((item, index) => (
+                    <QuestionBlock
+                      key={index}
+                      question={item.question}
+                      answerData={item.answer}
+                      isOpen={openQuestion === index}
+                      toggle={() => toggleAnswer(index)}
+                    />
+                  ))
+                ) : (
+                  <div>No Questions Available</div>
+                )}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
@@ -107,7 +114,16 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
-.faqButton {
+
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdownButton {
   padding: 10px 20px;
   margin-bottom: 15px;
   background-color: #0073e6;
@@ -115,9 +131,29 @@ export default MainContent;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   transition: background-color 0.3s ease;
 }
 
-.faqButton:hover {
+.dropdownButton:hover {
   background-color: #005bb5;
+}
+
+.dropdownIcon {
+  margin-left: 8px;
+}
+
+.dropdownContent {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
 }
