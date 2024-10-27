@@ -31,15 +31,16 @@
   padding: 10px 20px;
   border-top: 1px solid #ddd; /* Separate header from content */
   background-color: #fff; /* White background for content */
-  max-height: 0; /* Collapsed height */
-  overflow: hidden; /* Prevent overflow */
+  max-height: calc(5 * 50px); /* Approximate height for 5 questions (adjust 50px as needed) */
+  overflow-y: auto; /* Allow vertical scrolling */
   transition: max-height 0.5s ease, opacity 0.5s ease; /* Smooth max-height transition */
   opacity: 0; /* Initially hidden */
 }
 
 .show {
-  max-height: 500px; /* Arbitrary value for max height */
+  max-height: calc(5 * 50px); /* Same as above */
   opacity: 1; /* Fully visible */
+  transition: max-height 0.5s ease, opacity 0.5s ease; /* Smooth transition */
 }
 
 .hide {
@@ -72,4 +73,3 @@
   background-color: #f8f9fa; /* Light background for selected question */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
 }
-
