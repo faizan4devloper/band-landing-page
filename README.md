@@ -1,15 +1,18 @@
+// MainContent.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import QuestionBlock from './QuestionBlock';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeQuestion, setActiveQuestion] = useState(null);
+  const [openQuestion, setOpenQuestion] = useState(null);
+  const [showFAQDropdown, setShowFAQDropdown] = useState(false);
 
   const topicQuestions = {
     1: [
@@ -70,7 +73,11 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const handleQuestionClick = (index) => setActiveQuestion(prevIndex => (prevIndex === index ? null : index));
+  const toggleAnswer = (index) => {
+    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+    setShowFAQDropdown(false); // Close dropdown after selecting a question
+  };
+  const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
 
   return (
     <div className={styles.mainContent}>
@@ -80,25 +87,30 @@ const MainContent = ({ activeTopic }) => {
         </div>
       ) : (
         <>
-          <div className={styles.questionList}>
-            {contentData.length > 0 ? (
-              contentData.map((item, index) => (
-                <QuestionBlock
-                  key={index}
-                  question={item.question}
-                  answerData={item.answer}
-                  isOpen={activeQuestion === index}
-                  toggle={() => handleQuestionClick(index)}
-                />
-              ))
-            ) : (
-              <div>No Questions Available</div>
+          <div className={styles.dropdown}>
+            <button onClick={toggleFAQDropdown} className={styles.dropdownButton}>
+              FAQ
+              <FontAwesomeIcon icon={showFAQDropdown ? faChevronUp : faChevronDown} className={styles.dropdownIcon} />
+            </button>
+            {showFAQDropdown && (
+              <div className={styles.dropdownContent}>
+                {contentData.length > 0 ? (
+                  contentData.map((item, index) => (
+                    <QuestionBlock
+                      key={index}
+                      question={item.question}
+                      answerData={item.answer}
+                      isOpen={openQuestion === index}
+                      toggle={() => toggleAnswer(index)}
+                      isActive={openQuestion === index} // New prop to mark active question
+                    />
+                  ))
+                ) : (
+                  <div>No Questions Available</div>
+                )}
+              </div>
             )}
           </div>
-          <button onClick={() => setActiveQuestion(null)} className={styles.faqButton}>
-            FAQ
-            <FontAwesomeIcon icon={faChevronDown} className={styles.faqIcon} />
-          </button>
         </>
       )}
     </div>
@@ -109,71 +121,19 @@ export default MainContent;
 
 
 
-.mainContent {
-  flex-grow: 1;
-  height: 100vh;
-  padding: 35px;
-  padding-top: 60px;
-  background-color: #f7f9fc;
-  overflow-y: auto;
-  width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.questionList {
-  flex-grow: 1;
-}
-
-.faqButton {
-  margin-top: auto;
-  padding: 10px 20px;
-  background-color: #0073e6;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-.faqButton:hover {
-  background-color: #005bb5;
-}
-
-.faqIcon {
-  margin-left: 8px;
-}
-
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-
-
+// QuestionBlock.js
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import styles from './QuestionBlock.module.css';
 import GridAnswer from './GridAnswer';
 
-const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
-  <div
-    className={`${styles.questionBlock} ${isOpen ? styles.active : ''}`}
-    onClick={toggle}
-  >
-    <div className={styles.question}>
+const QuestionBlock = ({ question, answerData, isOpen, toggle, isActive }) => (
+  <div className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}>
+    <div className={styles.question} onClick={toggle}>
       {question}
-      <FontAwesomeIcon icon={faChevronDown} className={styles.chevronIcon} />
+      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
     </div>
     {isOpen && <GridAnswer answerData={answerData} />}
   </div>
@@ -183,24 +143,26 @@ export default QuestionBlock;
 
 
 
+/* QuestionBlock.module.css */
+
 .questionBlock {
   margin: 0;
+  border: none;
   background-color: transparent;
-  transition: background-color 0.3s ease;
-}
-
-.questionBlock.active {
-  background-color: #f0f8ff; /* Light blue for active state */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .questionBlock:hover {
   background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .question {
+  font-size: 1rem;
   font-weight: bold;
   padding: 10px 14px;
   cursor: pointer;
+  color: #2a2a2a;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -212,13 +174,13 @@ export default QuestionBlock;
 }
 
 .chevronIcon {
+  font-size: 1rem;
   color: #888;
-  transition: transform 0.3s ease;
+  margin-left: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.gridAnswer {
-  padding: 10px;
-  background-color: #fafafa;
-  border-top: 1px solid #ddd;
+.active {
+  background-color: #e0f3ff;
+  border-left: 4px solid #0073e6;
 }
-
