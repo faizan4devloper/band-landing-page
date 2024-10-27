@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
 import styles from './MainContent.module.css';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
 
   const topicQuestions = {
     1: [
@@ -64,13 +66,20 @@ const MainContent = ({ activeTopic }) => {
     }
   };
 
+  const handleQuestionSelect = async (question) => {
+    const answer = await fetchDataForQuestion(question);
+    setSelectedQuestion(question);
+    setSelectedAnswer({
+      textualResponse: answer,
+      citizenExperience: 'Citizen experience response goes here.',
+      factualInfo: 'Factual information goes here.',
+      contextual: 'Contextual information goes here.',
+    });
+  };
+
   useEffect(() => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
-
-  const handleQuestionSelect = (index) => {
-    setSelectedQuestionIndex(index);
-  };
 
   return (
     <div className={styles.mainContent}>
@@ -79,21 +88,13 @@ const MainContent = ({ activeTopic }) => {
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
       ) : (
-        <div>
-          <FaqDropdown
-            contentData={contentData}
-            onQuestionSelect={handleQuestionSelect}
-          />
-          {selectedQuestionIndex !== null && (
-            <div className={styles.selectedAnswer}>
-              <h3>Selected Question Answer:</h3>
-              <QuestionBlock
-                question={contentData[selectedQuestionIndex].question}
-                answerData={contentData[selectedQuestionIndex].answer}
-              />
-            </div>
+        <>
+          {selectedQuestion ? (
+            <QuestionBlock question={selectedQuestion} answerData={selectedAnswer} />
+          ) : (
+            <FaqDropdown contentData={contentData} onQuestionSelect={handleQuestionSelect} />
           )}
-        </div>
+        </>
       )}
     </div>
   );
@@ -110,11 +111,10 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const FaqDropdown = ({ contentData, onQuestionSelect }) => {
   const [isFaqOpen, setIsFaqOpen] = useState(false);
-  
   const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
 
-  const handleQuestionClick = (index) => {
-    onQuestionSelect(index); // Pass the selected question index
+  const handleQuestionClick = (question) => {
+    onQuestionSelect(question);
     setIsFaqOpen(false); // Close the dropdown
   };
 
@@ -127,11 +127,10 @@ const FaqDropdown = ({ contentData, onQuestionSelect }) => {
       {isFaqOpen && (
         <div className={styles.dropdownContent}>
           {contentData.map((item, index) => (
-            <div key={index} onClick={() => handleQuestionClick(index)}>
+            <div key={index} onClick={() => handleQuestionClick(item.question)}>
               <QuestionBlock
                 question={item.question}
                 answerData={item.answer}
-                isActive={item.isActive} // Check if the question is active
               />
             </div>
           ))}
@@ -144,26 +143,75 @@ const FaqDropdown = ({ contentData, onQuestionSelect }) => {
 export default FaqDropdown;
 
 
+
 import React from 'react';
 import styles from './QuestionBlock.module.css';
 
-const QuestionBlock = ({ question, answerData, isActive }) => (
-  <div className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}>
+const QuestionBlock = ({ question, answerData }) => (
+  <div className={styles.questionBlock}>
     <div className={styles.question}>
       {question}
     </div>
-    {isActive && (
-      <div className={styles.answer}>
-        <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
-        <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
-        <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
-        <p><strong>Contextual:</strong> {answerData.contextual}</p>
-      </div>
-    )}
+    <div className={styles.answer}>
+      <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
+      <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
+      <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
+      <p><strong>Contextual:</strong> {answerData.contextual}</p>
+    </div>
   </div>
 );
 
 export default QuestionBlock;
+
+
+
+.mainContent {
+  flex-grow: 1;
+  height: 100vh;
+  padding: 35px;
+  padding-top: 60px;
+  background-color: #f7f9fc;
+  overflow-y: auto;
+  width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+
+
+
+
+.faqDropdown {
+  border: 1px solid #ddd;
+  margin-top: 20px;
+  border-radius: 5px;
+}
+
+.dropdownHeader {
+  display: flex;
+  width: 400px;
+  justify-content: space-between;
+  padding: 15px;
+  background-color: #f5f5f5;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+}
+
+.dropdownContent {
+  padding: 10px 15px;
+}
+
+
 
 
 .questionBlock {
@@ -177,15 +225,10 @@ export default QuestionBlock;
   background-color: #f0f0f0;
 }
 
-.questionBlock.active {
-  background-color: #0073e6; /* Highlight color */
-  color: #fff; /* Change text color when active */
-}
-
 .question {
   font-size: 1rem;
   font-weight: bold;
-  color: inherit; /* Inherit color from parent */
+  color: #2a2a2a;
 }
 
 .answer {
@@ -194,3 +237,4 @@ export default QuestionBlock;
   background-color: #fafafa;
   border-left: 4px solid #0073e6;
 }
+
