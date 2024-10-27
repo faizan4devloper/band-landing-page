@@ -1,115 +1,47 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import PropagateLoader from 'react-spinners/PropagateLoader';
-import FaqDropdown from './FaqDropdown';
-import QuestionBlock from './QuestionBlock';
-import styles from './MainContent.module.css';
+import React from 'react';
+import styles from './QuestionBlock.module.css';
 
-const MainContent = ({ activeTopic }) => {
-  const [contentData, setContentData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedData, setSelectedData] = useState({}); // Use an object to store selected question and answer by topic
-
-  const topicQuestions = {
-    1: [
-      'What are the average class sizes and student-teacher ratios in the local schools?',
-      'What are the admission criteria for the schools in this area?',
-    ],
-    2: ['Topic 2 Question 1', 'Topic 2 Question 2'],
-    // Add more topics as needed...
-  };
-
-  const fetchDataForQuestion = async (question) => {
-    try {
-      const response = await axios.post(
-        'dummy',
-        { question: `${question}:- hi` },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-
-      const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
-      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
-
-      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      return ['No Answer Available'];
-    }
-  };
-
-  const fetchAllData = async (topicId) => {
-    setLoading(true);
-    try {
-      const questionsList = topicQuestions[topicId] || [];
-      const formattedData = await Promise.all(
-        questionsList.map(async (question) => {
-          const answer = await fetchDataForQuestion(question);
-          return {
-            question,
-            answer: {
-              textualResponse: answer,
-              citizenExperience: 'Citizen experience response goes here.',
-              factualInfo: 'Factual information goes here.',
-              contextual: 'Contextual information goes here.',
-            },
-          };
-        })
-      );
-
-      setContentData(formattedData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching data for all questions:', error);
-      setLoading(false);
-    }
-  };
-
-  const handleQuestionSelect = (question, answer) => {
-    // Update selected data for the active topic
-    setSelectedData((prev) => ({
-      ...prev,
-      [activeTopic]: {
-        question,
-        answer,
-      },
-    }));
-  };
-
-  useEffect(() => {
-    fetchAllData(activeTopic);
-    // Reset selected data when the active topic changes
-    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
-  }, [activeTopic]);
-
-  const selectedQuestionData = selectedData[activeTopic] || {};
-
-  return (
-    <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
-        </div>
-      ) : (
-        <>
-          <FaqDropdown
-            contentData={contentData}
-            onQuestionSelect={handleQuestionSelect}
-            selectedQuestion={selectedQuestionData.question}
-            selectedAnswer={selectedQuestionData.answer}
-          />
-          {selectedQuestionData.question && selectedQuestionData.answer && (
-            <div className={styles.selectedQuestionBlock}>
-              <QuestionBlock
-                question={selectedQuestionData.question}
-                answerData={selectedQuestionData.answer}
-              />
-            </div>
-          )}
-        </>
-      )}
+const QuestionBlock = ({ question, answerData }) => (
+  <div className={styles.questionBlock}>
+    <div className={styles.question}>
+      {question}
     </div>
-  );
-};
+    <div className={styles.answer}>
+      <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
+      <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
+      <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
+      <p><strong>Contextual:</strong> {answerData.contextual}</p>
+    </div>
+  </div>
+);
 
-export default MainContent;
+export default QuestionBlock;
+
+
+
+.questionBlock {
+  padding: 10px; /* Increased padding for comfort */
+  margin: 20px 0; /* Top and bottom margin for spacing from other elements */
+  border-radius: 5px; /* Rounded corners */
+  background-color: #ffffff; /* White background for clarity */
+  transition: transform 0.2s; /* Smooth scaling effect on hover */
+}
+
+
+
+.question {
+  font-size: 1.2rem; /* Larger font size for question text */
+  font-weight: bold; /* Bold for emphasis */
+  color: #2a2a2a; /* Dark text color for readability */
+  margin-bottom: 10px; /* Space below question text */
+}
+
+.answer {
+  font-size: 1.1rem; /* Normal font size for answers */
+  color: #444; /* Dark grey for answers */
+  margin-top: 10px; /* Space above answer text */
+  padding: 10px; /* Padding around answer */
+  background-color: #fafafa; /* Light background for answers */
+  border-left: 4px solid #0073e6; /* Blue left border for visual interest */
+  border-radius: 4px; /* Slight rounding for the answer block */
+}
