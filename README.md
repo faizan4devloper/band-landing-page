@@ -3,13 +3,14 @@ import axios from 'axios';
 import styles from './MainContent.module.css';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import QuestionBlock from './QuestionBlock';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
-  const [faqData, setFaqData] = useState([]);
-  const [openFaqIndex, setOpenFaqIndex] = useState(null); // State for managing opened FAQ
+  const [openQuestion, setOpenQuestion] = useState(null);
+  const [showFAQDropdown, setShowFAQDropdown] = useState(false);
 
   const topicQuestions = {
     1: [
@@ -19,12 +20,6 @@ const MainContent = ({ activeTopic }) => {
     2: ['Topic 2 Question 1', 'Topic 2 Question 2'],
     // Add more topics as needed...
   };
-
-  const faqs = [
-    { question: "What is the purpose of this application?", answer: "This application helps users with inquiries regarding various topics." },
-    { question: "How do I submit a question?", answer: "You can submit a question by selecting it from the available options." },
-    // Add more FAQs as needed...
-  ];
 
   const fetchDataForQuestion = async (question) => {
     try {
@@ -76,15 +71,8 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const selectQuestion = (index) => {
-    setSelectedQuestionIndex(index);
-  };
-
-  const toggleFaq = (index) => {
-    setOpenFaqIndex(openFaqIndex === index ? null : index); // Toggle FAQ
-  };
-
-  const selectedQuestion = selectedQuestionIndex !== null ? contentData[selectedQuestionIndex] : null;
+  const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+  const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
 
   return (
     <div className={styles.mainContent}>
@@ -92,40 +80,120 @@ const MainContent = ({ activeTopic }) => {
         <div className={styles.loaderWrapper}>
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
-      ) : contentData.length > 0 ? (
-        <div>
-          {contentData.map((item, index) => (
-            <QuestionBlock
-              key={index}
-              question={item.question}
-              answerData={item.answer}
-              isOpen={selectedQuestionIndex === index}
-              toggle={() => selectQuestion(index)}
-            />
-          ))}
-          {selectedQuestion && (
-            <div className={styles.selectedAnswer}>
-              <h2>Selected Question:</h2>
-              <h3>{selectedQuestion.question}</h3>
-              <div>{selectedQuestion.answer.textualResponse.join(', ')}</div>
-            </div>
-          )}
-          <h2>FAQs</h2>
-          {faqs.map((faq, index) => (
-            <QuestionBlock
-              key={`faq-${index}`}
-              question={faq.question}
-              answerData={{ textualResponse: [faq.answer] }}
-              isOpen={openFaqIndex === index}
-              toggle={() => toggleFaq(index)} // Handle FAQ toggle
-            />
-          ))}
-        </div>
       ) : (
-        <div>No Questions Available</div>
+        <>
+          <div className={styles.dropdown}>
+            <button onClick={toggleFAQDropdown} className={styles.dropdownButton}>
+              FAQ
+              <FontAwesomeIcon icon={showFAQDropdown ? faChevronUp : faChevronDown} className={styles.dropdownIcon} />
+            </button>
+            {showFAQDropdown && (
+              <div className={styles.dropdownContent}>
+                {contentData.length > 0 ? (
+                  contentData.map((item, index) => (
+                    <QuestionBlock
+                      key={index}
+                      question={item.question}
+                      answerData={item.answer}
+                      isOpen={openQuestion === index}
+                      toggle={() => toggleAnswer(index)}
+                    />
+                  ))
+                ) : (
+                  <div>No Questions Available</div>
+                )}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
 export default MainContent;
+
+
+
+.mainContent {
+  flex-grow: 1;
+  height: 100vh;
+  padding: 35px;
+  padding-top: 60px;
+  background-color: #f7f9fc;
+  overflow-y: auto;
+  width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.dropdownButton {
+  padding: 10px 20px;
+  margin-bottom: 15px;
+  background-color: #0073e6;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownButton:hover {
+  background-color: #005bb5;
+}
+
+.dropdownIcon {
+  margin-left: 8px;
+}
+
+.dropdownContent {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
+  max-height: 300px;
+  overflow-y: auto;
+  transition: max-height 0.3s ease;
+}
+
+.fullScreenContent {
+  position: fixed; /* Position it over the existing content */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ffffff; /* White background for contrast */
+  padding: 20px; /* Padding around the content */
+  z-index: 100; /* Ensure it appears above other content */
+  overflow-y: auto; /* Allow scrolling if content is large */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
+}
+
+.fullScreenContent h2 {
+  margin-top: 0; /* Remove margin for header */
+}
+
+
+.loaderWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+
+
