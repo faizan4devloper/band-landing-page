@@ -7,7 +7,9 @@ import QuestionBlock from './QuestionBlock';
 const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedQuestion, setSelectedQuestion] = useState(null); // Track the selected question
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(null);
+  const [faqData, setFaqData] = useState([]);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null); // State for managing opened FAQ
 
   const topicQuestions = {
     1: [
@@ -17,6 +19,12 @@ const MainContent = ({ activeTopic }) => {
     2: ['Topic 2 Question 1', 'Topic 2 Question 2'],
     // Add more topics as needed...
   };
+
+  const faqs = [
+    { question: "What is the purpose of this application?", answer: "This application helps users with inquiries regarding various topics." },
+    { question: "How do I submit a question?", answer: "You can submit a question by selecting it from the available options." },
+    // Add more FAQs as needed...
+  ];
 
   const fetchDataForQuestion = async (question) => {
     try {
@@ -68,9 +76,15 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const handleQuestionClick = (index) => {
-    setSelectedQuestion(contentData[index]); // Set the selected question
+  const selectQuestion = (index) => {
+    setSelectedQuestionIndex(index);
   };
+
+  const toggleFaq = (index) => {
+    setOpenFaqIndex(openFaqIndex === index ? null : index); // Toggle FAQ
+  };
+
+  const selectedQuestion = selectedQuestionIndex !== null ? contentData[selectedQuestionIndex] : null;
 
   return (
     <div className={styles.mainContent}>
@@ -78,23 +92,35 @@ const MainContent = ({ activeTopic }) => {
         <div className={styles.loaderWrapper}>
           <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
-      ) : selectedQuestion ? (
-        // Render selected question's data in full screen
-        <div className={styles.fullScreenContent}>
-          <h2>{selectedQuestion.question}</h2>
-          <div>{selectedQuestion.answer.textualResponse.join(', ')}</div>
-          {/* Add additional data display as needed */}
-          <button onClick={() => setSelectedQuestion(null)}>Back</button>
-        </div>
       ) : contentData.length > 0 ? (
-        contentData.map((item, index) => (
-          <QuestionBlock
-            key={index}
-            question={item.question}
-            answerData={item.answer}
-            toggle={() => handleQuestionClick(index)} // Change toggle to handleQuestionClick
-          />
-        ))
+        <div>
+          {contentData.map((item, index) => (
+            <QuestionBlock
+              key={index}
+              question={item.question}
+              answerData={item.answer}
+              isOpen={selectedQuestionIndex === index}
+              toggle={() => selectQuestion(index)}
+            />
+          ))}
+          {selectedQuestion && (
+            <div className={styles.selectedAnswer}>
+              <h2>Selected Question:</h2>
+              <h3>{selectedQuestion.question}</h3>
+              <div>{selectedQuestion.answer.textualResponse.join(', ')}</div>
+            </div>
+          )}
+          <h2>FAQs</h2>
+          {faqs.map((faq, index) => (
+            <QuestionBlock
+              key={`faq-${index}`}
+              question={faq.question}
+              answerData={{ textualResponse: [faq.answer] }}
+              isOpen={openFaqIndex === index}
+              toggle={() => toggleFaq(index)} // Handle FAQ toggle
+            />
+          ))}
+        </div>
       ) : (
         <div>No Questions Available</div>
       )}
@@ -103,43 +129,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
-
-
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
-import styles from './QuestionBlock.module.css';
-import GridAnswer from './GridAnswer';
-
-const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
-  <div className={styles.questionBlock}>
-    <div className={styles.question} onClick={toggle}>
-      {question}
-      <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
-    </div>
-    {isOpen && <GridAnswer answerData={answerData} />}
-  </div>
-);
-
-export default QuestionBlock;
-
-
-
-
-.fullScreenContent {
-  position: fixed; /* Position it over the existing content */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ffffff; /* White background for contrast */
-  padding: 20px; /* Padding around the content */
-  z-index: 100; /* Ensure it appears above other content */
-  overflow-y: auto; /* Allow scrolling if content is large */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
-}
-
-.fullScreenContent h2 {
-  margin-top: 0; /* Remove margin for header */
-}
