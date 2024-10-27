@@ -1,3 +1,5 @@
+// MainContent.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -71,7 +73,10 @@ const MainContent = ({ activeTopic }) => {
     fetchAllData(activeTopic);
   }, [activeTopic]);
 
-  const toggleAnswer = (index) => setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+  const toggleAnswer = (index) => {
+    setOpenQuestion(prevIndex => (prevIndex === index ? null : index));
+    setShowFAQDropdown(false); // Close dropdown after selecting a question
+  };
   const toggleFAQDropdown = () => setShowFAQDropdown(prevState => !prevState);
 
   return (
@@ -97,6 +102,7 @@ const MainContent = ({ activeTopic }) => {
                       answerData={item.answer}
                       isOpen={openQuestion === index}
                       toggle={() => toggleAnswer(index)}
+                      isActive={openQuestion === index} // New prop to mark active question
                     />
                   ))
                 ) : (
@@ -115,88 +121,8 @@ export default MainContent;
 
 
 
-.mainContent {
-  flex-grow: 1;
-  height: 100vh;
-  padding: 35px;
-  padding-top: 60px;
-  background-color: #f7f9fc;
-  overflow-y: auto;
-  width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
 
-
-.dropdown {
-  position: relative;
-  display: inline-block;
-  width: 100%;
-}
-
-.dropdownButton {
-  padding: 10px 20px;
-  margin-bottom: 15px;
-  background-color: #0073e6;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  transition: background-color 0.3s ease;
-}
-
-.dropdownButton:hover {
-  background-color: #005bb5;
-}
-
-.dropdownIcon {
-  margin-left: 8px;
-}
-
-.dropdownContent {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-  max-height: 300px;
-  overflow-y: auto;
-  transition: max-height 0.3s ease;
-}
-
-.fullScreenContent {
-  position: fixed; /* Position it over the existing content */
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ffffff; /* White background for contrast */
-  padding: 20px; /* Padding around the content */
-  z-index: 100; /* Ensure it appears above other content */
-  overflow-y: auto; /* Allow scrolling if content is large */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow */
-}
-
-.fullScreenContent h2 {
-  margin-top: 0; /* Remove margin for header */
-}
-
-
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-
+// QuestionBlock.js
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -204,8 +130,8 @@ import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import styles from './QuestionBlock.module.css';
 import GridAnswer from './GridAnswer';
 
-const QuestionBlock = ({ question, answerData, isOpen, toggle }) => (
-  <div className={styles.questionBlock}>
+const QuestionBlock = ({ question, answerData, isOpen, toggle, isActive }) => (
+  <div className={`${styles.questionBlock} ${isActive ? styles.active : ''}`}>
     <div className={styles.question} onClick={toggle}>
       {question}
       <FontAwesomeIcon icon={isOpen ? faChevronUp : faChevronDown} className={styles.chevronIcon} />
@@ -218,46 +144,44 @@ export default QuestionBlock;
 
 
 
+/* QuestionBlock.module.css */
+
 .questionBlock {
-  margin: 0; /* Remove bottom margin to avoid space between dropdown items */
-  border: none; /* Remove border for a smoother look */
-  background-color: transparent; /* Make the background transparent to blend in with dropdown */
+  margin: 0;
+  border: none;
+  background-color: transparent;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .questionBlock:hover {
-  background-color: #f0f0f0; /* Slightly darken on hover */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow on hover */
+  background-color: #f0f0f0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .question {
-  font-size: 1rem; /* Maintain same font size */
-  font-weight: bold; /* Bold for emphasis */
-  padding: 10px 14px; /* Adjust padding for a comfortable click area */
-  cursor: pointer; /* Pointer cursor to indicate interactivity */
-  color: #2a2a2a; /* Dark text color for visibility */
-  display: flex; /* Flexbox for alignment */
-  justify-content: space-between; /* Space between question text and chevron */
-  align-items: center; /* Center items vertically */
-  transition: color 0.3s ease; /* Smooth color transition */
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #2a2a2a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s ease;
 }
 
 .question:hover {
-  color: #0073e6; /* Change color on hover */
+  color: #0073e6;
 }
 
 .chevronIcon {
-  font-size: 1rem; /* Maintain size */
-  color: #888; /* Icon color */
-  margin-left: 10px; /* Space from question text */
-  transition: transform 0.3s ease, color 0.3s ease; /* Smooth transitions for icon */
+  font-size: 1rem;
+  color: #888;
+  margin-left: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-/* Add additional styling for the expanded answer if needed */
-.gridAnswer {
-  padding: 10px; /* Padding around the answer content */
-  background-color: #fafafa; /* Light background for answers */
-  border-top: 1px solid #ddd; /* Subtle border to separate question and answer */
+.active {
+  background-color: #e0f3ff;
+  border-left: 4px solid #0073e6;
 }
-
-
