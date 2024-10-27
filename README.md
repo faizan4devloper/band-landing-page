@@ -23,7 +23,11 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
       {isFaqOpen && (
         <div className={styles.dropdownContent}>
           {contentData.map((item, index) => (
-            <div key={index} onClick={() => handleQuestionSelect(item.question, item.answer)} className={styles.questionBlock}>
+            <div
+              key={index}
+              onClick={() => handleQuestionSelect(item.question, item.answer)}
+              className={`${styles.questionBlock} ${selectedQuestion === item.question ? styles.activeQuestion : ''}`}
+            >
               <span>{item.question}</span>
             </div>
           ))}
@@ -42,26 +46,24 @@ const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, selected
 export default FaqDropdown;
 
 
-.faqDropdown {
-  border: 1px solid #ddd;
-  margin-top: 20px;
-  border-radius: 5px;
-}
 
-.dropdownHeader {
-  display: flex;
-  width: 400px;
-  justify-content: space-between;
-  padding: 15px;
-  background-color: #f5f5f5;
-  cursor: pointer;
-  font-weight: bold;
+.questionBlock {
+  padding: 10px;
   border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.dropdownContent {
-  padding: 10px 15px;
+.questionBlock:hover {
+  background-color: #f0f0f0;
 }
+
+.activeQuestion {
+  background-color: #d3eafc; /* Light blue background for active question */
+  font-weight: bold; /* Make the font bold for the active question */
+  color: #1a1a1a; /* Change the text color for the active question */
+}
+
 
 
 import React, { useState, useEffect } from 'react';
@@ -159,68 +161,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
-
-.mainContent {
-  flex-grow: 1;
-  height: 100vh;
-  padding: 35px;
-  padding-top: 60px;
-  background-color: #f7f9fc;
-  overflow-y: auto;
-  width: 800px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60vh;
-}
-
-import React from 'react';
-import styles from './QuestionBlock.module.css';
-
-const QuestionBlock = ({ question, answerData }) => (
-  <div className={styles.questionBlock}>
-    <div className={styles.question}>
-      {question}
-    </div>
-    <div className={styles.answer}>
-      <p><strong>Textual Response:</strong> {answerData.textualResponse.join(', ')}</p>
-      <p><strong>Citizen Experience:</strong> {answerData.citizenExperience}</p>
-      <p><strong>Factual Info:</strong> {answerData.factualInfo}</p>
-      <p><strong>Contextual:</strong> {answerData.contextual}</p>
-    </div>
-  </div>
-);
-
-export default QuestionBlock;
-
-.questionBlock {
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.questionBlock:hover {
-  background-color: #f0f0f0;
-}
-
-.question {
-  font-size: 1rem;
-  font-weight: bold;
-  color: #2a2a2a;
-}
-
-.answer {
-  margin-top: 10px;
-  padding: 10px;
-  background-color: #fafafa;
-  border-left: 4px solid #0073e6;
-}
