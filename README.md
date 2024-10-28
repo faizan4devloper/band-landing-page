@@ -81,17 +81,16 @@ export default Chatbot;
 
 
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faWandSparkles, faTrashAlt, faComments, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-regular-svg-icons';
 import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+import styles from './ChatbotNew.module.css';
 import BotProfile from "./chatbotprofile.jpg";
 
-const Chatbot = () => {
+const ChatbotNew = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -135,10 +134,7 @@ const Chatbot = () => {
 
     try {
       const response = await axios.post('dummy', // Replace with your actual endpoint
-        { 
-          question: input 
-          
-        },
+        { query: input },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -269,188 +265,33 @@ const Chatbot = () => {
   );
 };
 
-export default Chatbot;
-
-Both chatbot are same why the second chatbot not working 
+export default ChatbotNew;
 
 
 
 
 
+main.bed4737e1269095…f.hot-update.js:114 Uncaught TypeError: Cannot read properties of undefined (reading 'split')
+    at linkify (main.bed4737e1269095…ot-update.js:114:17)
+    at main.bed4737e1269095…ot-update.js:249:29
+    at Array.map (<anonymous>)
+    at Chatbot (main.bed4737e1269095…ot-update.js:231:29)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at updateFunctionComponent (react-dom.development.js:19617:1)
+    at beginWork (react-dom.development.js:21640:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+react-dom.development.js:18704 The above error occurred in the <Chatbot> component:
 
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faTrashAlt, faComments, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { faUser } from '@fortawesome/free-regular-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
-import BotProfile from "./chatbotprofile.jpg";
+    at Chatbot (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/main.bed4737….hot-update.js:40:76)
+    at div
+    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43668:15)
+    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:41605:5)
+    at AuthProvider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2078:3)
+    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:76505:3)
+    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:52:84)
+    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:76505:3)
 
-const Chatbot = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [showClearChat, setShowClearChat] = useState(false);
-  
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      setMessages([{ text: 'Hello! How can I assist you today?', sender: 'bot' }]);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  const toggleChatbot = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const minimizeChatbot = () => {
-    setIsOpen(false);
-  };
-
-  const sendMessage = async () => {
-    if (input.trim() === '') return;
-
-    const userMessage = { text: input, sender: 'user' };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-
-    // Add loading message placeholder
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: '', sender: 'bot', loading: true },
-    ]);
-
-    try {
-      const response = await axios.post('dummy', // Replace with your actual endpoint
-        { question: input },
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-
-      const botText = response.data.text || 'No response available.';
-      const botMessage = { text: botText, sender: 'bot', loading: false };
-
-      // Replace loading message with actual bot message
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) => (msg.loading ? botMessage : msg))
-      );
-    } catch (error) {
-      console.error('Error sending message:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: 'Sorry, something went wrong. Please try again later.', sender: 'bot', loading: false },
-      ]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleClearChat = () => {
-    setMessages([]);
-    setShowClearChat(false);
-  };
-
-  const linkify = (text) => {
-    const urlPattern = /(https?:\/\/[^\s]+)/g;
-    return text.split(urlPattern).map((part, index) =>
-      urlPattern.test(part) ? (
-        <a key={index} href={part} target="_blank" rel="noopener noreferrer">
-          {part}
-        </a>
-      ) : (
-        part
-      )
-    );
-  };
-
-  return (
-    <>
-      <div className={styles.chatbotIcon} onClick={toggleChatbot} title="AI Ninja Chat">
-        <FontAwesomeIcon icon={faComments} />
-      </div>
-
-      {isOpen && (
-        <div className={`${styles.chatbotContainer} ${isOpen ? styles.open : ''}`}>
-          <div className={styles.chatbotHeader}>
-            <div className={styles.botProfile}>
-              <img src={BotProfile} className={styles.botImage} />
-              <div className={styles.botInfo}>
-                <div className={styles.botName}>AI Ninja</div>
-                <div className={styles.botStatus}>
-                  <span className={styles.onlineDot}></span> Online
-                </div>
-              </div>
-            </div>
-            <div className={styles.headerActions}>
-              <button onClick={() => setShowClearChat(true)} className={styles.clearChatButton} title="Clear Chat">
-                <FontAwesomeIcon icon={faTrashAlt} />
-              </button>
-              <button onClick={minimizeChatbot} className={styles.minimizeButton} title="Minimize Chat">
-                <FontAwesomeIcon icon={faChevronDown} />
-              </button>
-            </div>
-          </div>
-
-          <div className={styles.chatbotMessages}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={message.sender === 'user' ? styles.userMessage : styles.botMessage}
-              >
-                <FontAwesomeIcon
-                  icon={message.sender === 'user' ? faUser : faWandSparkles}
-                  className={styles.icon}
-                />
-                <div className={styles.messageText}>
-                  {message.loading ? (
-                    <BeatLoader color="#5f1ec1" size={8} />
-                  ) : (
-                    linkify(message.text)
-                  )}
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {showClearChat && (
-            <div className={styles.clearChatWindow}>
-              <p>Are you sure you want to clear the chat?</p>
-              <button onClick={handleClearChat} className={styles.confirmButton}>
-                Yes, Clear Chat
-              </button>
-              <button onClick={() => setShowClearChat(false)} className={styles.cancelButton}>
-                Cancel
-              </button>
-            </div>
-          )}
-
-          <div className={styles.chatbotInput}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder="Type your message and hit Enter..."
-              disabled={loading}
-            />
-            <button onClick={sendMessage} disabled={loading} className={styles.sendButton} title="Send">
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default Chatbot;
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
