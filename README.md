@@ -1,5 +1,82 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import styles from './ChatbotNew.module.css'; // Import ChatbotNew styles here
+
+const Chatbot = () => {
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState([]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (input.trim() === '') return;
+
+    const userMessage = { type: 'user', text: input };
+    setMessages([...messages, userMessage]);
+
+    try {
+      const response = await axios.post('dummy', {
+        question: input
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      const parsedBody = JSON.parse(response.data.body);
+      const answer = parsedBody.answer || 'No answer available for this question.';
+      const source = parsedBody.source || 'No source available';
+
+      const botMessage = {
+        type: 'bot',
+        text: `${answer} (Source: ${source})`
+      };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
+    }
+
+    setInput('');
+  };
+
+  return (
+    <div className={styles.chatContainer}>
+      <div className={styles.chatWindow}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={message.type === 'user' ? styles.userMessage : styles.botMessage}
+          >
+            {message.text}
+          </div>
+        ))}
+      </div>
+      <form onSubmit={handleSubmit} className={styles.inputForm}>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Ask a question..."
+          className={styles.inputField}
+        />
+        <button type="submit" className={styles.submitButton}>Send</button>
+      </form>
+    </div>
+  );
+};
+
+export default Chatbot;
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import axios from 'axios';
 import styles from './Chatbot.module.css';
 
 const Chatbot = () => {
