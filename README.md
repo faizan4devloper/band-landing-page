@@ -1,512 +1,300 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import React from 'react';
+import styles from './FaqDropdown.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faUser, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import QuestionBlock from './QuestionBlock';
 
-const Chatbot = ({ onClose }) => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion }) => {
+  const [isFaqOpen, setIsFaqOpen] = React.useState(false); // Initially closed
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+  const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-
-    try {
-      const response = await axios.post('dummy', {
-        question: input,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
-
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+  const handleQuestionSelect = (question, answer) => {
+    onQuestionSelect(question, answer);
+    setIsFaqOpen(false); // Close dropdown after selection
   };
 
   return (
-    <div className={styles.chatbotContainer}>
-      {/* Header with title and close button */}
-      <div className={styles.chatbotHeader}>
-        <h2 className={styles.chatbotTitle}>AI Ninja</h2>
-        <button onClick={onClose} className={styles.closeButton} title="Close">
-          <FontAwesomeIcon icon={faTimes} />
-        </button>
+    <div className={styles.faqDropdown}>
+      <div className={styles.dropdownHeader} onClick={toggleFaq}>
+        <span>Frequently Asked Questions</span>
+        <FontAwesomeIcon icon={isFaqOpen ? faChevronUp : faChevronDown} />
       </div>
-
-      {/* Chat messages container */}
-      <div className={styles.chatbotMessages}>
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={`${styles.userMessage} ${message.type === 'bot' ? styles.botMessage : ''}`}
+      
+      <div className={`${styles.dropdownContent} ${isFaqOpen ? styles.show : styles.hide}`}>
+        {contentData.map((item, index) => (
+          <div 
+            key={index} 
+            onClick={() => handleQuestionSelect(item.question, item.answer)} 
+            className={`${styles.questionBlock} ${selectedQuestion === item.question ? styles.activeQuestion : ''}`}
           >
-            <FontAwesomeIcon
-              icon={message.type === 'user' ? faUser : faWandSparkles}
-              className={styles.icon}
-            />
-            <div className={styles.messageText}>
-              {message.text}
-            </div>
+            <span>{item.question}</span>
           </div>
         ))}
-        {/* Loader for bot response */}
-        {loading && (
-          <div className={styles.botMessage}>
-            <FontAwesomeIcon icon={faWandSparkles} className={styles.icon} />
-            <div className={styles.messageText}>
-              <BeatLoader color="#5f1ec1" size={8} />
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
       </div>
-
-      {/* Input form for user to type a message */}
-      <form onSubmit={handleSubmit} className={styles.chatbotInput}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question..."
-          className={styles.chatbotInputField}
-          disabled={loading}
-        />
-        <button type="submit" className={styles.chatbotSubmitButton} title="Send">
-          <FontAwesomeIcon icon={faPaperPlane} />
-        </button>
-      </form>
     </div>
   );
 };
 
-export default Chatbot;
+export default FaqDropdown;
 
 
+.faqDropdown {
+  border: 1px solid rgba(95, 30, 193, 0.1); /* Light purple on hover */
 
-
-
-
-
-
-/* Default Light Theme */
-:root {
-  --primary-color: #5f1ec1;
-  --secondary-color: rgba(15, 95, 220, 1);
-  --background-color: #ffffff;
-  --inp-text-color: #00000;
-  --chat-text-color:#fff;
-  --scrollbar-color: rgba(15, 95, 220, 1);
-  --scrollbar-background: #dcdcdc;
-  --button-background-color: rgba(13, 85, 198, 0.1);
-  --button-hover-color: #5f1ec1;
-    --placeholder-color: #a9a9a9; /* Light theme placeholder color */
-    --icon-color: #000000;
-
-}
-
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --secondary-color: #c1a1f2;
-  --background-color: #1a1a2e;
-  --inp-text-color: #ffffff;
-    --text-color:#ffffff;
-  --scrollbar-color: #5f1ec1;
-  --scrollbar-background: #333333;
-  --button-background-color: rgba(95, 30, 193, 0.8);
-  --button-hover-color: #c1a1f2;
-    --placeholder-color: #555555; /* Dark theme placeholder color */
-        --icon-color: #ffffff;
-
-
-}
-
-/* Chatbot Styles */
-.chatbotIcon {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--chat-text-color);
-  padding: 11px 12px;
-  border-radius: 50%;
-  cursor: pointer;
-  z-index: 1000;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.chatbotContainer {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 420px;
-  background-color: var(--background-color);
+  margin-top: 12px;
   border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  z-index: 1001;
-  opacity: 0;
-  transform: scale(0.9);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  overflow: hidden; /* Ensures children don't overflow the parent */
+  transition: box-shadow 0.3s ease; /* Smooth transition for shadow */
 }
 
-.chatbotContainer.open {
-  opacity: 1;
-  transform: scale(1);
+.faqDropdown:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Elevate on hover */
 }
 
-.chatbotHeader {
+.dropdownHeader {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--chat-text-color);
-  padding: 10px;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-.chatbotTitle {
-  font-size: 16px;
+  align-items: center; /* Center align items vertically */
+  padding: 15px 20px;
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%); /* Gradient background */
+  color: #fff; /* White text color */
+  cursor: pointer;
   font-weight: bold;
+  font-size: 1rem;
+  border-radius: 8px 8px 0 0; /* Rounded corners on top */
+  transition: background-color 0.3s ease; /* Smooth background color transition */
 }
 
-.closeButton, .clearChatButton, .minimizeButton {
-  background: none;
-  border: none;
-  color: var(--chat-text-color);
-  font-size: 16px;
+.dropdownHeader:hover {
+  background: linear-gradient(90deg, rgb(75, 20, 173) 0%, rgb(5, 75, 200) 100%); /* Darken gradient on hover */
+}
+
+.dropdownContent {
+  padding: 10px 20px;
+  border-top: 1px solid #ddd; /* Separate header from content */
+  background-color: #fff; /* White background for content */
+  max-height: calc(5 * 50px); /* Approximate height for 5 questions (adjust 50px as needed) */
+  overflow-y: auto; /* Allow vertical scrolling */
+  transition: max-height 0.5s ease, opacity 0.5s ease; /* Smooth max-height transition */
+  opacity: 0; /* Initially hidden */
+}
+
+.show {
+  max-height: calc(5 * 50px); /* Same as above */
+  opacity: 1; /* Fully visible */
+  transition: max-height 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+}
+
+.hide {
+  max-height: 0; /* Collapsed height */
+  opacity: 0; /* Hidden */
+}
+
+.questionBlock {
+  padding: 10px;
   cursor: pointer;
-  margin-left: 5px;
+  font-size: .8rem;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions for background and transform */
+  border-radius: 4px; /* Rounded corners */
 }
 
-.chatbotMessages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  animation: slideIn 0.5s ease;
+.questionBlock:hover {
+  background-color: rgba(95, 30, 193, 0.1); /* Light purple on hover */
+  transform: translateY(-2px); /* Slight lift effect */
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.activeQuestion {
+  background-color: rgba(15, 95, 220, 0.2); /* Highlight active question */
+  font-weight: bold; /* Emphasize selected question */
 }
 
-.userMessage, .botMessage {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.userMessage {
-  justify-content: flex-end;
-}
-
-.botMessage {
-  justify-content: flex-start;
-}
-
-.icon {
-  margin: 0 8px;
-  font-size: 15px;
-  color: var(--chat-text-color)
-}
-
-.messageText {
-  max-width: 75%;
-  background-color: #f1f1f1;
-  padding: 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  color: #333;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-}
-
-.messageText a {
-  color: var(--primary-color);
-  text-decoration: none;
-  font-size: 10px;
-  margin-bottom: 5px;
-}
-
-.userMessage .messageText {
-  background-color: #d1e7ff;
-}
-
-.chatbotInput {
-  display: flex;
-  border-top: 1px solid #ddd;
-  padding: 10px;
-}
-
-.chatbotInput input::placeholder {
-  color: var(--placeholder-color);
-  /*font-style: italic;*/
-}
-
-
-
-.chatbotInput input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  color: var(--inp-text-color);
-  outline: none;
-}
-
-.chatbotInput button {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--chat-text-color);
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  margin-left: 10px;
-  cursor: pointer;
-}
-
-.clearChatOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1002;
-}
-
-.clearChatWindow {
-  position: absolute;
-  bottom: 130px; /* Adjust based on available space */
-  left: 0;
-  right: 0;
-  background: var(--background-color);
-  color: var(--text-color);
+.selectedQuestionBlock {
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  text-align: center;
-}
-
-.confirmButton {
-  background-color: #d9534f;
-  color: var(--chat-text-color);
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-right: 10px;
-}
-
-.cancelButton {
-  background-color: var(--primary-color);
-  color: var(--chat-text-color);
-  padding: 8px 18px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.botProfile {
-  display: flex;
-  align-items: center;
-}
-
-.botImage {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 10px;
-}
-
-.botInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.botStatus {
-  font-size: 12px;
-  color: var(--chat-text-color);
-  display: flex;
-  align-items: center;
-}
-
-.onlineDot {
-  width: 8px;
-  height: 8px;
-  background-color: #4caf50; /* Green dot */
-  border-radius: 50%;
-  display: inline-block;
-  margin-right: 5px;
+  margin-top: 20px; /* Increased space between dropdown and selected question */
+  border: 1px solid rgb(95, 30, 193); /* Use main theme color */
+  border-radius: 5px;
+  background-color: #f8f9fa; /* Light background for selected question */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
 }
 
 
 
+/* Custom Scrollbar Styles */
+.dropdownContent::-webkit-scrollbar {
+  width: 8px; /* Width of the scrollbar */
+}
 
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faUser, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+.dropdownContent::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background of the scrollbar track */
+  border-radius: 8px; /* Rounded corners */
+}
 
-const Chatbot = ({ onClose }) => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef(null);
+.dropdownContent::-webkit-scrollbar-thumb {
+  background: rgb(95, 30, 193); /* Color of the scrollbar thumb */
+  border-radius: 8px; /* Rounded corners */
+}
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+.dropdownContent::-webkit-scrollbar-thumb:hover {
+  background: rgb(75, 20, 173); /* Darker shade on hover */
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
 
-    const userMessage = { type: 'user', text: input };
-    setMessages([...messages, userMessage]);
-    setInput('');
-    setLoading(true);
 
-    try {
-      const response = await axios.post('dummy', {
-        question: input,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+import React, { useState } from 'react';
+import styles from './QuestionBlock.module.css';
 
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
+// Utility function to convert URLs in text to anchor tags
+const parseLinks = (text) => {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, index) =>
+    urlPattern.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
 
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
+const QuestionBlock = ({ question, answerData }) => {
+  const [showFullTextual, setShowFullTextual] = useState(false);
+  const [showFullCitizen, setShowFullCitizen] = useState(false);
+  const [showFullFactual, setShowFullFactual] = useState(false);
+  const [showFullContextual, setShowFullContextual] = useState(false);
 
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const renderResponsePoints = (responseArray, isExpanded) => (
+    <ul className={styles.responseList}>
+      {(isExpanded ? responseArray : responseArray.slice(0, 2)).map((item, index) => (
+        <li key={index} className={styles.responseItem}>
+          {parseLinks(item)}
+        </li>
+      ))}
+    </ul>
+  );
 
   return (
-    <div className={styles.chatContainer}>
-      {/* Header with title and close button */}
-      <div className={styles.chatHeader}>
-        <h2 className={styles.chatTitle}>AI Ninja</h2>
-        <button onClick={onClose} className={styles.closeButton} title="Close">
-          <FontAwesomeIcon icon={faTimes} />
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      <div className={`${styles.responseSection} ${styles.leftSection}`}>
+        <p><strong>Textual Response:</strong></p>
+        {renderResponsePoints(answerData.textualResponse, showFullTextual)}
+        <button className={styles.seeMoreButton} onClick={() => setShowFullTextual(!showFullTextual)}>
+          {showFullTextual ? 'See Less' : 'See More'}
         </button>
       </div>
 
-      {/* Chat messages container */}
-      <div className={styles.chatWindow}>
-        {messages.map((message, index) => (
-          <div
-            key={index}
-            className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-          >
-            <FontAwesomeIcon
-              icon={message.type === 'user' ? faUser : faWandSparkles}
-              className={styles.messageIcon}
-            />
-            <div className={styles.messageText}>
-              {message.text}
-            </div>
-          </div>
-        ))}
-        {/* Loader for bot response */}
-        {loading && (
-          <div className={styles.botMessage}>
-            <FontAwesomeIcon icon={faWandSparkles} className={styles.messageIcon} />
-            <div className={styles.messageText}>
-              <BeatLoader color="#5f1ec1" size={8} />
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+      <div className={`${styles.responseSection} ${styles.rightSection}`}>
+        <p><strong>Citizen Experience:</strong></p>
+        {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
+        <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
+          {showFullCitizen ? 'See Less' : 'See More'}
+        </button>
       </div>
 
-      {/* Input form for user to type a message */}
-      <form onSubmit={handleSubmit} className={styles.inputForm}>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask a question..."
-          className={styles.inputField}
-          disabled={loading}
-        />
-        <button type="submit" className={styles.submitButton} title="Send">
-          <FontAwesomeIcon icon={faPaperPlane} />
+      <div className={`${styles.responseSection} ${styles.bottomLeftSection}`}>
+        <p><strong>Factual Info:</strong></p>
+        {renderResponsePoints([answerData.factualInfo], showFullFactual)}
+        <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
+          {showFullFactual ? 'See Less' : 'See More'}
         </button>
-      </form>
+      </div>
+
+      <div className={`${styles.responseSection} ${styles.bottomRightSection}`}>
+        <p><strong>Contextual:</strong></p>
+        {renderResponsePoints([answerData.contextual], showFullContextual)}
+        <button className={styles.seeMoreButton} onClick={() => setShowFullContextual(!showFullContextual)}>
+          {showFullContextual ? 'See Less' : 'See More'}
+        </button>
+      </div>
     </div>
   );
 };
 
-export default Chatbot;
+export default QuestionBlock;
+
+.questionBlock {
+  display: grid;
+  grid-template-areas:
+    "question question"
+    "leftSection rightSection"
+    "bottomLeftSection bottomRightSection";
+  grid-gap: 20px;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.question {
+  grid-area: question;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2a2a2a;
+  margin-bottom: 15px;
+}
+
+.responseSection {
+  padding: 15px;
+  font-size:1rem;
+  background-color: #f9f9f9;
+  border-left: 4px solid #0073e6;
+  border-radius: 6px;
+}
+
+.leftSection {
+  grid-area: leftSection;
+}
+
+.rightSection {
+  grid-area: rightSection;
+}
+
+.bottomLeftSection {
+  grid-area: bottomLeftSection;
+}
+
+.bottomRightSection {
+  grid-area: bottomRightSection;
+}
+
+.responseList {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.responseItem {
+  margin-bottom: 8px;
+  font-size: .8rem;
+  line-height: 1.5;
+}
+
+.link {
+  color: #0073e6;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #005bb5;
+}
+
+.seeMoreButton {
+  display: inline-block;
+  margin-top: 10px;
+  background-color: #0073e6;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.seeMoreButton:hover {
+  background-color: #005bb5;
+}
