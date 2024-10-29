@@ -1,281 +1,126 @@
-import React, { useState } from 'react';
-import styles from './QuestionBlock.module.css';
 
-// Utility function to convert URLs in text to anchor tags
-const parseLinks = (text) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlPattern).map((part, index) =>
-    urlPattern.test(part) ? (
-      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
-};
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
+import styles from './MainContent.module.css';
 
-const QuestionBlock = ({ question, answerData }) => {
-  const [showFullTextual, setShowFullTextual] = useState(false);
-  const [showFullCitizen, setShowFullCitizen] = useState(false);
-  const [showFullFactual, setShowFullFactual] = useState(false);
-  const [showFullContextual, setShowFullContextual] = useState(false);
+const MainContent = ({ activeTopic }) => {
+  const [contentData, setContentData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState({}); // Use an object to store selected question and answer by topic
 
-  const renderResponsePoints = (responseArray, isExpanded) => {
-    // Ensure responseArray is an array for proper slicing
-    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray].filter(Boolean);
-
-    return (
-      <ul className={styles.responseList}>
-        {(isExpanded ? arrayToRender : arrayToRender.slice(0, 2)).map((item, index) => (
-          <li key={index} className={styles.responseItem}>
-            {parseLinks(item)}
-          </li>
-        ))}
-      </ul>
-    );
+  const topicQuestions = {
+    1: [
+      'What are the last five years key statistics for Serpell Primary School?',
+      'What are the admission criteria and process for Serpell Primary School?',
+      'How does the school perform in standardized tests and assessments?'
+    ],
+    2: [
+    'What’s the curriculum at Serpell Primary School?',
+    'How is the curriculum structured across different year levels?',
+    'What specialist programs are offered at Serpell Primary School?'
+    ],
+    3: [
+      'How does the school engage with the broader community?',
+      'How can parents get involved in the school community?',
+      'What support services are available for students with special needs at serpell primary school?'
+      ],
+    // Add more topics as needed...
   };
 
+  const fetchDataForQuestion = async (question) => {
+    try {
+      const response = await axios.post(
+        'dummy',
+        { question: `${question}` },
+        { headers: { 'Content-Type': 'application/json' } }
+      );    
+
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer;
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return ['No Answer Available'];
+    }
+  };
+
+  const fetchAllData = async (topicId) => {
+    setLoading(true);
+    try {
+      const questionsList = topicQuestions[topicId] || [];
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here. its me kkkkkkkslf dfksfjdlf sdkfjslf jkdlfaas lksdddddddf ksdfjlafkls ksaldfjlsfj sdfupwie3 fdskfjlkasf 3 rwkslfjlsad',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
+
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data for all questions:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleQuestionSelect = (question, answer) => {
+    // Update selected data for the active topic
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    fetchAllData(activeTopic);
+    // Reset selected data when the active topic changes
+    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
+  }, [activeTopic]);
+
+  const selectedQuestionData = selectedData[activeTopic] || {};
+
   return (
-    <div className={styles.questionBlock}>
-      <div className={styles.question}>{question}</div>
-
-      <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
-        <p><strong>Textual Response:</strong></p>
-        {renderResponsePoints(answerData.textualResponse || [], showFullTextual)}
-        {answerData.textualResponse && answerData.textualResponse.length > 2 && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullTextual(!showFullTextual)}>
-            {showFullTextual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
-        <p><strong>Citizen Experience:</strong></p>
-        {renderResponsePoints([answerData.citizenExperience].filter(Boolean), showFullCitizen)}
-        {answerData.citizenExperience && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
-            {showFullCitizen ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
-        <p><strong>Factual Info:</strong></p>
-        {renderResponsePoints([answerData.factualInfo].filter(Boolean), showFullFactual)}
-        {answerData.factualInfo && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
-            {showFullFactual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
-        <p><strong>Contextual:</strong></p>
-        {renderResponsePoints([answerData.contextual].filter(Boolean), showFullContextual)}
-        {answerData.contextual && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullContextual(!showFullContextual)}>
-            {showFullContextual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
+        </div>
+      ) : (
+        <>
+          <FaqDropdown
+            contentData={contentData}
+            onQuestionSelect={handleQuestionSelect}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
+          />
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
 
-export default QuestionBlock;
-
-
-
-
-
-
-
-
-
-
-
-
-import React, { useState } from 'react';
-import styles from './QuestionBlock.module.css';
-
-// Utility function to convert URLs in text to anchor tags
-const parseLinks = (text) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlPattern).map((part, index) =>
-    urlPattern.test(part) ? (
-      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
-};
-
-const QuestionBlock = ({ question, answerData }) => {
-  const [showFullTextual, setShowFullTextual] = useState(false);
-  const [showFullCitizen, setShowFullCitizen] = useState(false);
-  const [showFullFactual, setShowFullFactual] = useState(false);
-  const [showFullContextual, setShowFullContextual] = useState(false);
-
-  const renderResponsePoints = (responseArray, isExpanded) => {
-    // Ensure responseArray is an array for proper slicing
-    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
-
-    return (
-      <ul className={styles.responseList}>
-        {(isExpanded ? arrayToRender : arrayToRender.slice(0, 2)).map((item, index) => (
-          <li key={index} className={styles.responseItem}>
-            {parseLinks(item)}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  return (
-    <div className={styles.questionBlock}>
-      <div className={styles.question}>{question}</div>
-
-      <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
-        <p><strong>Textual Response:</strong></p>
-        {renderResponsePoints(answerData.textualResponse, showFullTextual)}
-        {answerData.textualResponse.length > 2 && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullTextual(!showFullTextual)}>
-            {showFullTextual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
-        <p><strong>Citizen Experience:</strong></p>
-        {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
-        {answerData.citizenExperience && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
-            {showFullCitizen ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
-        <p><strong>Factual Info:</strong></p>
-        {renderResponsePoints([answerData.factualInfo], showFullFactual)}
-        {answerData.factualInfo && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
-            {showFullFactual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
-        <p><strong>Contextual:</strong></p>
-        {renderResponsePoints([answerData.contextual], showFullContextual)}
-        {answerData.contextual && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullContextual(!showFullContextual)}>
-            {showFullContextual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default QuestionBlock;
-
-
-
-
-
-
-
-.questionBlock {
-  display: grid;
-  grid-template-areas:
-    "question question"
-    "leftSection rightSection"
-    "bottomLeftSection bottomRightSection";
-  grid-gap: 20px;
-  position: relative;
-  margin: 20px 0;
-  border-radius: 8px;
-}
-
-.question {
-  grid-area: question;
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #2a2a2a;
-  margin-bottom: 15px;
-}
-
-.responseSection {
-  padding: 15px;
-  font-size: 1rem;
-  background-color: #f9f9f9;
-  border-left: 4px solid #0073e6;
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
-  transition: max-height 0.4s ease, opacity 0.4s ease;
-  max-height: 155px; /* Collapsed height */
-  width: 350px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  opacity: 1; /* Ensure opacity starts at 1 */
-}
-
-.responseSection.expanded {
-  max-height: 300px; /* Expanded height */
-  z-index: 1;
-  overflow-y: auto;
-  opacity: 1; /* Maintain opacity when expanded */
-}
-
-.responseList {
-  margin: 10px 0;
-  padding-left: 20px;
-}
-
-.responseItem {
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  line-height: 1.5;
-}
-
-.link {
-  color: #0073e6;
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.link:hover {
-  color: #005bb5;
-}
-
-.seeMoreButton {
-  display: inline-block;
-  margin-top: 10px;
-  background-color: #0073e6;
-  color: white;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: background-color 0.2s;
-}
-
-.seeMoreButton:hover {
-  background-color: #005bb5;
-}
-
-/* Optional: Customize scrollbar appearance */
-.responseSection.expanded::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.responseSection.expanded::-webkit-scrollbar-thumb {
-  background-color: rgb(75, 20, 173);
-  border-radius: 4px;
-}
+export default MainContent;
