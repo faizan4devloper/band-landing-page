@@ -1,3 +1,44 @@
+.responseSection {
+  padding: 15px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  border-left: 4px solid #0073e6;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  max-height: 80px; /* Collapsed height */
+  opacity: 1;
+  width: 100%; /* Set width to 100% to fill parent container */
+  max-width: 400px; /* Set a maximum width */
+}
+
+.responseSection.expanded {
+  max-height: 300px; /* Expanded height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  z-index: 1;
+}
+
+/* Optional: Customize scrollbar appearance */
+.responseSection.expanded::-webkit-scrollbar {
+  width: 8px;
+}
+
+.responseSection.expanded::-webkit-scrollbar-thumb {
+  background-color: #0073e6;
+  border-radius: 4px;
+}
+
+.responseSection.expanded::-webkit-scrollbar-thumb:hover {
+  background-color: #005bb5;
+}
+
+
+
+
+
+
+
 .questionBlock {
   display: grid;
   grid-template-areas:
