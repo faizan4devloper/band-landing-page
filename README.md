@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faUser, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faPaperPlane, faWandSparkles, faUser, faComments, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { BeatLoader } from 'react-spinners';
 import styles from './Chatbot.module.css';
 
@@ -73,7 +73,7 @@ const Chatbot = () => {
         <div className={styles.chatWindow}>
           <div className={styles.chatHeader}>
             <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}>X</button>
+            <button className={styles.closeButton} onClick={toggleChatVisibility}><FontAwesomeIcon icon={faTimes}/></button>
           </div>
           <div className={styles.messages}>
             {messages.map((message, index) => (
@@ -125,8 +125,6 @@ export default Chatbot;
 
 
 
-
-
 :root {
   --primary-color: #5f1ec1;
   --secondary-color: rgba(15, 95, 220, 1);
@@ -159,11 +157,18 @@ export default Chatbot;
     position: fixed;
     bottom: 20px;
     color:#fff;
-    padding: 14px;
-    border-radius: 30%;
-    background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+    /*padding: 14px;*/
+    /*border-radius: 30%;*/
+    /*background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);*/
     right: 20px;
     z-index: 1000;
+}
+
+.iconContainer{
+  cursor: pointer;  
+  padding: 14px;
+    border-radius: 30%;
+    background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
 }
 
 /* Chat Window - Modal Style */
@@ -262,7 +267,7 @@ export default Chatbot;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  color: var(--inp-text-color);
+  color: #000;
   outline: none;
 }
 
@@ -274,4 +279,13 @@ export default Chatbot;
   border-radius: 4px;
   margin-left: 10px;
   cursor: pointer;
+}
+
+
+.messages::-webkit-scrollbar{
+  width:6px;
+}
+.messages::-webkit-scrollbar-thumb{
+background-color: rgba(15, 95, 220, 1);
+border-radius: 10px
 }
