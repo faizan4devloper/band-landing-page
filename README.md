@@ -1,3 +1,149 @@
+:root {
+  --primary-color: #5f1ec1;
+  --secondary-color: rgba(15, 95, 220, 1);
+  --background-color: #ffffff;
+  --inp-text-color: #00000;
+  --chat-text-color: #fff;
+  --scrollbar-color: rgba(15, 95, 220, 1);
+  --scrollbar-background: #dcdcdc;
+  --button-background-color: rgba(13, 85, 198, 0.1);
+  --button-hover-color: #5f1ec1;
+  --placeholder-color: #a9a9a9; /* Light theme placeholder color */
+  --icon-color: #000000;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --primary-color: #9d66f5;
+  --secondary-color: #c1a1f2;
+  --background-color: #1a1a2e;
+  --inp-text-color: #ffffff;
+  --text-color: #ffffff;
+  --scrollbar-color: #5f1ec1;
+  --scrollbar-background: #333333;
+  --button-background-color: rgba(95, 30, 193, 0.8);
+  --button-hover-color: #c1a1f2;
+  --placeholder-color: #555555; /* Dark theme placeholder color */
+}
+
+.chatContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Chat Window - Modal Style */
+.chatWindow {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  height: 420px;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.chatHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--chat-text-color);
+  padding: 10px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.chatHeader h4 {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--chat-text-color);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.userMessage,
+.botMessage {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.userMessage {
+  justify-content: flex-end;
+}
+
+.botMessage {
+  justify-content: flex-start;
+}
+
+.icon {
+  margin: 0 8px;
+  font-size: 15px;
+  color: var(--chat-text-color);
+}
+
+.messageText {
+  max-width: 75%;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  color: #333;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.userMessage .messageText {
+  background-color: #d1e7ff;
+}
+
+.inputForm {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+}
+
+.inputField {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: var(--inp-text-color);
+  outline: none;
+}
+
+.submitButton {
+  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  color: var(--chat-text-color);
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
