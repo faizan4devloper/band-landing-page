@@ -1,268 +1,137 @@
-:root {
-  --primary-color: #5f1ec1;
-  --secondary-color: rgba(15, 95, 220, 1);
-  --background-color: #ffffff;
-  --chat-text-color: #fff;
-  --message-background: #f1f1f1;
-  --user-message-background: #d1e7ff;
-  --input-background: #ffffff;
-  --input-border: #ddd;
-  --loading-color: #5f1ec1;
-}
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
+import styles from './MainContent.module.css';
 
-/* Dark Theme */
-[data-theme="dark"] {
-  --primary-color: #9d66f5;
-  --background-color: #1a1a2e;
-  --message-background: #333;
-  --user-message-background: #444;
-  --input-background: #444;
-  --input-border: #666;
-  --loading-color: #c1a1f2;
-}
+const MainContent = ({ activeTopic }) => {
+  const [contentData, setContentData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState({});
 
-.chatContainer {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-    animation: fadeIn 0.5s; /* Animation for the container */
-}
+  const topicQuestions = {
+    1: [
+      'What are the last five years key statistics for Serpell Primary School?',
+      'What are the admission criteria and process for Serpell Primary School?',
+      'How does the school perform in standardized tests and assessments?'
+    ],
+    2: [
+      'What’s the curriculum at Serpell Primary School?',
+      'How is the curriculum structured across different year levels?',
+      'What specialist programs are offered at Serpell Primary School?'
+    ],
+    3: [
+      'How does the school engage with the broader community?',
+      'How can parents get involved in the school community?',
+      'What support services are available for students with special needs at Serpell Primary School?'
+    ],
+    // Add more topics as needed...
+  };
 
-.iconContainer {
-  cursor: pointer;  
-  padding: 14px;
-  border-radius: 30%;
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  transition: transform 0.3s ease;
-}
-
-.iconContainer:hover {
-  transform: scale(1.1); /* Scale effect on hover */
-}
-
-.chatWindow {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 320px;
-  height: 420px;
-  background-color: var(--background-color);
-  border-radius: 8px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  animation: slideIn 0.5s; /* Animation for chat window */
-}
-
-.messages {
-  flex: 1;
-  padding: 10px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  transition: opacity 0.5s; /* Smooth opacity transition */
-}
-
-.userMessage,
-.botMessage {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  animation: slideIn 0.3s; /* Slide-in effect for messages */
-}
-
-.userMessage {
-  justify-content: flex-end;
-}
-
-.messageText {
-  max-width: 75%;
-  background-color: var(--message-background);
-  padding: 10px;
-  font-size: 12px;
-  border-radius: 10px;
-  color: #333;
-  word-wrap: break-word;
-  white-space: pre-wrap;
-  transition: background-color 0.3s; /* Smooth background transition */
-}
-
-.userMessage .messageText {
-  background-color: var(--user-message-background);
-}
-
-.inputField {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid var(--input-border);
-  border-radius: 4px;
-  color: #000;
-  outline: none;
-  background-color: var(--input-background);
-  transition: border-color 0.3s; /* Transition for input border */
-}
-
-.inputField:focus {
-  border-color: var(--primary-color); /* Change border color on focus */
-}
-
-.submitButton {
-  background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: var(--chat-text-color);
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  margin-left: 10px;
-  cursor: pointer;
-  transition: transform 0.2s; /* Transition for button */
-}
-
-.submitButton:hover {
-  transform: scale(1.05); /* Scale effect on hover */
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-
-
-const Chatbot = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false);
-  const [typing, setTyping] = useState(false); // New state for typing indication
-
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-    setTyping(true); // Set typing to true
-
+  const fetchDataForQuestion = async (question) => {
     try {
-      const response = await axios.post('dummy', {
-        question: input,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axios.post(
+        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
+        { question: `${question}` },
+        { headers: { 'Content-Type': 'application/json' } }
+      );    
 
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
+      // Log the raw response data
+      console.log('Raw response data for question:', question, response.data);
 
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer;
+
+      // Log the parsed answer
+      console.log('Parsed answer:', llmAnswer);
+
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+      // Log the formatted answer
+      console.log('Formatted answer:', formattedAnswer);
+
+      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
     } catch (error) {
       console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setLoading(false);
-      setTyping(false); // Set typing to false
+      return ['No Answer Available'];
     }
   };
 
-  const toggleChatVisibility = () => {
-    setChatVisible(!isChatVisible);
+  const fetchAllData = async (topicId) => {
+    setLoading(true);
+    try {
+      const questionsList = topicQuestions[topicId] || [];
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answer = await fetchDataForQuestion(question);
+          return {
+            question,
+            answer: {
+              textualResponse: answer,
+              citizenExperience: 'Citizen experience response goes here. its me kkkkkkkslf dfksfjdlf sdkfjslf jkdlfaas lksdddddddf ksdfjlafkls ksaldfjlsfj sdfupwie3 fdskfjlkasf 3 rwkslfjlsad',
+              factualInfo: 'Factual information goes here.',
+              contextual: 'Contextual information goes here.',
+            },
+          };
+        })
+      );
+
+      // Log the formatted content data
+      console.log('Formatted content data:', formattedData);
+
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data for all questions:', error);
+      setLoading(false);
+    }
   };
 
+  const handleQuestionSelect = (question, answer) => {
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    fetchAllData(activeTopic);
+    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
+  }, [activeTopic]);
+
+  const selectedQuestionData = selectedData[activeTopic] || {};
+
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
-      </div>
-
-      {isChatVisible && (
-        <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
-            <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}><FontAwesomeIcon icon={faTimes}/></button>
-          </div>
-          <div className={styles.messages}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-              >
-                <FontAwesomeIcon
-                  icon={message.type === 'user' ? faUser : faWandSparkles}
-                  className={styles.icon}
-                />
-                <div className={styles.messageText}>
-                  {message.text}
-                </div>
-              </div>
-            ))}
-            {typing && (
-              <div className={styles.botMessage}>
-                <FontAwesomeIcon icon={faWandSparkles} className={styles.icon} />
-                <div className={styles.messageText}>
-                  Typing...
-                </div>
-              </div>
-            )}
-            {loading && (
-              <div className={styles.botMessage}>
-                <FontAwesomeIcon icon={faWandSparkles} className={styles.icon} />
-                <div className={styles.messageText}>
-                  <BeatLoader color={styles.loadingColor} size={8} />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form onSubmit={handleSubmit} className={styles.inputForm}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
-              className={styles.inputField}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.submitButton} title="Send">
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </form>
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
+      ) : (
+        <>
+          <FaqDropdown
+            contentData={contentData}
+            onQuestionSelect={handleQuestionSelect}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
+          />
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
+
+export default MainContent;
+
