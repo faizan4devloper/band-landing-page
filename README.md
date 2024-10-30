@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
@@ -33,7 +32,7 @@ const MainContent = ({ activeTopic }) => {
   const fetchDataForQuestion = async ({ id, text }) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', 
+        'dummy', // Replace with your actual endpoint
         { questionId: id, questionText: text },
         { headers: { 'Content-Type': 'application/json' } }
       );    
@@ -43,7 +42,6 @@ const MainContent = ({ activeTopic }) => {
 
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-      // Check for image URLs in factualInfo and citizenExperience
       const factualInfo = parsedResponse.factualInfo?.startsWith('http') ? parsedResponse.factualInfo : null;
       const citizenExperience = parsedResponse.citizenExperience?.startsWith('http') ? parsedResponse.citizenExperience : null;
 
@@ -135,8 +133,6 @@ export default MainContent;
 
 
 
-
-
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
@@ -197,7 +193,7 @@ const QuestionBlock = ({ question, answerData }) => {
       <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
         <p><strong>Citizen Experience:</strong></p>
         {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
-        {renderImage(answerData.citizenImage, "Citizen Experience Image")}
+        {renderImage(answerData.citizenExperience, "Citizen Experience Image")}
         {answerData.citizenExperience && answerData.citizenExperience.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
             {showFullCitizen ? 'See Less' : 'See More'}
@@ -209,7 +205,7 @@ const QuestionBlock = ({ question, answerData }) => {
       <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
         <p><strong>Factual Info:</strong></p>
         {renderResponsePoints([answerData.factualInfo], showFullFactual)}
-        {renderImage(answerData.factualImage, "Factual Info Image")}
+        {renderImage(answerData.factualInfo, "Factual Info Image")}
         {answerData.factualInfo && answerData.factualInfo.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
             {showFullFactual ? 'See Less' : 'See More'}
