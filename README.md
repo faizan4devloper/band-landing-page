@@ -22,9 +22,7 @@ const QuestionBlock = ({ question, answerData }) => {
   const [showFullContextual, setShowFullContextual] = useState(false);
 
   const renderResponsePoints = (responseArray, isExpanded) => {
-    // Ensure responseArray is an array for proper slicing
     const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
-
     return (
       <ul className={styles.responseList}>
         {(isExpanded ? arrayToRender : arrayToRender.slice(0, 2)).map((item, index) => (
@@ -36,44 +34,56 @@ const QuestionBlock = ({ question, answerData }) => {
     );
   };
 
+  const renderImage = (imageUrl, altText) => (
+    imageUrl ? <img src={imageUrl} alt={altText} className={styles.responseImage} /> : null
+  );
+
   return (
     <div className={styles.questionBlock}>
       <div className={styles.question}>{question}</div>
 
+      {/* Textual Response */}
       <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
         <p><strong>Textual Response:</strong></p>
         {renderResponsePoints(answerData.textualResponse, showFullTextual)}
-        {answerData.textualResponse.length > 2 && (
+        {renderImage(answerData.textualImage, "Textual Response Image")}
+        {answerData.textualResponse && answerData.textualResponse.length > 2 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullTextual(!showFullTextual)}>
             {showFullTextual ? 'See Less' : 'See More'}
           </button>
         )}
       </div>
 
+      {/* Citizen Experience */}
       <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
         <p><strong>Citizen Experience:</strong></p>
         {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
-        {answerData.citizenExperience && (
+        {renderImage(answerData.citizenImage, "Citizen Experience Image")}
+        {answerData.citizenExperience && answerData.citizenExperience.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
             {showFullCitizen ? 'See Less' : 'See More'}
           </button>
         )}
       </div>
 
+      {/* Factual Info */}
       <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
         <p><strong>Factual Info:</strong></p>
         {renderResponsePoints([answerData.factualInfo], showFullFactual)}
-        {answerData.factualInfo && (
+        {renderImage(answerData.factualImage, "Factual Info Image")}
+        {answerData.factualInfo && answerData.factualInfo.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
             {showFullFactual ? 'See Less' : 'See More'}
           </button>
         )}
       </div>
 
+      {/* Contextual */}
       <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
         <p><strong>Contextual:</strong></p>
         {renderResponsePoints([answerData.contextual], showFullContextual)}
-        {answerData.contextual && (
+        {renderImage(answerData.contextualImage, "Contextual Info Image")}
+        {answerData.contextual && answerData.contextual.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullContextual(!showFullContextual)}>
             {showFullContextual ? 'See Less' : 'See More'}
           </button>
@@ -84,5 +94,3 @@ const QuestionBlock = ({ question, answerData }) => {
 };
 
 export default QuestionBlock;
-
-
