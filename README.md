@@ -12,49 +12,54 @@ const MainContent = ({ activeTopic }) => {
 
   const topicQuestions = {
     1: [
-      'What are the last five years key statistics for Serpell Primary School?',
-      'What are the admission criteria and process for Serpell Primary School?',
-      'How does the school perform in standardized tests and assessments?'
+      { id: 'q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
+      { id: 'q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
+      { id: 'q3', text: 'How does the school perform in standardized tests and assessments?' }
     ],
     2: [
-      'What’s the curriculum at Serpell Primary School?',
-      'How is the curriculum structured across different year levels?',
-      'What specialist programs are offered at Serpell Primary School?'
+      { id: 'q4', text: 'What’s the curriculum at Serpell Primary School?' },
+      { id: 'q5', text: 'How is the curriculum structured across different year levels?' },
+      { id: 'q6', text: 'What specialist programs are offered at Serpell Primary School?' }
     ],
     3: [
-      'How does the school engage with the broader community?',
-      'How can parents get involved in the school community?',
-      'What support services are available for students with special needs at Serpell Primary School?'
+      { id: 'q7', text: 'How does the school engage with the broader community?' },
+      { id: 'q8', text: 'How can parents get involved in the school community?' },
+      { id: 'q9', text: 'What support services are available for students with special needs at Serpell Primary School?' }
     ],
     // Add more topics as needed...
   };
 
-  const fetchDataForQuestion = async (question) => {
+  const fetchDataForQuestion = async ({ id, text }) => {
     try {
       const response = await axios.post(
-        'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2',
-        { question: `${question}` },
+        'dummy', 
+        { questionId: id, questionText: text },
         { headers: { 'Content-Type': 'application/json' } }
       );    
-
-      // Log the raw response data
-      console.log('Raw response data for question:', question, response.data);
 
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
 
-      // Log the parsed answer
-      console.log('Parsed answer:', llmAnswer);
-
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-      // Log the formatted answer
-      console.log('Formatted answer:', formattedAnswer);
+      // Check for image URLs in factualInfo and citizenExperience
+      const factualInfo = parsedResponse.factualInfo?.startsWith('http') ? parsedResponse.factualInfo : null;
+      const citizenExperience = parsedResponse.citizenExperience?.startsWith('http') ? parsedResponse.citizenExperience : null;
 
-      return formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'];
+      return {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualInfo: factualInfo || 'Factual information goes here.',
+        citizenExperience: citizenExperience || 'Citizen experience response goes here.',
+        contextual: parsedResponse.contextual || 'Contextual information goes here.',
+      };
     } catch (error) {
       console.error('Error fetching data:', error);
-      return ['No Answer Available'];
+      return {
+        textualResponse: ['No Answer Available'],
+        factualInfo: null,
+        citizenExperience: null,
+        contextual: 'No contextual information available.',
+      };
     }
   };
 
@@ -64,21 +69,13 @@ const MainContent = ({ activeTopic }) => {
       const questionsList = topicQuestions[topicId] || [];
       const formattedData = await Promise.all(
         questionsList.map(async (question) => {
-          const answer = await fetchDataForQuestion(question);
+          const answerData = await fetchDataForQuestion(question);
           return {
-            question,
-            answer: {
-              textualResponse: answer,
-              citizenExperience: 'Citizen experience response goes here. its me kkkkkkkslf dfksfjdlf sdkfjslf jkdlfaas lksdddddddf ksdfjlafkls ksaldfjlsfj sdfupwie3 fdskfjlkasf 3 rwkslfjlsad',
-              factualInfo: 'Factual information goes here.',
-              contextual: 'Contextual information goes here.',
-            },
+            question: question.text,
+            answer: answerData,
           };
         })
       );
-
-      // Log the formatted content data
-      console.log('Formatted content data:', formattedData);
 
       setContentData(formattedData);
       setLoading(false);
@@ -134,4 +131,3 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
-
