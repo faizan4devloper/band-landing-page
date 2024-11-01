@@ -11,43 +11,32 @@ const MainContent = ({ activeTopic }) => {
   const [selectedData, setSelectedData] = useState({});
 
   const topicQuestions = {
-    1: [
-      { id: 'q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
-      { id: 'q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
-      { id: 'q3', text: 'How does the school perform in standardized tests and assessments?' }
-    ],
-    2: [
-      { id: 'q4', text: 'What’s the curriculum at Serpell Primary School?' },
-      { id: 'q5', text: 'How is the curriculum structured across different year levels?' },
-      { id: 'q6', text: 'What specialist programs are offered at Serpell Primary School?' }
-    ],
-    3: [
-      { id: 'q7', text: 'How does the school engage with the broader community?' },
-      { id: 'q8', text: 'How can parents get involved in the school community?' },
-      { id: 'q9', text: 'What support services are available for students with special needs at Serpell Primary School?' }
-    ],
-    // Add more topics as needed...
+    // Add your topic questions here
   };
+
+  const ensurePngExtension = (url) => 
+    url && !url.endsWith('.png') ? `${url}.png` : url;
+
+  const cleanUrl = (url) =>
+    url ? url.replace(/\s/g, '%20') : null;
 
   const fetchDataForQuestion = async ({ id, text }) => {
     try {
-      console.log(`Fetching data for question ID: ${id}, Text: "${text}"`);
       const response = await axios.post(
         'dummy', // Replace with your actual endpoint
         { questionId: id, questionText: text },
         { headers: { 'Content-Type': 'application/json' } }
       );
 
-      console.log('Raw response data:', response.data); // Log the raw response data
       const parsedResponse = JSON.parse(response.data.body);
-      console.log('Parsed response:', parsedResponse); // Log the parsed response
-
       const llmAnswer = parsedResponse.answer;
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
-      console.log('Formatted answer:', formattedAnswer); // Log the formatted answer
 
-      const factualInfo = parsedResponse.factualInfo?.startsWith('http') ? parsedResponse.factualInfo : null;
-      const citizenExperience = parsedResponse.citizenExperience?.startsWith('http') ? parsedResponse.citizenExperience : null;
+      const factualInfo = cleanUrl(ensurePngExtension(parsedResponse.factualInfo));
+      const citizenExperience = cleanUrl(ensurePngExtension(parsedResponse.citizenExperience));
+
+      console.log('Factual Info URL:', factualInfo);
+      console.log('Citizen Experience URL:', citizenExperience);
 
       return {
         textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
@@ -70,12 +59,9 @@ const MainContent = ({ activeTopic }) => {
     setLoading(true);
     try {
       const questionsList = topicQuestions[topicId] || [];
-      console.log(`Fetching all data for topic ID: ${topicId}`, questionsList);
-
       const formattedData = await Promise.all(
         questionsList.map(async (question) => {
           const answerData = await fetchDataForQuestion(question);
-          console.log(`Fetched data for question: "${question.text}"`, answerData); // Log each fetched answer data
           return {
             question: question.text,
             answer: answerData,
@@ -83,7 +69,6 @@ const MainContent = ({ activeTopic }) => {
         })
       );
 
-      console.log('All fetched data for current topic:', formattedData); // Log all fetched data for the topic
       setContentData(formattedData);
       setLoading(false);
     } catch (error) {
@@ -93,7 +78,6 @@ const MainContent = ({ activeTopic }) => {
   };
 
   const handleQuestionSelect = (question, answer) => {
-    console.log('Selected question and answer:', question, answer); // Log selected question and answer
     setSelectedData((prev) => ({
       ...prev,
       [activeTopic]: {
@@ -104,7 +88,6 @@ const MainContent = ({ activeTopic }) => {
   };
 
   useEffect(() => {
-    console.log('Active topic changed:', activeTopic); // Log when active topic changes
     fetchAllData(activeTopic);
     setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
   }, [activeTopic]);
@@ -139,16 +122,12 @@ const MainContent = ({ activeTopic }) => {
   );
 };
 
-
-
-
-
+export default MainContent;
 
 
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
-// Utility function to convert URLs in text to anchor tags
 const parseLinks = (text) => {
   const urlPattern = /(https?:\/\/[^\s]+)/g;
   return text.split(urlPattern).map((part, index) =>
@@ -189,7 +168,6 @@ const QuestionBlock = ({ question, answerData }) => {
     <div className={styles.questionBlock}>
       <div className={styles.question}>{question}</div>
 
-      {/* Textual Response */}
       <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
         <p><strong>Textual Response:</strong></p>
         {renderResponsePoints(answerData.textualResponse, showFullTextual)}
@@ -201,7 +179,6 @@ const QuestionBlock = ({ question, answerData }) => {
         )}
       </div>
 
-      {/* Citizen Experience */}
       <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
         <p><strong>Citizen Experience:</strong></p>
         {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
@@ -213,7 +190,6 @@ const QuestionBlock = ({ question, answerData }) => {
         )}
       </div>
 
-      {/* Factual Info */}
       <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
         <p><strong>Factual Info:</strong></p>
         {renderResponsePoints([answerData.factualInfo], showFullFactual)}
@@ -225,7 +201,6 @@ const QuestionBlock = ({ question, answerData }) => {
         )}
       </div>
 
-      {/* Contextual */}
       <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
         <p><strong>Contextual:</strong></p>
         {renderResponsePoints([answerData.contextual], showFullContextual)}
@@ -241,4 +216,3 @@ const QuestionBlock = ({ question, answerData }) => {
 };
 
 export default QuestionBlock;
-export default MainContent;
