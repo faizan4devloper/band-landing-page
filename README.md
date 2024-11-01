@@ -1,42 +1,58 @@
-const fetchDataForQuestion = async ({ id, text }) => {
-  try {
-    const response = await axios.post(
-      'dummy', // Replace with your actual endpoint
-      { questionId: id, questionText: text },
-      { headers: { 'Content-Type': 'application/json' }
-    });
+import React, { useState } from 'react';
+import styles from './QuestionBlock.module.css';
 
-    const parsedResponse = JSON.parse(response.data.body);
-    const llmAnswer = parsedResponse.answer;
-    const formattedAnswer = llmAnswer ? llmAnswer.split('-').map(line => line.trim()).filter(line => line) : ['No Answer Available'];
+const QuestionBlock = ({ question, answerData }) => {
+  const [showFullTextual, setShowFullTextual] = useState(false);
+  const [showFullCitizen, setShowFullCitizen] = useState(false);
+  const [showFullFactual, setShowFullFactual] = useState(false);
+  const [showFullContextual, setShowFullContextual] = useState(false);
 
-    // Ensure URLs are formatted properly (e.g., adding .png extension if needed)
-    const factualData = ensurePngExtension(cleanUrl(parsedResponse.factualData));
-    const citizenReview = ensurePngExtension(cleanUrl(parsedResponse.citizenReview));
+  const renderResponsePoints = (points, showFull) => (
+    <div>
+      {points.slice(0, showFull ? points.length : 3).map((point, index) => (
+        <p key={index}>{point}</p>
+      ))}
+      {points.length > 3 && (
+        <button onClick={() => showFull((prev) => !prev)}>
+          {showFull ? 'Show Less' : 'Show More'}
+        </button>
+      )}
+    </div>
+  );
 
-    return {
-      textualResponse: formattedAnswer,
-      factualInfo: factualData || 'Factual information goes here.',
-      citizenExperience: citizenReview || 'Citizen experience response goes here.',
-      contextual: parsedResponse.contextual || 'Contextual information goes here.',
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      textualResponse: ['No Answer Available'],
-      factualInfo: null,
-      citizenExperience: null,
-      contextual: 'No contextual information available.',
-    };
-  }
+  const renderImage = (url, altText) => (
+    url ? <img src={url} alt={altText} className={styles.image} /> : <p>Image not available</p>
+  );
+
+  return (
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      {/* Textual Response */}
+      <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
+        <p><strong>Textual Response:</strong></p>
+        {renderResponsePoints(answerData.textualResponse, showFullTextual)}
+      </div>
+
+      {/* Citizen Experience */}
+      <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
+        <p><strong>Citizen Experience:</strong></p>
+        {renderImage(answerData.citizenExperience, "Citizen Experience Image")}
+      </div>
+
+      {/* Factual Info */}
+      <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
+        <p><strong>Factual Info:</strong></p>
+        {renderImage(answerData.factualInfo, "Factual Info Image")}
+      </div>
+
+      {/* Contextual */}
+      <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
+        <p><strong>Contextual:</strong></p>
+        {renderResponsePoints([answerData.contextual], showFullContextual)}
+      </div>
+    </div>
+  );
 };
 
-// Helper functions
-const cleanUrl = (url) => {
-  // Implement any necessary URL cleaning logic here.
-  return url.trim();
-};
-
-const ensurePngExtension = (url) => {
-  return url && !url.endsWith('.png') ? `${url}.png` : url;
-};
+export default QuestionBlock;
