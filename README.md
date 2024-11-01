@@ -30,8 +30,12 @@ const MainContent = ({ activeTopic }) => {
   };
 
   // Ensure URLs are correctly formatted with .png extension
-  const ensurePngExtension = (url) => (url && !url.endsWith('.png') ? `${url}.png` : url);
-  const cleanUrl = (url) => (url ? url.replace(/\s/g, '%20') : null);
+  const ensureFullUrl = (url) => {
+    if (!url || url === "https://") {
+      return 'https://your-default-placeholder-image-url.png'; // Use a placeholder URL or keep null
+    }
+    return url.startsWith("https://") ? url : `https://${url}`;
+  };
 
   // Fetch data for each question
   const fetchDataForQuestion = async ({ id, text }) => {
@@ -45,14 +49,14 @@ const MainContent = ({ activeTopic }) => {
       const parsedResponse = JSON.parse(response.data.body);
       const llmAnswer = parsedResponse.answer;
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
-console.log(parsedResponse)
-      const factualInfo = ensurePngExtension(cleanUrl(parsedResponse.factualInfo));
-      const citizenExperience = ensurePngExtension(cleanUrl(parsedResponse.citizenExperience));
+
+      const factualInfo = ensureFullUrl(parsedResponse.factualInfo);
+      const citizenExperience = ensureFullUrl(parsedResponse.citizenExperience);
 
       return {
         textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-        factualInfo: factualInfo || 'Factual information goes here.',
-        citizenExperience: citizenExperience || 'Citizen experience response goes here.',
+        factualInfo: factualInfo,
+        citizenExperience: citizenExperience,
         contextual: parsedResponse.contextual || 'Contextual information goes here.',
       };
     } catch (error) {
@@ -137,6 +141,12 @@ console.log(parsedResponse)
 export default MainContent;
 
 
+
+
+
+
+
+
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
@@ -173,7 +183,9 @@ const QuestionBlock = ({ question, answerData }) => {
   };
 
   const renderImage = (imageUrl, altText) => (
-    imageUrl ? <img src={imageUrl} alt={altText} className={styles.responseImage} /> : null
+    imageUrl && imageUrl !== 'https://' // Ensure the image URL is valid
+      ? <img src={imageUrl} alt={altText} className={styles.responseImage} />
+      : null // Optionally add a placeholder image here
   );
 
   return (
