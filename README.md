@@ -29,10 +29,6 @@ const MainContent = ({ activeTopic }) => {
     ],
   };
 
-  // Ensure URLs are correctly formatted with .png extension
-  const ensurePngExtension = (url) => (url && !url.endsWith('.png') ? `${url}.png` : url);
-  const cleanUrl = (url) => (url ? url.replace(/\s/g, '%20') : null);
-
   // Fetch data for each question
   const fetchDataForQuestion = async ({ id, text }) => {
     try {
@@ -46,8 +42,8 @@ const MainContent = ({ activeTopic }) => {
       const llmAnswer = parsedResponse.answer;
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-      const factualInfo = ensurePngExtension(cleanUrl(parsedResponse.factualInfo));
-      const citizenExperience = ensurePngExtension(cleanUrl(parsedResponse.citizenExperience));
+      const factualInfo = parsedResponse.factualInfo;
+      const citizenExperience = parsedResponse.citizenExperience;
 
       return {
         textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
@@ -137,6 +133,8 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
+
+
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
@@ -155,9 +153,6 @@ const parseLinks = (text) => {
 
 const QuestionBlock = ({ question, answerData }) => {
   const [showFullTextual, setShowFullTextual] = useState(false);
-  const [showFullCitizen, setShowFullCitizen] = useState(false);
-  const [showFullFactual, setShowFullFactual] = useState(false);
-  const [showFullContextual, setShowFullContextual] = useState(false);
 
   const renderResponsePoints = (responseArray, isExpanded) => {
     const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
@@ -172,10 +167,6 @@ const QuestionBlock = ({ question, answerData }) => {
     );
   };
 
-  const renderImage = (imageUrl, altText) => (
-    imageUrl ? <img src={imageUrl} alt={altText} className={styles.responseImage} /> : null
-  );
-
   return (
     <div className={styles.questionBlock}>
       <div className={styles.question}>{question}</div>
@@ -184,7 +175,6 @@ const QuestionBlock = ({ question, answerData }) => {
       <div className={`${styles.responseSection} ${showFullTextual ? styles.expanded : ''}`}>
         <p><strong>Textual Response:</strong></p>
         {renderResponsePoints(answerData.textualResponse, showFullTextual)}
-        {renderImage(answerData.textualImage, "Textual Response Image")}
         {answerData.textualResponse && answerData.textualResponse.length > 2 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullTextual(!showFullTextual)}>
             {showFullTextual ? 'See Less' : 'See More'}
@@ -192,38 +182,23 @@ const QuestionBlock = ({ question, answerData }) => {
         )}
       </div>
 
-      {/* Citizen Experience */}
-      <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
+      {/* Citizen Experience Image */}
+      <div className={styles.responseSection}>
         <p><strong>Citizen Experience:</strong></p>
-        {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
-        {renderImage(answerData.citizenExperience, "Citizen Experience Image")}
-        {answerData.citizenExperience && answerData.citizenExperience.length > 50 && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
-            {showFullCitizen ? 'See Less' : 'See More'}
-          </button>
+        {answerData.citizenExperience ? (
+          <img src={answerData.citizenExperience} alt="Citizen Experience" className={styles.responseImage} />
+        ) : (
+          <p>No Citizen Experience Available</p>
         )}
       </div>
 
-      {/* Factual Info */}
-      <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
+      {/* Factual Info Image */}
+      <div className={styles.responseSection}>
         <p><strong>Factual Info:</strong></p>
-        {renderResponsePoints([answerData.factualInfo], showFullFactual)}
-        {renderImage(answerData.factualInfo, "Factual Info Image")}
-        {answerData.factualInfo && answerData.factualInfo.length > 50 && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
-            {showFullFactual ? 'See Less' : 'See More'}
-          </button>
-        )}
-      </div>
-
-      {/* Contextual */}
-      <div className={`${styles.responseSection} ${showFullContextual ? styles.expanded : ''}`}>
-        <p><strong>Contextual:</strong></p>
-        {renderResponsePoints([answerData.contextual], showFullContextual)}
-        {answerData.contextual && answerData.contextual.length > 50 && (
-          <button className={styles.seeMoreButton} onClick={() => setShowFullContextual(!showFullContextual)}>
-            {showFullContextual ? 'See Less' : 'See More'}
-          </button>
+        {answerData.factualInfo ? (
+          <img src={answerData.factualInfo} alt="Factual Info" className={styles.responseImage} />
+        ) : (
+          <p>No Factual Info Available</p>
         )}
       </div>
     </div>
