@@ -29,55 +29,49 @@ const MainContent = ({ activeTopic }) => {
     ],
   };
 
-  // Ensure URLs are correctly formatted with .png extension
-  const ensurePngExtension = (url) => (url && !url.endsWith('.png') ? `${url}.png` : url);
-  const cleanUrl = (url) => (url ? url.replace(/\s/g, '%20') : null);
-
   // Fetch data for each question
- 
-const fetchDataForQuestion = async ({ id, text }) => {
-  try {
-    const response = await axios.post(
-      'https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', // Replace with your actual endpoint
-      { questionId: id, questionText: text },
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+  const fetchDataForQuestion = async ({ id, text }) => {
+    try {
+      const response = await axios.post(
+        'dummy', // Replace with your actual endpoint
+        { questionId: id, questionText: text },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
 
-    const parsedResponse = JSON.parse(response.data.body);
-    console.log('Parsed Response:', parsedResponse);
+      const parsedResponse = JSON.parse(response.data.body);
+      console.log('Parsed Response:', parsedResponse);
 
-    const llmAnswer = parsedResponse.answer || '';
-    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+      const llmAnswer = parsedResponse.answer || '';
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-    // Safely get factualData and citizenReview URLs
-    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
-      ? parsedResponse.factualData
-      : null;
-    
-    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
-      ? parsedResponse.citizenReview
-      : null;
+      // Safely get factualData and citizenReview URLs
+      const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+        ? parsedResponse.factualData
+        : null;
 
-    console.log('Factual Data URL:', factualData);
-    console.log('Citizen Review URL:', citizenReview);
+      const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+        ? parsedResponse.citizenReview
+        : null;
 
-    return {
-      textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-      factualData: factualData || 'No factual information available.',
-      citizenReview: citizenReview || 'No citizen experience information available.',
-      contextual: parsedResponse.contextual || 'No contextual information available.',
-    };
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    return {
-      textualResponse: ['No Answer Available'],
-      factualData: null,
-      citizenReview: null,
-      contextual: 'No contextual information available.',
-    };
-  }
-};
+      console.log('Factual Data URL:', factualData);
+      console.log('Citizen Review URL:', citizenReview);
 
+      return {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData || 'No factual information available.',
+        citizenReview: citizenReview || 'No citizen experience information available.',
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return {
+        textualResponse: ['No Answer Available'],
+        factualData: null,
+        citizenReview: null,
+        contextual: 'No contextual information available.',
+      };
+    }
+  };
 
   const fetchAllData = async (topicId) => {
     setLoading(true);
@@ -149,3 +143,42 @@ const fetchDataForQuestion = async ({ id, text }) => {
 export default MainContent;
 
 
+
+
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from './QuestionBlock.module.css';
+
+const QuestionBlock = ({ question, answerData }) => {
+  return (
+    <div className={styles.questionBlock}>
+      <h2 className={styles.question}>{question}</h2>
+      <div className={styles.answer}>
+        <h3>Answer:</h3>
+        <ul>
+          {answerData.textualResponse.map((line, index) => (
+            <li key={index}>{line}</li>
+          ))}
+        </ul>
+        <h3>Factual Data:</h3>
+        <p>{answerData.factualData}</p>
+        <h3>Citizen Review:</h3>
+        <p>{answerData.citizenReview}</p>
+        <h3>Contextual Information:</h3>
+        <p>{answerData.contextual}</p>
+      </div>
+    </div>
+  );
+};
+
+QuestionBlock.propTypes = {
+  question: PropTypes.string.isRequired,
+  answerData: PropTypes.shape({
+    textualResponse: PropTypes.arrayOf(PropTypes.string).isRequired,
+    factualData: PropTypes.string,
+    citizenReview: PropTypes.string,
+    contextual: PropTypes.string,
+  }).isRequired,
+};
+
+export default QuestionBlock;
