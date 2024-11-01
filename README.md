@@ -1,21 +1,47 @@
-react-dom.development.js:18704 The above error occurred in the <QuestionBlock> component:
+const fetchDataForQuestion = async ({ id, text }) => {
+  try {
+    const response = await axios.post(
+      'dummy', // Replace with your actual endpoint
+      { questionId: id, questionText: text },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
 
-    at QuestionBlock (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1330:3)
-    at div
-    at div
-    at MainContent (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1079:3)
-    at div
-    at EducationPage (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:854:88)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43018:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43720:5)
-    at div
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43654:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:41591:5)
-    at AuthProvider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2064:3)
-    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:74981:3)
-    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:52:84)
-    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:74981:3)
+    // Log the full response for debugging purposes
+    const parsedResponse = JSON.parse(response.data.body);
+    console.log('Parsed Response:', parsedResponse);
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-﻿
+    // Safely access properties
+    const llmAnswer = parsedResponse.answer || '';  // Default to empty string if undefined
+    const formattedAnswer = llmAnswer
+      ? llmAnswer.split('-').map(line => line.trim()).filter(line => line.length > 0)
+      : ['No Answer Available'];  // Provide a default message if llmAnswer is empty
+
+    // Ensure safe access and check if URLs are valid
+    const factualData = parsedResponse.factualData 
+      ? (parsedResponse.factualData.startsWith("http") ? ensurePngExtension(cleanUrl(parsedResponse.factualData)) : null) 
+      : null;
+
+    const citizenReview = parsedResponse.citizenReview 
+      ? (parsedResponse.citizenReview.startsWith("http") ? ensurePngExtension(cleanUrl(parsedResponse.citizenReview)) : null) 
+      : null;
+
+    // Console logs to confirm the presence of URLs
+    console.log('Factual Data URL:', factualData);
+    console.log('Citizen Review URL:', citizenReview);
+
+    return {
+      textualResponse: formattedAnswer,
+      factualData: factualData || 'No factual information available.',
+      citizenReview: citizenReview || 'No citizen experience information available.',
+      contextual: parsedResponse.contextual || 'No contextual information available.',
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      textualResponse: ['No Answer Available'],
+      factualData: null,
+      citizenReview: null,
+      contextual: 'No contextual information available.',
+    };
+  }
+};
