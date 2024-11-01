@@ -6,34 +6,37 @@ const fetchDataForQuestion = async ({ id, text }) => {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
+    // Log the full response for debugging purposes
     const parsedResponse = JSON.parse(response.data.body);
+    console.log('Parsed Response:', parsedResponse);
+
     const llmAnswer = parsedResponse.answer;
     const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-    // Ensure URLs are processed correctly and check for "https" placeholder
-    const factualInfo = (parsedResponse.factualInfo && parsedResponse.factualInfo !== "https") 
-      ? ensurePngExtension(cleanUrl(parsedResponse.factualInfo)) 
+    // Update keywords to factualData and citizenReview
+    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+      ? ensurePngExtension(cleanUrl(parsedResponse.factualData))
       : null;
-    const citizenExperience = (parsedResponse.citizenExperience && parsedResponse.citizenExperience !== "https") 
-      ? ensurePngExtension(cleanUrl(parsedResponse.citizenExperience)) 
+    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+      ? ensurePngExtension(cleanUrl(parsedResponse.citizenReview))
       : null;
 
-    // Console logs with updated variable names
-    console.log('Factual Info URL:', factualInfo);
-    console.log('Citizen Experience URL:', citizenExperience);
+    // Console logs to confirm the presence of URLs
+    console.log('Factual Data URL:', factualData);
+    console.log('Citizen Review URL:', citizenReview);
 
     return {
       textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-      factualInfo: factualInfo || 'Factual information goes here.',
-      citizenExperience: citizenExperience || 'Citizen experience response goes here.',
-      contextual: parsedResponse.contextual || 'Contextual information goes here.',
+      factualData: factualData || 'No factual information available.',
+      citizenReview: citizenReview || 'No citizen experience information available.',
+      contextual: parsedResponse.contextual || 'No contextual information available.',
     };
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       textualResponse: ['No Answer Available'],
-      factualInfo: null,
-      citizenExperience: null,
+      factualData: null,
+      citizenReview: null,
       contextual: 'No contextual information available.',
     };
   }
