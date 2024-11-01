@@ -10,7 +10,6 @@ const MainContent = ({ activeTopic }) => {
   const [loading, setLoading] = useState(true);
   const [selectedData, setSelectedData] = useState({});
 
-  // Define the questions for each topic
   const topicQuestions = {
     1: [
       { id: 'q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
@@ -29,7 +28,6 @@ const MainContent = ({ activeTopic }) => {
     ],
   };
 
-  // Fetch data for each question
   const fetchDataForQuestion = async ({ id, text }) => {
     try {
       const response = await axios.post(
@@ -39,16 +37,16 @@ const MainContent = ({ activeTopic }) => {
       );
 
       const parsedResponse = JSON.parse(response.data.body);
-      const llmAnswer = parsedResponse.answer;
-      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+      const { answer, factualInfo, citizenExperience } = parsedResponse;
 
-      const factualInfo = parsedResponse.factualInfo;
-      const citizenExperience = parsedResponse.citizenExperience;
+      // Logging URLs for debugging purposes
+      console.log("Citizen Experience:", citizenExperience);
+      console.log("Factual Info:", factualInfo);
 
       return {
-        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-        factualInfo: factualInfo || 'Factual information goes here.',
-        citizenExperience: citizenExperience || 'Citizen experience response goes here.',
+        textualResponse: answer ? answer.split('-').map(line => line.trim()) : ['No Answer Available'],
+        factualInfo: factualInfo || null,
+        citizenExperience: citizenExperience || null,
         contextual: parsedResponse.contextual || 'Contextual information goes here.',
       };
     } catch (error) {
@@ -131,6 +129,10 @@ const MainContent = ({ activeTopic }) => {
 };
 
 export default MainContent;
+
+
+
+
 
 
 
