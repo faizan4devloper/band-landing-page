@@ -137,11 +137,6 @@ const MainContent = ({ activeTopic }) => {
 export default MainContent;
 
 
-
-
-
-
-
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
