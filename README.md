@@ -6,31 +6,25 @@ const fetchDataForQuestion = async ({ id, text }) => {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-    // Log the full response for debugging purposes
     const parsedResponse = JSON.parse(response.data.body);
     console.log('Parsed Response:', parsedResponse);
 
-    // Safely access properties
-    const llmAnswer = parsedResponse.answer || '';  // Default to empty string if undefined
-    const formattedAnswer = llmAnswer
-      ? llmAnswer.split('-').map(line => line.trim()).filter(line => line.length > 0)
-      : ['No Answer Available'];  // Provide a default message if llmAnswer is empty
+    const llmAnswer = parsedResponse.answer;
+    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-    // Ensure safe access and check if URLs are valid
-    const factualData = parsedResponse.factualData 
-      ? (parsedResponse.factualData.startsWith("http") ? ensurePngExtension(cleanUrl(parsedResponse.factualData)) : null) 
+    // No longer appending .png extension
+    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+      ? cleanUrl(parsedResponse.factualData) // Removed ensurePngExtension
+      : null;
+    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+      ? cleanUrl(parsedResponse.citizenReview) // Removed ensurePngExtension
       : null;
 
-    const citizenReview = parsedResponse.citizenReview 
-      ? (parsedResponse.citizenReview.startsWith("http") ? ensurePngExtension(cleanUrl(parsedResponse.citizenReview)) : null) 
-      : null;
-
-    // Console logs to confirm the presence of URLs
     console.log('Factual Data URL:', factualData);
     console.log('Citizen Review URL:', citizenReview);
 
     return {
-      textualResponse: formattedAnswer,
+      textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
       factualData: factualData || 'No factual information available.',
       citizenReview: citizenReview || 'No citizen experience information available.',
       contextual: parsedResponse.contextual || 'No contextual information available.',
