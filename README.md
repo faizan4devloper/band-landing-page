@@ -5,20 +5,39 @@ import { faPaperPlane, faWandSparkles, faUser, faComments, faTimes } from '@fort
 import { BeatLoader } from 'react-spinners';
 import styles from './Chatbot.module.css';
 
-const Chatbot = () => {
+const Chatbot = ({ initialFAQ }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false); // State for visibility
+  const [isChatVisible, setChatVisible] = useState(false);
 
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
+  // Auto-scroll to the latest message
   useEffect(() => {
-    // Auto-scroll to the latest message
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  // Auto-focus the input field when the chat window is opened
+  useEffect(() => {
+    if (isChatVisible && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isChatVisible]);
+
+  // Display initial FAQ if provided when the chat opens
+  useEffect(() => {
+    if (isChatVisible && initialFAQ) {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { type: 'user', text: initialFAQ.question },
+        { type: 'bot', text: initialFAQ.answer },
+      ]);
+    }
+  }, [isChatVisible, initialFAQ]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,22 +49,15 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', {
-        question: input,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await axios.post('dummy', { question: input }, {
+        headers: { 'Content-Type': 'application/json' },
       });
 
       const parsedBody = JSON.parse(response.data.body);
       const answer = parsedBody.answer || 'No answer available for this question.';
       const source = parsedBody.source || 'No source available';
 
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
+      const botMessage = { type: 'bot', text: `${answer} (Source: ${source})` };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
 
     } catch (error) {
@@ -58,7 +70,7 @@ const Chatbot = () => {
   };
 
   const toggleChatVisibility = () => {
-    setChatVisible(!isChatVisible); // Toggle visibility
+    setChatVisible(!isChatVisible);
   };
 
   return (
@@ -73,7 +85,9 @@ const Chatbot = () => {
         <div className={styles.chatWindow}>
           <div className={styles.chatHeader}>
             <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}><FontAwesomeIcon icon={faTimes}/></button>
+            <button className={styles.closeButton} onClick={toggleChatVisibility}>
+              <FontAwesomeIcon icon={faTimes}/>
+            </button>
           </div>
           <div className={styles.messages}>
             {messages.map((message, index) => (
@@ -104,6 +118,7 @@ const Chatbot = () => {
           {/* Input Form */}
           <form onSubmit={handleSubmit} className={styles.inputForm}>
             <input
+              ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
