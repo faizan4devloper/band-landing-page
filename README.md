@@ -1,3 +1,156 @@
+why the factualData  and citizenReview image not displaying in ui but in console printing correct url 
+
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
+import styles from './MainContent.module.css';
+
+const MainContent = ({ activeTopic }) => {
+  const [contentData, setContentData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState({});
+
+  // Define the questions for each topic
+  const topicQuestions = {
+    1: [
+      { id: 'q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
+      { id: 'q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
+      { id: 'q3', text: 'How does the school perform in standardized tests and assessments?' },
+    ],
+    2: [
+      { id: 'q4', text: 'What’s the curriculum at Serpell Primary School?' },
+      { id: 'q5', text: 'How is the curriculum structured across different year levels?' },
+      { id: 'q6', text: 'What specialist programs are offered at Serpell Primary School?' },
+    ],
+    3: [
+      { id: 'q7', text: 'How does the school engage with the broader community?' },
+      { id: 'q8', text: 'How can parents get involved in the school community?' },
+      { id: 'q9', text: 'What support services are available for students with special needs at Serpell Primary School?' },
+    ],
+  };
+
+  // Fetch data for each question
+  const fetchDataForQuestion = async ({ id, text }) => {
+    try {
+      const response = await axios.post(
+        'dummy', // Replace with your actual endpoint
+        { questionId: id, questionText: text },
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const parsedResponse = JSON.parse(response.data.body);
+      console.log('Parsed Response:', parsedResponse);
+
+      const llmAnswer = parsedResponse.answer || '';
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+      // Safely get factualData and citizenReview URLs
+      const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+        ? parsedResponse.factualData
+        : null;
+
+      const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+        ? parsedResponse.citizenReview
+        : null;
+
+      console.log('Factual Data URL:', factualData);
+      console.log('Citizen Review URL:', citizenReview);
+
+      return {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData || 'No factual information available.',
+        citizenReview: citizenReview || 'No citizen experience information available.',
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      return {
+        textualResponse: ['No Answer Available'],
+        factualData: null,
+        citizenReview: null,
+        contextual: 'No contextual information available.',
+      };
+    }
+  };
+
+  const fetchAllData = async (topicId) => {
+    setLoading(true);
+    try {
+      const questionsList = topicQuestions[topicId] || [];
+      const formattedData = await Promise.all(
+        questionsList.map(async (question) => {
+          const answerData = await fetchDataForQuestion(question);
+          return {
+            question: question.text,
+            answer: answerData,
+          };
+        })
+      );
+
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching data for all questions:', error);
+      setLoading(false);
+    }
+  };
+
+  const handleQuestionSelect = (question, answer) => {
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
+  };
+
+  useEffect(() => {
+    fetchAllData(activeTopic);
+    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
+  }, [activeTopic]);
+
+  const selectedQuestionData = selectedData[activeTopic] || {};
+
+  return (
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
+        </div>
+      ) : (
+        <>
+          <FaqDropdown
+            contentData={contentData}
+            onQuestionSelect={handleQuestionSelect}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
+          />
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+
+
+
+
+
 import React, { useState } from 'react';
 import styles from './QuestionBlock.module.css';
 
@@ -35,12 +188,7 @@ const QuestionBlock = ({ question, answerData }) => {
   };
 
   const renderImage = (imageUrl, altText) => (
-    imageUrl ? (
-      <img src={imageUrl}
-        alt={altText}
-        className={styles.responseImage}
-      />
-    ) : null
+    imageUrl ? <img src={imageUrl} alt={altText} className={styles.responseImage} /> : null
   );
 
   return (
@@ -62,8 +210,7 @@ const QuestionBlock = ({ question, answerData }) => {
       {/* Citizen Experience */}
       <div className={`${styles.responseSection} ${showFullCitizen ? styles.expanded : ''}`}>
         <p><strong>Citizen Experience:</strong></p>
-        {renderResponsePoints([answerData.citizenExperience], showFullCitizen)}
-        {renderImage(answerData.citizenReview, "Citizen Experience Image")}
+        {renderImage(answerData.citizenExperienceImage, "Citizen Experience Image")}
         {answerData.citizenExperience && answerData.citizenExperience.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullCitizen(!showFullCitizen)}>
             {showFullCitizen ? 'See Less' : 'See More'}
@@ -74,8 +221,7 @@ const QuestionBlock = ({ question, answerData }) => {
       {/* Factual Info */}
       <div className={`${styles.responseSection} ${showFullFactual ? styles.expanded : ''}`}>
         <p><strong>Factual Info:</strong></p>
-        {renderResponsePoints([answerData.factualInfo], showFullFactual)}
-        {renderImage(answerData.factualData, "Factual Info Image")}
+        {renderImage(answerData.factualInfoImage, "Factual Info Image")}
         {answerData.factualInfo && answerData.factualInfo.length > 50 && (
           <button className={styles.seeMoreButton} onClick={() => setShowFullFactual(!showFullFactual)}>
             {showFullFactual ? 'See Less' : 'See More'}
@@ -99,98 +245,3 @@ const QuestionBlock = ({ question, answerData }) => {
 };
 
 export default QuestionBlock;
-
-
-
-
-.questionBlock {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
-  gap: 20px;
-  position: relative;
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 8px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.question {
-  grid-column: span 2;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #2a2a2a;
-  margin-bottom: 15px;
-}
-
-.responseSection {
-  padding: 15px;
-  font-size: 0.8rem;
-  background-color: #f9f9f9;
-  border-left: 4px solid #0073e6;
-  border-radius: 6px;
-  overflow: hidden;
-  max-height: 150px; /* Set fixed height to avoid layout shift */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: max-height 0.4s ease;
-}
-
-.responseSection.expanded {
-  max-height: 100%; /* Allow full expansion */
-}
-
-.responseList {
-  margin: 10px 0;
-  padding-left: 20px;
-  overflow-y: auto;
-  max-height: 80px; /* Limit list height */
-}
-
-.responseItem {
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-  line-height: 1.6;
-}
-
-.link {
-  color: #0073e6;
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.link:hover {
-  color: #005bb5;
-}
-
-.responseImage {
-  max-width: 100%;
-  height: auto;
-  margin-top: 10px;
-}
-
-.seeMoreButton {
-  display: inline-block;
-  margin-top: 10px;
-  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
-  color: white;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: background-color 0.2s;
-}
-
-.seeMoreButton:hover {
-  background-color: #005bb5;
-}
-
-.responseSection.expanded::-webkit-scrollbar {
-  width: 6px;
-}
-
-.responseSection.expanded::-webkit-scroll
