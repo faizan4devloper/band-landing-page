@@ -1,111 +1,163 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faComments, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
+import styles from './MainContent.module.css';
 
-const Chatbot = ({ initialQuestion }) => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false);
-  const messagesEndRef = useRef(null);
+const MainContent = ({ activeTopic }) => {
+  const [topics, setTopics] = useState([]); // Dynamically fetched topics
+  const [contentData, setContentData] = useState([]); // Answers for questions in the selected topic
+  const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState({});
+  const [questions, setQuestions] = useState([]); // Dynamically loaded questions
 
-  // Scroll to the bottom when new messages are added
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  // Check if there's a new question from MainContent
-  useEffect(() => {
-    if (initialQuestion) {
-      const userMessage = { type: 'user', text: initialQuestion.question };
-      const botMessage = { type: 'bot', text: initialQuestion.answer.textualResponse.join(' ') };
-      setMessages((prevMessages) => [...prevMessages, userMessage, botMessage]);
-    }
-  }, [initialQuestion]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-
+  // Fetch topics on component load
+  const fetchTopics = async () => {
     try {
-      const response = await axios.post('dummy', { question: input }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const botMessage = {
-        type: 'bot',
-        text: answer,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-
+      const response = await axios.get('your-topics-endpoint'); // Replace with your endpoint for topics
+      setTopics(response.data); // Assuming response data is an array of topic objects
     } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
+      console.error("Error fetching topics:", error);
+    }
+  };
+
+  // Fetch questions for a specific topic
+  const fetchQuestionsForTopic = async (topicId) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`your-questions-endpoint/${topicId}`); // Replace with your endpoint
+      setQuestions(response.data); // Assuming response data is an array of questions
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
       setLoading(false);
     }
   };
 
-  const toggleChatVisibility = () => {
-    setChatVisible(!isChatVisible);
+  // Fetch data dynamically for each question with payload
+  const fetchDataForQuestion = async (question) => {
+    const payload = {
+      topicId: activeTopic,
+      questionId: question.id,
+      questionText: question.text,
+    };
+
+    try {
+      const response = await axios.post(
+        'your-answers-endpoint', // Replace with your actual endpoint for answers
+        payload,
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+
+      const parsedResponse = JSON.parse(response.data.body);
+      const llmAnswer = parsedResponse.answer || '';
+      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+      const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+        ? parsedResponse.factualData
+        : null;
+
+      const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+        ? parsedResponse.citizenReview
+        : null;
+
+      return {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData || 'No factual information available.',
+        citizenReview: citizenReview || 'No citizen experience information available.',
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      };
+    } catch (error) {
+      console.error("Error fetching data for question:", error);
+      return {
+        textualResponse: ['No Answer Available'],
+        factualData: null,
+        citizenReview: null,
+        contextual: 'No contextual information available.',
+      };
+    }
   };
 
-  return (
-    <div className={styles.chatContainer}>
-      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
-      </div>
+  const fetchAllData = async (topicId) => {
+    setLoading(true);
+    try {
+      const formattedData = await Promise.all(
+        questions.map(async (question) => {
+          const answerData = await fetchDataForQuestion(question);
+          return {
+            question: question.text,
+            answer: answerData,
+          };
+        })
+      );
 
-      {isChatVisible && (
-        <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
-            <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-          <div className={styles.messagesContainer}>
-            {messages.map((msg, idx) => (
-              <div key={idx} className={msg.type === 'user' ? styles.userMessage : styles.botMessage}>
-                {msg.text}
-              </div>
-            ))}
-            {loading && (
-              <div className={styles.loaderWrapper}>
-                <BeatLoader color="rgb(15, 95, 220)" loading={loading} size={8} />
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-          <form onSubmit={handleSubmit} className={styles.inputContainer}>
-            <input
-              type="text"
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              className={styles.inputField}
-            />
-            <button type="submit" className={styles.sendButton}>
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </form>
+      setContentData(formattedData);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching all data:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleQuestionSelect = (question, answer) => {
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
+  };
+
+  // Load topics on initial render
+  useEffect(() => {
+    fetchTopics();
+  }, []);
+
+  // Load questions when active topic changes
+  useEffect(() => {
+    if (activeTopic) {
+      fetchQuestionsForTopic(activeTopic);
+      setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
+    }
+  }, [activeTopic]);
+
+  // Load answers once questions are fetched
+  useEffect(() => {
+    if (questions.length > 0) {
+      fetchAllData(activeTopic);
+    }
+  }, [questions]);
+
+  const selectedQuestionData = selectedData[activeTopic] || {};
+
+  return (
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
         </div>
+      ) : (
+        <>
+          <FaqDropdown
+            contentData={contentData}
+            onQuestionSelect={handleQuestionSelect}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
+          />
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 };
 
-export default Chatbot;
+export default MainContent;
