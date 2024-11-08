@@ -1,5 +1,3 @@
-// MainContent.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
@@ -11,7 +9,6 @@ const MainContent = ({ activeTopic }) => {
   const [contentData, setContentData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedData, setSelectedData] = useState({});
-  const [clickedQuestion, setClickedQuestion] = useState(null); // To track which question was clicked
 
   // Define the questions for each topic
   const topicQuestions = {
@@ -47,6 +44,7 @@ const MainContent = ({ activeTopic }) => {
       const llmAnswer = parsedResponse.answer || '';
       const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
+      // Safely get factualData and citizenReview URLs
       const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
         ? parsedResponse.factualData
         : null;
@@ -107,10 +105,6 @@ const MainContent = ({ activeTopic }) => {
     }));
   };
 
-  const handleClick = (question) => {
-    setClickedQuestion(question); // Track clicked question
-  };
-
   useEffect(() => {
     fetchAllData(activeTopic);
     setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
@@ -132,21 +126,14 @@ const MainContent = ({ activeTopic }) => {
             selectedQuestion={selectedQuestionData.question}
             selectedAnswer={selectedQuestionData.answer}
           />
-          {contentData.map((data) => (
-            <div
-              key={data.question}
-              className={`${styles.responseSection} ${clickedQuestion === data.question ? styles.clicked : ''}`}
-              onClick={() => handleClick(data.question)}
-            >
-              <p>{data.question}</p>
-              {clickedQuestion === data.question && (
-                <QuestionBlock
-                  question={data.question}
-                  answerData={data.answer}
-                />
-              )}
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
             </div>
-          ))}
+          )}
         </>
       )}
     </div>
@@ -158,82 +145,7 @@ export default MainContent;
 
 
 
-// QuestionBlock.js
 
-import React from 'react';
-import styles from './QuestionBlock.module.css';
-
-// Utility function to convert URLs in text to anchor tags
-const parseLinks = (text) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlPattern).map((part, index) =>
-    urlPattern.test(part) ? (
-      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
-};
-
-const QuestionBlock = ({ question, answerData }) => {
-  const renderResponsePoints = (responseArray) => {
-    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
-    return (
-      <ul className={styles.responseList}>
-        {arrayToRender.map((item, index) => (
-          <li key={index} className={styles.responseItem}>
-            {parseLinks(item)}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  const renderImage = (imageUrl, altText) =>
-    imageUrl ? (
-      <img src={imageUrl} alt={altText} className={styles.responseImage} />
-    ) : null;
-
-  return (
-    <div className={styles.questionBlock}>
-      <div className={styles.question}>{question}</div>
-
-      {/* Textual Response */}
-      <div className={styles.responseSection}>
-        <p><strong>Textual Response:</strong></p>
-        {renderResponsePoints(answerData.textualResponse)}
-        {renderImage(answerData.textualImage, "Textual Response Image")}
-      </div>
-
-      {/* Citizen Experience */}
-      <div className={styles.responseSection}>
-        <p><strong>Citizen Experience:</strong></p>
-        {renderImage(answerData.citizenReview, "Citizen Experience Image")}
-      </div>
-
-      {/* Factual Info */}
-      <div className={styles.responseSection}>
-        <p><strong>Factual Info:</strong></p>
-        {renderImage(answerData.factualData, "Factual Info Image")}
-      </div>
-
-      {/* Contextual */}
-      <div className={styles.responseSection}>
-        <p><strong>Contextual:</strong></p>
-        {renderResponsePoints([answerData.contextual])}
-        {renderImage(answerData.contextualImage, "Contextual Info Image")}
-      </div>
-    </div>
-  );
-};
-
-export default QuestionBlock;
-
-
-
-// Chatbot.js
 
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -246,11 +158,12 @@ const Chatbot = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false);
+  const [isChatVisible, setChatVisible] = useState(false); // State for visibility
 
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    // Auto-scroll to the latest message
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -266,63 +179,93 @@ const Chatbot = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('dummy', { question: input }, { headers: { 'Content-Type': 'application/json' } });
+      const response = await axios.post('dummy', {
+        question: input,
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
       const parsedBody = JSON.parse(response.data.body);
-      const botMessage = { type: 'bot', text: parsedBody.answer || 'Sorry, I couldn\'t understand that.' };
+      const answer = parsedBody.answer || 'No answer available for this question.';
+      const source = parsedBody.source || 'No source available';
+
+      const botMessage = {
+        type: 'bot',
+        text: `${answer} (Source: ${source})`,
+      };
       setMessages((prevMessages) => [...prevMessages, botMessage]);
+
     } catch (error) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { type: 'bot', text: 'Sorry, there was an issue with the request.' },
-      ]);
+      console.error('Error fetching data:', error);
+      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+      setMessages((prevMessages) => [...prevMessages, errorMessage]);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleChatVisibility = () => setChatVisible(!isChatVisible);
+  const toggleChatVisibility = () => {
+    setChatVisible(!isChatVisible); // Toggle visibility
+  };
 
   return (
-    <div className={styles.chatbotWrapper}>
-      <div className={`${styles.chatbot} ${isChatVisible ? styles.visible : ''}`}>
-        <div className={styles.chatHeader}>
-          <span>Chatbot</span>
-          <button className={styles.closeButton} onClick={toggleChatVisibility}>
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
-        </div>
-        <div className={styles.chatBody}>
+    <div className={styles.chatContainer}>
+      {/* Conversation Icon */}
+      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
+        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
+      </div>
+
+      {/* Chat Window - Modal Style */}
+      {isChatVisible && (
+        <div className={styles.chatWindow}>
+          <div className={styles.chatHeader}>
+            <p className={styles.chatHeading}>Chatbot</p>
+            <button className={styles.closeButton} onClick={toggleChatVisibility}><FontAwesomeIcon icon={faTimes}/></button>
+          </div>
           <div className={styles.messages}>
-            {messages.map((msg, index) => (
-              <div key={index} className={msg.type === 'user' ? styles.userMessage : styles.botMessage}>
-                <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faComments} />
-                <span>{msg.text}</span>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={message.type === 'user' ? styles.userMessage : styles.botMessage}
+              >
+                <FontAwesomeIcon
+                  icon={message.type === 'user' ? faUser : faWandSparkles}
+                  className={styles.icon}
+                />
+                <div className={styles.messageText}>
+                  {message.text}
+                </div>
               </div>
             ))}
             {loading && (
-              <div className={styles.loading}>
-                <BeatLoader color="rgb(15, 95, 220)" loading={loading} size={8} />
+              <div className={styles.botMessage}>
+                <FontAwesomeIcon icon={faWandSparkles} className={styles.icon} />
+                <div className={styles.messageText}>
+                  <BeatLoader color="#5f1ec1" size={8} />
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
+
+          {/* Input Form */}
+          <form onSubmit={handleSubmit} className={styles.inputForm}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask a question..."
+              className={styles.inputField}
+              disabled={loading}
+            />
+            <button type="submit" className={styles.submitButton} title="Send">
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </form>
         </div>
-        <div className={styles.chatFooter}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask a question..."
-          />
-          <button onClick={handleSubmit} disabled={loading}>
-            <FontAwesomeIcon icon={faPaperPlane} />
-          </button>
-        </div>
-      </div>
-      <button className={styles.toggleChatButton} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faWandSparkles} />
-      </button>
+      )}
     </div>
   );
 };
