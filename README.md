@@ -1,3 +1,60 @@
+
+/* Styling for Follow-up Questions */
+.followUpQuestion {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  background-color: #e6f7ff;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+/* Highlighting Follow-up Question on Hover */
+.followUpQuestion:hover {
+  background-color: #cceeff;
+  transform: scale(1.05);
+}
+
+.followUpQuestion .icon {
+  margin-right: 10px;
+  font-size: 18px;
+  color: var(--primary-color);
+}
+
+/* Styling for the Follow-up Question Text */
+.followUpQuestion .questionText {
+  flex: 1;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Add these styles to the messages section */
+.messages {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages .followUpQuestion {
+  margin-top: 5px;
+}
+
+/* Optional: Add a small "Reply" icon beside follow-up questions */
+.followUpQuestion .replyIcon {
+  font-size: 14px;
+  color: var(--primary-color);
+  margin-left: 8px;
+}
+
+
+
+
 :root {
   --primary-color: #5f1ec1;
   --secondary-color: rgba(15, 95, 220, 1);
