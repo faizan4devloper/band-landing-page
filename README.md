@@ -1,3 +1,8 @@
+why the answer is not coming after i type question in chatbot in MainContent same question getting answers
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
