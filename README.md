@@ -1,164 +1,3 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faWandSparkles, faUser, faComments, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
-
-const followUpQuestions = {
-  Q1: [
-    "Can you tell me more about the recent academic performance?",
-    "How has the school evolved over the years?",
-    "Are there any recent awards or recognitions?",
-    "What extracurricular activities are most popular?",
-    "Is there any plan for new facilities?"
-  ],
-  // Add follow-up questions for other question IDs as needed
-};
-
-const Chatbot = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false); // State for visibility
-  const [currentQuestionId, setCurrentQuestionId] = useState(null); // Track current question ID
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-
-    try {
-      const response = await axios.post('dummy', {
-        question: input,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
-      const questionId = parsedBody.questionId || 'Q1'; // Example ID - replace as needed
-
-      const botMessage = {
-        type: 'bot',
-        text: `(${questionId}) ${answer} (Source: ${source})`,
-      };
-
-      setCurrentQuestionId(questionId); // Set current question ID for follow-ups
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleChatVisibility = () => {
-    setChatVisible(!isChatVisible);
-  };
-
-  return (
-    <div className={styles.chatContainer}>
-      {/* Conversation Icon */}
-      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
-      </div>
-
-      {/* Chat Window - Modal Style */}
-      {isChatVisible && (
-        <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
-            <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}>
-              <FontAwesomeIcon icon={faTimes}/>
-            </button>
-          </div>
-          <div className={styles.messages}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-              >
-                <FontAwesomeIcon
-                  icon={message.type === 'user' ? faUser : faWandSparkles}
-                  className={styles.icon}
-                />
-                <div className={styles.messageText}>
-                  {message.text}
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className={styles.botMessage}>
-                <FontAwesomeIcon icon={faWandSparkles} className={styles.icon} />
-                <div className={styles.messageText}>
-                  <BeatLoader color="#5f1ec1" size={8} />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Follow-up Questions */}
-          {currentQuestionId && followUpQuestions[currentQuestionId] && (
-            <div className={styles.followUpContainer}>
-              <p className={styles.followUpHeader}>Follow-up Questions:</p>
-              <ul className={styles.followUpList}>
-                {followUpQuestions[currentQuestionId].map((followUp, index) => (
-                  <li key={index} className={styles.followUpItem} onClick={() => setInput(followUp)}>
-                    {followUp}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className={styles.inputForm}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
-              className={styles.inputField}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.submitButton} title="Send">
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Chatbot;
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
@@ -364,6 +203,8 @@ export default MainContent;
 
 
 
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -488,3 +329,71 @@ const Chatbot = () => {
 };
 
 export default Chatbot;
+
+
+
+import React from 'react';
+import styles from './QuestionBlock.module.css';
+
+// Utility function to convert URLs in text to anchor tags
+const parseLinks = (text) => {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, index) =>
+    urlPattern.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
+const QuestionBlock = ({ question, answerData }) => {
+  const renderResponsePoints = (responseArray) => {
+    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+    return (
+      <ul className={styles.responseList}>
+        {arrayToRender.map((item, index) => (
+          <li key={index} className={styles.responseItem}>
+            {parseLinks(item)}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderImage = (imageUrl, altText) =>
+    imageUrl ? (
+      <img src={imageUrl} alt={altText} className={styles.responseImage} />
+    ) : null;
+
+  return (
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      {/* Textual Response */}
+      <div className={styles.responseSection}>
+        <p><strong>Textual Response:</strong></p>
+        {renderResponsePoints(answerData.textualResponse)}
+        {renderImage(answerData.textualImage, "Textual Response Image")}
+      </div>
+
+      {/* Citizen Experience */}
+      <div className={styles.responseSection}>
+        <p><strong>Citizen Experience:</strong></p>
+        {renderImage(answerData.citizenReview, "Citizen Experience Image")}
+      </div>
+
+      {/* Factual Info */}
+      <div className={styles.responseSection}>
+        <p><strong>Factual Info:</strong></p>
+        {renderImage(answerData.factualData, "Factual Info Image")}
+      </div>
+
+      
+    </div>
+  );
+};
+
+export default QuestionBlock;
