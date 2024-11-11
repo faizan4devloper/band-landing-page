@@ -1,4 +1,15 @@
-import React, { useState, useEffect } from 'react';
+MainContent.js:66 Error fetching data: SyntaxError: "undefined" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at fetchDataForQuestion (MainContent.js:41:1)
+    at async MainContent.js:82:1
+    at async Promise.all (index 0)
+    at async fetchAllData (MainContent.js:80:1)
+
+
+
+
+
+    import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
 import FaqDropdown from './FaqDropdown';
@@ -14,19 +25,19 @@ const MainContent = ({ activeTopic }) => {
   // Define the questions based on the active topic
   const topicQuestions = {
     1: [
-      { id: 'q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
-      { id: 'q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
-      { id: 'q3', text: 'How does the school perform in standardized tests and assessments?' },
+      { id: 'Q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
+      { id: 'Q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
+      { id: 'Q3', text: 'How does the school perform in standardized tests and assessments?' },
     ],
     2: [
-      { id: 'q4', text: 'What’s the curriculum at Serpell Primary School?' },
-      { id: 'q5', text: 'How is the curriculum structured across different year levels?' },
-      { id: 'q6', text: 'What specialist programs are offered at Serpell Primary School?' },
+      { id: 'Q4', text: 'What’s the curriculum at Serpell Primary School?' },
+      { id: 'Q5', text: 'How is the curriculum structured across different year levels?' },
+      { id: 'Q6', text: 'What specialist programs are offered at Serpell Primary School?' },
     ],
     3: [
-      { id: 'q7', text: 'How does the school engage with the broader community?' },
-      { id: 'q8', text: 'How can parents get involved in the school community?' },
-      { id: 'q9', text: 'What support services are available for students with special needs at Serpell Primary School?' },
+      { id: 'Q7', text: 'How does the school engage with the broader community?' },
+      { id: 'Q8', text: 'How can parents get involved in the school community?' },
+      { id: 'Q9', text: 'What support services are available for students with special needs at Serpell Primary School?' },
     ],
   };
 
@@ -39,7 +50,7 @@ const MainContent = ({ activeTopic }) => {
 
     try {
       const response = await axios.post(
-        'your-single-api-endpoint', // Replace with your actual API endpoint
+        'dummy', // Replace with your actual API endpoint
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
