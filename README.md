@@ -81,7 +81,7 @@ export default FaqDropdown;
       question_id: questionId,  // Dynamically assigned question_id
     };
 
-    const response = await axios.post('https://2kn1kfoouh.execute-api.us-east-1.amazonaws.com/edu/cit-adv2', payload, {
+    const response = await axios.post('dummy, {
       headers: {
         'Content-Type': 'application/json',
       },
