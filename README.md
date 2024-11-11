@@ -1,3 +1,52 @@
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (input.trim() === '') return;
+
+  const userMessage = { type: 'user', text: input };
+  setMessages((prevMessages) => [...prevMessages, userMessage]);
+  setInput('');
+  setLoading(true);
+
+  try {
+    // Dynamically set the question_id (e.g., Q1, Q2, etc.)
+    const questionId = `Q${Math.floor(Math.random() * 9) + 1}`; // Randomly generates Q1-Q9
+
+    const payload = {
+      question: input,
+      question_id: questionId,  // Dynamically assigned question_id
+    };
+
+    const response = await axios.post('dummy', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const parsedBody = JSON.parse(response.data.body);
+    const answer = parsedBody.answer || 'No answer available for this question.';
+    const source = parsedBody.source || 'No source available';
+
+    const botMessage = {
+      type: 'bot',
+      text: `${answer} (Source: ${source})`,
+    };
+    setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+    setMessages((prevMessages) => [...prevMessages, errorMessage]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
+
 const fetchDataForQuestion = async (question) => {
   const payload = {
     question_id: question.id,  // Pass the question id as part of the payload
