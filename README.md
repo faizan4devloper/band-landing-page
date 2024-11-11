@@ -1,3 +1,107 @@
+const fetchDataForQuestion = async (question) => {
+  const payload = {
+    question_id: question.id,  // Pass the question id as part of the payload
+    question: question.text,
+  };
+
+  try {
+    const response = await axios.post(
+      'dummy', // Replace with your actual API endpoint
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    console.log('API Response:', response.data);
+
+    // Check if `response.data.body` is already an object or a JSON string
+    const parsedResponse = typeof response.data.body === 'string'
+      ? JSON.parse(response.data.body)
+      : response.data.body;
+
+    const llmAnswer = parsedResponse.answer || '';
+    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+      ? parsedResponse.factualData
+      : 'No factual information available.';
+
+    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+      ? parsedResponse.citizenReview
+      : 'No citizen experience information available.';
+
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData,
+        citizenReview: citizenReview,
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching data for question:", error);
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: ['No Answer Available'],
+        factualData: 'No factual information available.',
+        citizenReview: 'No citizen experience information available.',
+        contextual: 'No contextual information available.',
+      },
+    };
+  }
+};
+
+
+
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (input.trim() === '') return;
+
+  const userMessage = { type: 'user', text: input };
+  setMessages((prevMessages) => [...prevMessages, userMessage]);
+  setInput('');
+  setLoading(true);
+
+  try {
+    const payload = {
+      question: input,
+      question_id: "Q1",  // Set the appropriate question id (could be dynamic based on the conversation)
+    };
+
+    const response = await axios.post('dummy', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const parsedBody = JSON.parse(response.data.body);
+    const answer = parsedBody.answer || 'No answer available for this question.';
+    const source = parsedBody.source || 'No source available';
+
+    const botMessage = {
+      type: 'bot',
+      text: `${answer} (Source: ${source})`,
+    };
+    setMessages((prevMessages) => [...prevMessages, botMessage]);
+
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
+    setMessages((prevMessages) => [...prevMessages, errorMessage]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
