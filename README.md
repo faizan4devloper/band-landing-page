@@ -39,12 +39,13 @@ const Sidebar = () => {
       {file && (
         <div className={styles.fileContainer}>
           <p className={styles.fileName} onClick={openModal}>
-            {file.name}<FontAwesomeIcon  icon={faTimes}
+            {file.name}
+          </p>
+          <FontAwesomeIcon
+            icon={faTimes}
             className={styles.removeIcon}
             onClick={removeFile}
           />
-          </p>
-          
         </div>
       )}
 
@@ -55,6 +56,8 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
+
 
 
 
@@ -99,24 +102,22 @@ export default Sidebar;
   margin-top: 10px;
   font-size: 12px;
   color: #333;
-  cursor: pointer;
   border: 1px solid #f0f0f0;
   padding: 8px;
   border-radius: 5px;
   transition: background-color 0.3s;
+  cursor: pointer;
 }
 
 .fileContainer:hover {
-background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
   color: #fff;
-  
 }
 
 .fileName {
   flex: 1;
   text-align: left;
-  margin-right: 8px;
-  /*font-weight: bold;*/
+  margin: 0;
 }
 
 .uploadIcon {
