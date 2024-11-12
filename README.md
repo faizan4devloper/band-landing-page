@@ -1,45 +1,95 @@
-/* Wrapper for the image */
-.imageWrapper {
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
 
-/* Tooltip styles */
-.tooltip {
-  visibility: hidden;
-  position: absolute;
-  bottom: 100%; /* Position the tooltip above the image */
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.75);
-  color: #fff;
-  text-align: center;
-  border-radius: 5px;
-  padding: 5px;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.3s, visibility 0s 0.3s; /* Smooth fade-in/out */
-  z-index: 1;
-}
+// Modal component for preview
+const FilePreviewModal = ({ file, closeModal }) => {
+  const [fileContent, setFileContent] = useState(null);
 
-/* Show tooltip on hover */
-.imageWrapper:hover .tooltip {
-  visibility: visible;
-  opacity: 1;
-  transition: opacity 0.3s, visibility 0s;
-}
+  const readFile = (file) => {
+    const reader = new FileReader();
 
-/* Image styles */
-.responseImage {
-  max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+    // For text files, read the contents
+    if (file.type.startsWith('text')) {
+      reader.onload = () => {
+        setFileContent(reader.result);
+      };
+      reader.readAsText(file);
+    }
+    // For image files, display the image preview
+    else if (file.type.startsWith('image')) {
+      setFileContent(URL.createObjectURL(file));
+    }
+    else {
+      setFileContent('Unable to preview this file type');
+    }
+  };
 
-/* You can also add hover effects for the image if needed */
-.responseImage:hover {
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
+  // Read the file content when the modal is opened
+  React.useEffect(() => {
+    if (file) {
+      readFile(file);
+    }
+  }, [file]);
+
+  return (
+    <div className={styles.modalOverlay} onClick={closeModal}>
+      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <h2>File Preview</h2>
+        {/* Preview based on file type */}
+        {file && file.type.startsWith('text') && (
+          <pre>{fileContent}</pre>
+        )}
+        {file && file.type.startsWith('image') && (
+          <img src={fileContent} alt="preview" className={styles.imagePreview} />
+        )}
+        {file && !file.type.startsWith('text') && !file.type.startsWith('image') && (
+          <p>{fileContent}</p>
+        )}
+        <button onClick={closeModal} className={styles.closeButton}>Close</button>
+      </div>
+    </div>
+  );
+};
+
+const Sidebar = () => {
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]); // Store the first file object
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const openModal = () => {
+    setShowModal(true); // Show modal
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Close modal
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <h2 className={styles.sidebarHeader}>Document Uploaded</h2>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
+      </div>
+      {file && (
+        <p className={styles.fileName} onClick={openModal}>
+          {file.name} {/* Clicking on file name will open modal */}
+        </p>
+      )}
+
+      {/* Modal for preview */}
+      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
+    </div>
+  );
+};
+
+export default Sidebar;
