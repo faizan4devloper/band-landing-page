@@ -1,118 +1,132 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faMagic, faUserCircle, faComments, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+.chatContainer {
+    position: fixed;
+    bottom: 20px;
+    color: #fff;
+    right: 20px;
+    z-index: 1000;
+}
 
-const Chatbot = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false);
+.iconContainer {
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 30%;
+    background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+    transition: transform 0.3s ease;
+}
 
-  const messagesEndRef = useRef(null);
+.chatWindow {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 320px;
+    height: 420px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+.chatHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+    color: #fff;
+    padding: 5px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
+.chatHeading {
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
 
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
+.closeButton {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
 
-    try {
-      const response = await axios.post('dummy', { question: input }, {
-        headers: { 'Content-Type': 'application/json' },
-      });
-      
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
-      
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      setMessages((prevMessages) => [...prevMessages, { type: 'bot', text: 'Something went wrong. Please try again later.' }]);
-    } finally {
-      setLoading(false);
-    }
-  };
+.messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
 
-  const toggleChatVisibility = () => setChatVisible(!isChatVisible);
+.userMessage,
+.botMessage {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
-  return (
-    <div className={styles.chatContainer}>
-      {/* Chat Icon */}
-      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
-      </div>
+.userMessage {
+    justify-content: flex-end;
+}
 
-      {/* Chat Window */}
-      {isChatVisible && (
-        <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
-            <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
+.botMessage {
+    justify-content: flex-start;
+}
 
-          {/* Messages */}
-          <div className={styles.messages}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-              >
-                <FontAwesomeIcon
-                  icon={message.type === 'user' ? faUserCircle : faMagic}  // Updated Icons
-                  className={styles.icon}
-                />
-                <div className={styles.messageText}>
-                  {message.text}
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className={styles.botMessage}>
-                <FontAwesomeIcon icon={faMagic} className={styles.icon} />
-                <div className={styles.messageText}>
-                  <BeatLoader color="#5f1ec1" size={8} />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+.icon {
+    margin: 0 8px;
+    font-size: 15px;
+    color: #fff;
+}
 
-          {/* Input Form */}
-          <form onSubmit={handleSubmit} className={styles.inputForm}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
-              className={styles.inputField}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.submitButton} title="Send">
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </form>
-        </div>  
-      )}
-    </div>
-  );
-};
+.messageText {
+    max-width: 75%;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 12px;
+    border-radius: 10px;
+    color: #333;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
 
-export default Chatbot;
+.userMessage .messageText {
+    background-color: #d1e7ff;
+}
+
+.inputForm {
+    display: flex;
+    border-top: 1px solid #ddd;
+    padding: 10px;
+}
+
+.inputField {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #000;
+    outline: none;
+}
+
+.submitButton {
+    background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: rgba(15, 95, 220, 1);
+    border-radius: 10px;
+}
