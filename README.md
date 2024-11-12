@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import styles from './FilePreviewModal.module.css'
+import React, { useState, useEffect } from 'react';
+import styles from './FilePreviewModal.module.css';
 
-// Modal component for preview
 const FilePreviewModal = ({ file, closeModal }) => {
   const [fileContent, setFileContent] = useState(null);
 
@@ -22,7 +21,7 @@ const FilePreviewModal = ({ file, closeModal }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (file) {
       readFile(file);
     }
@@ -31,6 +30,7 @@ const FilePreviewModal = ({ file, closeModal }) => {
   return (
     <div className={styles.modalOverlay} onClick={closeModal}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        <button onClick={closeModal} className={styles.closeButton}>×</button>
         <h2>File Preview</h2>
 
         {file && file.type.startsWith('text') && <pre>{fileContent}</pre>}
@@ -40,8 +40,6 @@ const FilePreviewModal = ({ file, closeModal }) => {
         {file && file.type === 'application/pdf' && (
           <iframe
             src={fileContent}
-            className={styles.iframe}
-            width="200px"
             title="PDF Preview"
             className={styles.pdfPreview}
           />
@@ -49,8 +47,6 @@ const FilePreviewModal = ({ file, closeModal }) => {
         {file && !file.type.startsWith('text') && !file.type.startsWith('image') && file.type !== 'application/pdf' && (
           <p>{fileContent}</p>
         )}
-
-        <button onClick={closeModal} className={styles.closeButton}>Close</button>
       </div>
     </div>
   );
@@ -59,6 +55,9 @@ const FilePreviewModal = ({ file, closeModal }) => {
 export default FilePreviewModal;
 
 
+
+
+/* Modal overlay */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -72,14 +71,33 @@ export default FilePreviewModal;
   z-index: 1000;
 }
 
-/* Modal Content */
+/* Modal content */
 .modalContent {
+  position: relative;
   background: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 10px;
   text-align: center;
   width: 600px;
+  max-width: 90%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Close button */
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s;
+}
+
+.closeButton:hover {
+  color: #572ac2;
 }
 
 /* Image preview */
@@ -90,23 +108,7 @@ export default FilePreviewModal;
   margin-top: 20px;
 }
 
-/* Close button style */
-.closeButton {
-  margin-top: 20px;
-  padding: 8px 16px;
-  background-color: #4080f5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.closeButton:hover {
-  background-color: #572ac2;
-}
-
-/* For text file content display */
+/* Text file content display */
 pre {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -119,27 +121,10 @@ pre {
   overflow-y: auto;
 }
 
+/* PDF preview */
 .pdfPreview {
   width: 100%;
   height: 500px;
   border: none;
-}
-
-/* CSS for PDF image preview */
-.pdfPages {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   margin-top: 20px;
-}
-
-.pdfImage {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-}
-
-.iframe{
-    width: 200px;
-    height:300px;
 }
