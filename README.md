@@ -1,40 +1,95 @@
-/* Styled scrollbar for modal content */
-.modalContent {
-  position: relative;
-  background: white;
-  padding: 20px 20px 30px;
-  border-radius: 10px;
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+import FilePreviewModal from './FilePreviewModal';
+
+
+const Sidebar = () => {
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]); // Store the first file object
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const openModal = () => {
+    setShowModal(true); // Show modal
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Close modal
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <h2 className={styles.sidebarHeader}>Document Uploaded</h2>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
+      </div>
+      {file && (
+        <p className={styles.fileName} onClick={openModal}>
+          {file.name} {/* Clicking on file name will open modal */}
+        </p>
+      )}
+
+      {/* Modal for preview */}
+      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+
+
+.sidebar {
+     width: 250px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+    padding: 20px;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.sidebarHeader {
+  font-size: 1rem;
   text-align: center;
-  width: 600px;
-  max-width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  /* Custom scrollbar styles for WebKit browsers */
-  scrollbar-width: thin; /* Firefox */
-  scrollbar-color: #572ac2 #f4f4f4; /* Firefox */
+  font-weight: bold;
+  margin-bottom: 20px;
 }
 
-/* WebKit scrollbar styling */
-.modalContent::-webkit-scrollbar {
-  width: 8px; /* Set the width of the scrollbar */
+.dropzone {
+  border: 2px dashed #cccccc;
+  padding: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 8px;
+  background: rgba(230, 235, 245, 1); /* HCLTech theme hover color */
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
-.modalContent::-webkit-scrollbar-track {
-  background: #f4f4f4; /* Track color */
-  border-radius: 10px;
+.dropzone:hover {
+  background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  color: #fff;
 }
 
-.modalContent::-webkit-scrollbar-thumb {
-  background-color: #572ac2; /* Thumb color */
-  border-radius: 10px;
-  border: 2px solid #f4f4f4; /* Adds space around thumb */
+.fileName {
+  margin-top: 10px;
+  font-size: 14px;
+  /*font-weight: bold;*/
+  text-align: center;
+  color: #333;
 }
 
-.modalContent::-webkit-scrollbar-thumb:hover {
-  background-color: #4080f5; /* Thumb color on hover */
+.uploadIcon{
+    font-size: 18px;
 }
