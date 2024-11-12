@@ -1,89 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
-
-const MainContent = () => {
-  const [data, setData] = useState({
-    techSkills: [],
-    jobPostings: [],
-    similarProfiles: [],
-    immigrationInsights: [],
-    crossSkilling: [],
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post('/api/data'); // Replace with your API endpoint
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  return (
-    <div className={styles.mainContent}>
-      <section className={styles.section}>
-        <h3>Tech Skills, Certifications, Awards</h3>
-        <ul>
-          {data.techSkills.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Top 5 Job Postings</h3>
-        <ul>
-          {data.jobPostings.map((job, index) => (
-            <li key={index}>
-              <a href={job.link} target="_blank" rel="noopener noreferrer">
-                {job.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Similar Profiles - Job Recommendations</h3>
-        <ul>
-          {data.similarProfiles.map((recommendation, index) => (
-            <li key={index}>{recommendation}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Immigration and Visa Insights</h3>
-        <ul>
-          {data.immigrationInsights.map((insight, index) => (
-            <li key={index}>{insight}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Cross Skilling Recommendations</h3>
-        <ul>
-          {data.crossSkilling.map((skill, index) => (
-            <li key={index}>{skill}</li>
-          ))}
-        </ul>
-      </section>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
 .mainContent {
   flex: 1;
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   background-color: #f0f4f8;
+  max-height: 90vh; /* Set max height for vertical scrolling */
+  overflow-y: auto; /* Enable scrolling */
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #0073e6 #f0f4f8;
+}
+
+/* Scrollbar for Webkit-based browsers (e.g., Chrome, Safari) */
+.mainContent::-webkit-scrollbar {
+  width: 8px;
+}
+.mainContent::-webkit-scrollbar-track {
+  background: #f0f4f8;
+}
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #0073e6;
+  border-radius: 10px;
 }
 
 .section {
@@ -92,6 +29,8 @@ export default MainContent;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow-y: auto; /* Add scroll for long content */
+  max-height: 300px; /* Prevent sections from expanding too much */
 }
 
 .section:hover {
@@ -101,8 +40,13 @@ export default MainContent;
 
 h3 {
   margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #333;
+  font-size: 1.5rem;
+  color: #0073e6;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid #0073e6;
+  padding-bottom: 10px;
+  margin-top: 0;
 }
 
 ul {
@@ -112,8 +56,9 @@ ul {
 
 li {
   font-size: 0.95rem;
-  color: #666;
+  color: #333;
   margin-bottom: 8px;
+  line-height: 1.5;
 }
 
 a {
@@ -124,4 +69,31 @@ a {
 
 a:hover {
   color: #005bb5;
+}
+
+/* Add animations for list items */
+li {
+  opacity: 0;
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Custom styling for better text readability */
+p, li, a {
+  font-family: 'Arial', sans-serif;
+}
+
+/* Adding padding to improve section content spacing */
+.section ul {
+  padding-right: 10px;
 }
