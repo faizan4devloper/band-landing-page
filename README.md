@@ -1,151 +1,127 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import PropagateLoader from 'react-spinners/PropagateLoader';
-import FaqDropdown from './FaqDropdown';
-import QuestionBlock from './QuestionBlock';
 import styles from './MainContent.module.css';
 
-const MainContent = ({ activeTopic }) => {
-  const [questions, setQuestions] = useState([]); // Dynamically loaded questions for the topic
-  const [contentData, setContentData] = useState([]); // Stores answers for each question
-  const [loading, setLoading] = useState(true);
-  const [selectedData, setSelectedData] = useState({});
-
-  // Define the questions based on the active topic
-  const topicQuestions = {
-    1: [
-      { id: 'Q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
-      { id: 'Q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
-      { id: 'Q3', text: 'How does the school perform in standardized tests and assessments?' },
-    ],
-    2: [
-      { id: 'Q4', text: 'What’s the curriculum at Serpell Primary School?' },
-      { id: 'Q5', text: 'How is the curriculum structured across different year levels?' },
-      { id: 'Q6', text: 'What specialist programs are offered at Serpell Primary School?' },
-    ],
-    3: [
-      { id: 'Q7', text: 'How does the school engage with the broader community?' },
-      { id: 'Q8', text: 'How can parents get involved in the school community?' },
-      { id: 'Q9', text: 'What support services are available for students with special needs at Serpell Primary School?' },
-    ],
-  };
-
- 
-  
-const fetchDataForQuestion = async (question) => {
-  const payload = {
-    question_id: question.id,
-    question: question.text,
-  };
-
-  try {
-    const response = await axios.post(
-      'dummy', // Replace with your actual API endpoint
-      payload,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
-    
-    console.log('API Response:', response.data)
-
-    // Check if `response.data.body` is already an object or a JSON string
-    const parsedResponse = typeof response.data.body === 'string'
-      ? JSON.parse(response.data.body)
-      : response.data.body;
-
-    const llmAnswer = parsedResponse.answer || '';
-    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
-
-    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
-      ? parsedResponse.factualData
-      : 'No factual information available.';
-
-    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
-      ? parsedResponse.citizenReview
-      : 'No citizen experience information available.';
-
-    return {
-      question: question.text,
-      answer: {
-        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-        factualData: factualData,
-        citizenReview: citizenReview,
-        contextual: parsedResponse.contextual || 'No contextual information available.',
-      },
-    };
-  } catch (error) {
-    console.error("Error fetching data for question:", error);
-    return {
-      question: question.text,
-      answer: {
-        textualResponse: ['No Answer Available'],
-        factualData: 'No factual information available.',
-        citizenReview: 'No citizen experience information available.',
-        contextual: 'No contextual information available.',
-      },
-    };
-  }
-};
-
-
-  // Fetch all data for the selected topic
-  const fetchAllData = async (topicId) => {
-    setLoading(true);
-    try {
-      const questionsList = topicQuestions[topicId] || [];
-      const formattedData = await Promise.all(
-        questionsList.map(fetchDataForQuestion)
-      );
-      setContentData(formattedData);
-    } catch (error) {
-      console.error("Error fetching data for all questions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuestionSelect = (question, answer) => {
-    setSelectedData((prev) => ({
-      ...prev,
-      [activeTopic]: {
-        question,
-        answer,
-      },
-    }));
-  };
+const MainContent = () => {
+  const [data, setData] = useState({
+    techSkills: [],
+    jobPostings: [],
+    similarProfiles: [],
+    immigrationInsights: [],
+    crossSkilling: [],
+  });
 
   useEffect(() => {
-    fetchAllData(activeTopic);
-    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
-  }, [activeTopic]);
-
-  const selectedQuestionData = selectedData[activeTopic] || {};
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('/api/data'); // Replace with your API endpoint
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className={styles.mainContent}>
-      {loading ? (
-        <div className={styles.loaderWrapper}>
-          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
-        </div>
-      ) : (
-        <>
-          <FaqDropdown
-            contentData={contentData}
-            onQuestionSelect={handleQuestionSelect}
-            selectedQuestion={selectedQuestionData.question}
-            selectedAnswer={selectedQuestionData.answer}
-          />
-          {selectedQuestionData.question && selectedQuestionData.answer && (
-            <div className={styles.selectedQuestionBlock}>
-              <QuestionBlock
-                question={selectedQuestionData.question}
-                answerData={selectedQuestionData.answer}
-              />
-            </div>
-          )}
-        </>
-      )}
+      <section className={styles.section}>
+        <h3>Tech Skills, Certifications, Awards</h3>
+        <ul>
+          {data.techSkills.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
+      </section>
+      <section className={styles.section}>
+        <h3>Top 5 Job Postings</h3>
+        <ul>
+          {data.jobPostings.map((job, index) => (
+            <li key={index}>
+              <a href={job.link} target="_blank" rel="noopener noreferrer">
+                {job.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section className={styles.section}>
+        <h3>Similar Profiles - Job Recommendations</h3>
+        <ul>
+          {data.similarProfiles.map((recommendation, index) => (
+            <li key={index}>{recommendation}</li>
+          ))}
+        </ul>
+      </section>
+      <section className={styles.section}>
+        <h3>Immigration and Visa Insights</h3>
+        <ul>
+          {data.immigrationInsights.map((insight, index) => (
+            <li key={index}>{insight}</li>
+          ))}
+        </ul>
+      </section>
+      <section className={styles.section}>
+        <h3>Cross Skilling Recommendations</h3>
+        <ul>
+          {data.crossSkilling.map((skill, index) => (
+            <li key={index}>{skill}</li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 };
 
 export default MainContent;
+
+
+
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  background-color: #f0f4f8;
+}
+
+.section {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+h3 {
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+ul {
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+li {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+a {
+  color: #0073e6;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: #005bb5;
+}
