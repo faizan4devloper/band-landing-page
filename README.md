@@ -1,128 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
+Uncaught TypeError: Cannot read properties of undefined (reading 'map')
+    at MainContent (MainContent.js:30:1)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at updateFunctionComponent (react-dom.development.js:19617:1)
+    at beginWork (react-dom.development.js:21640:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
+MainContent @ MainContent.js:30
+renderWithHooks @ react-dom.development.js:15486
+updateFunctionComponent @ react-dom.development.js:19617
+beginWork @ react-dom.development.js:21640
+callCallback @ react-dom.development.js:4164
+invokeGuardedCallbackDev @ react-dom.development.js:4213
+invokeGuardedCallback @ react-dom.development.js:4277
+beginWork$1 @ react-dom.development.js:27490
+performUnitOfWork @ react-dom.development.js:26596
+workLoopSync @ react-dom.development.js:26505
+renderRootSync @ react-dom.development.js:26473
+recoverFromConcurrentError @ react-dom.development.js:25889
+performConcurrentWorkOnRoot @ react-dom.development.js:25789
+workLoop @ scheduler.development.js:266
+flushWork @ scheduler.development.js:239
+performWorkUntilDeadline @ scheduler.development.js:533
+Show 15 more frames
+Show less
+react-dom.development.js:18704 The above error occurred in the <MainContent> component:
 
-const MainContent = () => {
-  const [data, setData] = useState({
-    techSkills: [],
-    jobPostings: [],
-    similarProfiles: [],
-    immigrationInsights: [],
-    crossSkilling: [],
-  });
+    at MainContent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2239:74)
+    at div
+    at JobPage
+    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45559:5)
+    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46261:5)
+    at div
+    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46195:15)
+    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44132:5)
+    at AuthProvider (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2851:3)
+    at Provider (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:78557:3)
+    at App (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50:84)
+    at Provider (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:78557:3)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/api/data'); // Replace with your API endpoint
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  return (
-    <div className={styles.mainContent}>
-      <section className={styles.section}>
-        <h3>Tech Skills, Certifications, Awards</h3>
-        <ul>
-          {data.techSkills.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Top 5 Job Postings</h3>
-        <ul>
-          {data.jobPostings.map((job, index) => (
-            <li key={index}>
-              <a href={job.link} target="_blank" rel="noopener noreferrer">
-                {job.title}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Similar Profiles - Job Recommendations</h3>
-        <ul>
-          {data.similarProfiles.map((recommendation, index) => (
-            <li key={index}>{recommendation}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Immigration and Visa Insights</h3>
-        <ul>
-          {data.immigrationInsights.map((insight, index) => (
-            <li key={index}>{insight}</li>
-          ))}
-        </ul>
-      </section>
-      <section className={styles.section}>
-        <h3>Cross Skilling Recommendations</h3>
-        <ul>
-          {data.crossSkilling.map((skill, index) => (
-            <li key={index}>{skill}</li>
-          ))}
-        </ul>
-      </section>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
-
-.mainContent {
-  flex: 1;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  background-color: #f0f4f8;
-}
-
-.section {
-  background-color: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.section:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-h3 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-ul {
-  padding-left: 20px;
-  list-style-type: disc;
-}
-
-li {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 8px;
-}
-
-a {
-  color: #0073e6;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-a:hover {
-  color: #005bb5;
-}
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
