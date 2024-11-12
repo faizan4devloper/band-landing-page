@@ -1,135 +1,72 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPaperPlane, faMagic, faUserCircle, faComments, faTimes } from '@fortawesome/free-solid-svg-icons'; // Replacing faWandSparkles and faUser with alternatives
-import { BeatLoader } from 'react-spinners';
-import styles from './Chatbot.module.css';
+import React, { useState} from 'react';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import Chatbot from './../../../components/ChatBot/Chatbot';
 
-const Chatbot = () => {
-  const [input, setInput] = useState('');
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isChatVisible, setChatVisible] = useState(false);
+import styles from './EducationPage.module.css';
 
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    if (isChatVisible && messages.length === 0) {
-      setMessages([{ type: 'bot', text: 'Hello! How can I assist you today?' }]);
-    }
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages, isChatVisible]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (input.trim() === '') return;
-
-    const userMessage = { type: 'user', text: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setLoading(true);
-
-    try {
-      const questionId = `Q${Math.floor(Math.random() * 9) + 1}`;
-      const payload = {
-        question: input,
-        question_id: questionId,
-      };
-
-      const response = await axios.post('dummy', payload, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const parsedBody = JSON.parse(response.data.body);
-      const answer = parsedBody.answer || 'No answer available for this question.';
-      const source = parsedBody.source || 'No source available';
-
-      const botMessage = {
-        type: 'bot',
-        text: `${answer} (Source: ${source})`,
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      const errorMessage = { type: 'bot', text: 'Something went wrong. Please try again later.' };
-      setMessages((prevMessages) => [...prevMessages, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const toggleChatVisibility = () => {
-    setChatVisible(!isChatVisible);
-  };
-
-  const formatMessageText = (text) => {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.split(urlRegex).map((part, i) => 
-      urlRegex.test(part) ? <a key={i} href={part} target="_blank" rel="noopener noreferrer">{part}</a> : part
-    );
-  };
-
+const EducationPage = () => {
+  const [activeTopic, setActiveTopic] = useState(1);
+  
   return (
-    <div className={styles.chatContainer}>
-      <div className={styles.iconContainer} onClick={toggleChatVisibility}>
-        <FontAwesomeIcon icon={faComments} className={styles.conversationIcon} />
-      </div>
-
-      {isChatVisible && (
-        <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
-            <p className={styles.chatHeading}>Chatbot</p>
-            <button className={styles.closeButton} onClick={toggleChatVisibility}>
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-          <div className={styles.messages}>
-            {messages.map((message, index) => (
-              <div
-                key={index}
-                className={message.type === 'user' ? styles.userMessage : styles.botMessage}
-              >
-                <FontAwesomeIcon
-                  icon={message.type === 'user' ? faUserCircle : faMagic} // Replaced with faUserCircle and faMagic
-                  className={styles.icon}
-                />
-                <div className={styles.messageText}>
-                  {formatMessageText(message.text)}
-                </div>
-              </div>
-            ))}
-            {loading && (
-              <div className={styles.botMessage}>
-                <FontAwesomeIcon icon={faMagic} className={styles.icon} /> {/* Loading icon */}
-                <div className={styles.messageText}>
-                  <BeatLoader color="#5f1ec1" size={8} />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <form onSubmit={handleSubmit} className={styles.inputForm}>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask a question..."
-              className={styles.inputField}
-              disabled={loading}
-            />
-            <button type="submit" className={styles.submitButton} title="Send">
-              <FontAwesomeIcon icon={faPaperPlane} />
-            </button>
-          </form>
-        </div>
-      )}
+    <div className={styles.educationPage}>
+      <Sidebar setActiveTopic={setActiveTopic} />
+      <MainContent activeTopic={activeTopic} />
+      <Chatbot/>
     </div>
   );
 };
 
-export default Chatbot;
+export default EducationPage;
+
+
+
+
+
+/* EducationPage.module.css */
+.educationPage {
+  display: flex;
+  padding: 0 60px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Sidebar.module.css */
+.sidebar {
+  width: 250px;
+  background-color: #f7f7f7;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar li.active {
+  background-color: #e2d9fb;
+}
+
+.sidebar li:hover {
+  background-color: #ddd;
+}
+
+.icon {
+  margin-right: 10px;
+}
+
+/* MainContent.module.css */
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  background-color: #fff;
+}
