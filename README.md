@@ -9,9 +9,10 @@
 .iconContainer {
     cursor: pointer;
     padding: 14px;
-    border-radius: 30%;
+    border-radius: 50%; /* Updated to ensure a circular shape */
     background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
     transition: transform 0.3s ease;
+    z-index: 2; /* Ensure it's on top of the background */
 }
 
 .chatWindow {
@@ -78,8 +79,9 @@
 
 .icon {
     margin: 0 8px;
-    font-size: 15px;
+    font-size: 20px; /* Increased font size for better visibility */
     color: #fff;
+    z-index: 1; /* Ensures the icon is visible above other elements */
 }
 
 .messageText {
