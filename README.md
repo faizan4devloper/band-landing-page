@@ -65,6 +65,8 @@ export default FilePreviewModal;
 
 
 
+
+
 .modalOverlay {
   position: fixed;
   top: 0;
