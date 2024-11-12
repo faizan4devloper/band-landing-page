@@ -1,149 +1,65 @@
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faTimes } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
-import FilePreviewModal from './FilePreviewModal';
+import React from 'react';
+import styles from './MainContent.module.css';
 
-const Sidebar = () => {
-  const [file, setFile] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-
-  const onDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
-  };
-
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  const openModal = () => {
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
-
-  const removeFile = () => {
-    setFile(null);
-    closeModal();
-  };
-
+const MainContent = () => {
   return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.sidebarHeader}>Upload Document</h2>
-      <div {...getRootProps()} className={styles.dropzone}>
-        <input {...getInputProps()} />
-        <p>Drag & Drop, or click to select a file</p>
-        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
-      </div>
-      {file && (
-        <div className={styles.fileContainer}>
-          <p className={styles.fileName} onClick={openModal}>
-            {file.name} <span className={styles.previewLabel}>(Preview)</span>
-          </p>
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={styles.removeIcon}
-            onClick={removeFile}
-          />
-        </div>
-      )}
-      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
+    <div className={styles.mainContent}>
+      <section className={styles.section}>
+        <p>Tech skills, certifications, awards, etc.</p>
+        <p>Details about Section 1</p>
+      </section>
+      <section className={styles.section}>
+        <p>Top 5 job postings</p>
+        <p>Details about Section 2</p>
+      </section>
+      <section className={styles.section}>
+        <p>How other Similar profiles got job opportunities- Recommendation based on Similar Skill Sets</p>
+        <p>Details about Section 3</p>
+      </section>
+      <section className={styles.section}>
+        <p>Country Specific Immigration /visa/wp related insights</p>
+        <p>Details about Section 4</p>
+      </section>
+      <section className={styles.section}>
+        <p>Cross Skilling – Recommendations for better job reach</p>
+        <p>Details about Section 5</p>
+      </section>
     </div>
   );
 };
 
-export default Sidebar;
+export default MainContent;
 
 
 
-.sidebar {
-  width: 250px;
-  padding: 20px;
-  height: 100%;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, #f8f9fb 0%, #eceff4 100%);
-  color: #333;
-  overflow-y: hidden;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
 
-.sidebarHeader {
-  font-size: 1.2rem;
-  text-align: center;
-  font-weight: bold;
-  color: #5f1ec1;
-  margin-bottom: 25px;
-  border-bottom: 2px solid #e1e4f0;
-  padding-bottom: 8px;
-}
-
-.dropzone {
-  border: 2px dashed #cccccc;
-  padding: 20px;
-  font-size: 14px;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 8px;
-  background: rgba(230, 235, 245, 1);
-  margin-bottom: 20px;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.dropzone:hover {
-  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
-  border-color: #5f1ec1;
-  color: #fff;
-}
-
-.uploadIcon {
-  font-size: 18px;
-  color: #5f1ec1;
-  margin-top: 10px;
-}
-
-.fileContainer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 15px;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #f0f0f0;
-  background: #fdfdfd;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.fileContainer:hover {
-  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
-  color: #fff;
-}
-
-.fileName {
+.mainContent {
   flex: 1;
-  text-align: left;
-  font-size: 14px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  background-color: #fff;
+}
+
+.section {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.section:hover {
+  transform: translateY(-5px);
+}
+
+h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
   color: #333;
-  margin-right: 8px;
 }
 
-.previewLabel {
-  font-size: 12px;
-  font-weight: bold;
-  color: #5f1ec1;
-  margin-left: 5px;
+.section p {
+  color: #666;
 }
-
-.removeIcon {
-  color: #d9534f;
-  font-size: 14px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.removeIcon:hover {
-  color: #fff;
-}
-
