@@ -30,60 +30,64 @@ const MainContent = ({ activeTopic }) => {
     ],
   };
 
-  const fetchDataForQuestion = async (question) => {
-    const payload = {
-      question_id: question.id,
-      question: question.text,
-    };
-
-    try {
-      const response = await axios.post(
-        'dummy', // Replace with your actual API endpoint
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-      
-      console.log('API Response:', response.data);
-
-      // Check if `response.data.body` is already an object or a JSON string
-      const parsedResponse = typeof response.data.body === 'string'
-        ? JSON.parse(response.data.body)
-        : response.data.body;
-
-      const llmAnswer = parsedResponse.answer || '';
-      const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
-
-      const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
-        ? parsedResponse.factualData
-        : 'No factual information available.';
-
-      const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
-        ? parsedResponse.citizenReview
-        : 'No citizen experience information available.';
-
-      return {
-        question: question.text,
-        answer: {
-          textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
-          factualData: factualData,
-          citizenReview: citizenReview,
-          contextual: parsedResponse.contextual || 'No contextual information available.',
-        },
-      };
-    } catch (error) {
-      console.error("Error fetching data for question:", error);
-      return {
-        question: question.text,
-        answer: {
-          textualResponse: ['No Answer Available'],
-          factualData: 'No factual information available.',
-          citizenReview: 'No citizen experience information available.',
-          contextual: 'No contextual information available.',
-        },
-      };
-    }
+ 
+  
+const fetchDataForQuestion = async (question) => {
+  const payload = {
+    question_id: question.id,
+    question: question.text,
   };
 
+  try {
+    const response = await axios.post(
+      'dummy', // Replace with your actual API endpoint
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    console.log('API Response:', response.data)
+
+    // Check if `response.data.body` is already an object or a JSON string
+    const parsedResponse = typeof response.data.body === 'string'
+      ? JSON.parse(response.data.body)
+      : response.data.body;
+
+    const llmAnswer = parsedResponse.answer || '';
+    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
+
+    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+      ? parsedResponse.factualData
+      : 'No factual information available.';
+
+    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+      ? parsedResponse.citizenReview
+      : 'No citizen experience information available.';
+
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData,
+        citizenReview: citizenReview,
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching data for question:", error);
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: ['No Answer Available'],
+        factualData: 'No factual information available.',
+        citizenReview: 'No citizen experience information available.',
+        contextual: 'No contextual information available.',
+      },
+    };
+  }
+};
+
+
+  // Fetch all data for the selected topic
   const fetchAllData = async (topicId) => {
     setLoading(true);
     try {
@@ -109,11 +113,6 @@ const MainContent = ({ activeTopic }) => {
     }));
   };
 
-  const handleGoClick = (question, answer) => {
-    console.log("Go button clicked for:", question);
-    // Add logic here to handle the "Go" button click, e.g., show the answer in a chat window or perform other actions
-  };
-
   useEffect(() => {
     fetchAllData(activeTopic);
     setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
@@ -134,7 +133,6 @@ const MainContent = ({ activeTopic }) => {
             onQuestionSelect={handleQuestionSelect}
             selectedQuestion={selectedQuestionData.question}
             selectedAnswer={selectedQuestionData.answer}
-            onGoClick={handleGoClick} // Pass the onGoClick function as a prop
           />
           {selectedQuestionData.question && selectedQuestionData.answer && (
             <div className={styles.selectedQuestionBlock}>
@@ -154,52 +152,68 @@ export default MainContent;
 
 
 
-
-
-
-
 import React from 'react';
-import styles from './FaqDropdown.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import styles from './QuestionBlock.module.css';
 
-const FaqDropdown = ({ contentData, onQuestionSelect, selectedQuestion, onGoClick }) => {
-  const [isFaqOpen, setIsFaqOpen] = React.useState(false);
+// Utility function to convert URLs in text to anchor tags
+const parseLinks = (text) => {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, index) =>
+    urlPattern.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
 
-  const toggleFaq = () => setIsFaqOpen(!isFaqOpen);
-
-  const handleQuestionSelect = (question, answer) => {
-    onQuestionSelect(question, answer);
-    setIsFaqOpen(false);
+const QuestionBlock = ({ question, answerData }) => {
+  const renderResponsePoints = (responseArray) => {
+    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+    return (
+      <ul className={styles.responseList}>
+        {arrayToRender.map((item, index) => (
+          <li key={index} className={styles.responseItem}>
+            {parseLinks(item)}
+          </li>
+        ))}
+      </ul>
+    );
   };
 
-  const handleGoClick = (question, answer) => {
-    if (onGoClick) {
-      onGoClick(question, answer);  // Call the onGoClick function passed from parent
-    }
-  };
+  const renderImage = (imageUrl, altText) =>
+    imageUrl ? (
+      <img src={imageUrl} alt={altText} className={styles.responseImage} />
+    ) : null;
 
   return (
-    <div className={styles.faqDropdown}>
-      <div className={styles.dropdownHeader} onClick={toggleFaq}>
-        <span>Frequently Asked Questions</span>
-        <FontAwesomeIcon icon={isFaqOpen ? faChevronUp : faChevronDown} />
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      {/* Textual Response */}
+      <div className={styles.responseSection}>
+        <p><strong>Textual Response:</strong></p>
+        {renderResponsePoints(answerData.textualResponse)}
+        {renderImage(answerData.textualImage, "Textual Response Image")}
       </div>
+
+      {/* Citizen Experience */}
+      <div className={styles.responseSection}>
+        <p><strong>Citizen Experience:</strong></p>
+        {renderImage(answerData.citizenReview, "Citizen Experience Image")}
+      </div>
+
+      {/* Factual Info */}
+      <div className={styles.responseSection}>
+        <p><strong>Factual Info:</strong></p>
+        {renderImage(answerData.factualData, "Factual Info Image")}
+      </div>
+
       
-      <div className={`${styles.dropdownContent} ${isFaqOpen ? styles.show : styles.hide}`}>
-        {contentData.map((item, index) => (
-          <div 
-            key={index} 
-            className={`${styles.questionBlock} ${selectedQuestion === item.question ? styles.activeQuestion : ''}`}
-          >
-            <span>{item.question}</span>
-            {/* Go Button */}
-            <button onClick={() => handleGoClick(item.question, item.answer)}>Go</button>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
 
-export default FaqDropdown;
+export default QuestionBlock;
