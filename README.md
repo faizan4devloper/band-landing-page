@@ -1,18 +1,9 @@
-ERROR in ./src/components/Pages/Job/FilePreviewModal.js 6:0-35
-Module not found: Error: Can't resolve 'react-pdf' in '/home/ec2-user/environment/citizen-advisor-v2/web-app/src/components/Pages/Job'
-ERROR in ./src/components/Pages/Job/FilePreviewModal.js 11:38-100
-Module not found: Error: Can't resolve 'pdfjs-dist/build/pdf.worker.min.js' in '/home/ec2-user/environment/citizen-advisor-v2/web-app/src/components/Pages/Job'
-
-
-
-
 import React, { useState, useEffect } from 'react';
-import * as pdfjs from 'react-pdf';
+import { GlobalWorkerOptions, getDocument } from 'pdfjs-dist';
 import styles from './FilePreviewModal.module.css';
 
 // PDF worker setup
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.js', import.meta.url).toString();
+GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const FilePreviewModal = ({ file, closeModal }) => {
   const [fileContent, setFileContent] = useState(null);
@@ -21,7 +12,7 @@ const FilePreviewModal = ({ file, closeModal }) => {
   // Function to extract text content from PDF
   const renderPdfText = async (file) => {
     const arrayBuffer = await file.arrayBuffer();
-    const pdf = await pdfjs.getDocument(arrayBuffer).promise;
+    const pdf = await getDocument(arrayBuffer).promise;
     let textContent = '';
 
     for (let i = 1; i <= pdf.numPages; i++) {
@@ -80,3 +71,17 @@ const FilePreviewModal = ({ file, closeModal }) => {
 };
 
 export default FilePreviewModal;
+
+
+
+.pdfTextPreview {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: left;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
