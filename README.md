@@ -39,13 +39,12 @@ const Sidebar = () => {
       {file && (
         <div className={styles.fileContainer}>
           <p className={styles.fileName} onClick={openModal}>
-            {file.name} {/* Clicking on file name will open modal */}
-          </p>
-          <FontAwesomeIcon
-            icon={faTimes}
+            {file.name}<FontAwesomeIcon  icon={faTimes}
             className={styles.removeIcon}
             onClick={removeFile}
           />
+          </p>
+          
         </div>
       )}
 
@@ -98,7 +97,7 @@ export default Sidebar;
   align-items: center;
   justify-content: space-between;
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 12px;
   color: #333;
   cursor: pointer;
   border: 1px solid #f0f0f0;
@@ -108,14 +107,16 @@ export default Sidebar;
 }
 
 .fileContainer:hover {
-  background-color: rgba(95, 30, 193, 0.1);
+background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  color: #fff;
+  
 }
 
 .fileName {
   flex: 1;
   text-align: left;
   margin-right: 8px;
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .uploadIcon {
@@ -123,11 +124,12 @@ export default Sidebar;
 }
 
 .removeIcon {
-  color: #888;
+  color: red;
+  font-size: 14px;
   cursor: pointer;
   transition: color 0.3s;
 }
 
 .removeIcon:hover {
-  color: #ff4d4f;
+  color: #fff;
 }
