@@ -1,18 +1,32 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import MainContent from './MainContent';
 import Chatbot from './../../../components/ChatBot/Chatbot';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome left arrow icon
 
 import styles from './EducationPage.module.css';
 
 const EducationPage = () => {
   const [activeTopic, setActiveTopic] = useState(1);
   
+  const handleBackClick = () => {
+    // Handle the back button functionality here (navigate to previous page or reset the state)
+    console.log('Back button clicked');
+  };
+
   return (
     <div className={styles.educationPage}>
       <Sidebar setActiveTopic={setActiveTopic} />
-      <MainContent activeTopic={activeTopic} />
-      <Chatbot/>
+      <div className={styles.mainContentWithBack}>
+        {/* Back button */}
+        <button className={styles.backButton} onClick={handleBackClick}>
+          <FontAwesomeIcon icon={faArrowLeft} /> Back
+        </button>
+        <MainContent activeTopic={activeTopic} />
+      </div>
+      <Chatbot />
     </div>
   );
 };
@@ -21,9 +35,6 @@ export default EducationPage;
 
 
 
-
-
-/* EducationPage.module.css */
 .educationPage {
   display: flex;
   padding: 0 60px;
@@ -31,42 +42,33 @@ export default EducationPage;
   overflow: hidden;
 }
 
-/* Sidebar.module.css */
-.sidebar {
-  width: 250px;
-  background-color: #f7f7f7;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
-
-.sidebar ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.sidebar li {
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.sidebar li.active {
-  background-color: #e2d9fb;
-}
-
-.sidebar li:hover {
-  background-color: #ddd;
-}
-
-.icon {
-  margin-right: 10px;
-}
-
-/* MainContent.module.css */
-.mainContent {
+.mainContentWithBack {
   flex: 1;
-  padding: 20px;
-  background-color: #fff;
+  position: relative; /* For positioning the back button */
+}
+
+.backButton {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background-color: #5f1ec1; /* Purple background */
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.backButton:hover {
+  background-color: #4a139c; /* Darker purple on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.backButton svg {
+  margin-right: 8px; /* Space between the icon and the text */
 }
