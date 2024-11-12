@@ -72,3 +72,25 @@ export default EducationPage;
 .backButton svg {
   margin-right: 8px; /* Space between the icon and the text */
 }
+
+
+
+
+
+
+
+
+import { useNavigate } from 'react-router-dom';
+
+const EducationPage = () => {
+  const navigate = useNavigate();
+  
+  const handleBackClick = () => {
+    navigate(-1); // Navigate back to the previous page
+  };
+  
+  return (
+    // JSX as above
+  );
+};
+
