@@ -1,101 +1,76 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Personas.module.css';
+import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome left arrow icon
+import styles from './Sidebar.module.css';
 
-import educationImg from '../assets/EducationLogo.png'; 
-import jobImg from '../assets/JobLogo.png'; 
-import healthImg from '../assets/HealthLogo.png'; 
+const Sidebar = () => {
+  const [fileName, setFileName] = useState(null);
 
-const personas = [
-  {
-    title: 'Education',
-    description: 'Streamlined Academic Pathfinding...',
-    themeColor: '#e6ebf5',
-    route: '/education',
-    img: educationImg,
-  },
-  {
-    title: 'Job',
-    description: 'Find job opportunities and career development tools.',
-    themeColor: '#e6ebf5',
-    route: '/job',
-    img: jobImg,
-  },
-  {
-    title: 'Health',
-    description: 'Manage health records and access health services.',
-    themeColor: '#e6ebf5',
-    route: '/health',
-    img: healthImg,
-  },
-];
-
-const Personas = () => {
-  const navigate = useNavigate();
-
-  const handleClick = (route) => {
-    navigate(route);
+  const onDrop = (acceptedFiles) => {
+    setFileName(acceptedFiles[0].name); // Store the file name of the first file
   };
 
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
   return (
-    <div className={styles.Personas}>
-      {/* Back Button */}
-      <button className={styles.backButton} onClick={() => navigate(-1)}>
-        <FontAwesomeIcon icon={faArrowLeft} className={styles.backIcon} />
-        Back
-      </button>
-
-      <h1 className={styles.gradientText}>Your Personas</h1>
-
-      <div className={styles.personaCards}>
-        {personas.map((persona, index) => (
-          <div
-            key={index}
-            className={styles.personaCard}
-            style={{ backgroundColor: persona.themeColor }}
-            onClick={() => handleClick(persona.route)}
-          >
-            <img src={persona.img} alt={persona.title} className={styles.personaImage} />
-            <h2 className={styles.cardHead}>{persona.title}</h2>
-            <p className={styles.description}>{persona.description}</p>
-            <div className={styles.rightIcon}>
-              <span className={styles.goText}>Explore</span>
-              <FontAwesomeIcon icon={faArrowRight} className={styles.arrow} />
-            </div>
-          </div>
-        ))}
+    <div className={styles.sidebar}>
+      <h2 className={styles.sidebarHeader}>Document Uploaded</h2>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon}/>
       </div>
+      {fileName && <p className={styles.fileName}>{fileName}</p>}
     </div>
   );
 };
 
-export default Personas;
+export default Sidebar;
 
 
 
+.sidebar {
+     width: 250px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    color: #333;
+    padding: 20px;
+    height: 100%;
+    overflow-y: hidden;
+}
 
-
-.backButton {
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  color: #4080f5;
+.sidebarHeader {
   font-size: 1rem;
-  font-weight: 600;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.dropzone {
+  border: 2px dashed #cccccc;
+  padding: 5px;
+  font-size: 12px;
   cursor: pointer;
-  margin-bottom: 1.5rem;
-  transition: color 0.3s ease, transform 0.3s ease;
+  text-align: center;
+  border-radius: 8px;
+  background: rgba(230, 235, 245, 1); /* HCLTech theme hover color */
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
 }
 
-.backButton:hover {
-  color: #572ac2;
-  transform: translateX(-5px);
+.dropzone:hover {
+  background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  color: #fff;
 }
 
-.backIcon {
-  margin-right: 0.5rem;
-  font-size: 1.2rem;
+.fileName {
+  margin-top: 10px;
+  font-size: 14px;
+  /*font-weight: bold;*/
+  text-align: center;
+  color: #333;
+}
+
+.uploadIcon{
+    font-size: 18px;
 }
