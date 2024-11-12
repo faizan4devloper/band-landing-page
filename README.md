@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpFromBracket, faTimes } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
 import FilePreviewModal from './FilePreviewModal';
-
 
 const Sidebar = () => {
   const [file, setFile] = useState(null);
@@ -24,6 +23,11 @@ const Sidebar = () => {
     setShowModal(false); // Close modal
   };
 
+  const removeFile = () => {
+    setFile(null); // Remove the file
+    closeModal(); // Close modal if open
+  };
+
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.sidebarHeader}>Document Uploaded</h2>
@@ -33,9 +37,16 @@ const Sidebar = () => {
         <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
       </div>
       {file && (
-        <p className={styles.fileName} onClick={openModal}>
-          {file.name} {/* Clicking on file name will open modal */}
-        </p>
+        <div className={styles.fileContainer}>
+          <p className={styles.fileName} onClick={openModal}>
+            {file.name} {/* Clicking on file name will open modal */}
+          </p>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.removeIcon}
+            onClick={removeFile}
+          />
+        </div>
       )}
 
       {/* Modal for preview */}
@@ -50,12 +61,12 @@ export default Sidebar;
 
 
 .sidebar {
-     width: 250px;
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    color: #333;
-    padding: 20px;
-    height: 100%;
-    overflow-y: hidden;
+  width: 250px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+  padding: 20px;
+  height: 100%;
+  overflow-y: hidden;
 }
 
 .sidebarHeader {
@@ -72,24 +83,51 @@ export default Sidebar;
   cursor: pointer;
   text-align: center;
   border-radius: 8px;
-  background: rgba(230, 235, 245, 1); /* HCLTech theme hover color */
+  background: rgba(230, 235, 245, 1);
   margin-bottom: 20px;
   transition: background-color 0.3s ease;
 }
 
 .dropzone:hover {
-  background:linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
   color: #fff;
 }
 
-.fileName {
+.fileContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 10px;
   font-size: 14px;
-  /*font-weight: bold;*/
-  text-align: center;
   color: #333;
+  cursor: pointer;
+  border: 1px solid #f0f0f0;
+  padding: 8px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
 }
 
-.uploadIcon{
-    font-size: 18px;
+.fileContainer:hover {
+  background-color: rgba(95, 30, 193, 0.1);
+}
+
+.fileName {
+  flex: 1;
+  text-align: left;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.uploadIcon {
+  font-size: 18px;
+}
+
+.removeIcon {
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.removeIcon:hover {
+  color: #ff4d4f;
 }
