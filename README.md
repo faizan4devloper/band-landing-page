@@ -1,159 +1,246 @@
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
+// import React from 'react';
+// import styles from './QuestionBlock.module.css';
 
-// Modal component for preview
-const FilePreviewModal = ({ file, closeModal }) => {
-  const [fileContent, setFileContent] = useState(null);
+// // Utility function to convert URLs in text to anchor tags
+// const parseLinks = (text) => {
+//   const urlPattern = /(https?:\/\/[^\s]+)/g;
+//   return text.split(urlPattern).map((part, index) =>
+//     urlPattern.test(part) ? (
+//       <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+//         {part}
+//       </a>
+//     ) : (
+//       part
+//     )
+//   );
+// };
 
-  const readFile = (file) => {
-    const reader = new FileReader();
+// const QuestionBlock = ({ question, answerData }) => {
+//   const renderResponsePoints = (responseArray) => {
+//     const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+//     return (
+//       <ul className={styles.responseList}>
+//         {arrayToRender.map((item, index) => (
+//           <li key={index} className={styles.responseItem}>
+//             {parseLinks(item)}
+//           </li>
+//         ))}
+//       </ul>
+//     );
+//   };
 
-    // For text files, read the contents
-    if (file.type.startsWith('text')) {
-      reader.onload = () => {
-        setFileContent(reader.result);
-      };
-      reader.readAsText(file);
-    }
-    // For image files, display the image preview
-    else if (file.type.startsWith('image')) {
-      setFileContent(URL.createObjectURL(file));
-    }
-    else {
-      setFileContent('Unable to preview this file type');
-    }
+//   const renderImage = (imageUrl, altText) =>
+//     imageUrl ? (
+//       <img src={imageUrl} alt={altText} className={styles.responseImage} />
+//     ) : null;
+
+//   return (
+//     <div className={styles.questionBlock}>
+//       <div className={styles.question}>{question}</div>
+
+//       {/* Textual Response */}
+//       <div className={styles.responseSection}>
+//         <p><strong>Textual Response:</strong></p>
+//         {renderResponsePoints(answerData.textualResponse)}
+//         {renderImage(answerData.textualImage, "Textual Response Image")}
+//       </div>
+
+//       {/* Citizen Experience */}
+//       <div className={styles.responseSection}>
+//         <p><strong>Citizen Experience:</strong></p>
+//         {renderImage(answerData.citizenReview, "Citizen Experience Image")}
+//       </div>
+
+//       {/* Factual Info */}
+//       <div className={styles.responseSection}>
+//         <p><strong>Factual Info:</strong></p>
+//         {renderImage(answerData.factualData, "Factual Info Image")}
+//       </div>
+
+      
+//     </div>
+//   );
+// };
+
+// export default QuestionBlock;
+
+
+
+
+import React from 'react';
+import styles from './QuestionBlock.module.css';
+
+// Utility function to convert URLs in text to anchor tags
+const parseLinks = (text) => {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, index) =>
+    urlPattern.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
+const QuestionBlock = ({ question, answerData }) => {
+  const renderResponsePoints = (responseArray) => {
+    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+    return (
+      <ul className={styles.responseList}>
+        {arrayToRender.map((item, index) => (
+          <li key={index} className={styles.responseItem}>
+            {parseLinks(item)}
+          </li>
+        ))}
+      </ul>
+    );
   };
 
-  // Read the file content when the modal is opened
-  React.useEffect(() => {
-    if (file) {
-      readFile(file);
-    }
-  }, [file]);
+  const renderContent = (content, altText) => {
+    // Display as an image if content is a URL; otherwise, treat as text
+    return content && content.startsWith('http') ? (
+      <img src={content} alt={altText} className={styles.responseImage} />
+    ) : (
+      <p>{content}</p>
+    );
+  };
 
   return (
-    <div className={styles.modalOverlay} onClick={closeModal}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <h2>File Preview</h2>
-        {/* Preview based on file type */}
-        {file && file.type.startsWith('text') && (
-          <pre>{fileContent}</pre>
-        )}
-        {file && file.type.startsWith('image') && (
-          <img src={fileContent} alt="preview" className={styles.imagePreview} />
-        )}
-        {file && !file.type.startsWith('text') && !file.type.startsWith('image') && (
-          <p>{fileContent}</p>
-        )}
-        <button onClick={closeModal} className={styles.closeButton}>Close</button>
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      {/* Textual Response */}
+      <div className={styles.responseSection}>
+        <p><strong>School Sources Insights:</strong></p>
+        {renderResponsePoints(answerData.textualResponse)}
+      </div>
+
+      {/* Citizen Experience (Display as text or image) */}
+      <div className={styles.responseSection}>
+        <p><strong>Citizen Speak:</strong></p>
+        {renderContent(answerData.citizenReview, "Citizen Experience")}
+      </div>
+
+      {/* Factual Info (Display as text or image) */}
+      <div className={styles.responseSection}>
+        <p><strong>Factual Content:</strong></p>
+        {renderContent(answerData.factualData, "Factual Info")}
       </div>
     </div>
   );
 };
 
-const Sidebar = () => {
-  const [file, setFile] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-
-  const onDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]); // Store the first file object
-  };
-
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  const openModal = () => {
-    setShowModal(true); // Show modal
-  };
-
-  const closeModal = () => {
-    setShowModal(false); // Close modal
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.sidebarHeader}>Document Uploaded</h2>
-      <div {...getRootProps()} className={styles.dropzone}>
-        <input {...getInputProps()} />
-        <p>Drag & Drop, or click to select files</p>
-        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
-      </div>
-      {file && (
-        <p className={styles.fileName} onClick={openModal}>
-          {file.name} {/* Clicking on file name will open modal */}
-        </p>
-      )}
-
-      {/* Modal for preview */}
-      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
-    </div>
-  );
-};
-
-export default Sidebar;
+export default QuestionBlock;
 
 
 
-
-/* Modal Overlay */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+.questionBlock {
+  display: grid;
+  grid-template-areas:
+    "question question"
+    "leftSection rightSection"
+    "bottomLeftSection bottomRightSection";
+  grid-gap: 20px 40px;
+  position: relative;
+  margin: 20px 0;
+  border-radius: 8px;
+  padding: 15px;
+  /*background-color: #ffffff;*/
+  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
 }
 
-/* Modal Content */
-.modalContent {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
+.question {
+  grid-area: question;
   text-align: center;
-  width: 600px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2a2a2a;
+  margin-bottom: 15px;
 }
 
-/* Image preview */
-.imagePreview {
+strong{
+  color:#572ac2;
+}
+
+.responseSection {
+  padding: 15px;
+  font-size: 0.8rem;
+  background-color: #f9f9f9;
+  border-left: 2px solid #0073e6;
+  border-radius: 6px;
+  position: relative;
+  max-height: 200px;
+  overflow-y: auto; /* Enable vertical scrolling */
   width: 100%;
-  max-width: 500px;
-  height: auto;
-  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.4s ease, padding 0.4s ease;
 }
 
-/* Close button style */
-.closeButton {
-  margin-top: 20px;
-  padding: 8px 16px;
-  background-color: #4080f5;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.responseSection::-webkit-scrollbar {
+  width: 6px;
 }
 
-.closeButton:hover {
-  background-color: #572ac2;
+.responseSection::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 95, 220, 1);
+  border-radius: 10px;
 }
 
-/* For text file content display */
-pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  text-align: left;
-  background-color: #f4f4f4;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 20px;
-  max-height: 400px;
+
+.responseSection.expanded {
   overflow-y: auto;
+}
+
+.responseList {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.responseItem {
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.link {
+  color: #0073e6;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #005bb5;
+}
+
+.responseImage{
+  max-width: 100%;
+  height: auto;
+  margin-top: 10px;
+}
+
+.seeMoreButton {
+  display: inline-block;
+  margin-top: 10px;
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+}
+
+.seeMoreButton:hover {
+  background-color: #005bb5;
+}
+
+.responseSection.expanded::-webkit-scrollbar {
+  width: 6px;
+}
+
+.responseSection.expanded::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 95, 220, 1);
+  border-radius: 10px;
 }
