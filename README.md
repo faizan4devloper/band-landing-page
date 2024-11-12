@@ -1,17 +1,53 @@
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons'; // Import FontAwesome left arrow icon
+import { faArrowUpFromBracket } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
 
 // Modal component for preview
-const FilePreviewModal = ({ fileName, closeModal }) => {
+const FilePreviewModal = ({ file, closeModal }) => {
+  const [fileContent, setFileContent] = useState(null);
+
+  const readFile = (file) => {
+    const reader = new FileReader();
+
+    // For text files, read the contents
+    if (file.type.startsWith('text')) {
+      reader.onload = () => {
+        setFileContent(reader.result);
+      };
+      reader.readAsText(file);
+    }
+    // For image files, display the image preview
+    else if (file.type.startsWith('image')) {
+      setFileContent(URL.createObjectURL(file));
+    }
+    else {
+      setFileContent('Unable to preview this file type');
+    }
+  };
+
+  // Read the file content when the modal is opened
+  React.useEffect(() => {
+    if (file) {
+      readFile(file);
+    }
+  }, [file]);
+
   return (
     <div className={styles.modalOverlay} onClick={closeModal}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <h2>File Preview</h2>
-        <p>Preview for: {fileName}</p>
-        {/* You can add more file-specific preview logic here, e.g., image preview */}
+        {/* Preview based on file type */}
+        {file && file.type.startsWith('text') && (
+          <pre>{fileContent}</pre>
+        )}
+        {file && file.type.startsWith('image') && (
+          <img src={fileContent} alt="preview" className={styles.imagePreview} />
+        )}
+        {file && !file.type.startsWith('text') && !file.type.startsWith('image') && (
+          <p>{fileContent}</p>
+        )}
         <button onClick={closeModal} className={styles.closeButton}>Close</button>
       </div>
     </div>
@@ -19,11 +55,11 @@ const FilePreviewModal = ({ fileName, closeModal }) => {
 };
 
 const Sidebar = () => {
-  const [fileName, setFileName] = useState(null);
-  const [showModal, setShowModal] = useState(false); // State for modal visibility
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const onDrop = (acceptedFiles) => {
-    setFileName(acceptedFiles[0].name); // Store the file name of the first file
+    setFile(acceptedFiles[0]); // Store the first file object
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -44,14 +80,14 @@ const Sidebar = () => {
         <p>Drag & Drop, or click to select files</p>
         <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
       </div>
-      {fileName && (
+      {file && (
         <p className={styles.fileName} onClick={openModal}>
-          {fileName} {/* Clicking on file name will open modal */}
+          {file.name} {/* Clicking on file name will open modal */}
         </p>
       )}
 
       {/* Modal for preview */}
-      {showModal && <FilePreviewModal fileName={fileName} closeModal={closeModal} />}
+      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
     </div>
   );
 };
@@ -81,8 +117,16 @@ export default Sidebar;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
-  width: 400px;
+  width: 600px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Image preview */
+.imagePreview {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+  margin-top: 20px;
 }
 
 /* Close button style */
@@ -99,4 +143,17 @@ export default Sidebar;
 
 .closeButton:hover {
   background-color: #572ac2;
+}
+
+/* For text file content display */
+pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: left;
+  background-color: #f4f4f4;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
 }
