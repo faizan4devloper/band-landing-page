@@ -138,29 +138,3 @@ const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
 };
 
 export default MainContent;
-
-
-
-/* Style for the PDF link mask */
-.pdfLink {
-  text-decoration: none;
-  background-color: #0073e6;
-  color: #fff;
-  padding: 8px 12px;
-  border-radius: 5px;
-  display: inline-block;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
-  transition: background-color 0.3s, color 0.3s;
-}
-
-.pdfLink:hover {
-  background-color: #005bb5;
-  color: #fff;
-}
-
-.pdfLink:focus {
-  outline: none;
-  box-shadow: 0 0 5px #005bb5;
-}
