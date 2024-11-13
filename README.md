@@ -1,64 +1,70 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import ClipLoader from 'react-spinners/ClipLoader'; // Import the spinner
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+import FilePreviewModal from './FilePreviewModal';
 
-import styles from './App.module.css';
-import Personas from './components/Personas/Personas';
-import EducationPage from './components/Pages/Education/EducationPage';
-import JobPage from './components/Pages/Job/JobPage';
-import HealthPage from './components/Pages/Health/HealthPage';
-import LoginPage from './components/Login/LoginPage';
-import Header from './components/Header/Header';
-import store from './redux/store'; 
-import { AuthProvider } from './context/AuthContext';
+const Sidebar = () => {
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+const navigate = useNavigate();
 
-function App() {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const dispatch = useDispatch();
-
-  const [loading, setLoading] = useState(true); // Loading state
-
-  // Simulate loading (e.g., authentication check) on initial load
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 1000); // Adjust timing as needed
-  }, []);
-
-  return (
-    <Provider store={store}>
-      <AuthProvider>
-        <Router>
-          {/* Loader at the top of all content */}
-          {loading && (
-            <div className={styles.topLoader}>
-              <ClipLoader color="#0073e6" loading={loading} size={40} />
-            </div>
-          )}
-          {!loading && <Header />}
-          <div className={styles.App}>
-            {!loading && (
-              <Routes>
-                <Route
-                  path="/"
-                  element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />}
-                />
-                {isAuthenticated ? (
-                  <>
-                    <Route path="/personas" element={<Personas />} />
-                    <Route path="/education" element={<EducationPage />} />
-                    <Route path="/job" element={<JobPage />} />
-                    <Route path="/health" element={<HealthPage />} />
-                  </>
-                ) : (
-                  <Route path="*" element={<LoginPage setIsAuthenticated={() => dispatch({ type: 'LOGIN' })} />} />
-                )}
-              </Routes>
-            )}
-          </div>
-        </Router>
-      </AuthProvider>
-    </Provider>
-  );
+const handleBackClick = ()=>{
+  navigate(-1);
 }
 
-export default App;
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]); // Store the first file object
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const openModal = () => {
+    setShowModal(true); // Show modal
+  };
+
+  const closeModal = () => {
+    setShowModal(false); // Close modal
+  };
+
+  const removeFile = () => {
+    setFile(null); // Remove the file
+    closeModal(); // Close modal if open
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <button className={styles.backButton} onClick={handleBackClick}>
+          <FontAwesomeIcon icon={faArrowLeft} />
+        </button>
+      <h3 className={styles.sidebarHeader}>Document Uploaded</h3>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
+      </div>
+      {file && (
+        <div className={styles.fileContainer}>
+          <p className={styles.fileName} onClick={openModal}>
+            {file.name}
+          </p>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.removeIcon}
+            onClick={removeFile}
+          />
+        </div>
+      )}
+
+      {/* Modal for preview */}
+      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
+    </div>
+  );
+};
+
+export default Sidebar;
+
+
+
