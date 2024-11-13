@@ -1,94 +1,166 @@
-<section className={styles.section}>
-  <p className={styles.sectionHead}>Success Stories</p>
-  {Object.keys(data.success_stories).length > 0 ? (
-    <ul>
-      {Object.keys(data.success_stories).map((storyKey, index) => (
-        <li key={index} className={styles.successStoryCardWrapper}>
-          <a
-            href={data.success_stories[storyKey]?.pdf_link || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.successStoryCard}
-          >
-            <div className={styles.maskEffect}>
-              <strong>{storyKey}:</strong> {JSON.stringify(data.success_stories[storyKey]?.content)}
-            </div>
-          </a>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No success stories available</p>
-  )}
-</section>
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { PropagateLoader } from 'react-spinners';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
+
+const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
+  const [data, setData] = useState({
+    job_postings: '',
+    resume_highlights: '',
+    existing_skills: '',
+    suggested_skills: '',
+    success_stories: {},
+  });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (clearData) {
+      setData({
+        job_postings: '',
+        resume_highlights: '',
+        existing_skills: '',
+        suggested_skills: '',
+        success_stories: {},
+      });
+    }
+  }, [clearData]);
+
+  useEffect(() => {
+    if (isFileUploaded && resumeIdentifier) {
+      const fetchData = async () => {
+        setLoading(true);
+
+        try {
+          const response = await axios.post(
+            'dummy',  // Replace with your actual API URL
+            { resume_identifier: resumeIdentifier },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            }
+          );
+
+          console.log('API Response:', response.data);
+
+          const responseBody = response.data.body ? JSON.parse(response.data.body) : response.data;
+          
+          console.log(responseBody)
+
+          setData({
+            job_postings: responseBody.job_postings || '',
+            resume_highlights: responseBody.resume_highlights || '',
+            existing_skills: responseBody.existing_skills || '',
+            suggested_skills: responseBody.suggested_skills || '',
+            success_stories: responseBody.success_stories || {},
+          });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [isFileUploaded, resumeIdentifier]);
+
+  if (loading) {
+    return (
+      <div className={styles.spinnerContainer}>
+        <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.mainContent}>
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Existing Skills</p>
+        <p>{data.existing_skills || 'No skills information available'}</p>
+      </section>
+      
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Job Postings</p>
+        {data.job_postings ? (
+          <ol className={styles.jobUrlList}>
+            <li>
+              <a href={data.job_postings} target="_blank" rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faLink} className={styles.icon} /> View Job
+              </a>
+            </li>
+          </ol>
+        ) : (
+          <p>No job URL available</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Resume Highlights</p>
+        <p>{data.resume_highlights || 'No resume summary available'}</p>
+      </section>
+
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Success Stories</p>
+        {Object.keys(data.success_stories).length > 0 ? (
+          <ul>
+            {Object.keys(data.success_stories).map((storyKey, index) => (
+              <li key={index}>
+                <strong>{storyKey}:</strong> 
+                {data.success_stories[storyKey].pdfLink ? (
+                  <a 
+                    href={data.success_stories[storyKey].pdfLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.pdfLink}
+                  >
+                    Read PDF
+                  </a>
+                ) : (
+                  <p>No PDF link available</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No success stories available</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Suggested Skills</p>
+        <p>{data.suggested_skills || 'No skill suggestions available'}</p>
+      </section>
+    </div>
+  );
+};
+
+export default MainContent;
 
 
 
-
-
-
-
-
-/* Container for the success story cards */
-.successStoryCardWrapper {
-  position: relative;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-/* Mask effect that appears on hover */
-.successStoryCard {
-  position: relative;
-  background: #f1f8ff;
-  padding: 10px;
-  border-radius: 8px;
-  border-left: 4px solid #0f5fdc;
-  transition: transform 0.3s ease;
-  overflow: hidden;
-}
-
-.successStoryCard .maskEffect {
-  position: relative;
-  z-index: 1;
-}
-
-/* The overlay effect that covers the card */
-.successStoryCard:hover::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 2;
-}
-
-.successStoryCard:hover {
-  transform: scale(1.05);
-}
-
-.successStoryCard a {
+/* Style for the PDF link mask */
+.pdfLink {
   text-decoration: none;
-  color: inherit;
-}
-
-.successStoryCard a:hover {
-  color: inherit;
-}
-
-/* Styling for the success story link */
-.successStoryCard a {
-  color: #0f5fdc;
-  font-weight: bold;
-  text-decoration: none;
-  border: 1px solid #0f5fdc;
-  border-radius: 6px;
+  background-color: #0073e6;
+  color: #fff;
   padding: 8px 12px;
+  border-radius: 5px;
+  display: inline-block;
+  font-weight: bold;
+  text-align: center;
+  margin-top: 10px;
   transition: background-color 0.3s, color 0.3s;
 }
 
-.successStoryCard a:hover {
-  background-color: #0f5fdc;
-  color: white;
+.pdfLink:hover {
+  background-color: #005bb5;
+  color: #fff;
+}
+
+.pdfLink:focus {
+  outline: none;
+  box-shadow: 0 0 5px #005bb5;
 }
