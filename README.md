@@ -1,3 +1,31 @@
+import React from 'react';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import Chatbot from './ChatBot/Chatbot';
+
+import styles from './JobPage.module.css';
+
+const JobPage = () => {
+  return (
+    <div className={styles.jobPage}>
+      <Sidebar />
+      <MainContent />
+    </div>
+  );
+};
+
+export default JobPage;
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PropagateLoader from 'react-spinners/PropagateLoader';
