@@ -1,6 +1,20 @@
-Key Skills: - Data Engineering: SQL, ETL (Extract, Transform, Load), Apache Spark, Hadoop, Airflow - Big Data & Cloud:
-AWS
-(Redshift, S3), Google BigQuery, Azure Data Lake - Programming Languages: Python, SQL,
-Scala
-- Data Science & Machine Learning: Python, Pandas, Scikit - Learn, Data Visualization - Tools & Frameworks: Jupyter Notebooks, Docker,
-Gi
+const parseSkills = (text) => {
+  if (!text) return [];
+
+  // Convert keywords to lowercase for case-insensitive matching
+  const lowerCaseKeywords = skillKeywords.map((keyword) => keyword.toLowerCase());
+
+  // Split text based on word boundaries and punctuation
+  return text.split(/[\s,.-]+/).map((word, index) => {
+    const normalizedWord = word.trim().toLowerCase();
+
+    if (lowerCaseKeywords.includes(normalizedWord)) {
+      return (
+        <span key={index} className={styles.skillBadge}>
+          {word} {/* Display original word with correct case */}
+        </span>
+      );
+    }
+    return `${word} `;
+  });
+};
