@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -15,7 +16,7 @@ const MainContent = () => {
     const fetchData = async () => {
       try {
         const response = await axios.post(
-          'DUMMY',  // Replace with your actual API URL
+          'https://7dyehbe7de.execute-api.us-east-1.amazonaws.com/emp/cit-adv2',  // Replace with your actual API URL
           { resume_identifier: "scenario_1" },
           {
             headers: {
@@ -74,7 +75,7 @@ const MainContent = () => {
       <section className={styles.section}>
         <h3>Skills</h3>
         {data.skills ? (
-          <p>{data.skills}</p>  {/* Display the skills string directly */}
+          <p>{data.skills}</p> 
         ) : (
           <p>No skills available</p>
         )}
@@ -83,7 +84,7 @@ const MainContent = () => {
       <section className={styles.section}>
         <h3>Skill Suggestions</h3>
         {data.skillsuggestion ? (
-          <p>{data.skillsuggestion}</p>  {/* Display the skillsuggestion string directly */}
+          <p>{data.skillsuggestion}</p>  
         ) : (
           <p>No skill suggestions available</p>
         )}
@@ -108,3 +109,67 @@ const MainContent = () => {
 };
 
 export default MainContent;
+
+
+
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+import FilePreviewModal from './FilePreviewModal';
+
+const Sidebar = () => {
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleBackClick = () => {
+    navigate(-1);
+  };
+
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]);
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+  const removeFile = () => {
+    setFile(null);
+    closeModal();
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <button className={styles.backButton} onClick={handleBackClick} aria-label="Go back">
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h3 className={styles.sidebarHeader}>Document Uploaded</h3>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} aria-label="File dropzone" />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} aria-label="Upload icon" />
+      </div>
+      {file && (
+        <div className={styles.fileContainer}>
+          <p className={styles.fileName} onClick={openModal} role="button" tabIndex="0">
+            {file.name}
+          </p>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.removeIcon}
+            onClick={removeFile}
+            aria-label="Remove file"
+          />
+        </div>
+      )}
+
+      {showModal && <FilePreviewModal file={file} closeModal={closeModal} />}
+    </div>
+  );
+};
+
+export default Sidebar;
