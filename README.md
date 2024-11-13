@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Sidebar from './Sidebar';
 import styles from './MainContent.module.css';
 
 const MainContent = () => {
@@ -12,32 +11,37 @@ const MainContent = () => {
     crossSkilling: [],
   });
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.post(
-        'dummy', // Replace with actual API endpoint
-        { resume_identifier: "scenario_1" },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      console.log("API Response:", response.data);
-      setData(response.data); // Update the data in state after fetching
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post(
+          'dummy',  // Replace with your actual API URL
+          { resume_identifier: "scenario_1" },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+        console.log("API Response:", response.data); // Log response to verify structure
 
-  // Trigger data fetch after document upload
-  const handleFileUpload = () => {
-    fetchData(); // Call fetchData when file is uploaded
-  };
+        // Ensure the response data is correctly formatted, defaulting to empty arrays if missing
+        setData({
+          techSkills: response.data.techSkills || [],
+          jobPostings: response.data.jobPostings || [],
+          similarProfiles: response.data.similarProfiles || [],
+          immigrationInsights: response.data.immigrationInsights || [],
+          crossSkilling: response.data.crossSkilling || [],
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div className={styles.mainContent}>
-      <Sidebar onFileUpload={handleFileUpload} />
       <section className={styles.section}>
         <h3>Tech Skills, Certifications, Awards</h3>
         <ul>
@@ -46,18 +50,24 @@ const MainContent = () => {
           ))}
         </ul>
       </section>
+
       <section className={styles.section}>
         <h3>Top 5 Job Postings</h3>
         <ul>
           {data.jobPostings?.map((job, index) => (
             <li key={index}>
-              <a href={job.link} target="_blank" rel="noopener noreferrer">
-                {job.title}
-              </a>
+              {job.link ? (
+                <a href={job.link} target="_blank" rel="noopener noreferrer">
+                  {job.title}
+                </a>
+              ) : (
+                <span>{job.title}</span>  // Fallback if no link
+              )}
             </li>
           ))}
         </ul>
       </section>
+
       <section className={styles.section}>
         <h3>Similar Profiles - Job Recommendations</h3>
         <ul>
@@ -66,6 +76,7 @@ const MainContent = () => {
           ))}
         </ul>
       </section>
+
       <section className={styles.section}>
         <h3>Immigration and Visa Insights</h3>
         <ul>
@@ -74,6 +85,7 @@ const MainContent = () => {
           ))}
         </ul>
       </section>
+
       <section className={styles.section}>
         <h3>Cross Skilling Recommendations</h3>
         <ul>
@@ -94,6 +106,7 @@ export default MainContent;
 
 
 
+
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
@@ -102,7 +115,7 @@ import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-so
 import styles from './Sidebar.module.css';
 import FilePreviewModal from './FilePreviewModal';
 
-const Sidebar = ({ onFileUpload }) => {
+const Sidebar = () => {
   const [file, setFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
@@ -113,7 +126,6 @@ const Sidebar = ({ onFileUpload }) => {
 
   const onDrop = (acceptedFiles) => {
     setFile(acceptedFiles[0]);
-    onFileUpload(); // Trigger the data fetch after file upload
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
