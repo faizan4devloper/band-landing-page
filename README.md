@@ -16,7 +16,7 @@ const MainContent = () => {
     const fetchData = async () => {
       try {
         const response = await axios.post(
-          'https://7dyehbe7de.execute-api.us-east-1.amazonaws.com/emp/cit-adv2',  // Replace with your actual API URL
+          'dummy',  // Replace with your actual API URL
           { resume_identifier: "scenario_1" },
           {
             headers: {
