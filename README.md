@@ -5,11 +5,6 @@ import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
-const skillKeywords = [
-  'Python', 'SQL', 'AWS', 'ETL', 'Apache Spark', 'Hadoop', 'Airflow', 'BigQuery',
-  'Azure Data Lake', 'Scala', 'Pandas', 'Scikit-Learn', 'Docker', 'Git'
-];
-
 const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
   const [data, setData] = useState({
     job_postings: '',
@@ -19,6 +14,9 @@ const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
     success_stories: {},
   });
   const [loading, setLoading] = useState(false);
+
+  // List of keywords to be highlighted
+  const skillKeywords = ["SQL", "Python", "Scala", "AWS", "Redshift", "S3", "BigQuery", "Data Lake", "Docker", "Git", "Jupyter Notebooks"];
 
   useEffect(() => {
     if (clearData) {
@@ -72,8 +70,21 @@ const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
     }
   }, [isFileUploaded, resumeIdentifier]);
 
-  const filterSkills = (text) => {
-    return skillKeywords.filter(keyword => text.includes(keyword));
+  // Function to parse and highlight skills in existing skills text
+  const parseSkills = (text) => {
+    if (!text) return [];
+
+    return text.split(/(\s|-)/).map((word, index) => {
+      const trimmedWord = word.trim();
+      if (skillKeywords.includes(trimmedWord)) {
+        return (
+          <span key={index} className={styles.skillBadge}>
+            {trimmedWord}
+          </span>
+        );
+      }
+      return `${word} `;
+    });
   };
 
   if (loading) {
@@ -90,9 +101,7 @@ const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
         <p className={styles.sectionHead}>Existing Skills</p>
         <div className={styles.skillsList}>
           {data.existing_skills ? (
-            filterSkills(data.existing_skills).map((skill, index) => (
-              <span key={index} className={styles.skillBadge}>{skill}</span>
-            ))
+            parseSkills(data.existing_skills)
           ) : (
             <p>No skills information available</p>
           )}
