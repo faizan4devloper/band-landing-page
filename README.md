@@ -1,112 +1,154 @@
-/* Style the overall container */
-.mainContent {
-  flex: 1;
-  padding: 20px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  overflow-y: auto;
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #0073e6 #f1f1f1; /* For Firefox */
-}
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import PropagateLoader from 'react-spinners/PropagateLoader';
+import FaqDropdown from './FaqDropdown';
+import QuestionBlock from './QuestionBlock';
+import styles from './MainContent.module.css';
 
-/* Style the section container */
-.section {
-  padding: 15px;
-  font-size: 0.8rem;
-  background-color: #f9f9f9;
-  border-left: 2px solid #0073e6;
-  border-radius: 6px;
-  height: 280px;
-  overflow-y: auto;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #0073e6 #f1f1f1; /* For Firefox */
-}
+const MainContent = ({ activeTopic }) => {
+  const [questions, setQuestions] = useState([]); // Dynamically loaded questions for the topic
+  const [contentData, setContentData] = useState([]); // Stores answers for each question
+  const [loading, setLoading] = useState(true);
+  const [selectedData, setSelectedData] = useState({});
 
-/* Hover effect on section */
-.section:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
+  // Define the questions based on the active topic
+  const topicQuestions = {
+    1: [
+      { id: 'Q1', text: 'What are the last five years key statistics for Serpell Primary School?' },
+      { id: 'Q2', text: 'What are the admission criteria and process for Serpell Primary School?' },
+      { id: 'Q3', text: 'How does the school perform in standardized tests and assessments?' },
+    ],
+    2: [
+      { id: 'Q4', text: 'What’s the curriculum at Serpell Primary School?' },
+      { id: 'Q5', text: 'How is the curriculum structured across different year levels?' },
+      { id: 'Q6', text: 'What specialist programs are offered at Serpell Primary School?' },
+    ],
+    3: [
+      { id: 'Q7', text: 'How does the school engage with the broader community?' },
+      { id: 'Q8', text: 'How can parents get involved in the school community?' },
+      { id: 'Q9', text: 'What support services are available for students with special needs at Serpell Primary School?' },
+    ],
+  };
 
-h3 {
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #333;
-}
+ 
+  
+const fetchDataForQuestion = async (question) => {
+  const payload = {
+    question_id: question.id,
+    question: question.text,
+  };
 
-ul {
-  padding-left: 0;
-  list-style-type: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
+  try {
+    const response = await axios.post(
+      'dummy', // Replace with your actual API endpoint
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    
+    console.log('API Response:', response.data)
 
-.skillList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
+    // Check if `response.data.body` is already an object or a JSON string
+    const parsedResponse = typeof response.data.body === 'string'
+      ? JSON.parse(response.data.body)
+      : response.data.body;
 
-.skillItem {
-  background-color: #0073e6;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-}
+    const llmAnswer = parsedResponse.answer || '';
+    const formattedAnswer = llmAnswer.split('-').map(line => line.trim()).filter(line => line);
 
-.skillItem:hover {
-  background-color: #005bb5;
-  transform: scale(1.05);
-}
+    const factualData = parsedResponse.factualData && parsedResponse.factualData.startsWith("http")
+      ? parsedResponse.factualData
+      : 'No factual information available.';
+      
+        console.log('Factual Image URL:', factualData);  // Add this line
+      
 
-/* Custom Scrollbar for Webkit Browsers (Chrome, Safari) */
-.section::-webkit-scrollbar {
-  width: 8px;
-}
+    const citizenReview = parsedResponse.citizenReview && parsedResponse.citizenReview.startsWith("http")
+      ? parsedResponse.citizenReview
+      : 'No citizen experience information available.';
 
-.section::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: formattedAnswer.length > 0 ? formattedAnswer : ['No Answer Available'],
+        factualData: factualData,
+        citizenReview: citizenReview,
+        contextual: parsedResponse.contextual || 'No contextual information available.',
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching data for question:", error);
+    return {
+      question: question.text,
+      answer: {
+        textualResponse: ['No Answer Available'],
+        factualData: 'No factual information available.',
+        citizenReview: 'No citizen experience information available.',
+        contextual: 'No contextual information available.',
+      },
+    };
+  }
+};
 
-.section::-webkit-scrollbar-thumb {
-  background-color: #0073e6;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
 
-.section::-webkit-scrollbar-thumb:hover {
-  background-color: #005bb5;
-}
+  // Fetch all data for the selected topic
+  const fetchAllData = async (topicId) => {
+    setLoading(true);
+    try {
+      const questionsList = topicQuestions[topicId] || [];
+      const formattedData = await Promise.all(
+        questionsList.map(fetchDataForQuestion)
+      );
+      setContentData(formattedData);
+    } catch (error) {
+      console.error("Error fetching data for all questions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-/* For the mainContent scroll */
-.mainContent::-webkit-scrollbar {
-  width: 8px;
-}
+  const handleQuestionSelect = (question, answer) => {
+    setSelectedData((prev) => ({
+      ...prev,
+      [activeTopic]: {
+        question,
+        answer,
+      },
+    }));
+  };
 
-.mainContent::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
+  useEffect(() => {
+    fetchAllData(activeTopic);
+    setSelectedData((prev) => ({ ...prev, [activeTopic]: null }));
+  }, [activeTopic]);
 
-.mainContent::-webkit-scrollbar-thumb {
-  background-color: #0073e6;
-  border-radius: 10px;
-  border: 2px solid #f1f1f1;
-}
+  const selectedQuestionData = selectedData[activeTopic] || {};
 
-.mainContent::-webkit-scrollbar-thumb:hover {
-  background-color: #005bb5;
-}
+  return (
+    <div className={styles.mainContent}>
+      {loading ? (
+        <div className={styles.loaderWrapper}>
+          <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={22} />
+        </div>
+      ) : (
+        <>
+          <FaqDropdown
+            contentData={contentData}
+            onQuestionSelect={handleQuestionSelect}
+            selectedQuestion={selectedQuestionData.question}
+            selectedAnswer={selectedQuestionData.answer}
+          />
+          {selectedQuestionData.question && selectedQuestionData.answer && (
+            <div className={styles.selectedQuestionBlock}>
+              <QuestionBlock
+                question={selectedQuestionData.question}
+                answerData={selectedQuestionData.answer}
+              />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
 
-/* For Firefox scrollbar styling */
-.scrollbarCustom {
-  scrollbar-width: thin;
-  scrollbar-color: #0073e6 #f1f1f1;
-}
+export default MainContent;
