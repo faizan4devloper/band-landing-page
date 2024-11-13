@@ -1,154 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { PropagateLoader } from 'react-spinners';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
+existing skill:-
+Jordan Michaels' key skills include: - Data Engineering: SQL
+ETL (Extract
+Transform
+Load)
+Apache Spark
+Hadoop
+Airflow - Big Data & Cloud: AWS (Redshift
+S3)
+Google BigQuery
+Azure Data Lake - Programming Languages: Python
+SQL
+Scala - Data Science & Machine Learning: Python
+Pandas
+Scikit-Learn
+Data Visualization - Tools & Frameworks: Jupyter Notebooks
+Docker
+Git Jordan has experience as a Data Engineer
+building and optimizing ETL pipelines
+designing and maintaining scalable data warehouses
+and developing data workflows using Apache Airflow. They have also gained experience as a Data Scientist intern
+building predictive models
+conducting exploratory data analysis
+and deploying machine learning models into production. Jordan's educational background includes a Master of Data Science from the University of Sydney and a Bachelor of Computer Science from the University of New South Wales. They also hold certifications in AWS Certified Solutions Architect
+Google Professional Data Engineer
+and Certified Data Scientist (CDS).
 
-// Define a list of skills to highlight
-const knownSkills = ["programming", "aws", "react", "javascript", "python", "data analysis"];
 
-const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
-  const [data, setData] = useState({
-    job_postings: '',
-    resume_highlights: '',
-    existing_skills: '',
-    suggested_skills: '',
-    success_stories: {},
-  });
-  const [loading, setLoading] = useState(false);
+Suggested Skills:
 
-  useEffect(() => {
-    if (clearData) {
-      setData({
-        job_postings: '',
-        resume_highlights: '',
-        existing_skills: '',
-        suggested_skills: '',
-        success_stories: {},
-      });
-    }
-  }, [clearData]);
-
-  useEffect(() => {
-    if (isFileUploaded && resumeIdentifier) {
-      const fetchData = async () => {
-        setLoading(true);
-
-        try {
-          const response = await axios.post(
-            'dummy',  // Replace with your actual API URL
-            { resume_identifier: resumeIdentifier },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              }
-            }
-          );
-
-          const responseBody = response.data.body ? JSON.parse(response.data.body) : response.data;
-          
-          setData({
-            job_postings: responseBody.job_postings || '',
-            resume_highlights: responseBody.resume_highlights || '',
-            existing_skills: responseBody.existing_skills || '',
-            suggested_skills: responseBody.suggested_skills || '',
-            success_stories: responseBody.success_stories || {},
-          });
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    }
-  }, [isFileUploaded, resumeIdentifier]);
-
-  const filterSkills = (skillsString) => {
-    return skillsString.split(',')
-      .map(skill => skill.trim())
-      .filter(skill => knownSkills.includes(skill.toLowerCase()));
-  };
-
-  const existingSkills = filterSkills(data.existing_skills);
-  const suggestedSkills = filterSkills(data.suggested_skills);
-
-  if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-        <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.mainContent}>
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Existing Skills</p>
-        <div className={styles.skillsList}>
-          {existingSkills.length > 0 ? (
-            existingSkills.map((skill, index) => (
-              <span key={index} className={styles.skillBadge}>{skill}</span>
-            ))
-          ) : (
-            <p>No skills information available</p>
-          )}
-        </div>
-      </section>
-      
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Job Postings</p>
-        {data.job_postings ? (
-          <ol className={styles.jobUrlList}>
-            <li>
-              <a href={data.job_postings} target="_blank" rel="noopener noreferrer">
-                <FontAwesomeIcon icon={faLink} className={styles.icon} /> View Job
-              </a>
-            </li>
-          </ol>
-        ) : (
-          <p>No job URL available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Resume Highlights</p>
-        <div className={styles.resumeHighlights}>
-          {data.resume_highlights || 'No resume summary available'}
-        </div>
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Success Stories</p>
-        {Object.keys(data.success_stories).length > 0 ? (
-          <ul className={styles.successStoriesList}>
-            {Object.keys(data.success_stories).map((storyKey, index) => (
-              <li key={index} className={styles.successStoryCard}>
-                <strong>{storyKey}:</strong> {JSON.stringify(data.success_stories[storyKey])}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No success stories available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Suggested Skills</p>
-        <div className={styles.suggestedSkillsList}>
-          {suggestedSkills.length > 0 ? (
-            suggestedSkills.map((skill, index) => (
-              <span key={index} className={styles.suggestedSkillBadge}>{skill}</span>
-            ))
-          ) : (
-            <p>No skill suggestions available</p>
-          )}
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default MainContent;
+To enhance your job prospects
+focus on developing expertise in advanced machine learning techniques (deep learning
+NLP
+reinforcement learning)
+MLOps and deployment (model deployment
+CI/CD)
+and practical business domain knowledge (finance
+healthcare
+e-commerce). These additional skills will complement your strong foundation in data engineering
+big data
+cloud technologies
+programming
+and data science/machine learning.
