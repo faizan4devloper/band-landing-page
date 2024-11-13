@@ -1,102 +1,173 @@
-/* QuestionBlock.module.css */
+Below is my code i have 4 sections in that component i remove the 4th section BottomRightSection and now that empty space look very bad i wanted the citizen speak cover 4th sections space with height or etc
+
+import React, { useState } from 'react';
+import styles from './QuestionBlock.module.css';
+import Modal from './ImageModal'; // Import the Modal component
+
+// Utility function to convert URLs in text to anchor tags
+const parseLinks = (text) => {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlPattern).map((part, index) =>
+    urlPattern.test(part) ? (
+      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
+        {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
+const QuestionBlock = ({ question, answerData }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageSrc, setImageSrc] = useState(null);
+
+  const handleImageClick = (src) => {
+    setImageSrc(src);
+    setIsModalOpen(true); // Open the modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Close the modal
+    setImageSrc(null); // Reset the image source
+  };
+
+  const renderResponsePoints = (responseArray) => {
+    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+    return (
+      <ul className={styles.responseList}>
+        {arrayToRender.map((item, index) => (
+          <li key={index} className={styles.responseItem}>
+            {parseLinks(item)}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderContent = (content, altText) => {
+    // Display as an image if content is a URL; otherwise, treat as text
+    return content && content.startsWith('http') ? (
+      <div className={styles.imageWrapper}>
+        
+      <img
+        src={content}
+        alt={altText}
+        className={styles.responseImage}
+        onClick={() => handleImageClick(content)} // Open modal on image click
+      />
+      <span className={styles.tooltip}>Click to View Larger</span>
+      </div>
+    ) : (
+      <p>{content}</p>
+    );
+  };
+
+  return (
+    <div className={styles.questionBlock}>
+      <div className={styles.question}>{question}</div>
+
+      {/* Textual Response */}
+      <div className={styles.responseSection}>
+        <p><strong>School Sources Insights:</strong></p>
+        {renderResponsePoints(answerData.textualResponse)}
+      </div>
+
+      {/* Citizen Experience (Display as text or image) */}
+      <div className={styles.responseSection}>
+        <p><strong>Citizen Speak:</strong></p>
+        {renderContent(answerData.citizenReview, "Citizen Experience")}
+      </div>
+
+      {/* Factual Info (Display as text or image) */}
+      <div className={styles.responseSection}>
+        <p><strong>Factual Content:</strong></p>
+        {renderContent(answerData.factualData, "Factual Info")}
+      </div>
+
+      {/* Modal for Image */}
+      <Modal isOpen={isModalOpen} closeModal={closeModal} imageSrc={imageSrc} altText="Modal Image" />
+    </div>
+  );
+};
+
+export default QuestionBlock;
+
+
+
+/* Wrapper for the image */
+.imageWrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Tooltip styles */
+.tooltip {
+  visibility: hidden;
+  position: absolute;
+  bottom: 100%; /* Position the tooltip above the image */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0s 0.3s; /* Smooth fade-in/out */
+  z-index: 1;
+}
+
+/* Show tooltip on hover */
+.imageWrapper:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s, visibility 0s;
+}
+
+/* Image styles */
+/*.responseImage {*/
+/*  max-width: 100%;*/
+/*  height: auto;*/
+/*  border-radius: 8px;*/
+/*  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);*/
+/*}*/
+
+/* You can also add hover effects for the image if needed */
+.responseImage:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
 
 .questionBlock {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Two equal columns for the first row */
-  grid-template-rows: auto 1fr; /* Auto height for the question, equal height for the second row */
   grid-template-areas:
     "question question"
-    "leftSection rightSection";
-  grid-gap: 20px;
+    "leftSection rightSection"
+    ;
+  grid-gap: 20px 40px;
+  position: relative;
   margin: 20px 0;
-  padding: 15px;
   border-radius: 8px;
-}
-
-.question {
-  grid-column: span 2; /* Span across both columns */
-  text-align: center;
-  font-size: 1.3rem;
-  font-weight: bold;
-  color: #2a2a2a;
-  margin-bottom: 15px;
+  padding: 15px;
+  /*background-color: #ffffff;*/
+  /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
 }
 
 .responseSection {
   padding: 15px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   background-color: #f9f9f9;
   border-left: 2px solid #0073e6;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
+  position: relative;
   max-height: 200px;
-}
-
-.leftSection {
-  grid-area: leftSection;
-}
-
-.rightSection {
-  grid-area: rightSection;
-}
-
-.responseList {
-  margin: 10px 0;
-  padding-left: 20px;
-}
-
-.responseItem {
-  margin-bottom: 8px;
-  font-size: 0.8rem;
-}
-
-.link {
-  color: #0073e6;
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.link:hover {
-  color: #005bb5;
-}
-
-.responseImage {
+  overflow-y: auto; /* Enable vertical scrolling */
   width: 100%;
-  max-width: 300px;
-  cursor: pointer;
-  border-radius: 6px;
-  margin-top: 10px;
-  transition: transform 0.3s;
-}
-
-.responseImage:hover {
-  transform: scale(1.05);
-}
-
-
-
-
-
-
-
-
-
-
-
-/* QuestionBlock.module.css */
-
-.questionBlock {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Three equal columns */
-  grid-template-rows: auto 1fr; /* Auto height for the question, equal height for sections */
-  grid-template-areas:
-    "question question question"
-    "leftSection middleSection rightSection";
-  grid-gap: 20px;
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: max-height 0.4s ease, padding 0.4s ease;
 }
 
 .question {
@@ -108,27 +179,25 @@
   margin-bottom: 15px;
 }
 
-.responseSection {
-  padding: 15px;
-  font-size: 0.9rem;
-  background-color: #f9f9f9;
-  border-left: 2px solid #0073e6;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+
+strong{
+  color:#572ac2;
+}
+
+
+.responseSection::-webkit-scrollbar {
+  width: 6px;
+}
+
+.responseSection::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 95, 220, 1);
+  border-radius: 10px;
+}
+
+
+.responseSection.expanded {
   overflow-y: auto;
-  max-height: 200px;
-}
-
-.leftSection {
-  grid-area: leftSection;
-}
-
-.middleSection {
-  grid-area: middleSection;
-}
-
-.rightSection {
-  grid-area: rightSection;
 }
 
 .responseList {
@@ -139,6 +208,7 @@
 .responseItem {
   margin-bottom: 8px;
   font-size: 0.8rem;
+  line-height: 1.6;
 }
 
 .link {
@@ -151,40 +221,34 @@
   color: #005bb5;
 }
 
-.responseImage {
-  width: 100%;
-  max-width: 300px;
-  cursor: pointer;
-  border-radius: 6px;
+.responseImage{
+  max-width: 100%;
+  height: auto;
   margin-top: 10px;
-  transition: transform 0.3s;
 }
 
-.responseImage:hover {
-  transform: scale(1.05);
+.seeMoreButton {
+  display: inline-block;
+  margin-top: 10px;
+  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
 }
 
+.seeMoreButton:hover {
+  background-color: #005bb5;
+}
 
+.responseSection.expanded::-webkit-scrollbar {
+  width: 6px;
+}
 
-
-
-
-
-
-import React from 'react';
-import styles from './ImageModal.module.css';
-
-const ImageModal = ({ isOpen, closeModal, imageSrc, altText }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className={styles.modalOverlay} onClick={closeModal}>
-      <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <img src={imageSrc} alt={altText} className={styles.modalImage} />
-        <button onClick={closeModal} className={styles.closeButton}>X</button>
-      </div>
-    </div>
-  );
-};
-
-export default ImageModal;
+.responseSection.expanded::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 95, 220, 1);
+  border-radius: 10px;
+}
