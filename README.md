@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
@@ -24,19 +23,12 @@ const MainContent = () => {
             }
           }
         );
-        console.log("API Response:", response.data); // Log response to verify structure
-
-        // Assuming response.data.body contains the actual response as a string
         let responseBody;
         if (response.data.body) {
           responseBody = JSON.parse(response.data.body); // Parse the body if it's a string
         } else {
-          responseBody = response.data;  // Fallback if body is not present
+          responseBody = response.data;
         }
-
-        console.log("Parsed Response Body:", responseBody); // Log to verify the parsed response
-
-        // Set state with the parsed data
         setData({
           joburl: responseBody.joburl || '',
           resume_summary: responseBody.resume_summary || '',
@@ -57,7 +49,11 @@ const MainContent = () => {
       <section className={styles.section}>
         <h3>Job URL</h3>
         {data.joburl ? (
-          <a href={data.joburl} target="_blank" rel="noopener noreferrer">{data.joburl}</a>
+          <ol className={styles.jobUrlList}>
+            <li>
+              <a href={data.joburl} target="_blank" rel="noopener noreferrer">1</a>
+            </li>
+          </ol>
         ) : (
           <p>No job URL available</p>
         )}
@@ -113,7 +109,7 @@ export default MainContent;
 
 
 
-
+/* MainContent.module.css */
 
 .mainContent {
   flex: 1;
@@ -122,32 +118,21 @@ export default MainContent;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   overflow-y: auto;
-  /*background-color: #f0f4f8;*/
 }
 
 .section {
-  /*background-color: #ffffff;*/
-  /*padding: 20px;*/
-  /*border-radius: 8px;*/
-  /*box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);*/
-  
-    padding: 15px;
-    font-size: 0.8rem;
-    background-color: #f9f9f9;
-    border-left: 2px solid #0073e6;
-    border-radius: 6px;
-    /*position: relative;*/
-    max-height: 200px;
-    overflow-y: auto;
-    /*width: 100%;*/
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    /*transition: max-height 0.4s ease, padding 0.4s ease;*/
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-
+  padding: 15px;
+  font-size: 0.8rem;
+  background-color: #f9f9f9;
+  border-left: 2px solid #0073e6;
+  border-radius: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .section:hover {
-  /*transform: translateY(-5px);*/
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -176,4 +161,27 @@ a {
 
 a:hover {
   color: #005bb5;
+}
+
+/* New styles for job URL list */
+.jobUrlList {
+  padding-left: 0;
+  list-style-type: none;
+  margin: 0;
+}
+
+.jobUrlList li {
+  display: inline;
+  margin-right: 8px;
+}
+
+.jobUrlList a {
+  color: #0073e6;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.jobUrlList a:hover {
+  color: #005bb5;
+  text-decoration: underline;
 }
