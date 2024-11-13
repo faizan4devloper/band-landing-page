@@ -1,23 +1,47 @@
+import React, { useState } from 'react';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import Chatbot from './ChatBot/Chatbot';
+
+import styles from './JobPage.module.css';
+
+const JobPage = () => {
+  const [file, setFile] = useState(null);
+
+  const handleFileUpload = (uploadedFile) => {
+    setFile(uploadedFile);
+  };
+
+  return (
+    <div className={styles.jobPage}>
+      <Sidebar onFileUpload={handleFileUpload} />
+      <MainContent file={file} />
+    </div>
+  );
+};
+
+export default JobPage;
+
+
+
+
+
 
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.css';
 import FilePreviewModal from './FilePreviewModal';
 
-const Sidebar = () => {
+const Sidebar = ({ onFileUpload }) => {
   const [file, setFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
-
-  const handleBackClick = () => {
-    navigate(-1);
-  };
 
   const onDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
+    const uploadedFile = acceptedFiles[0];
+    setFile(uploadedFile);
+    onFileUpload(uploadedFile);  // Pass the file up to the parent component
   };
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -31,7 +55,7 @@ const Sidebar = () => {
 
   return (
     <div className={styles.sidebar}>
-      <button className={styles.backButton} onClick={handleBackClick} aria-label="Go back">
+      <button className={styles.backButton} onClick={() => window.history.back()} aria-label="Go back">
         <FontAwesomeIcon icon={faArrowLeft} />
       </button>
       <h3 className={styles.sidebarHeader}>Document Uploaded</h3>
@@ -62,13 +86,18 @@ const Sidebar = () => {
 export default Sidebar;
 
 
+
+
+
+
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
-const MainContent = () => {
+const MainContent = ({ file }) => {
   const [data, setData] = useState({
     joburl: '',
     resume_summary: '',
@@ -79,6 +108,8 @@ const MainContent = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!file) return;  // Only fetch if a file is uploaded
+
       try {
         const response = await axios.post(
           'dummy',  // Replace with your actual API URL
@@ -89,19 +120,17 @@ const MainContent = () => {
             }
           }
         );
-        console.log("API Response:", response.data); // Log response to verify structure
+        console.log("API Response:", response.data);
 
-        // Assuming response.data.body contains the actual response as a string
         let responseBody;
         if (response.data.body) {
-          responseBody = JSON.parse(response.data.body); // Parse the body if it's a string
+          responseBody = JSON.parse(response.data.body);
         } else {
-          responseBody = response.data;  // Fallback if body is not present
+          responseBody = response.data;
         }
 
-        console.log("Parsed Response Body:", responseBody); // Log to verify the parsed response
+        console.log("Parsed Response Body:", responseBody);
 
-        // Set state with the parsed data
         setData({
           joburl: responseBody.joburl || '',
           resume_summary: responseBody.resume_summary || '',
@@ -115,24 +144,24 @@ const MainContent = () => {
     };
 
     fetchData();
-  }, []);
+  }, [file]); // Trigger fetch when file changes
 
   return (
     <div className={styles.mainContent}>
-     
-<section className={styles.section}>
-  <h3>Job URL</h3>
-  {data.joburl ? (
-    <ol className={styles.jobUrlList}>
-      <li>
-        <a href={data.joburl} target="_blank" rel="noopener noreferrer"><FontAwesomeIcon icon={faLink} className={styles.icon}/> View Job</a>
-      </li>
-    </ol>
-  ) : (
-    <p>No job URL available</p>
-  )}
-</section>
-
+      <section className={styles.section}>
+        <h3>Job URL</h3>
+        {data.joburl ? (
+          <ol className={styles.jobUrlList}>
+            <li>
+              <a href={data.joburl} target="_blank" rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faLink} className={styles.icon}/> View Job
+              </a>
+            </li>
+          </ol>
+        ) : (
+          <p>No job URL available</p>
+        )}
+      </section>
 
       <section className={styles.section}>
         <h3>Resume Summary</h3>
@@ -180,24 +209,3 @@ const MainContent = () => {
 };
 
 export default MainContent;
-
-
-
-import React from 'react';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import Chatbot from './ChatBot/Chatbot';
-
-import styles from './JobPage.module.css';
-
-const JobPage = () => {
-  return (
-    <div className={styles.jobPage}>
-      <Sidebar />
-      <MainContent />
-    </div>
-  );
-};
-
-export default JobPage;
-
