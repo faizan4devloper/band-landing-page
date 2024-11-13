@@ -1,114 +1,50 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './MainContent.module.css';
+MainContent.js:76 Uncaught TypeError: _data$skills.map is not a function
+    at MainContent (MainContent.js:76:1)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at updateFunctionComponent (react-dom.development.js:19617:1)
+    at beginWork (react-dom.development.js:21640:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
+MainContent.js:76 Uncaught TypeError: _data$skills.map is not a function
+    at MainContent (MainContent.js:76:1)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at updateFunctionComponent (react-dom.development.js:19617:1)
+    at beginWork (react-dom.development.js:21640:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
+react-dom.development.js:18704 The above error occurred in the <MainContent> component:
 
-const MainContent = () => {
-  const [data, setData] = useState({
-    jobUrl: '',
-    resumeSummary: '',
-    skills: [],
-    skillSuggestion: [],
-    successStories: [],
-  });
+    at MainContent (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3287:74)
+    at div
+    at JobPage
+    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:46629:5)
+    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47331:5)
+    at div
+    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47265:15)
+    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45202:5)
+    at AuthProvider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:3921:3)
+    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:80986:3)
+    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:54:84)
+    at Provider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:80986:3)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.post(
-          'DUMMY',  // Replace with your actual API URL
-          { resume_identifier: "scenario_1" },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          }
-        );
-        console.log("API Response:", response.data); // Log response to verify structure
-
-        // Assuming response.data.body contains the actual response as a string
-        let responseBody;
-        if (response.data.body) {
-          responseBody = JSON.parse(response.data.body); // Parse the body if it's a string
-        } else {
-          responseBody = response.data;  // Fallback if body is not present
-        }
-
-        console.log("Parsed Response Body:", responseBody); // Log to verify the parsed response
-
-        // Set state with the parsed data
-        setData({
-          jobUrl: responseBody.jobUrl || '',
-          resumeSummary: responseBody.resumeSummary || '',
-          skills: responseBody.skills || [],
-          skillSuggestion: responseBody.skillsuggestion || [],
-          successStories: responseBody.success_stories || [],
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  return (
-    <div className={styles.mainContent}>
-      <section className={styles.section}>
-        <h3>Job URL</h3>
-        {data.jobUrl ? (
-          <a href={data.jobUrl} target="_blank" rel="noopener noreferrer">{data.jobUrl}</a>
-        ) : (
-          <p>No job URL available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <h3>Resume Summary</h3>
-        {data.resumeSummary ? (
-          <p>{data.resumeSummary}</p>
-        ) : (
-          <p>No resume summary available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <h3>Skills</h3>
-        <ul>
-          {data.skills?.map((skill, index) => (
-            <li key={index}>{skill}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={styles.section}>
-        <h3>Skill Suggestions</h3>
-        <ul>
-          {data.skillSuggestion?.map((suggestion, index) => (
-            <li key={index}>{suggestion}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={styles.section}>
-        <h3>Success Stories</h3>
-        <ul>
-          {data.successStories?.map((story, index) => (
-            <li key={index}>{story}</li>
-          ))}
-        </ul>
-      </section>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
-
-
-joburl
-resume_summary
-skills
-skillsuggestion
-success_stories
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+MainContent.js:76 Uncaught TypeError: _data$skills.map is not a function
+    at MainContent (MainContent.js:76:1)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at updateFunctionComponent (react-dom.development.js:19617:1)
+    at beginWork (react-dom.development.js:21640:1)
+    at beginWork$1 (react-dom.development.js:27465:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
+    at renderRootSync (react-dom.development.js:26473:1)
+    at recoverFromConcurrentError (react-dom.development.js:25889:1)
+    at performConcurrentWorkOnRoot (react-dom.development.js:25789:1)
