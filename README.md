@@ -1,3 +1,87 @@
+/* Add a subtle zoom effect on the background */
+.leftSide {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+  animation: backgroundZoom 15s ease-in-out infinite;
+}
+
+@keyframes backgroundZoom {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Slight zoom */
+  }
+}
+
+/* Enhanced overlay text styling */
+.overlayText {
+  position: relative;
+  z-index: 2;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast */
+  border-radius: 0.75rem;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInSlide 1.5s ease-out forwards;
+}
+
+/* Staggered fade-in for description */
+.leftSide p {
+  position: relative;
+  z-index: 2;
+  color: #f0f0f0;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 1.5rem;
+  margin: 0;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInSlide 1.8s ease-out forwards;
+  animation-delay: 0.5s; /* More delay for staggered effect */
+}
+
+/* Update button hover effect */
+.button:hover {
+  background-color: #4338ca;
+  transform: translateY(-3px) scale(1.02); /* Slight scaling for emphasis */
+  box-shadow: 0 5px 15px rgba(67, 56, 202, 0.4);
+}
+
+/* Animation keyframes for fade-in and slide-up */
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .leftSide {
+    display: flex;
+  }
+}
+
+
+
+
+
+
+
 /* Container for the page layout */
 .container {
   display: flex;
