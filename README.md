@@ -1,21 +1,4 @@
-<section className={styles.section}>
-  <h3>Skills</h3>
-  {data.skills ? (
-    <ul className={styles.skillList}>
-      {data.skills.split("•").map((skill, index) => (
-        <li key={index} className={styles.skillItem}>
-          {skill.trim()}
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No skills available</p>
-  )}
-</section>
-
-
-
-
+/* Style the overall container */
 .mainContent {
   flex: 1;
   padding: 20px;
@@ -23,8 +6,11 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   overflow-y: auto;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #0073e6 #f1f1f1; /* For Firefox */
 }
 
+/* Style the section container */
 .section {
   padding: 15px;
   font-size: 0.8rem;
@@ -35,8 +21,11 @@
   overflow-y: auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #0073e6 #f1f1f1; /* For Firefox */
 }
 
+/* Hover effect on section */
 .section:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
@@ -76,29 +65,48 @@ ul {
   transform: scale(1.05);
 }
 
-a {
-  color: #0073e6;
-  text-decoration: none;
-  transition: color 0.3s;
+/* Custom Scrollbar for Webkit Browsers (Chrome, Safari) */
+.section::-webkit-scrollbar {
+  width: 8px;
 }
 
-a:hover {
-  color: #005bb5;
+.section::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
 }
 
-.jobUrlList {
-  list-style-type: decimal;
-  padding-left: 20px;
-  margin: 0;
+.section::-webkit-scrollbar-thumb {
+  background-color: #0073e6;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
 }
 
-.jobUrlList a {
-  color: #0073e6;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s;
+.section::-webkit-scrollbar-thumb:hover {
+  background-color: #005bb5;
 }
 
-.jobUrlList a:hover {
-  color: #005bb5;
+/* For the mainContent scroll */
+.mainContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mainContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.mainContent::-webkit-scrollbar-thumb {
+  background-color: #0073e6;
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+.mainContent::-webkit-scrollbar-thumb:hover {
+  background-color: #005bb5;
+}
+
+/* For Firefox scrollbar styling */
+.scrollbarCustom {
+  scrollbar-width: thin;
+  scrollbar-color: #0073e6 #f1f1f1;
 }
