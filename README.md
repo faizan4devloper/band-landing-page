@@ -1,27 +1,66 @@
-/* MainContent.module.css */
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import styles from './Sidebar.module.css';
+import FilePreviewModal from './FilePreviewModal';
+import { useNavigate } from 'react-router-dom';
 
-/* Container for the loader to center it */
-.spinnerContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Centering the loader */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* Takes full viewport height */
-  width: 100%;   /* Takes full width */
-  background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent background */
-  z-index: 999; /* Ensures the loader is on top of other content */
-}
+const Sidebar = () => {
+  const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
-/* You can adjust the size of the loader itself if needed */
-.loaderWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+  const handleBackClick = () => {
+    navigate(-1);
+  };
 
-.clipLoader {
-  border-color: #36d7b7 !important;  /* Sets loader color */
-}
+  const onDrop = (acceptedFiles) => {
+    setFile(acceptedFiles[0]);
+  };
+
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+  const removeFile = () => {
+    setFile(null);
+    closeModal();
+  };
+
+  return (
+    <div className={styles.sidebar}>
+      <button className={styles.backButton} onClick={handleBackClick} aria-label="Go back">
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h3 className={styles.sidebarHeader}>Document Uploaded</h3>
+      <div {...getRootProps()} className={styles.dropzone}>
+        <input {...getInputProps()} aria-label="File dropzone" />
+        <p>Drag & Drop, or click to select files</p>
+        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} aria-label="Upload icon" />
+      </div>
+      {file && (
+        <div className={styles.fileContainer}>
+          <p className={styles.fileName} onClick={openModal} role="button" tabIndex="0">
+            {file.name}
+          </p>
+          <FontAwesomeIcon
+            icon={faTimes}
+            className={styles.removeIcon}
+            onClick={removeFile}
+            aria-label="Remove file"
+          />
+        </div>
+      )}
+
+      {showModal && file && (
+        <FilePreviewModal
+          file={file}
+          closeModal={closeModal}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Sidebar;
