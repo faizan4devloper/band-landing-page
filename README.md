@@ -1,3 +1,5 @@
+add styling on the overlaytext enhanced the styling add animations on text transform into user appealing also leftSide p
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from 'react-redux';
