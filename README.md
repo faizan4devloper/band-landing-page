@@ -1,73 +1,3 @@
-import React, { useState } from 'react';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import styles from './JobPage.module.css';
-
-const JobPage = () => {
-  const [isFileUploaded, setIsFileUploaded] = useState(false);
-
-  // Handle file upload status change
-  const handleFileUpload = () => {
-    setIsFileUploaded(true);
-  };
-
-  return (
-    <div className={styles.jobPage}>
-      <Sidebar onFileUpload={handleFileUpload} />
-      <MainContent isFileUploaded={isFileUploaded} />
-    </div>
-  );
-};
-
-export default JobPage;
-
-
-
-import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUpFromBracket, faTimes, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
-import styles from './Sidebar.module.css';
-
-const Sidebar = ({ onFileUpload }) => {
-  const [file, setFile] = useState(null);
-
-  const onDrop = (acceptedFiles) => {
-    setFile(acceptedFiles[0]);
-    onFileUpload(); // Notify JobPage that a file has been uploaded
-  };
-
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
-  const removeFile = () => {
-    setFile(null);
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <button className={styles.backButton} onClick={() => window.history.back()}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
-      <h3 className={styles.sidebarHeader}>Document Uploaded</h3>
-      <div {...getRootProps()} className={styles.dropzone}>
-        <input {...getInputProps()} />
-        <p>Drag & Drop, or click to select files</p>
-        <FontAwesomeIcon icon={faArrowUpFromBracket} className={styles.uploadIcon} />
-      </div>
-      {file && (
-        <div className={styles.fileContainer}>
-          <p className={styles.fileName}>{file.name}</p>
-          <FontAwesomeIcon icon={faTimes} className={styles.removeIcon} onClick={removeFile} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Sidebar;
-
-
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
@@ -136,7 +66,7 @@ const MainContent = ({ isFileUploaded }) => {
 
   return (
     <div className={styles.mainContent}>
-      {/* Conditionally render sections */}
+      {/* Job URL Section */}
       <section className={styles.section}>
         <h3>Job URL</h3>
         {data.joburl ? (
@@ -152,7 +82,38 @@ const MainContent = ({ isFileUploaded }) => {
         )}
       </section>
 
-      {/* Other sections similarly */}
+      {/* Resume Summary Section */}
+      <section className={styles.section}>
+        <h3>Resume Summary</h3>
+        <p>{data.resume_summary || 'No resume summary available'}</p>
+      </section>
+
+      {/* Skills Section */}
+      <section className={styles.section}>
+        <h3>Skills</h3>
+        <p>{data.skills || 'No skills information available'}</p>
+      </section>
+
+      {/* Skill Suggestions Section */}
+      <section className={styles.section}>
+        <h3>Skill Suggestions</h3>
+        <p>{data.skillsuggestion || 'No skill suggestions available'}</p>
+      </section>
+
+      {/* Success Stories Section */}
+      {data.success_stories && Object.keys(data.success_stories).length > 0 && (
+        <section className={styles.section}>
+          <h3>Success Stories</h3>
+          <ul className={styles.successStoriesList}>
+            {Object.entries(data.success_stories).map(([key, story]) => (
+              <li key={key} className={styles.successStoryItem}>
+                <h4>{story.title}</h4>
+                <p>{story.description}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 };
