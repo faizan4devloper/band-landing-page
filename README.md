@@ -1,140 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { PropagateLoader } from 'react-spinners';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLink } from "@fortawesome/free-solid-svg-icons";
-
-const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
-  const [data, setData] = useState({
-    job_postings: '',
-    resume_highlights: '',
-    existing_skills: '',
-    suggested_skills: '',
-    success_stories: {},
-  });
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (clearData) {
-      setData({
-        job_postings: '',
-        resume_highlights: '',
-        existing_skills: '',
-        suggested_skills: '',
-        success_stories: {},
-      });
-    }
-  }, [clearData]);
-
-  useEffect(() => {
-    if (isFileUploaded && resumeIdentifier) {
-      const fetchData = async () => {
-        setLoading(true);
-
-        try {
-          const response = await axios.post(
-            'dummy',  // Replace with your actual API URL
-            { resume_identifier: resumeIdentifier },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-              }
-            }
-          );
-
-          console.log('API Response:', response.data);
-
-          const responseBody = response.data.body ? JSON.parse(response.data.body) : response.data;
-          
-          console.log(responseBody)
-
-          setData({
-            job_postings: responseBody.job_postings || '',
-            resume_highlights: responseBody.resume_highlights || '',
-            existing_skills: responseBody.existing_skills || '',
-            suggested_skills: responseBody.suggested_skills || '',
-            success_stories: responseBody.success_stories || {},
-          });
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchData();
-    }
-  }, [isFileUploaded, resumeIdentifier]);
-
-  if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-        <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.mainContent}>
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Existing Skills</p>
-        <p>{data.existing_skills || 'No skills information available'}</p>
-      </section>
-      
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Job Postings</p>
-        {data.job_postings ? (
-          <ol className={styles.jobUrlList}>
-            <li>
-              <a href={data.job_postings} target="_blank" rel="noopener noreferrer">
-                <FontAwesomeIcon icon={faLink} className={styles.icon} /> View Job
-              </a>
-            </li>
-          </ol>
-        ) : (
-          <p>No job URL available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Resume Highlights</p>
-        <p>{data.resume_highlights || 'No resume summary available'}</p>
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Success Stories</p>
-        {Object.keys(data.success_stories).length > 0 ? (
-          <ul>
-            {Object.keys(data.success_stories).map((storyKey, index) => (
-              <li key={index}>
-                <strong>{storyKey}:</strong> 
-                {data.success_stories[storyKey].pdfLink ? (
-                  <a 
-                    href={data.success_stories[storyKey].pdfLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={styles.pdfLink}
-                  >
-                    Read PDF
-                  </a>
-                ) : (
-                  <p>No PDF link available</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No success stories available</p>
-        )}
-      </section>
-
-      <section className={styles.section}>
-        <p className={styles.sectionHead}>Suggested Skills</p>
-        <p>{data.suggested_skills || 'No skill suggestions available'}</p>
-      </section>
-    </div>
-  );
-};
-
-export default MainContent;
+Success Story 1
+: 
+metadata
+: 
+pdf_link
+: 
+"https://ac-aws-buc.s3.amazonaws.com/citizen-advisor/persona_employment/success_stories/Data-Engineer-Data-Scientists-Success-Story.pdf?AWSAccessKeyId=ASIAQS3SH5XJIYH52R6Q&Signature=OHUB%2BYOrprLWJdRf6x33VLwRIyU%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEFgaCXVzLWVhc3QtMSJHMEUCIQCFFU8fTlNvGQe6W7kSMYDHLNE76EqewpsdfFl%2BwQMZogIgaJejM4jp%2B4QioAyC9Ak%2FfFP%2BTELMUZEB3nZzp%2BNqUsQqmAMI4P%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARABGgwwNDA1MDQ5MTMzNjIiDFCN3Bnwt2auu85R0CrsAvvCS9r0tiRe2pZQ95uRDMiIsdBlfGtoUxUYiIVCAv62Utn6lMwR4QXbU0Ky4c7aP4VtOHRHEQGQtOI4TUTV7Ov4dBHeKq06eZb3%2Fz6HAoML95I%2Fwxt899aO58kv0WxugE1v%2BtehSov%2Fte7YSd2DECtedQeSlmzCXSPHA5GIOAMuYfj9S8W3atqEMKMvnEBpFGFwb6%2FyQnD2AF%2FHVr4mSC2aP7p80KhgnHrhvCra7VSFt5ohEkfjIB6wRRHdpY3oEZ5Nfn4y284MJcPoxzRQgYngBmEHp%2BF7D3vly9ruJi3sfhS%2FmtdmUi6zL04%2BYOZ5skfdJcOvLOltbtfw5HY9VLsGrZDDRhaK1NZ%2FEPKtVGPYKWSnSFqhuGZTU3%2Bz8akh01AtlelGr2Fs32tGcEowK8UBBOuiZ6jp63NuwJgL9mWwuxHbWWNJ35NT2sdFTN6aTO7fcJeUDoQRMGiAw1OWHkY9SZ7NiktI1FfnkOcwvuTUuQY6nQG2UYRgobri3Kz4Duz5k2aveePfQPkd56IArgoM8mPvmV%2BHrQIfVRx2nl9YgOvaCyuOwoJjUV2nItEtHvDdUKvZBPQtUUB0N%2BRPUtYUxY3X%2FsyFJAlep05xFSes6bHDeknb%2FmBjr2qtgp9GXzGGZGaUcySPDkq2K4ZrjD5CR2f1ViSVBlIvuf0VQ1w5kGZ5iIJ9PwcqfvJTNpRjIbDX&Expires=1731543509"
+title
+: 
+"Data Engineer to Data Scientist in Adelaide"
+[[Prototype]]
+: 
+Object
+outcome
+: 
+"secured a Data Scientist position at an Australian fintech startup, where he applied his knowledge of data engineering to build robust data pipelines and create predictive models for customer behavior"
+skills
+: 
+(3) ['machine learning techniques like neural networks and deep learning', 'data engineering', 'communication skills']
+transition
+: 
+"from non-tech (data engineering) to Data Scientist"
