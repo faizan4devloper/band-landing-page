@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
-import styles from './QuestionBlock.module.css';
-import Modal from './ImageModal'; // Import the Modal component
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { PropagateLoader } from 'react-spinners';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLink } from "@fortawesome/free-solid-svg-icons";
 
 // Utility function to convert URLs in text to anchor tags
 const parseLinks = (text) => {
@@ -16,77 +19,143 @@ const parseLinks = (text) => {
   );
 };
 
-const QuestionBlock = ({ question, answerData }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageSrc, setImageSrc] = useState(null);
+const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
+  const [data, setData] = useState({
+    job_postings: '',
+    resume_highlights: '',
+    existing_skills: '',
+    suggested_skills: '',
+    success_stories: {},
+  });
+  const [loading, setLoading] = useState(false);
 
-  const handleImageClick = (src) => {
-    setImageSrc(src);
-    setIsModalOpen(true); // Open the modal
-  };
+  useEffect(() => {
+    if (clearData) {
+      setData({
+        job_postings: '',
+        resume_highlights: '',
+        existing_skills: '',
+        suggested_skills: '',
+        success_stories: {},
+      });
+    }
+  }, [clearData]);
 
-  const closeModal = () => {
-    setIsModalOpen(false); // Close the modal
-    setImageSrc(null); // Reset the image source
-  };
+  useEffect(() => {
+    if (isFileUploaded && resumeIdentifier) {
+      const fetchData = async () => {
+        setLoading(true);
 
-  const renderResponsePoints = (responseArray) => {
-    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
+        try {
+          const response = await axios.post(
+            'dummy',  // Replace with your actual API URL
+            { resume_identifier: resumeIdentifier },
+            {
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            }
+          );
+
+          console.log('API Response:', response.data);
+
+          const responseBody = response.data.body ? JSON.parse(response.data.body) : response.data;
+
+          setData({
+            job_postings: responseBody.job_postings || '',
+            resume_highlights: responseBody.resume_highlights || '',
+            existing_skills: responseBody.existing_skills || '',
+            suggested_skills: responseBody.suggested_skills || '',
+            success_stories: responseBody.success_stories || {},
+          });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchData();
+    }
+  }, [isFileUploaded, resumeIdentifier]);
+
+  if (loading) {
     return (
-      <ul className={styles.responseList}>
-        {arrayToRender.map((item, index) => (
-          <li key={index} className={styles.responseItem}>
-            {parseLinks(item)}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  const renderContent = (content, altText) => {
-    // Display as an image if content is a URL; otherwise, treat as text
-    return content && content.startsWith('http') ? (
-      <div className={styles.imageWrapper}>
-        
-      <img
-        src={content}
-        alt={altText}
-        className={styles.responseImage}
-        onClick={() => handleImageClick(content)} // Open modal on image click
-      />
-      <span className={styles.tooltip}>Click to View Larger</span>
+      <div className={styles.spinnerContainer}>
+        <PropagateLoader color="rgb(15, 95, 220)" loading={loading} size={25} />
       </div>
-    ) : (
-      <p>{content}</p>
     );
-  };
+  }
 
   return (
-    <div className={styles.questionBlock}>
-      <div className={styles.question}>{question}</div>
+    <div className={styles.mainContent}>
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Existing Skills</p>
+        <p>{data.existing_skills || 'No skills information available'}</p>
+      </section>
 
-      {/* Textual Response */}
-      <div className={styles.responseSection}>
-        <p><strong>School Sources Insights:</strong></p>
-        {renderResponsePoints(answerData.textualResponse)}
-      </div>
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Job Postings</p>
+        {data.job_postings ? (
+          <ol className={styles.jobUrlList}>
+            <li>
+              <a href={data.job_postings} target="_blank" rel="noopener noreferrer">
+                <FontAwesomeIcon icon={faLink} className={styles.icon} /> View Job
+              </a>
+            </li>
+          </ol>
+        ) : (
+          <p>No job URL available</p>
+        )}
+      </section>
 
-      {/* Citizen Experience (Display as text or image) */}
-      <div className={styles.responseSection}>
-        <p><strong>Citizen Speak:</strong></p>
-        {renderContent(answerData.citizenReview, "Citizen Experience")}
-      </div>
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Resume Highlights</p>
+        <p>{data.resume_highlights || 'No resume summary available'}</p>
+      </section>
 
-      {/* Factual Info (Display as text or image) */}
-      <div className={styles.responseSection}>
-        <p><strong>Factual Content:</strong></p>
-        {renderContent(answerData.factualData, "Factual Info")}
-      </div>
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Success Stories</p>
+        {Object.keys(data.success_stories).length > 0 ? (
+          <ul>
+            {Object.keys(data.success_stories).map((storyKey, index) => {
+              const story = data.success_stories[storyKey];
 
-      {/* Modal for Image */}
-      <Modal isOpen={isModalOpen} closeModal={closeModal} imageSrc={imageSrc} altText="Modal Image" />
+              return (
+                <li key={index}>
+                  <h3>{story.title}</h3>
+                  <p><strong>Outcome:</strong> {story.outcome}</p>
+                  <p><strong>Transition:</strong> {story.transition}</p>
+                  <p><strong>Skills:</strong> {story.skills.join(', ')}</p>
+                  {story.pdf_link ? (
+                    <div className={styles.pdfLinkWrapper}>
+                      <a
+                        href={story.pdf_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.pdfLink}
+                      >
+                        <FontAwesomeIcon icon={faLink} /> Read PDF
+                      </a>
+                    </div>
+                  ) : (
+                    <p>No PDF link available</p>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p>No success stories available</p>
+        )}
+      </section>
+
+      <section className={styles.section}>
+        <p className={styles.sectionHead}>Suggested Skills</p>
+        <p>{data.suggested_skills || 'No skill suggestions available'}</p>
+      </section>
     </div>
   );
 };
 
-export default QuestionBlock;
+export default MainContent;
