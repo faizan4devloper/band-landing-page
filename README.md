@@ -1,27 +1,18 @@
-<section className={styles.section}>
-  <h3>Job URL</h3>
-  {data.joburl ? (
-    <ol className={styles.jobUrlList}>
-      <li>
-        <a href={data.joburl} target="_blank" rel="noopener noreferrer">1</a>
-      </li>
-    </ol>
-  ) : (
-    <p>No job URL available</p>
-  )}
-</section>
+/* Styling for job URL list */
+.jobUrlList {
+  list-style-type: decimal;
+  padding-left: 20px;
+  margin: 0;
+}
 
+/* Styles for masked job URL link */
+.jobUrlList a {
+  color: #0073e6;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
 
-
-<section className={styles.section}>
-  <h3>Job URL</h3>
-  {data.joburl ? (
-    <ol className={styles.jobUrlList}>
-      <li>
-        <a href={data.joburl} target="_blank" rel="noopener noreferrer">1</a>
-      </li>
-    </ol>
-  ) : (
-    <p>No job URL available</p>
-  )}
-</section>
+.jobUrlList a:hover {
+  color: #005bb5;
+}
