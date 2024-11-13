@@ -5,20 +5,6 @@ import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 
-// Utility function to convert URLs in text to anchor tags
-const parseLinks = (text) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlPattern).map((part, index) =>
-    urlPattern.test(part) ? (
-      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
-};
-
 const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
   const [data, setData] = useState({
     job_postings: '',
@@ -129,13 +115,14 @@ const MainContent = ({ isFileUploaded, resumeIdentifier, clearData }) => {
                   <p><strong>Skills:</strong> {story.skills.join(', ')}</p>
                   {story.pdf_link ? (
                     <div className={styles.pdfLinkWrapper}>
+                      {/* Display the PDF link as is */}
                       <a
                         href={story.pdf_link}
                         target="_blank"
                         rel="noopener noreferrer"
                         className={styles.pdfLink}
                       >
-                        <FontAwesomeIcon icon={faLink} /> Read PDF
+                        Read PDF
                       </a>
                     </div>
                   ) : (
