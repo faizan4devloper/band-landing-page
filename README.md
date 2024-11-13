@@ -1,15 +1,21 @@
-<section className={styles.section}>
-  <h3>Resume Summary</h3>
-  {data.resume_summary ? (
-    <p className={styles.resumeSummary}>{data.resume_summary}</p>
-  ) : (
-    <p className={styles.noData}>No resume summary available</p>
-  )}
-</section>
+this type of skills coming from back end in skill section add styling on them
+
+Key Skills: • Data Engineering: SQL, ETL (Extract, Transform, Load), Apache Spark, Hadoop, Airflow • Big Data & Cloud: AWS (Redshift, S3), Google BigQuery, Azure Data Lake • Programming Languages: Python, SQL, Scala • Data Science & Machine Learning: Python, Pandas, Scikit-Learn, Data Visualization • Tools & Frameworks: Jupyter Notebooks, Docker, Git
+
+
+ <section className={styles.section}>
+        <h3>Skills</h3>
+        {data.skills ? (
+          <p>{data.skills}</p> 
+        ) : (
+          <p>No skills available</p>
+        )}
+      </section>
 
 
 
-/* Styling for the main content area */
+      /* MainContent.module.css */
+
 .mainContent {
   flex: 1;
   padding: 20px;
@@ -19,7 +25,6 @@
   overflow-y: auto;
 }
 
-/* Styling for each section */
 .section {
   padding: 15px;
   font-size: 0.8rem;
@@ -32,19 +37,16 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Hover effect for the section */
 .section:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Header styling (for section titles like "Resume Summary") */
 h3 {
   margin-bottom: 15px;
   font-size: 1.2rem;
   color: #333;
 }
 
-/* Styling for lists (if needed) */
 ul {
   padding-left: 20px;
   list-style-type: disc;
@@ -56,7 +58,6 @@ li {
   margin-bottom: 8px;
 }
 
-/* Links styling */
 a {
   color: #0073e6;
   text-decoration: none;
@@ -67,31 +68,23 @@ a:hover {
   color: #005bb5;
 }
 
-/* New styling for Resume Summary text */
-.resumeSummary {
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.6;
-  padding: 10px;
-  background-color: #f1f1f1;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow-y: auto;
-  max-height: 200px;
+/* Styling for job URL list */
+.jobUrlList {
+  list-style-type: decimal;
+  padding-left: 20px;
+  margin: 0;
 }
 
-.resumeSummary:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
+/* Styles for masked job URL link */
+.jobUrlList a {
+  color: #0073e6;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
 }
 
-/* Styling for the case when no resume summary is available */
-.noData {
-  font-size: 1rem;
-  color: #999;
-  padding: 10px;
-  background-color: #f1f1f1;
-  border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.jobUrlList a:hover {
+  color: #005bb5;
 }
+
+
