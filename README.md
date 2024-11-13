@@ -1,3 +1,4 @@
+This is back-end code
   resume_mapping = {
         "scenario_1": "DataEngineerDataScientistResume.pdf",
         "scenario_2": "NonTechDataEngineerResume.pdf"
@@ -8,7 +9,7 @@ test_event = {
 }
 response  = lambda_hanlder(test_event, None)
 
-
+Front end code
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
