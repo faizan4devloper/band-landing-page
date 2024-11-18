@@ -1,93 +1,97 @@
-import React, { useEffect, useRef } from "react";
-import styles from "./Header.module.css";
-import { gsap } from "gsap";
 
-import Logo from '../assets/HCLTechLogoBlue.svg';
+import React, { forwardRef } from "react";
+import styles from "./FeaturesCard.module.css";
 
-const Header = () => {
-  const logoRef = useRef(null);
-  const rightLogoRef = useRef(null);
-
-  useEffect(() => {
-    // GSAP Animations
-    gsap.fromTo(
-      logoRef.current,
-      { opacity: 0, scale: 0.5 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 1.5,
-        ease: "elastic.out(1, 0.5)",
-      }
-    );
-
-    gsap.fromTo(
-      rightLogoRef.current,
-      { x: 50, opacity: 0 },
-      { x: 0, opacity: 1, duration: 1, ease: "power2.out", delay: 0.5 }
-    );
-  }, []);
-
+const FeaturesCard = forwardRef(({ icon, title, description }, ref) => {
   return (
-    <header className={styles.header}>
-      <div ref={logoRef} className={styles.logoContainer}>
-        <span className={styles.logo}>Claim Assist</span>
-      </div>
-      <div className={styles.authButtons}>
-        <img
-          ref={rightLogoRef}
-          className={styles.rightLogo}
-          src={Logo}
-          alt="HCL Logo"
-        />
-      </div>
-    </header>
+    <div ref={ref} className={styles.card}>
+      <div className={styles.icon}>{icon}</div>
+      <h3>{title}</h3>
+      <p>{description}</p>
+    </div>
+  );
+});
+
+export default FeaturesCard;
+
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.icon {
+  font-size: 2.5rem;
+  color: #4a90e2;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+
+import React from "react";
+import HeroSection from "./HeroSection";
+import FeaturesSection from "./FeaturesSection";
+import styles from "./WelcomePage.module.css";
+
+const WelcomePage = () => {
+  return (
+    <div className={styles.container}>
+      <HeroSection />
+      <FeaturesSection />
+    </div>
   );
 };
 
-export default Header;
+export default WelcomePage;
 
 
-
-/* Header Layout */
-.header {
+.container {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 80px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f9f9f9;
 }
 
-/* Logo Styling */
-.logoContainer {
-  position: relative;
+
+import React from 'react';
+import WelcomePage from './components/WelcomePage';
+import Header from './components/Header/Header';
+
+const App = ()=>{
+  return <div>
+    <Header/>
+    <WelcomePage/>
+  </div>
 }
 
-.logo {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #0f5fdc;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+export default App;
+
+
+.App {
+  text-align: center;
 }
 
-/* Right Logo Hover Animation */
-.rightLogo {
-  width: 90px;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-}
-
-.rightLogo:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 15px rgba(15, 95, 220, 0.3);
-}
-
-/* Auth Buttons Section */
-.authButtons {
-  display: flex;
-  align-items: center;
-}
