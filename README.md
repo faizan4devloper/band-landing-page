@@ -1,129 +1,206 @@
-import React, { useState } from 'react';
-import styles from './QuestionBlock.module.css';
-import Modal from './ImageModal'; // Import the Modal component
+import React from "react";
+import styles from "./WelcomePage.module.css";
 
-// Utility function to convert URLs in text to anchor tags
-const parseLinks = (text) => {
-  const urlPattern = /(https?:\/\/[^\s]+)/g;
-  return text.split(urlPattern).map((part, index) =>
-    urlPattern.test(part) ? (
-      <a key={index} href={part} target="_blank" rel="noopener noreferrer" className={styles.link}>
-        {part}
-      </a>
-    ) : (
-      part
-    )
-  );
-};
-
-const QuestionBlock = ({ question, answerData }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imageSrc, setImageSrc] = useState(null);
-
-  const handleImageClick = (src) => {
-    setImageSrc(src);
-    setIsModalOpen(true); // Open the modal
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false); // Close the modal
-    setImageSrc(null); // Reset the image source
-  };
-
-  const renderResponsePoints = (responseArray) => {
-    const arrayToRender = Array.isArray(responseArray) ? responseArray : [responseArray];
-
-    return (
-      <ul className={styles.responseList}>
-        {arrayToRender.map((item, index) => {
-          // Check if the item is a valid URL (specifically for PDFs)
-          const isPdfLink = item.startsWith('http') && item.endsWith('.pdf');
-
-          return (
-            <li key={index} className={styles.responseItem}>
-              {isPdfLink ? (
-                // Mask the PDF link with "View PDF" text
-                <a href={item} target="_blank" rel="noopener noreferrer" className={styles.link}>
-                  View PDF
-                </a>
-              ) : (
-                parseLinks(item)  // Use the existing parseLinks for other URLs
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
-
-  const renderContent = (content, altText) => {
-    // Check if the content exists and is a valid URL (image URL)
-    if (content && content.startsWith('http')) {
-      return (
-        <div className={styles.imageWrapper}>
-          <img
-            src={content}
-            alt={altText}
-            className={styles.responseImage}
-            onClick={() => handleImageClick(content)} // Open modal on image click
-          />
-          <span className={styles.tooltip}>Click to View Larger</span>
-        </div>
-      );
-    } else {
-      // If no image, display a beautiful message instead of an error or blank space
-      return (
-        <div className={styles.noImageMessage}>
-          <p>{content ? "No image available for this content." : "No content available."}</p>
-        </div>
-      );
-    }
-  };
-
-  // Masking the source link with 'Click here'
-  const renderSourceLink = (source) => {
-    if (source && source.startsWith("http")) {
-      return (
-        <a href={source} target="_blank" rel="noopener noreferrer" className={styles.link}>
-          Click here
-        </a>
-      );
-    } else {
-      return 'No source available.';
-    }
-  };
-
+const WelcomePage = () => {
   return (
-    <div className={styles.questionBlock}>
-      <div className={styles.question}>{question}</div>
+    <div className={styles.container}>
+      {/* Header */}
+      <header className={styles.header}>
+        <div className={styles.logo}>Claim Assist</div>
+        <nav className={styles.navbar}>
+          <a href="#home">Home</a>
+          <a href="#services">Services</a>
+          <a href="#faqs">FAQs</a>
+          <a href="#contact">Contact Us</a>
+        </nav>
+        <div className={styles.authButtons}>
+          <button className={styles.loginButton}>Login</button>
+          <button className={styles.signupButton}>Sign Up</button>
+        </div>
+      </header>
 
-      {/* Textual Response */}
-      <div className={styles.responseSection}>
-        <p><strong>School Sources Insights:</strong></p>
-        {renderResponsePoints(answerData.textualResponse)}
-      </div>
+      {/* Hero Section */}
+      <section className={styles.hero}>
+        <div className={styles.heroContent}>
+          <h1 className={styles.heroTitle}>Simplifying Your Claim Process!</h1>
+          <p className={styles.heroSubtitle}>
+            Fast, Secure, and Reliable Assistance for All Your Claim Needs.
+          </p>
+          <button className={styles.ctaButton}>Get Started</button>
+        </div>
+        <div className={styles.heroImage}></div>
+      </section>
 
-      {/* Citizen Experience (Display as text or image) */}
-      <div className={styles.responseSection}>
-        <p><strong>Citizen Speak:</strong></p>
-        {renderContent(answerData.citizenReview, "No Data Available")}
-      </div>
+      {/* Features Section */}
+      <section className={styles.features}>
+        <h2 className={styles.sectionTitle}>Why Choose Claim Assist?</h2>
+        <div className={styles.featureCards}>
+          <div className={styles.card}>
+            <div className={styles.icon}>🔄</div>
+            <h3>Streamlined Process</h3>
+            <p>Experience a smooth and efficient claim process.</p>
+          </div>
+          <div className={styles.card}>
+            <div className={styles.icon}>⏰</div>
+            <h3>24/7 Support</h3>
+            <p>Our team is always here to help you.</p>
+          </div>
+          <div className={styles.card}>
+            <div className={styles.icon}>🔒</div>
+            <h3>Secure & Reliable</h3>
+            <p>Data security and reliability you can trust.</p>
+          </div>
+        </div>
+      </section>
 
-      {/* Factual Info (Display as text or image) */}
-      <div className={styles.responseSection}>
-        <p><strong>Factual Content:</strong></p>
-        {renderContent(answerData.factualData, "No Data Available")}
-      </div>
-
-      {/* Source Link Section with Masking */}
-      <div className={styles.responseSection}>
-        <p><strong>Source:</strong> {renderSourceLink(answerData.textualResponse[answerData.textualResponse.length - 1]?.match(/Source:\s*(https?:\/\/[^\s]+)/)?.[1])}</p>
-      </div>
-
-      {/* Modal for Image */}
-      <Modal isOpen={isModalOpen} closeModal={closeModal} imageSrc={imageSrc} altText="Modal Image" />
+      {/* Footer */}
+      <footer className={styles.footer}>
+        <p>© 2024 Claim Assist. All Rights Reserved.</p>
+        <div className={styles.socialLinks}>
+          <a href="#facebook">Facebook</a>
+          <a href="#twitter">Twitter</a>
+          <a href="#linkedin">LinkedIn</a>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default QuestionBlock;
+export default WelcomePage;
+
+
+
+
+/* Container */
+.container {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #f2f2f2 0%, #7ca2e1 100%);
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #004aad;
+}
+
+.navbar a {
+  margin: 0 1rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+.authButtons button {
+  margin-left: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.loginButton {
+  background: transparent;
+  color: #004aad;
+  border: 2px solid #004aad;
+}
+
+.signupButton {
+  background: #004aad;
+  color: #fff;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #004aad, #7ca2e1);
+  color: white;
+}
+
+.heroContent {
+  max-width: 50%;
+}
+
+.heroTitle {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.heroSubtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.ctaButton {
+  padding: 1rem 2rem;
+  background: #ffd700;
+  color: #004aad;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Features Section */
+.features {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.featureCards {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.card {
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  padding: 2rem;
+  text-align: center;
+  flex: 1;
+}
+
+.icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1rem 0;
+  background: #004aad;
+  color: white;
+}
+
+.socialLinks a {
+  margin: 0 1rem;
+  text-decoration: none;
+  color: white;
+}
