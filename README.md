@@ -1,13 +1,16 @@
-
 import React, { forwardRef } from "react";
+import { Link } from "react-router-dom";
 import styles from "./FeaturesCard.module.css";
 
-const FeaturesCard = forwardRef(({ icon, title, description }, ref) => {
+const FeaturesCard = forwardRef(({ icon, title, description, buttonLabel, to }, ref) => {
   return (
     <div ref={ref} className={styles.card}>
       <div className={styles.icon}>{icon}</div>
       <h3>{title}</h3>
       <p>{description}</p>
+      <Link to={to} className={styles.button}>
+        {buttonLabel} <span className={styles.arrow}>&rarr;</span>
+      </Link>
     </div>
   );
 });
@@ -15,6 +18,7 @@ const FeaturesCard = forwardRef(({ icon, title, description }, ref) => {
 export default FeaturesCard;
 
 
+/* Card Styling */
 .card {
   display: flex;
   flex-direction: column;
@@ -32,66 +36,146 @@ export default FeaturesCard;
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.icon {
-  font-size: 2.5rem;
-  color: #4a90e2;
-  margin-bottom: 20px;
-}
-
-h3 {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-p {
+/* Button Styling */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  padding: 10px 20px;
   font-size: 1rem;
-  color: #666;
-  line-height: 1.5;
+  color: #ffffff;
+  background-color: #4a90e2;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #357abd;
+}
+
+/* Arrow Animation */
+.arrow {
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.button:hover .arrow {
+  transform: translateX(5px);
 }
 
 
-import React from "react";
-import HeroSection from "./HeroSection";
-import FeaturesSection from "./FeaturesSection";
-import styles from "./WelcomePage.module.css";
 
-const WelcomePage = () => {
+
+
+import React, { useEffect, useRef } from "react";
+import FeaturesCard from "./FeaturesCard";
+import styles from "./FeaturesSection.module.css";
+import { gsap } from "gsap";
+
+const FeaturesSection = () => {
+  const cardsRef = useRef([]);
+
+  useEffect(() => {
+    // Initial animation for the cards
+    gsap.from(cardsRef.current, {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      stagger: 0.2,
+      ease: "power2.out",
+    });
+  }, []);
+
   return (
-    <div className={styles.container}>
-      <HeroSection />
-      <FeaturesSection />
-    </div>
+    <section className={styles.featuresSection}>
+      <h2>Our Features</h2>
+      <div className={styles.cards}>
+        <FeaturesCard
+          ref={(el) => (cardsRef.current[0] = el)}
+          icon="📄"
+          title="Manage Product Sheets"
+          description="Easily manage and organize product sheets for your business."
+          buttonLabel="Go to Product Sheets"
+          to="/product-sheets"
+        />
+        <FeaturesCard
+          ref={(el) => (cardsRef.current[1] = el)}
+          icon="📂"
+          title="Manage Claims"
+          description="Streamline the claims process with efficient management tools."
+          buttonLabel="Go to Claims"
+          to="/claims"
+        />
+      </div>
+    </section>
   );
 };
 
-export default WelcomePage;
+export default FeaturesSection;
 
 
-.container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  background-color: #f9f9f9;
+.featuresSection {
+  padding: 40px 80px;
+  background-color: #ffffff;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+h2 {
+  font-size: 2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 
-import React from 'react';
-import WelcomePage from './components/WelcomePage';
-import Header from './components/Header/Header';
 
-const App = ()=>{
-  return <div>
-    <Header/>
-    <WelcomePage/>
-  </div>
-}
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./components/Header/Header";
+import WelcomePage from "./components/WelcomePage";
+import ProductSheetsPage from "./components/ProductSheetsPage";
+import ClaimsPage from "./components/ClaimsPage";
+
+const App = () => {
+  return (
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<WelcomePage />} />
+        <Route path="/product-sheets" element={<ProductSheetsPage />} />
+        <Route path="/claims" element={<ClaimsPage />} />
+      </Routes>
+    </Router>
+  );
+};
 
 export default App;
 
 
-.App {
-  text-align: center;
-}
 
+import React from "react";
+
+const ProductSheetsPage = () => {
+  return <div>Manage Product Sheets Page</div>;
+};
+
+export default ProductSheetsPage;
+
+
+
+import React from "react";
+
+const ClaimsPage = () => {
+  return <div>Manage Claims Page</div>;
+};
+
+export default ClaimsPage;
