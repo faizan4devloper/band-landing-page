@@ -6,16 +6,19 @@ import Logo from '../assets/HCLTechLogoBlue.svg';
 const Header = () => {
   return (
     <header className={styles.header}>
-      <div className={styles.logo}>Claim Assist</div>
+      <div className={styles.logoContainer}>
+        <span className={styles.logo}>Claim Assist</span>
+      </div>
       
       <div className={styles.authButtons}>
-       <img className={styles.rightlogo} src={Logo}  alt="logo"/>
+        <img className={styles.rightLogo} src={Logo} alt="logo" />
       </div>
     </header>
   );
 };
 
 export default Header;
+
 
 
 .header {
@@ -25,22 +28,61 @@ export default Header;
   padding: 14px 80px;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.logoContainer {
+  position: relative;
 }
 
 .logo {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   font-weight: bold;
   color: rgb(15, 95, 220);
+  position: relative;
+  z-index: 1;
 }
 
-.rightlogo{
-      width: 90px;
-
+.logoContainer::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) translateX(-100%);
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(15, 95, 220), transparent);
+  animation: slideIn 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  z-index: 0;
 }
 
-.navbar {
+@keyframes slideIn {
+  0% {
+    transform: translateY(-50%) translateX(-100%);
+  }
+  50% {
+    transform: translateY(-50%) translateX(50%);
+  }
+  100% {
+    transform: translateY(-50%) translateX(100%);
+  }
+}
+
+.rightLogo {
+  width: 90px;
+  transform: scale(0.9);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.rightLogo:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+.authButtons {
   display: flex;
-  gap: 20px;
+  align-items: center;
 }
 
 .navbar a {
@@ -52,11 +94,6 @@ export default Header;
 
 .navbar a:hover {
   color: #4a90e2;
-}
-
-.authButtons {
-  display: flex;
-  gap: 15px;
 }
 
 .loginButton,
