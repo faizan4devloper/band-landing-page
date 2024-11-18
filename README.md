@@ -1,17 +1,45 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import styles from "./Header.module.css";
+import { gsap } from "gsap";
 
 import Logo from '../assets/HCLTechLogoBlue.svg';
 
 const Header = () => {
+  const logoRef = useRef(null);
+  const rightLogoRef = useRef(null);
+
+  useEffect(() => {
+    // GSAP Animations
+    gsap.fromTo(
+      logoRef.current,
+      { opacity: 0, scale: 0.5 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+        ease: "elastic.out(1, 0.5)",
+      }
+    );
+
+    gsap.fromTo(
+      rightLogoRef.current,
+      { x: 50, opacity: 0 },
+      { x: 0, opacity: 1, duration: 1, ease: "power2.out", delay: 0.5 }
+    );
+  }, []);
+
   return (
     <header className={styles.header}>
-      <div className={styles.logoContainer}>
+      <div ref={logoRef} className={styles.logoContainer}>
         <span className={styles.logo}>Claim Assist</span>
       </div>
-      
       <div className={styles.authButtons}>
-        <img className={styles.rightLogo} src={Logo} alt="logo" />
+        <img
+          ref={rightLogoRef}
+          className={styles.rightLogo}
+          src={Logo}
+          alt="HCL Logo"
+        />
       </div>
     </header>
   );
@@ -21,107 +49,45 @@ export default Header;
 
 
 
+/* Header Layout */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 80px;
+  padding: 20px 80px;
   background-color: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 }
 
+/* Logo Styling */
 .logoContainer {
   position: relative;
 }
 
 .logo {
-  font-size: 1.8rem;
+  font-size: 2rem;
   font-weight: bold;
-  color: rgb(15, 95, 220);
-  position: relative;
-  z-index: 1;
+  color: #0f5fdc;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.logoContainer::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%) translateX(-100%);
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(90deg, rgb(15, 95, 220), transparent);
-  animation: slideIn 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-  z-index: 0;
-}
-
-@keyframes slideIn {
-  0% {
-    transform: translateY(-50%) translateX(-100%);
-  }
-  50% {
-    transform: translateY(-50%) translateX(50%);
-  }
-  100% {
-    transform: translateY(-50%) translateX(100%);
-  }
-}
-
+/* Right Logo Hover Animation */
 .rightLogo {
   width: 90px;
-  transform: scale(0.9);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .rightLogo:hover {
   transform: scale(1.1);
-  opacity: 0.8;
+  box-shadow: 0 8px 15px rgba(15, 95, 220, 0.3);
 }
 
+/* Auth Buttons Section */
 .authButtons {
   display: flex;
   align-items: center;
-}
-
-.navbar a {
-  text-decoration: none;
-  color: #333;
-  font-size: 1rem;
-  transition: color 0.3s ease;
-}
-
-.navbar a:hover {
-  color: #4a90e2;
-}
-
-.loginButton,
-.signupButton {
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.loginButton {
-  background-color: #ffffff;
-  color: #4a90e2;
-  border: 1px solid #4a90e2;
-}
-
-.loginButton:hover {
-  background-color: #4a90e2;
-  color: #ffffff;
-}
-
-.signupButton {
-  background-color: #4a90e2;
-  color: #ffffff;
-}
-
-.signupButton:hover {
-  background-color: #357abd;
 }
