@@ -1,13 +1,2 @@
-Upload failed: TypeError: Cannot read properties of undefined (reading 'protocol')
-    at isURLSameOrigin (isURLSameOrigin.js:57:1)
-    at __WEBPACK_DEFAULT_EXPORT__ (resolveConfig.js:45:1)
-    at dispatchXhrRequest (xhr.js:16:1)
-    at new Promise (<anonymous>)
-    at xhr (xhr.js:15:1)
-    at Axios.dispatchRequest (dispatchRequest.js:51:1)
-    at Axios._request (Axios.js:173:1)
-    at Axios.request (Axios.js:40:1)
-    at Axios.httpMethod [as put] (Axios.js:212:1)
-    at Function.wrap [as put] (bind.js:5:1)
-    at Axios.request (Axios.js:45:1)
-    at async handleUpload (ProductSheetsPage.js:35:1)
+API DATA: key:""singlife/claimforms/CI161080/NonTechDataEngineerResume""
+presignedUrl: https://s3
