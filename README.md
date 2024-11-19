@@ -1,45 +1,39 @@
 import React, { useState } from "react";
+import { useDropzone } from "react-dropzone"; // Import react-dropzone hook
 import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ onFileChange, onUpload, uploading }) => {
-  const [dragging, setDragging] = useState(false);
-  
-  // Handle drag enter
-  const handleDragEnter = (e) => {
-    e.preventDefault();
-    setDragging(true);
-  };
-  
-  // Handle drag leave
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setDragging(false);
-  };
-  
-  // Handle drop
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) onFileChange(file);
-  };
+  const [file, setFile] = useState(null);
+
+  // Use the useDropzone hook from react-dropzone
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: '.csv, .xls, .xlsx', // Allow only specific file types
+    onDrop: (acceptedFiles) => {
+      const uploadedFile = acceptedFiles[0];
+      setFile(uploadedFile);
+      onFileChange(uploadedFile); // Callback to handle the file change
+    }
+  });
 
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.heading}>Upload Product Sheet</h2>
+      
+      {/* Dropzone container */}
       <div 
-        className={`${styles.dropzoneContainer} ${dragging ? styles.active : ''}`}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
+        {...getRootProps()}
+        className={`${styles.dropzoneContainer} ${file ? styles.fileSelected : ''}`}
       >
+        <input {...getInputProps()} />
         <div className={styles.dropzone}>
-          <FontAwesomeIcon icon={faUpload} size="2x" className={styles.icon}/>
-          <p>Drag & Drop your file here</p>
+          <FontAwesomeIcon icon={faUpload} size="2x" className={styles.icon} />
+          <p>{file ? `File: ${file.name}` : 'Drag & Drop your file here'}</p>
         </div>
       </div>
+
+      {/* Upload Button */}
       <button
         className={styles.uploadButton}
         onClick={onUpload}
@@ -49,7 +43,7 @@ const Sidebar = ({ onFileChange, onUpload, uploading }) => {
           <div className={styles.loader}></div>
         ) : (
           <>
-            <FontAwesomeIcon className={styles.icon} icon={faUpload}/>
+            <FontAwesomeIcon className={styles.icon} icon={faUpload} />
             Upload
           </>
         )}
