@@ -10,7 +10,6 @@ const ProductSheetsPage = () => {
   const [uploading, setUploading] = useState(false);
   const [rows, setRows] = useState([]);
 
-  // Function to handle file selection
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -18,7 +17,6 @@ const ProductSheetsPage = () => {
     }
   };
 
-  // Function to handle file upload
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a file to upload.");
@@ -27,13 +25,13 @@ const ProductSheetsPage = () => {
     setUploading(true);
     try {
       // Request the presigned URL from the backend
-      const response = await axios.post("dummy", {
-        filename: file.name,
+      const response = await axios.post("dummy1", {
+        payload: { filename: file.name },
       });
 
       const { presignedUrl, key } = response.data;
 
-      // Upload the file to S3 using the presigned URL
+      // Use the presigned URL to upload the file
       await axios.put(presignedUrl, file, {
         headers: { "Content-Type": file.type },
       });
@@ -55,64 +53,46 @@ const ProductSheetsPage = () => {
       setMessage("File uploaded successfully!");
     } catch (error) {
       setMessage("Upload failed: " + error.message);
-      console.error("Upload Error:", error);
     } finally {
       setUploading(false);
     }
   };
 
-  // Function to reload row data using RecNum
   const handleReload = async (recNum) => {
     try {
-      const payload = {
-        recNum,
-        filename: file?.name || "unknown-file", // Ensure filename is included in the payload
-      };
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
       // Fetch the data for the specific RecNum from the API
-      const response = await axios.post("dummy1", payload, { headers });
+    //   const response = await axios.post(`https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/fileprocessing%22${recNum}`);
+     const response = await axios.post(`dummy${recNum}`,{
+                 headers: { "Content-Type": file.type },
 
+      });
+      
+      console.log(response)
       const data = response.data;
-      console.log("Reload Data:", data);
-
+console.log("Reload Data:", recNum, data);
       // Update the row with the fetched data
       setRows((prevRows) =>
         prevRows.map((row) =>
           row.recNum === recNum
             ? {
                 ...row,
-                policyId: data.policyId || "N/A",
-                productSheetType: data.productSheetType || "N/A",
-                summary: data.summary || "N/A",
+                policyId: data.policyId,
+                productSheetType: data.productSheetType,
+                summary: data.summary,
                 status: "Completed",
               }
             : row
         )
       );
-
-      setMessage(`Data for RecNum ${recNum} reloaded successfully.`);
     } catch (error) {
-      setMessage(`Failed to fetch data for RecNum: ${recNum}`);
-      console.error("Reload Error:", error);
+      setMessage("Failed to fetch data for RecNum: " + recNum);
     }
   };
 
   return (
     <div className={styles.container}>
-      <Sidebar
-        onFileChange={handleFileChange}
-        onUpload={handleUpload}
-        uploading={uploading}
-      />
-      <MainContent
-        message={message}
-        rows={rows}
-        handleReload={handleReload}
-      />
+      <Sidebar onFileChange={handleFileChange} onUpload={handleUpload} uploading={uploading} />
+      <MainContent message={message} rows={rows} handleReload={handleReload} />
     </div>
   );
 };
