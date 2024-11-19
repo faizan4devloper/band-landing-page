@@ -1,24 +1,37 @@
-import React from "react";
+import React, { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
+const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
+  const onDrop = useCallback((acceptedFiles) => {
+    if (acceptedFiles && acceptedFiles.length > 0) {
+      onFileChange(acceptedFiles[0]); // Passing the first file selected
+    }
+  }, [onFileChange]);
 
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    multiple: false, // Allow only one file
+    accept: '.pdf, .xlsx, .xls, .csv, .docx', // Accepted file types
+  });
+
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.heading}>Upload Product Sheet</h2>
-      <div className={styles.fileInputContainer}>
-        <label htmlFor="fileUpload" className={styles.fileLabel}>
-          Choose File
-          <input
-            type="file"
-            id="fileUpload"
-            onChange={onFileChange}
-            className={styles.fileInput}
-          />
-        </label>
+
+      <div {...getRootProps()} className={styles.dropzoneContainer}>
+        <input {...getInputProps()} />
+        <div className={styles.dropzone}>
+          <p>Drag & Drop your file here, or click to select</p>
+        </div>
       </div>
+
+      <div className={styles.fileInputContainer}>
+        {message && <p className={styles.message}>{message}</p>}
+      </div>
+
       <button
         className={styles.uploadButton}
         onClick={onUpload}
@@ -28,7 +41,7 @@ const Sidebar = ({ onFileChange, onUpload, uploading }) => {
           <div className={styles.loader}></div>
         ) : (
           <>
-            <FontAwesomeIcon className={styles.icon} icon={faUpload}/>
+            <FontAwesomeIcon className={styles.icon} icon={faUpload} />
             Upload
           </>
         )}
@@ -40,16 +53,15 @@ const Sidebar = ({ onFileChange, onUpload, uploading }) => {
 export default Sidebar;
 
 
+
 /* Sidebar Container */
 .sidebar {
-  width: 250px;
+  width: 300px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: #333;
   padding: 20px;
   height: 100vh;
   overflow-y: hidden;
-  /*background: linear-gradient(135deg, #ffffff, #f2f6fc);*/
-  /*box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);*/
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,52 +69,60 @@ export default Sidebar;
 
 /* Heading */
 .heading {
-     font-size: 1.2rem;
-    font-weight: bold;
-    color: #0f5fdc;
-    background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0f5fdc;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
+
+/* Dropzone Container */
+.dropzoneContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border-radius: 10px;
+  border: 2px dashed #ccc;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+/* Dropzone Styling */
+.dropzone {
+  padding: 20px;
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.dropzone:hover {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.dropzone p {
+  margin: 0;
 }
 
 /* File Input Container */
 .fileInputContainer {
-  margin-bottom: 15px;
+  margin-top: 15px;
   width: 100%;
   text-align: center;
-}
-
-/* File Input Label */
-.fileLabel {
-  border: 2px dashed #cccccc;
-  padding: 5px;
-  font-size: 12px;
-  cursor: pointer;
-  text-align: center;
-  border-radius: 8px;
-  background: rgba(230, 235, 245, 1);
-  margin-bottom: 20px;
-  transition: background-color 0.3s ease;
-}
-
-.dropzone:hover {
-  background: linear-gradient(90deg, rgb(95, 30, 193) 0%, rgb(15, 95, 220) 100%);
-  color: #fff;
-}
-
-.fileLabel:hover {
-  background-color: #45a049;
-}
-
-/* Hidden File Input */
-.fileInput {
-  display: none;
 }
 
 /* Upload Button */
 .uploadButton {
   padding: 10px 20px;
-  background:linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
   color: white;
   border: none;
   border-radius: 5px;
@@ -112,10 +132,11 @@ export default Sidebar;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 20px;
 }
 
 .uploadButton:disabled {
-  background:linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
   cursor: not-allowed;
 }
 
@@ -146,4 +167,11 @@ export default Sidebar;
 /* Upload Button Icon */
 .icon {
   margin-right: 8px;
+}
+
+/* Message below file input */
+.message {
+  font-size: 12px;
+  color: #555;
+  margin-top: 10px;
 }
