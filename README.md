@@ -7,8 +7,11 @@ import { useDropzone } from 'react-dropzone'; // Import Dropzone
 const Sidebar = ({ onFileChange, onUpload, uploading }) => {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (acceptedFiles) => {
-      // Pass the accepted files to onFileChange (this updates the parent state)
-      onFileChange(acceptedFiles);
+      // Check if file is received properly
+      console.log("Dropped files: ", acceptedFiles); // Debugging: See the dropped files in the console
+      if (acceptedFiles && acceptedFiles.length > 0) {
+        onFileChange(acceptedFiles[0]); // Pass the selected file to parent (single file)
+      }
     },
     multiple: false, // Allow only one file at a time
     accept: '.xlsx, .xls, .csv', // Only accept specific file types (you can change this)
