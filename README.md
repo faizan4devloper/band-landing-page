@@ -5,15 +5,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
-  const [fileName, setFileName] = useState(null); // State to hold the selected file name
+  const [selectedFile, setSelectedFile] = useState(null); // State to hold the selected file object
 
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
-      const selectedFile = acceptedFiles[0];
-      setFileName(selectedFile.name); // Set the file name to state
-      onFileChange(selectedFile); // Pass the file to the parent component
+      const file = acceptedFiles[0];
+      setSelectedFile(file); // Store the full file object
+      onFileChange(file); // Pass the file to the parent component
     }
   }, [onFileChange]);
+
+  const handleUpload = () => {
+    if (selectedFile) {
+      onUpload(selectedFile); // Ensure the selected file is passed to the upload function
+    } else {
+      console.error("No file selected for upload.");
+    }
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -33,9 +41,9 @@ const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
       </div>
 
       {/* Display selected file name */}
-      {fileName && (
+      {selectedFile && (
         <div className={styles.fileNameContainer}>
-          <p className={styles.fileName}>{fileName}</p>
+          <p className={styles.fileName}>{selectedFile.name}</p>
         </div>
       )}
 
@@ -45,8 +53,8 @@ const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
 
       <button
         className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
+        onClick={handleUpload}
+        disabled={uploading || !selectedFile} // Disable if no file or upload is in progress
       >
         {uploading ? (
           <div className={styles.loader}></div>
