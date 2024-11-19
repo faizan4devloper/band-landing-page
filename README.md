@@ -1,75 +1,144 @@
-import json
-import boto3
-import uuid
-import os
-import random
+import React, { useState } from "react";
+import axios from "axios";
+import styles from './ProductSheetsPage.module.css';
 
-# Configure S3 client
-s3 = boto3.client('s3')
-bucket_name = "aimlusecasesv1"
-headers = {
-            'Access-Control-Allow-Origin': '*',  # Replace with your client's origin
-            'Access-Control-Allow-Headers': '*',
-            'Access-Control-Allow-Methods': '*',  # Adjust based on the allowed methods
-        }
-def generate_ci_number(length):
-    # Ensure the length is at least 3 (2 for "CI" and at least 1 digit)
-    if length < 3:
-        raise ValueError("Length must be at least 3")
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null); // State to hold the file
+  const [uploadStatus, setUploadStatus] = useState(""); // Status for file upload
+  const [fileDetails, setFileDetails] = useState([]); // Array to store file details for the table
 
-# Generate random digits for the remaining length
-    digits = ''.join([str(random.randint(0, 9)) for _ in range(length - 2)])
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
-# Combine "CI" with the random digits
-    ci_number = "CI" + digits
-
-    return ci_number
-
-def lambda_handler(event, context):
-    
-    print("EVENT",event)
-    print("KEYS",event.keys())
-    # print("EXTENSION", event['queryStringParameters']['extension'])
-    print("VALUES",event.values())
-    file_namewext = event['body']
-    file_namewext=json.loads(file_namewext)#['payload']['filename']#via api
-    #file_namewext = event['payload']['filename'] # local testing
-    file_namewext=file_namewext['payload']['filename']
-    dot_index = file_namewext.rfind('.')
-    if dot_index == -1:  # No dot found, assume no extension
-        file_name = file_namewext
-        file_extension = ''
-    else:
-        file_name = file_namewext[:dot_index]
-        file_extension = file_namewext[dot_index+1:]
-    claimid = generate_ci_number(8)
-    print("FILENAME",file_name)
-    print("CLAIMID",claimid)
-    content_type = f'application/{file_extension}'  # Set content type based on file extension
-    # subfolder = f'iassureclaim/claimforms/{claimid}/'
-    subfolder = f'singlifepoc/productsheet/{claimid}/'
-    
-    # key = f'{uuid.uuid4()}.{file_extension}'  # Generate a unique key with specified extension
-    key = f'{subfolder}{file_name}'
-    # Generate pre-signed URL
-    presigned_url = s3.generate_presigned_url(
-        ClientMethod='put_object',
-        Params={
-            'Bucket': bucket_name, 
-            'Key': key,
-            'ContentType': content_type,
-        },
-        ExpiresIn=3600,    # The expiration time of the URL (in seconds), here it's set to 1 hour
-        HttpMethod='PUT'   # Only allow PUT requests on the url
-    )
-
-    print("PRESIGNEDURL",presigned_url)
-    print("KEY",key)
-    return {
-    'statusCode': 200,
-    'headers': headers,
-    'body': json.dumps({
-            'presignedUrl': presigned_url,
-            'key': key
-        })
+  // Function to upload the file to S3 using presigned URL
+  const handleUpload = async () => {
+    if (!file) {
+      setUploadStatus("No file selected.");
+      return;
     }
+
+    try {
+      // 1. Step - Request presigned URL from backend
+      const response = await axios.post('https://your-api-endpoint.com/presign-url', {
+        payload: {
+          filename: file.name,
+        },
+      });
+
+      const { presignedUrl, key } = response.data;
+
+      // 2. Step - Use the presigned URL to upload the file to S3
+      const uploadResponse = await axios.put(presignedUrl, file, {
+        headers: {
+          "Content-Type": file.type,
+        },
+      });
+
+      setUploadStatus("File uploaded successfully!");
+
+      // 3. Step - Add the file details to the table
+      const newFileDetails = {
+        policyId: key.split('/')[2],  // Extract Policy ID from S3 key
+        productSheetType: file.type,
+        summary: file.name,
+        previewLink: `https://your-s3-bucket-url/${key}`,
+      };
+
+      setFileDetails([...fileDetails, newFileDetails]);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setUploadStatus("Upload failed.");
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      {/* Left Sidebar */}
+      <div className={styles.sidebar}>
+        <input type="file" onChange={handleFileChange} />
+        <button className={styles.uploadButton} onClick={handleUpload}>
+          Upload & Process
+        </button>
+        {uploadStatus && <p>{uploadStatus}</p>}
+      </div>
+
+      {/* Main Content - Table Display */}
+      <div className={styles.mainContent}>
+        <h2>Uploaded Product Sheets</h2>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Policy ID</th>
+              <th>Product Sheet Type</th>
+              <th>Summary</th>
+              <th>Preview Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fileDetails.map((file, index) => (
+              <tr key={index}>
+                <td>{file.policyId}</td>
+                <td>{file.productSheetType}</td>
+                <td>{file.summary}</td>
+                <td>
+                  <a href={file.previewLink} target="_blank" rel="noopener noreferrer">
+                    View PDF
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default ProductSheetsPage;
+
+
+
+.container {
+  display: flex;
+  padding: 20px;
+}
+
+.sidebar {
+  width: 300px;
+  margin-right: 20px;
+}
+
+.mainContent {
+  flex-grow: 1;
+}
+
+.uploadButton {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.uploadButton:hover {
+  background-color: #45a049;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th, .table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
