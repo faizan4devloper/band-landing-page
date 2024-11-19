@@ -1,140 +1,100 @@
-import React from "react";
-import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
-import { FaUpload } from "react-icons/fa"; // Icon for the upload button
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import styles from './ProductSheetsPage.module.css';
 
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      // Request the presigned URL from the backend
+      const response = await axios.post("dummy", {
+        payload: { filename: file.name },
+      });
+
+      const { presignedUrl, key } = response.data;
+
+      // Use the presigned URL to upload the file
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      // Add a new row with static RecNum and placeholders
+      const newRecNum = rows.length + 1;
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum: newRecNum,
+          policyId: "",
+          productSheetType: "",
+          summary: "",
+          previewLink: `https://your-s3-bucket-url.com/${key}`,
+          status: "Pending",
+        },
+      ]);
+
+      setMessage("File uploaded successfully!");
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReload = async (recNum) => {
+    try {
+      // Fetch the data for the specific RecNum from the API
+    //   const response = await axios.post(`https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/fileprocessing%22${recNum}`);
+     const response = await axios.post(`dummy1${recNum}`,{
+                 headers: { "Content-Type": file.type },
+
+      });
+      
+      console.log(response)
+      const data = response.data;
+console.log("Reload Data:",data);
+      // Update the row with the fetched data
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.recNum === recNum
+            ? {
+                ...row,
+                policyId: data.policyId,
+                productSheetType: data.productSheetType,
+                summary: data.summary,
+                status: "Completed",
+              }
+            : row
+        )
+      );
+    } catch (error) {
+      setMessage("Failed to fetch data for RecNum: " + recNum);
+    }
+  };
+
   return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.heading}>Upload Product Sheet</h2>
-      <div className={styles.fileInputContainer}>
-        <label htmlFor="fileUpload" className={styles.fileLabel}>
-          Choose File
-          <input
-            type="file"
-            id="fileUpload"
-            onChange={onFileChange}
-            className={styles.fileInput}
-          />
-        </label>
-      </div>
-      <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
-      >
-        {uploading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          <>
-            <FaUpload className={styles.icon} />
-            Upload
-          </>
-        )}
-      </button>
+    <div className={styles.container}>
+      <Sidebar onFileChange={handleFileChange} onUpload={handleUpload} uploading={uploading} />
+      <MainContent message={message} rows={rows} handleReload={handleReload} />
     </div>
   );
 };
 
-export default Sidebar;
-
-
-/* Sidebar Container */
-.sidebar {
-  width: 250px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
-  padding: 20px;
-  height: 100vh;
-  overflow-y: hidden;
-  background: linear-gradient(135deg, #ffffff, #f2f6fc);
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Heading */
-.heading {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #4CAF50;
-  margin-bottom: 20px;
-}
-
-/* File Input Container */
-.fileInputContainer {
-  margin-bottom: 15px;
-  width: 100%;
-  text-align: center;
-}
-
-/* File Input Label */
-.fileLabel {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  font-size: 14px;
-}
-
-.fileLabel:hover {
-  background-color: #45a049;
-}
-
-/* Hidden File Input */
-.fileInput {
-  display: none;
-}
-
-/* Upload Button */
-.uploadButton {
-  padding: 10px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.uploadButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.uploadButton:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-/* Loader */
-.loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* Loader Animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Upload Button Icon */
-.icon {
-  margin-right: 8px;
-}
+export default ProductSheetsPage;
