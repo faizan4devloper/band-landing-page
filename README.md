@@ -1,60 +1,82 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
+import styles from "./Sidebar.module.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
-  const [selectedFile, setSelectedFile] = useState(null); // State to hold the selected file object
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(""); // State to store error messages
 
-  const onDrop = useCallback((acceptedFiles) => {
-    if (acceptedFiles && acceptedFiles.length > 0) {
-      const file = acceptedFiles[0];
-      setSelectedFile(file); // Store the full file object
-      onFileChange(file); // Pass the file to the parent component
-    }
-  }, [onFileChange]);
+  const onDrop = useCallback(
+    (acceptedFiles, fileRejections) => {
+      setErrorMessage(""); // Clear previous errors
+      if (fileRejections.length > 0) {
+        // Handle invalid file rejection
+        setErrorMessage("Invalid file type or size. Please try again.");
+        return;
+      }
+      if (acceptedFiles && acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        setSelectedFile(file);
+        onFileChange(file); // Pass the file to the parent
+      }
+    },
+    [onFileChange]
+  );
 
   const handleUpload = () => {
     if (selectedFile) {
-      onUpload(selectedFile); // Ensure the selected file is passed to the upload function
-    } else {
-      console.error("No file selected for upload.");
+      onUpload(selectedFile);
     }
   };
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
     onDrop,
-    multiple: false, // Allow only one file
-    accept: '.pdf, .xlsx, .xls, .csv, .docx', // Accepted file types
+    multiple: false,
+    accept: { 
+      'application/pdf': ['.pdf'], 
+      'application/vnd.ms-excel': ['.xls', '.xlsx', '.csv'], 
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] 
+    },
+    maxSize: 10 * 1024 * 1024, // 10 MB file size limit
   });
 
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.heading}>Upload Product Sheet</h2>
 
-      <div {...getRootProps()} className={styles.dropzoneContainer}>
+      <div
+        {...getRootProps()}
+        className={`${styles.dropzoneContainer} ${
+          isDragActive ? styles.active : isDragReject ? styles.reject : ""
+        }`}
+      >
         <input {...getInputProps()} />
         <div className={styles.dropzone}>
-          <p>Drag & Drop your file here, or click to select</p>
+          <p>
+            {isDragReject
+              ? "File type not accepted"
+              : isDragActive
+              ? "Drop the file here..."
+              : "Drag & Drop your file here, or click to select"}
+          </p>
         </div>
       </div>
 
-      {/* Display selected file name */}
+      {errorMessage && <p className={styles.errorMessage}>{errorMessage}</p>}
       {selectedFile && (
         <div className={styles.fileNameContainer}>
           <p className={styles.fileName}>{selectedFile.name}</p>
         </div>
       )}
 
-      <div className={styles.fileInputContainer}>
-        {message && <p className={styles.message}>{message}</p>}
-      </div>
+      {message && <p className={styles.message}>{message}</p>}
 
       <button
         className={styles.uploadButton}
         onClick={handleUpload}
-        disabled={uploading || !selectedFile} // Disable if no file or upload is in progress
+        disabled={uploading || !selectedFile}
       >
         {uploading ? (
           <div className={styles.loader}></div>
@@ -72,148 +94,19 @@ const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
 export default Sidebar;
 
 
-
-/* Sidebar Container */
-.sidebar {
-  width: 250px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
-  padding: 20px;
-  height: 100vh;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Heading */
-.heading {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0f5fdc;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
-}
-
-/* Dropzone Container */
-.dropzoneContainer {
-  /*width: 100%;*/
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /*padding: 20px;*/
-  border-radius: 10px;
-  border: 2px dashed #ccc;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-/* Dropzone Styling */
-.dropzone {
-  padding: 20px;
-  text-align: center;
-  color: #555;
-  font-size: 14px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.dropzone:hover {
-  background-color: #e8f5e9;
+/* Add visual feedback for drag events */
+.dropzoneContainer.active {
+  background-color: #e3f7e4;
   border-color: #4caf50;
-  color: #4caf50;
 }
 
-.dropzone p {
-  margin: 0;
+.dropzoneContainer.reject {
+  background-color: #fdecea;
+  border-color: #e57373;
 }
 
-/* File Name Container */
-.fileNameContainer {
-  margin-top: 15px;
-  background-color: #f3f3f3;
-  padding: 10px;
-  border-radius: 8px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* File Name Text */
-.fileName {
-  font-size: 14px;
-  color: #333;
-  font-weight: 600;
-  margin: 0;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* File Input Container */
-.fileInputContainer {
-  margin-top: 15px;
-  width: 100%;
-  text-align: center;
-}
-
-/* Upload Button */
-.uploadButton {
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.uploadButton:disabled {
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  cursor: not-allowed;
-}
-
-.uploadButton:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-/* Loader */
-.loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* Loader Animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Upload Button Icon */
-.icon {
-  margin-right: 8px;
-}
-
-/* Message below file input */
-.message {
+.errorMessage {
+  color: #e57373;
   font-size: 12px;
-  color: #555;
   margin-top: 10px;
 }
