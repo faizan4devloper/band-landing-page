@@ -1,17 +1,35 @@
-import React from 'react';
-import styles from './Sidebar.module.css'; // Custom CSS for Sidebar
+import React from "react";
+import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
+import { FaUpload } from "react-icons/fa"; // Icon for the upload button
 
 const Sidebar = ({ onFileChange, onUpload, uploading }) => {
   return (
     <div className={styles.sidebar}>
-      <h3>Upload Product Sheet</h3>
-      <input type="file" onChange={onFileChange} />
+      <h2 className={styles.heading}>Upload Product Sheet</h2>
+      <div className={styles.fileInputContainer}>
+        <label htmlFor="fileUpload" className={styles.fileLabel}>
+          Choose File
+          <input
+            type="file"
+            id="fileUpload"
+            onChange={onFileChange}
+            className={styles.fileInput}
+          />
+        </label>
+      </div>
       <button
         className={styles.uploadButton}
         onClick={onUpload}
         disabled={uploading}
       >
-        {uploading ? "Uploading..." : "Upload"}
+        {uploading ? (
+          <div className={styles.loader}></div>
+        ) : (
+          <>
+            <FaUpload className={styles.icon} />
+            Upload
+          </>
+        )}
       </button>
     </div>
   );
@@ -20,27 +38,103 @@ const Sidebar = ({ onFileChange, onUpload, uploading }) => {
 export default Sidebar;
 
 
+/* Sidebar Container */
+.sidebar {
+  width: 250px;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  color: #333;
+  padding: 20px;
+  height: 100vh;
+  overflow-y: hidden;
+  background: linear-gradient(135deg, #ffffff, #f2f6fc);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .sidebar {
-        width: 250px;
-      border-right: 1px solid rgba(0, 0, 0, 0.1);
-      color: #333;
-      padding: 20px;
-      height: 100vh;
-      overflow-y: hidden;
-    }
-    
-    .uploadButton {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    
-    .uploadButton:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
-    }
+/* Heading */
+.heading {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4CAF50;
+  margin-bottom: 20px;
+}
+
+/* File Input Container */
+.fileInputContainer {
+  margin-bottom: 15px;
+  width: 100%;
+  text-align: center;
+}
+
+/* File Input Label */
+.fileLabel {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  font-size: 14px;
+}
+
+.fileLabel:hover {
+  background-color: #45a049;
+}
+
+/* Hidden File Input */
+.fileInput {
+  display: none;
+}
+
+/* Upload Button */
+.uploadButton {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+/* Loader */
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4CAF50;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* Loader Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Upload Button Icon */
+.icon {
+  margin-right: 8px;
+}
