@@ -21,7 +21,6 @@ export default Sidebar;
 
 
 
-
     .sidebar {
         width: 250px;
       border-right: 1px solid rgba(0, 0, 0, 0.1);
