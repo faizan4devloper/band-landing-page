@@ -1,13 +1,17 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
+  const [fileName, setFileName] = useState(null); // State to hold the selected file name
+
   const onDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles && acceptedFiles.length > 0) {
-      onFileChange(acceptedFiles[0]); // Passing the first file selected
+      const selectedFile = acceptedFiles[0];
+      setFileName(selectedFile.name); // Set the file name to state
+      onFileChange(selectedFile); // Pass the file to the parent component
     }
   }, [onFileChange]);
 
@@ -27,6 +31,13 @@ const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
           <p>Drag & Drop your file here, or click to select</p>
         </div>
       </div>
+
+      {/* Display selected file name */}
+      {fileName && (
+        <div className={styles.fileNameContainer}>
+          <p className={styles.fileName}>{fileName}</p>
+        </div>
+      )}
 
       <div className={styles.fileInputContainer}>
         {message && <p className={styles.message}>{message}</p>}
@@ -51,7 +62,6 @@ const Sidebar = ({ onFileChange, onUpload, uploading, message }) => {
 };
 
 export default Sidebar;
-
 
 
 /* Sidebar Container */
@@ -110,6 +120,29 @@ export default Sidebar;
 
 .dropzone p {
   margin: 0;
+}
+
+/* File Name Container */
+.fileNameContainer {
+  margin-top: 15px;
+  background-color: #f3f3f3;
+  padding: 10px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* File Name Text */
+.fileName {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  margin: 0;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* File Input Container */
