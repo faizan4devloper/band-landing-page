@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import './ProductSheetsPage.css'; // Custom CSS for styling
+import axios from "axios";
+import styles from "./ProductSheetsPage.module.css"; // Importing CSS module
 
 const ProductSheetsPage = () => {
   const [file, setFile] = useState(null);
@@ -23,25 +24,16 @@ const ProductSheetsPage = () => {
         },
       };
 
-      // Fetch pre-signed URL from API Gateway
-      const response = await fetch("https://<your-api-gateway-url>", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      // Request pre-signed URL from API Gateway
+      const { data } = await axios.post("https://<your-api-gateway-url>", payload, {
+        headers: { "Content-Type": "application/json" },
       });
 
-      const data = await response.json();
       const { url } = data;
 
       // Upload the file to S3 using the pre-signed URL
-      await fetch(url, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
+      await axios.put(url, file, {
+        headers: { "Content-Type": file.type },
       });
 
       // Update the table with uploaded file data
@@ -71,17 +63,18 @@ const ProductSheetsPage = () => {
   };
 
   return (
-    <div className="container">
+    <div className={styles.container}>
       <h1>Manage Product Sheets</h1>
-      <div className="upload-section">
+      <div className={styles.uploadSection}>
         <input type="file" accept="application/pdf" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload Product Sheet</button>
+        <button className={styles.uploadButton} onClick={handleUpload}>
+          Upload Product Sheet
+        </button>
       </div>
-      {message && <p className="message">{message}</p>}
+      {message && <p className={styles.message}>{message}</p>}
 
-      {/* Table to display uploaded product sheets */}
-      <div className="table-container">
-        <table>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
           <thead>
             <tr>
               <th>File Name</th>
@@ -105,3 +98,67 @@ const ProductSheetsPage = () => {
 };
 
 export default ProductSheetsPage;
+
+
+.container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+.uploadSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.uploadButton {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.uploadButton:hover {
+  background-color: #0056b3;
+}
+
+.message {
+  color: green;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.tableContainer {
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
