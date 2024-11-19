@@ -1,34 +1,55 @@
 import React from "react";
 import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faUpload, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
-
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
+const Sidebar = ({
+  onFileChange,
+  onUpload,
+  uploading,
+  fileName,
+  onRemoveFile,
+}) => {
   return (
     <div className={styles.sidebar}>
       <h2 className={styles.heading}>Upload Product Sheet</h2>
-      <div className={styles.fileInputContainer}>
-        <label htmlFor="fileUpload" className={styles.fileLabel}>
-          Choose File
-          <input
-            type="file"
-            id="fileUpload"
-            onChange={onFileChange}
-            className={styles.fileInput}
-          />
-        </label>
+      
+      <div
+        className={styles.dropzoneContainer}
+        onClick={() => document.getElementById("fileUpload").click()}
+      >
+        <div className={styles.dropzone}>
+          <p>Drag & Drop or Click to Upload</p>
+        </div>
+        <input
+          type="file"
+          id="fileUpload"
+          onChange={onFileChange}
+          className={styles.fileInput}
+        />
       </div>
+      
+      {fileName && (
+        <div className={styles.fileNameContainer}>
+          <span className={styles.fileName}>{fileName}</span>
+          <FontAwesomeIcon
+            className={styles.removeIcon}
+            icon={faTrashAlt}
+            onClick={onRemoveFile}
+          />
+        </div>
+      )}
+      
       <button
         className={styles.uploadButton}
         onClick={onUpload}
-        disabled={uploading}
+        disabled={uploading || !fileName}
       >
         {uploading ? (
           <div className={styles.loader}></div>
         ) : (
           <>
-            <FontAwesomeIcon className={styles.icon} icon={faUpload}/>
+            <FontAwesomeIcon className={styles.icon} icon={faUpload} />
             Upload
           </>
         )}
@@ -40,72 +61,55 @@ const Sidebar = ({ onFileChange, onUpload, uploading }) => {
 export default Sidebar;
 
 
+
 /* Sidebar Container */
 .sidebar {
-  width: 250px;
+  width: 300px;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
   color: #333;
   padding: 20px;
   height: 100vh;
-  overflow-y: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/* Heading */
-.heading {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0f5fdc;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
-}
-
 /* Dropzone Container */
 .dropzoneContainer {
-  /*width: 100%;*/
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  /*padding: 20px;*/
   border-radius: 10px;
   border: 2px dashed #ccc;
   background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-/* Dropzone Styling */
-.dropzone {
   padding: 20px;
-  text-align: center;
-  color: #555;
-  font-size: 14px;
-  border-radius: 8px;
-  width: 100%;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.dropzone:hover {
+.dropzoneContainer:hover {
   background-color: #e8f5e9;
   border-color: #4caf50;
-  color: #4caf50;
 }
 
 .dropzone p {
+  font-size: 14px;
+  color: #555;
   margin: 0;
 }
 
 /* File Name Container */
 .fileNameContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 15px;
   background-color: #f3f3f3;
   padding: 10px;
   border-radius: 8px;
   width: 100%;
-  text-align: center;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -114,73 +118,26 @@ export default Sidebar;
   font-size: 14px;
   color: #333;
   font-weight: 600;
-  margin: 0;
   word-wrap: break-word;
-  text-overflow: ellipsis;
   overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* File Input Container */
-.fileInputContainer {
-  margin-top: 15px;
-  width: 100%;
-  text-align: center;
-}
-
-/* Upload Button */
-.uploadButton {
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  color: white;
-  border: none;
-  border-radius: 5px;
+/* Remove Icon */
+.removeIcon {
+  color: #ff4d4d;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
+  margin-left: 10px;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.uploadButton:disabled {
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  cursor: not-allowed;
+.removeIcon:hover {
+  color: #d32f2f;
+  transform: scale(1.2);
 }
 
-.uploadButton:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-/* Loader */
-.loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* Loader Animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Upload Button Icon */
-.icon {
-  margin-right: 8px;
-}
-
-/* Message below file input */
-.message {
-  font-size: 12px;
-  color: #555;
-  margin-top: 10px;
+/* File Input */
+.fileInput {
+  display: none;
 }
