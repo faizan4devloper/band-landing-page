@@ -1,210 +1,75 @@
-import React, { useState } from "react";
-import styles from "./ProductSheetsPage.module.css";
-import axios from "axios";
+import json
+import boto3
+import uuid
+import os
+import random
 
-const ProductSheetsPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [tableData, setTableData] = useState([]);
-
-  const handleFileChange = (event) => {
-    setFile(event.target.files[0]);
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-
-    try {
-      setMessage("Uploading...");
-      const payload = {
-        payload: {
-          filename: file.name,
-        },
-      };
-
-      const { data } = await axios.post(
-        "https://<your-api-gateway-url>",
-        payload,
-        {
-          headers: { "Content-Type": "application/json" },
+# Configure S3 client
+s3 = boto3.client('s3')
+bucket_name = "aimlusecasesv1"
+headers = {
+            'Access-Control-Allow-Origin': '*',  # Replace with your client's origin
+            'Access-Control-Allow-Headers': '*',
+            'Access-Control-Allow-Methods': '*',  # Adjust based on the allowed methods
         }
-      );
+def generate_ci_number(length):
+    # Ensure the length is at least 3 (2 for "CI" and at least 1 digit)
+    if length < 3:
+        raise ValueError("Length must be at least 3")
 
-      const url = data.presignedUrl;
-      if (!url) {
-        throw new Error("Pre-signed URL not received from API");
-      }
+# Generate random digits for the remaining length
+    digits = ''.join([str(random.randint(0, 9)) for _ in range(length - 2)])
 
-      await axios.put(url, file, {
-        headers: { "Content-Type": file.type },
-      });
+# Combine "CI" with the random digits
+    ci_number = "CI" + digits
 
-      // Update the table with new data
-      setTableData((prevData) => [
-        ...prevData,
-        {
-          policyId: `PID${Math.floor(Math.random() * 1000)}`,
-          productSheetType: "PDF",
-          summary: "File uploaded successfully",
-          previewLink: url.split("?")[0], // Strip query params
+    return ci_number
+
+def lambda_handler(event, context):
+    
+    print("EVENT",event)
+    print("KEYS",event.keys())
+    # print("EXTENSION", event['queryStringParameters']['extension'])
+    print("VALUES",event.values())
+    file_namewext = event['body']
+    file_namewext=json.loads(file_namewext)#['payload']['filename']#via api
+    #file_namewext = event['payload']['filename'] # local testing
+    file_namewext=file_namewext['payload']['filename']
+    dot_index = file_namewext.rfind('.')
+    if dot_index == -1:  # No dot found, assume no extension
+        file_name = file_namewext
+        file_extension = ''
+    else:
+        file_name = file_namewext[:dot_index]
+        file_extension = file_namewext[dot_index+1:]
+    claimid = generate_ci_number(8)
+    print("FILENAME",file_name)
+    print("CLAIMID",claimid)
+    content_type = f'application/{file_extension}'  # Set content type based on file extension
+    # subfolder = f'iassureclaim/claimforms/{claimid}/'
+    subfolder = f'singlifepoc/productsheet/{claimid}/'
+    
+    # key = f'{uuid.uuid4()}.{file_extension}'  # Generate a unique key with specified extension
+    key = f'{subfolder}{file_name}'
+    # Generate pre-signed URL
+    presigned_url = s3.generate_presigned_url(
+        ClientMethod='put_object',
+        Params={
+            'Bucket': bucket_name, 
+            'Key': key,
+            'ContentType': content_type,
         },
-      ]);
+        ExpiresIn=3600,    # The expiration time of the URL (in seconds), here it's set to 1 hour
+        HttpMethod='PUT'   # Only allow PUT requests on the url
+    )
 
-      setMessage("File uploaded successfully!");
-      setFile(null);
-    } catch (error) {
-      console.error("Upload failed:", error.message);
-      setMessage("Failed to upload the file.");
+    print("PRESIGNEDURL",presigned_url)
+    print("KEY",key)
+    return {
+    'statusCode': 200,
+    'headers': headers,
+    'body': json.dumps({
+            'presignedUrl': presigned_url,
+            'key': key
+        })
     }
-  };
-
-  return (
-    <div className={styles.container}>
-      {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <h2>Manage Product Sheets</h2>
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className={styles.fileInput}
-        />
-        <button onClick={handleUpload} className={styles.uploadButton}>
-          Upload and Process
-        </button>
-        {message && <p className={styles.message}>{message}</p>}
-      </aside>
-
-      {/* Main Content */}
-      <main className={styles.mainContent}>
-        <h2>Product Sheets Table</h2>
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Policy ID</th>
-              <th>Product Sheet Type</th>
-              <th>Summary</th>
-              <th>Preview</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tableData.map((row, index) => (
-              <tr key={index}>
-                <td>{row.policyId}</td>
-                <td>{row.productSheetType}</td>
-                <td>{row.summary}</td>
-                <td>
-                  <a href={row.previewLink} target="_blank" rel="noopener noreferrer">
-                    Preview
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </main>
-    </div>
-  );
-};
-
-export default ProductSheetsPage;
-
-
-.container {
-  display: flex;
-  height: 100vh;
-  font-family: Arial, sans-serif;
-  background-color: #f5f7fa;
-}
-
-/* Sidebar Styles */
-.sidebar {
-  width: 25%;
-  padding: 20px;
-  background-color: #3f51b5;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.sidebar h2 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.fileInput {
-  margin-bottom: 15px;
-  padding: 8px;
-  border: none;
-  border-radius: 4px;
-}
-
-.uploadButton {
-  padding: 10px 20px;
-  background-color: #ffffff;
-  color: #3f51b5;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.uploadButton:hover {
-  background-color: #f0f0f0;
-}
-
-.message {
-  margin-top: 10px;
-  font-size: 0.9rem;
-  color: yellow;
-  text-align: center;
-}
-
-/* Main Content Styles */
-.mainContent {
-  flex: 1;
-  padding: 20px;
-}
-
-.mainContent h2 {
-  margin-bottom: 20px;
-  color: #3f51b5;
-}
-
-/* Table Styles */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: white;
-}
-
-.table th, .table td {
-  padding: 10px 15px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #f5f5f5;
-  font-weight: bold;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tr:hover {
-  background-color: #f1f1f1;
-}
-
-.table a {
-  color: #3f51b5;
-  text-decoration: none;
-}
-
-.table a:hover {
-  text-decoration: underline;
-}
