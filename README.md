@@ -1,6 +1,7 @@
-<div className={styles.fileInputContainer}>
-  <div {...getRootProps()} className={styles.dropzone}>
-    <input {...getInputProps()} />
-    <p className={styles.dropzoneText}>Drag & Drop your file here or click to browse</p>
-  </div>
-</div>
+const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (acceptedFiles) => {
+      // Handle file selection here
+      onFileChange(acceptedFiles);
+    },
+    multiple: false, // Allow only one file at a time
+  });
