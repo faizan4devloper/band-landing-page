@@ -1,128 +1,103 @@
-import React, { useState, useRef } from "react";
-import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
+import React, { useEffect, useRef } from "react";
+import styles from "./Header.module.css";
+import { gsap } from "gsap";
+import { useNavigate } from 'react-router-dom';
 
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
-  const [selectedFileName, setSelectedFileName] = useState(""); // State to hold selected file name
-  const fileInputRef = useRef(null);
+import Logo from '../../assets/HCLTechLogoBlue.svg';
 
-  // Trigger the file input when the fileInputContainer is clicked
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // Programmatically click the hidden file input
-    }
-  };
+const Header = () => {
+  const navigate = useNavigate()
+  
+  const HandleImageClick= ()=>{
+    navigate(-1);
+  }
+  
+  const logoRef = useRef(null);
+  const rightLogoRef = useRef(null);
 
-  // Handle file selection and update file name
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFileName(file.name); // Update state with selected file name
-      onFileChange(file); // Call the provided onFileChange function (if needed)
-    }
-  };
+  useEffect(() => {
+    // GSAP Animations
+    gsap.fromTo(
+      logoRef.current,
+      { opacity: 0, scale: 0.5 },
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 1.5,
+        ease: "elastic.out(1, 0.5)",
+      }
+    );
+
+    gsap.fromTo(
+      rightLogoRef.current,
+      { x: 50, opacity: 0 },
+      { x: 0, opacity: 1, duration: 1, ease: "power2.out", delay: 0.5 }
+    );
+  }, []);
 
   return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.heading}>Upload Product Sheet</h2>
-      <div
-        className={styles.fileInputContainer}
-        onClick={handleContainerClick} // Trigger the file input click when container is clicked
-      >
-        <p className={styles.dropzoneText}>
-          {selectedFileName ? (
-            `Selected file: ${selectedFileName}` // Display selected file name
-          ) : (
-            "Click to choose a file or drag & drop"
-          )}
-        </p>
-        <input
-          type="file"
-          ref={fileInputRef} // Attach ref to the file input
-          onChange={handleFileChange}
-          className={styles.fileInput}
-          style={{ display: "none" }} // Hide the file input
+    <header className={styles.header}>
+      <div ref={logoRef} className={styles.logoContainer} onClick={HandleImageClick}>
+        <span className={styles.logo} >Claim Assist</span>
+      </div>
+      <div className={styles.authButtons} onClick={HandleImageClick}>
+        <img
+          ref={rightLogoRef}
+          className={styles.rightLogo}
+          src={Logo}
+          alt="HCL Logo"
         />
       </div>
-      <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
-      >
-        {uploading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          <>
-            <FontAwesomeIcon className={styles.icon} icon={faUpload} />
-            Upload
-          </>
-        )}
-      </button>
-    </div>
+    </header>
   );
 };
 
-export default Sidebar;
+export default Header;
 
 
-/* Sidebar.module.css */
-.fileInputContainer {
-  padding: 20px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  text-align: center;
+
+
+/* Header Layout */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 80px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Logo Styling */
+.logoContainer {
+  position: relative;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #0f5fdc;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  min-height: 100px; /* Ensures enough space for text */
 }
 
-.fileInputContainer:hover {
-  background-color: #e9f7ff; /* Light blue when hovering over the container */
+/* Right Logo Hover Animation */
+.rightLogo {
+  width: 90px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+
 }
 
-.dropzoneText {
-  color: #888;
-  font-size: 16px;
-  font-weight: 500;
+.rightLogo, .logo:hover {
+  transform: scale(1.1);
 }
 
-.selectedFileText {
-  font-size: 16px;
-  color: #2d2d2d; /* Dark color for the file name */
-  font-weight: 600;
-  margin-top: 10px;
-}
-
-.fileInput {
-  display: none; /* File input is hidden */
-}
-
-.uploadButton {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-.uploadButton:disabled {
-  background-color: #ccc;
-}
-
-.loader {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 2s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Auth Buttons Section */
+.authButtons {
+  display: flex;
+  align-items: center;
 }
