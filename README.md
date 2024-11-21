@@ -1,3 +1,132 @@
+i want the add beutiful filter drop down for pending and completed i want the current table as is the below table filters all the pending, complted and all
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import styles from './ProductSheetsPage.module.css';
+
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false); // Track if a file has been uploaded
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage(""); // Clear previous messages
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      // Request the presigned URL from the backend
+      const response = await axios.post("dummy", {
+        payload: { filename: file.name },
+      });
+      
+      console.log(response.data);
+
+      const { presignedUrl, key } = response.data;
+
+      // Use the presigned URL to upload the file
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      // Add a new row with static RecNum and placeholders
+      const newRecNum = rows.length + 1;
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum: newRecNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: `https://your-s3-bucket-url.com/${key}`,
+          status: "Pending",
+        },
+      ]);
+  
+      setMessage("File uploaded successfully!");
+      setIsUploaded(true); // Set flag to true after upload
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReload = async (recNum) => {
+    try {
+      const payload = {
+        recNum,
+        fileType: file ? file.type : "application/json",
+        filename: file ? file.name : "example.txt",
+      };
+
+      const response = await axios.post(`dummy1`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log("Reload Data:", recNum, response.data);
+      const data = response.data;
+
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.recNum === recNum
+            ? {
+                ...row,
+                policyid: data.policyid,
+                type: data.type,
+                summary: data.summary,
+                status: "Completed✔️",
+              }
+            : row
+        )
+      );
+    } catch (error) {
+      setMessage("Failed to fetch data for RecNum: " + recNum);
+      console.error("Reload Error:", error);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <Sidebar
+        onFileChange={handleFileChange}
+        onUpload={handleUpload}
+        uploading={uploading}
+      />
+      {isUploaded ? ( // Conditionally render MainContent
+        <MainContent
+          message={message}
+          rows={rows}
+          handleReload={handleReload}
+        />
+      ) : (
+        <p className={styles.infoMessage}>
+          Please upload a document to view the data table.
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default ProductSheetsPage;
+
+
+
+
+
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styles from './MainContent.module.css';
@@ -108,136 +237,3 @@ const MainContent = ({ message, rows, handleReload }) => {
 
 export default MainContent;
 
-
-
-/* Main Content Styles */
-.mainContent {
-  margin-left: 20px;
-  flex-grow: 1;
-  padding: 20px;
-}
-
-/* Message Styling */
-.message {
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-left: 5px solid #007bff;
-  margin-bottom: 20px;
-  font-size: 16px;
-  color: #333;
-}
-
-/* Table Styling */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.table th, .table td {
-  padding: 12px;
-  border: 1px solid #ddd;
-  text-align: center;
-}
-
-.table th {
-  background: linear-gradient(to right, #007bff, #0056b3);
-  color: white;
-  font-weight: bold;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Loader */
-.loader {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid #ccc;
-  border-top: 2px solid #007bff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Buttons */
-.reloadButton {
-  background: none;
-  border: none;
-  color: blue;
-  cursor: pointer;
-  margin-left: 8px;
-  font-size: 16px;
-}
-
-.reloadButton:hover {
-  color: darkblue;
-}
-
-.previewButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.previewButton:hover {
-  background-color: #0056b3;
-}
-
-/* Modal Styling */
-.modalOverlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background: white;
-  width: 80%;
-  max-width: 600px;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.modalContent {
-  padding: 20px;
-}
-
-.modalIframe {
-  width: 100%;
-  height: 400px;
-  border: none;
-}
-
-.closeButton {
-  background: red;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  cursor: pointer;
-  border-radius: 4px;
-  float: right;
-}
-
-.closeButton:hover {
-  background: darkred;
-}
