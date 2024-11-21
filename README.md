@@ -1,122 +1,111 @@
-import React from 'react';
-import styles from './MainContent.module.css'; // Custom CSS for MainContent
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import styles from './ProductSheetsPage.module.css';
 
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
 
-const MainContent = ({ message, rows, handleReload }) => {
-  return (
-    <div className={styles.mainContent}>
-      {message && <p>{message}</p>}
-      
-      {/* Table to display uploaded data */}
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows && rows.length > 0 ? (
-            rows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum}</td>
-                <td>{row.policyid || "Loading..."}</td>
-                <td>{row.type || "Loading..."}</td>
-                <td>{row.summary || "Loading..."}</td>
-                <td>
-                  {row.previewLink ? (
-                    <a href={row.previewLink} target="_blank" rel="noopener noreferrer">
-                      Preview
-                    </a>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {row.status === "Pending" ? (
-                    <span>
-                      Pending
-                      <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReload(row.recNum)}
-                      >
-<FontAwesomeIcon icon={faRotateRight} />                      </button>
-                    </span>
-                  ) : (
-                    row.status
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
-import React, { useRef } from "react";
-import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUpload } from '@fortawesome/free-solid-svg-icons';
-
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
-  // Create a ref for the file input
-  const fileInputRef = useRef(null);
-
-  // Trigger the file input when the fileInputContainer is clicked
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click(); // Programmatically click the hidden file input
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
     }
   };
 
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      // Request the presigned URL from the backend
+      const response = await axios.post("dummy", {
+        payload: { filename: file.name },
+      });
+      
+      console.log(response.data)
+
+      const { presignedUrl, key } = response.data;
+
+      // Use the presigned URL to upload the file
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      // Add a new row with static RecNum and placeholders
+      const newRecNum = rows.length + 1;
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum: newRecNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: `https://your-s3-bucket-url.com/${key}`,
+          status: "Pending",
+        },
+      ]);
+  
+      setMessage("File uploaded successfully!");
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+ 
+const handleReload = async (recNum) => {
+  try {
+    // Define the payload with the required properties
+    const payload = {
+      recNum, // Add the RecNum value dynamically
+      fileType: file ? file.type : "application/json", // Example: dynamic or default type
+      filename: file ? file.name : "example.txt", // Example: dynamic or default filename
+    };
+
+    // Make the API call with the payload
+    const response = await axios.post(`dummy`, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+    
+
+
+    console.log("Reload Data:", recNum, response.data);
+    const data = response.data;
+
+    // Update the row with the fetched data
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.recNum === recNum
+          ? {
+              ...row,
+              policyid: data.policyid,
+              type: data.type,
+              summary: data.summary,
+              status: "Completed✔️",
+            }
+          : row
+      )
+    );
+  } catch (error) {
+    setMessage("Failed to fetch data for RecNum: " + recNum);
+    console.error("Reload Error:", error);
+  }
+};
+
   return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.heading}>Upload Product Sheet</h2>
-      <div
-        className={styles.fileInputContainer}
-        onClick={handleContainerClick} // Trigger the file input click when container is clicked
-      >
-        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
-        <input
-          type="file"
-          ref={fileInputRef} // Attach ref to the file input
-          onChange={onFileChange}
-          className={styles.fileInput}
-          style={{ display: "none" }} // Hide the file input
-        />
-      </div>
-      <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
-      >
-        {uploading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          <>
-            <FontAwesomeIcon className={styles.icon} icon={faUpload} />
-            Upload
-          </>
-        )}
-      </button>
+    <div className={styles.container}>
+      <Sidebar onFileChange={handleFileChange} onUpload={handleUpload} uploading={uploading} />
+      <MainContent message={message} rows={rows} handleReload={handleReload} />
     </div>
   );
 };
 
-export default Sidebar;
+export default ProductSheetsPage;
