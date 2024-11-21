@@ -1,3 +1,4 @@
+i want filenames also and remove icon
 
 import React, { useRef } from "react";
 import styles from "./Sidebar.module.css"; // Custom CSS for Sidebar
