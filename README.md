@@ -1,3 +1,6 @@
+style the table add enhancement on the table add colors in table coming the dynamic data thats why style well also stle the messages add the loaders and the preview also add beutiful modal after user click on the preview then opens beutiful modal
+
+
 import React from 'react';
 import styles from './MainContent.module.css'; // Custom CSS for MainContent
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -67,4 +70,41 @@ const MainContent = ({ message, rows, handleReload }) => {
 
 export default MainContent;
 
-style the table add enhancement on the table add colors in table coming the dynamic data thats why style well also stle the messages add the loaders
+.mainContent {
+  margin-left: 20px;
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th, .table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+
+.reloadButton {
+  background: none;
+  border: none;
+  color: blue;
+  cursor: pointer;
+  margin-left: 8px;
+  font-size: 16px;
+}
+
+.reloadButton:hover {
+  color: darkblue;
+}
+
+
+
