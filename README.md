@@ -1,18 +1,92 @@
-AllDataTable.js:23 Uncaught TypeError: data.map is not a function
-    at AllDataTable (AllDataTable.js:23:1)
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import AllDataTable from './AllDataTable'; // Assuming AllDataTable is in the same directory
 
-react-dom.development.js:18704 The above error occurred in the <AllDataTable> component:
+const ManageClaims = () => {
+  const [claimsData, setClaimsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    at AllDataTable (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:727:3)
-    at div
-    at ManageClaims (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:974:86)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49893:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50627:5)
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50561:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48462:5)
-    at App
+  const fetchData = async () => {
+    try {
+      // Fetch data from the API
+      const response = await axios.post("dummy1", { tasktype: "FETCH_ALL_ACT_CLAIMS" });
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-AllDataTable.js:23 Uncaught TypeError: data.map is not a function
-    at AllDataTable (AllDataTable.js:23:1)
+      // Log the raw data
+      console.log("Received claims data:", response.data);
+
+      // Ensure data is an array, otherwise convert it using Object.values
+      const claimsArray = Array.isArray(response.data) ? response.data : Object.values(response.data);
+
+      // Log the transformed data
+      console.log("Claims data after conversion to array:", claimsArray);
+
+      // Set the claims data to the state
+      setClaimsData(claimsArray);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      setError("Failed to fetch claims data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch data when the component mounts
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  return (
+    <div>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      {!loading && !error && <AllDataTable data={claimsData} />}
+    </div>
+  );
+};
+
+export default ManageClaims;
+
+
+
+import React from 'react';
+
+const AllDataTable = ({ data }) => {
+  // Log the data to verify its structure
+  console.log("Received data in AllDataTable:", data);
+
+  // Ensure data is an array (in case it's an object, we convert it to array)
+  const claimsArray = Array.isArray(data) ? data : Object.values(data);
+
+  // Log the data after conversion
+  console.log("Data after conversion to array:", claimsArray);
+
+  if (claimsArray.length === 0) {
+    return <p>No claims data available.</p>;
+  }
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Claim ID</th>
+          <th>Claim Type</th>
+          <th>Summary</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {claimsArray.map((claim, index) => (
+          <tr key={index}>
+            <td>{claim.claimid}</td>
+            <td>{claim.claimtype}</td>
+            <td>{claim.briefsummary}</td>
+            <td>{claim.status}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+};
+
+export default AllDataTable;
