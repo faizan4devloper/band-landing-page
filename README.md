@@ -1,10 +1,11 @@
-Received data in AllDataTable: {0: {…}, 1: {…}}
-0
-: 
-{status: 'Approved', claimtype: 'CANCER', claimid: 'CL123456', briefsummary: 'A malignant tumour positively diagnosed with histo…s with invasion and destruction of normal tissue.'}
-1
-: 
-{status: 'Approved', claimtype: 'CANCER', claimid: 'CL1234567', briefsummary: 'A malignant tumour positively diagnosed with histo…s with invasion and destruction of normal tissue.'}
-[[Prototype]]
-: 
-Object
+ncaught TypeError: data.map is not a function
+    at AllDataTable (AllDataTable.js:23:1)
+    at renderWithHooks (react-dom.development.js:15486:1)
+    at mountIndeterminateComponent (react-dom.development.js:20103:1)
+    at beginWork (react-dom.development.js:21626:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
