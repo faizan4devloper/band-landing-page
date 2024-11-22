@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import AllDataTable from './AllDataTable'; // Assuming AllDataTable is in the same directory
+import AllDataTable from './AllDataTable';
 
 const ManageClaims = () => {
   const [claimsData, setClaimsData] = useState([]);
@@ -9,19 +9,14 @@ const ManageClaims = () => {
 
   const fetchData = async () => {
     try {
-      // Fetch data from the API
       const response = await axios.post("dummy", { tasktype: "FETCH_ALL_ACT_CLAIMS" });
+      console.log("Raw API Response:", response.data);
 
-      // Log the raw data
-      console.log("Received claims data:", response.data);
+      const claimsArray = Array.isArray(response.data)
+        ? response.data
+        : Object.values(response.data || {});
+      console.log("Transformed data to array:", claimsArray);
 
-      // Ensure data is an array, otherwise convert it using Object.values
-      const claimsArray = Array.isArray(response.data) ? response.data : Object.values(response.data);
-
-      // Log the transformed data
-      console.log("Claims data after conversion to array:", claimsArray);
-
-      // Set the claims data to the state
       setClaimsData(claimsArray);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -31,7 +26,6 @@ const ManageClaims = () => {
     }
   };
 
-  // Fetch data when the component mounts
   useEffect(() => {
     fetchData();
   }, []);
@@ -40,6 +34,7 @@ const ManageClaims = () => {
     <div>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
+      {console.log("Loading:", loading, "Error:", error, "Claims Data:", claimsData)}
       {!loading && !error && <AllDataTable data={claimsData} />}
     </div>
   );
@@ -47,19 +42,13 @@ const ManageClaims = () => {
 
 export default ManageClaims;
 
-
-
 import React from 'react';
 
 const AllDataTable = ({ data }) => {
-  // Log the data to verify its structure
-  console.log("Received data in AllDataTable:", data);
+  console.log("Props received in AllDataTable:", data);
 
-  // Ensure data is an array (in case it's an object, we convert it to array)
-  const claimsArray = Array.isArray(data) ? data : Object.values(data);
-
-  // Log the data after conversion
-  console.log("Data after conversion to array:", claimsArray);
+  const claimsArray = Array.isArray(data) ? data : Object.values(data || {});
+  console.log("Data converted to array in AllDataTable:", claimsArray);
 
   if (claimsArray.length === 0) {
     return <p>No claims data available.</p>;
