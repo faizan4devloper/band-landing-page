@@ -1,174 +1,160 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import styles from "./ManageClaims.module.css";
 
-const MainContent = ({ message, rows, handleReload }) => {
-  const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
-  const [loadingRows, setLoadingRows] = useState([]); // Track rows being reloaded
+const ManageClaims = () => {
+  const [claims, setClaims] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Filter rows based on the selected filter
-  const filteredRows = rows.filter((row) =>
-    filter === "All" ? true : row.status.includes(filter)
-  );
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
+  const fetchClaims = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.post("YOUR_API_URL", {
+        tasktype: "FETCH_ALL_ACT_CLAIMS",
+      });
+      setClaims(response.data); // Assuming the response contains an array of claims
+    } catch (err) {
+      setError("Failed to fetch claims. Please try again later.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-  };
-
-  const handleRowReload = async (recNum) => {
-    // Add the row to loading state
-    setLoadingRows((prev) => [...prev, recNum]);
-
-    // Simulate data fetching (replace with actual reload logic)
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Update the row's status to "Completed"
-    const updatedRows = rows.map((row) =>
-      row.recNum === recNum ? { ...row, status: "Completed" } : row
+  const handleStatusChange = (id, newStatus) => {
+    setClaims((prevClaims) =>
+      prevClaims.map((claim) =>
+        claim.id === id ? { ...claim, status: newStatus } : claim
+      )
     );
-
-    // Remove the row from loading state
-    setLoadingRows((prev) => prev.filter((id) => id !== recNum));
   };
+
+  useEffect(() => {
+    fetchClaims();
+  }, []);
+
+  if (loading) return <div className={styles.loading}>Loading claims...</div>;
+  if (error) return <div className={styles.error}>{error}</div>;
 
   return (
-    <div className={styles.mainContent}>
-      {message && <p className={styles.message}>{message}</p>}
-
-      {/* Filter Dropdown */}
-      <div className={styles.filterContainer}>
-        <label htmlFor="statusFilter" className={styles.filterLabel}>
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className={styles.filterDropdown}
-          value={filter}
-          onChange={handleFilterChange}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
-
-      {/* Table */}
+    <div className={styles.container}>
+      <h1 className={styles.heading}>Manage Claims</h1>
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Claim Type</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum}</td>
-                <td>{row.policyid || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.type || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {row.status === "Pending" ? (
-                    <span>
-                      Pending
-                      <button
-                        className={`${styles.reloadButton} ${
-                          loadingRows.includes(row.recNum) ? "spinning" : ""
-                        }`}
-                        onClick={() => handleRowReload(row.recNum)}
-                        disabled={loadingRows.includes(row.recNum)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faRotateRight}
-                          className={loadingRows.includes(row.recNum) ? "spinning" : ""}
-                        />
-                      </button>
-                    </span>
-                  ) : (
-                    row.status
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
+          {claims.map((claim) => (
+            <tr key={claim.id}>
+              <td>{claim.id}</td>
+              <td>{claim.name}</td>
+              <td>{claim.claimType}</td>
+              <td className={`${styles.status} ${styles[claim.status.toLowerCase()]}`}>
+                {claim.status}
+              </td>
+              <td>
+                <select
+                  value={claim.status}
+                  onChange={(e) => handleStatusChange(claim.id, e.target.value)}
+                  className={styles.dropdown}
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </td>
             </tr>
-          )}
+          ))}
         </tbody>
       </table>
-
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.modalOverlay}
-        ariaHideApp={false}
-      >
-        <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
-            Close
-          </button>
-          {modalContent ? (
-            <iframe
-              src={modalContent}
-              title="Preview"
-              className={styles.modalIframe}
-            ></iframe>
-          ) : (
-            <p>No preview available</p>
-          )}
-        </div>
-      </Modal>
     </div>
   );
 };
 
-export default MainContent;
+export default ManageClaims;
 
 
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.reloadButton .spinning {
-  animation: spin 1s linear infinite;
+.heading {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+
+.table th {
+  background-color: #0078d4;
+  color: #fff;
+  font-weight: bold;
+}
+
+.table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.status.pending {
+  color: #f39c12;
+}
+
+.status.approved {
+  color: #27ae60;
+}
+
+.status.rejected {
+  color: #e74c3c;
+}
+
+.dropdown {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #0078d4;
+}
+
+.error {
+  text-align: center;
+  font-size: 16px;
+  color: #e74c3c;
 }
