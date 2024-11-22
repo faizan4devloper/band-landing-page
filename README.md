@@ -10,7 +10,7 @@ const ManageClaims = () => {
   const fetchData = async () => {
     try {
       // Fetch data from the API
-      const response = await axios.post("dummy1", { tasktype: "FETCH_ALL_ACT_CLAIMS" });
+      const response = await axios.post("dummy", { tasktype: "FETCH_ALL_ACT_CLAIMS" });
 
       // Log the raw data
       console.log("Received claims data:", response.data);
