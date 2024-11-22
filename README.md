@@ -1,15 +1,14 @@
-
-
-import React, { useState } from 'react';
-import Modal from 'react-modal';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import Modal from "react-modal";
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateRight } from "@fortawesome/free-solid-svg-icons";
 
 const MainContent = ({ message, rows, handleReload }) => {
   const [filter, setFilter] = useState("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
+  const [loadingRows, setLoadingRows] = useState([]); // Track rows being reloaded
 
   // Filter rows based on the selected filter
   const filteredRows = rows.filter((row) =>
@@ -28,6 +27,22 @@ const MainContent = ({ message, rows, handleReload }) => {
   const closeModal = () => {
     setIsModalOpen(false);
     setModalContent(null);
+  };
+
+  const handleRowReload = async (recNum) => {
+    // Add the row to loading state
+    setLoadingRows((prev) => [...prev, recNum]);
+
+    // Simulate data fetching (replace with actual reload logic)
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Update the row's status to "Completed"
+    const updatedRows = rows.map((row) =>
+      row.recNum === recNum ? { ...row, status: "Completed" } : row
+    );
+
+    // Remove the row from loading state
+    setLoadingRows((prev) => prev.filter((id) => id !== recNum));
   };
 
   return (
@@ -88,10 +103,16 @@ const MainContent = ({ message, rows, handleReload }) => {
                     <span>
                       Pending
                       <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReload(row.recNum)}
+                        className={`${styles.reloadButton} ${
+                          loadingRows.includes(row.recNum) ? "spinning" : ""
+                        }`}
+                        onClick={() => handleRowReload(row.recNum)}
+                        disabled={loadingRows.includes(row.recNum)}
                       >
-                        <FontAwesomeIcon icon={faRotateRight} />
+                        <FontAwesomeIcon
+                          icon={faRotateRight}
+                          className={loadingRows.includes(row.recNum) ? "spinning" : ""}
+                        />
                       </button>
                     </span>
                   ) : (
@@ -138,69 +159,16 @@ const MainContent = ({ message, rows, handleReload }) => {
 export default MainContent;
 
 
-import React, { useRef, useState } from "react";
-import styles from "./Sidebar.module.css";
 
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
-  const fileInputRef = useRef(null);
-  const [fileName, setFileName] = useState("");
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-  // Trigger the file input when the container is clicked
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // Handle file selection and store the file name
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setFileName(file.name);
-    }
-    onFileChange(event); // Pass the file to the parent component
-  };
-
-  return (
-    <div className={styles.sidebar}>
-      <h2 className={styles.heading}>Upload Product Sheet</h2>
-
-      {/* File Input Container */}
-      <div
-        className={styles.fileInputContainer}
-        onClick={handleContainerClick}
-      >
-        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className={styles.fileInput}
-          style={{ display: "none" }}
-        />
-      </div>
-
-      {/* File Name Display */}
-      {fileName && (
-        <div className={styles.fileNameContainer}>
-          <p className={styles.fileName}>{fileName}</p>
-        </div>
-      )}
-
-      {/* Upload Button */}
-      <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
-      >
-        {uploading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          "Upload"
-        )}
-      </button>
-    </div>
-  );
-};
-
-export default Sidebar;
+.reloadButton .spinning {
+  animation: spin 1s linear infinite;
+}
