@@ -1,3 +1,24 @@
+i want first display the beutiful table from back api this type of data will be comming :-allclaimdata
+: 
+0
+: 
+{policy_id: 'PI1711049', prod_sheet_type: 'CANCER', summary: 'The product sheet outlines the Cancer Premium Waiv…rs, subject to certain exclusions and conditions.', file_name: 'R95.01-CancerPremWaiver.pdf', rec_number: 'PS123456', …}
+1
+: 
+{policy_id: 'PI2027251', prod_sheet_type: 'CANCER', summary: 'The product sheet provides details on the Cancer P…rs, subject to certain exclusions and conditions.', file_name: 'R95.01-CancerPremWaiver.pdf', rec_number: 'PS123456', …}
+2
+: 
+{policy_id: 'PI1155085', prod_sheet_type: 'CANCER', summary: 'The product sheet details a life assured who has b…urgery and is recommended for adjuvant treatment.', file_name: 'Case_CI_Cancer_3.1.pdf', rec_number: 'CL1234567', …}
+[[Prototype]]
+: 
+Object
+[[Prototype]]
+: 
+Object
+
+and first display the the table component then will click on the button called processing then display sidebar and the MainContent
+
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import Sidebar from './Sidebar';
