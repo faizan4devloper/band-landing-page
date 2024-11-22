@@ -11,16 +11,17 @@ const ManageClaims = () => {
     // Fetch data from API
     const fetchData = async () => {
       try {
-      const response = await axios.post("dummy1", {
-        tasktype: "FETCH_ALL_ACT_CLAIMS",
+        const response = await axios.post("dummy1", {
+          tasktype: "FETCH_ALL_ACT_CLAIMS",
+        });
+        setClaimsData(response.data.payload); // Update state with API response
       } catch (err) {
         setError("Failed to fetch claims data.");
       } finally {
         setLoading(false);
       }
     };
-    
-     
+
     fetchData();
   }, []);
 
