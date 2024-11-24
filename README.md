@@ -8,7 +8,7 @@ const DataTable = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [spinningRow, setSpinningRow] = useState(null); // Track which row's icon is spinning
+  const [spinningRows, setSpinningRows] = useState({}); // Track spinning state for each row
 
   const fetchData = async () => {
     setLoading(true);
@@ -40,7 +40,7 @@ const DataTable = () => {
   };
 
   const handleReloadRow = async (recNumber) => {
-    setSpinningRow(recNumber); // Set the spinning row
+    setSpinningRows((prev) => ({ ...prev, [recNumber]: true })); // Start spinning for the row
     try {
       console.log(`Reloading data for RecNum: ${recNumber}`);
       // Simulate reload logic (e.g., refreshing row data)
@@ -48,7 +48,7 @@ const DataTable = () => {
     } catch (err) {
       console.error("Error reloading row:", err);
     } finally {
-      setSpinningRow(null); // Stop spinning after the reload
+      setSpinningRows((prev) => ({ ...prev, [recNumber]: false })); // Stop spinning for the row
     }
   };
 
@@ -93,7 +93,7 @@ const DataTable = () => {
                   >
                     <FontAwesomeIcon
                       icon={faSyncAlt}
-                      className={spinningRow === row.rec_number ? "fa-spin" : ""}
+                      className={spinningRows[row.rec_number] ? "fa-spin" : ""}
                     />
                   </button>
                 </td>
@@ -109,27 +109,3 @@ const DataTable = () => {
 };
 
 export default DataTable;
-
-
-
-/* Reload button styling */
-.reloadButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease-in-out;
-}
-
-.reloadButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-/* FontAwesome icon spinning animation is handled by "fa-spin" class */
