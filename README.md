@@ -106,7 +106,7 @@ const ProductSheetsPage = () => {
   return (
     <div className={styles.container}>
       {!showMainContent ? (
-        <div className={styles.mainContentWrapper}>
+        <>
           {/* New Claim Processing Button */}
           <div className={styles.header}>
             <button
@@ -116,8 +116,8 @@ const ProductSheetsPage = () => {
               New Claim Processing
             </button>
           </div>
-          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
-        </div>
+          <DataTable rows={rows} handleReload={handleReload} /> {/* DataTable component */}
+        </>
       ) : (
         <>
           <Sidebar
@@ -143,42 +143,3 @@ const ProductSheetsPage = () => {
 };
 
 export default ProductSheetsPage;
-
-
-.container {
-  padding: 5px 20px;
-  display: grid;
-  grid-template-columns: 1fr 3fr; /* 1 part for Sidebar, 3 parts for MainContent */
-  gap: 20px; /* Adds space between Sidebar and MainContent */
-}
-
-.infoMessage {
-  text-align: center;
-  margin-top: 180px;
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.newClaimButton {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: fit-content; /* Ensure button does not take unnecessary space */
-  margin-bottom: 20px; /* To provide some space between button and table */
-}
-
-.newClaimButton:hover {
-  background-color: #0056b3;
-}
-
-/* Adjusting the layout of the DataTable or MainContent when displayed */
-.mainContentWrapper {
-  display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  gap: 20px; /* Space between content elements */
-}
