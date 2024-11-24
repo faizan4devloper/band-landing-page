@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,14 +17,14 @@ const AllDataTable = () => {
     setError("");
     try {
       const payload = {
-        tasktype: "FETCH_ALL_DATA", // Different payload
+        tasktype: "FETCH_ALL_ACT_CLAIMS", // Different payload
       };
 
       const headers = {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post("https://api.example.com/fetch-data", payload, { headers }); // Different API URL
+      const response = await axios.post("dummy", payload, { headers }); // Different API URL
 
       console.log("API Response:", response.data);
 
@@ -80,11 +81,10 @@ const AllDataTable = () => {
               const uniqueKey = `${index}_${row.uniqueField}`; // Adjust unique key based on available data
               return (
                 <tr key={uniqueKey}>
-                  <td>{row.field1}</td>
-                  <td>{row.field2}</td>
-                  <td>{row.field3}</td>
-                  <td>{row.field4}</td>
-                  <td>{row.field5}</td>
+                  <td>{row.claimid}</td>
+                  <td>{row.briefsummary}</td>
+                  <td>{row.claimtype}</td>
+                  <td>{row.status}</td>
                   <td>
                     <button
                       className={styles.reloadButton}
