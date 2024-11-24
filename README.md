@@ -144,3 +144,41 @@ const ProductSheetsPage = () => {
 };
 
 export default ProductSheetsPage;
+
+
+.container {
+  /*display: flex;*/
+  padding: 5px 20px;
+}
+
+.container > div {
+  margin-right: 20px;
+}
+
+.infoMessage{
+  text-align: center;
+  margin: 180px;
+  font-size: 1.2rem;
+  color:#555;
+}
+
+/*.header {*/
+/*  display: flex;*/
+/*  justify-content: flex-start;*/
+/*  margin-bottom: 20px;*/
+/*}*/
+
+.newClaimButton {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.newClaimButton:hover {
+  background-color: #0056b3;
+}
