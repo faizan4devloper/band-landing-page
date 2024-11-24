@@ -1,165 +1,209 @@
-import React, { useState } from 'react';
+
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import styles from "./DataTable.module.css";
+
+// const DataTable = () => {
+//   const [rows, setRows] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
+
+//   // Fetch data from the API
+//   const fetchData = async () => {
+//     setLoading(true);
+//     setError(""); // Clear any previous errors
+//     try {
+//       const payload = {
+//         tasktype: "FETCH_ALL_CLAIMS",
+//       };
+
+//       const headers = {
+//         "Content-Type": "application/json",
+//       };
+
+//       const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, {
+//         headers,
+//       });
+
+//       console.log("API Response:", response.data);
+
+//       // Adjusting the data mapping based on the console data structure
+//       setRows(response.data || []); // Ensure it's mapped properly from response
+//     } catch (err) {
+//       setError("Failed to fetch data. Please try again.");
+//       console.error("API Error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Fetch data on component mount
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   const handleReload = async (recNum) => {
+//     try {
+//       const payload = {
+//         tasktype: "FETCH_SINGLE_CLAIM",
+//         claimid: recNum,
+//       };
+
+//       const headers = {
+//         "Content-Type": "application/json",
+//       };
+
+//       const response = await axios.post("dummy2", payload, {
+//         headers,
+//       });
+
+//       console.log(`Reloaded Data for ${recNum}:`, response.data);
+
+//       // Update specific row based on recNum
+//       const updatedRow = response.data;
+//       setRows((prevRows) =>
+//         prevRows.map((row) =>
+//           row.rec_number === recNum ? { ...row, ...updatedRow } : row
+//         )
+//       );
+//     } catch (error) {
+//       console.error("Error reloading row:", error);
+//     }
+//   };
+
+//   return (
+//     <div className={styles.tableContainer}>
+//       {loading ? (
+//         <p>Loading data...</p>
+//       ) : error ? (
+//         <p className={styles.error}>{error}</p>
+//       ) : rows.length > 0 ? (
+//         <table className={styles.table}>
+//           <thead>
+//             <tr>
+//               <th>RecNum</th>
+//               <th>Policy ID</th>
+//               <th>Type</th>
+//               <th>Summary</th>
+//               <th>File Name</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {rows.map((row, index) => (
+//               <tr key={index}>
+//                 <td>{row.rec_number}</td>
+//                 <td>{row.policy_id}</td>
+//                 <td>{row.prod_sheet_type}</td>
+//                 <td>{row.summary}</td>
+//                 <td>{row.file_name}</td>
+//                 <td>
+//                   <button
+//                     className={styles.reloadButton}
+//                     onClick={() => handleReload(row.rec_number)}
+//                   >
+//                     Reload
+//                   </button>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       ) : (
+//         <p className={styles.noData}>No data available</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DataTable;
+
+
+
+
+
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import DataTable from './DataTable'; // Import the new DataTable component
-import styles from './ProductSheetsPage.module.css';
+import styles from './DataTable.module.css';
 
-const ProductSheetsPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [uploading, setUploading] = useState(false);
+const DataTable = () => {
   const [rows, setRows] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [showMainContent, setShowMainContent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setMessage("");
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const response = await axios.post("dummy1", {
-        payload: { filename: file.name },
-      });
-
-      const { presignedUrl, key, recNum } = response.data;
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        tasktype: "SEND_TO_QUEUE",
-      };
-
-      await axios.post("dummy2", sqsPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          recNum,
-          policyid: "",
-          type: "",
-          summary: "",
-          previewLink: presignedUrl,
-          status: "Pending",
-        },
-      ]);
-
-      setMessage("File uploaded successfully!");
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleReload = async (recNum) => {
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
     try {
       const payload = {
-        tasktype: "FETCH_SINGLE_CLAIM",
-        claimid: recNum,
+        tasktype: "FETCH_ALL_CLAIMS",
       };
 
-      const response = await axios.post(`dummy3`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const headers = {
+        "Content-Type": "application/json",
+      };
 
-      const data = response.data;
+      const response = await axios.post("dummy", payload, { headers });
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policyid: data.policyid,
-                type: data.type,
-                summary: data.summary,
-                status: "Completed️✅",
-              }
-            : row
-        )
-      );
-    } catch (error) {
-      setMessage("Failed to fetch data for RecNum: " + recNum);
+      console.log("API Response:", response.data);
+
+      // Extract values from the object
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
+
+      setRows(claimData);
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className={styles.container}>
-      {!showMainContent ? (
-        <>
-          {/* New Claim Processing Button */}
-          <div className={styles.header}>
-            <button
-              className={styles.newClaimButton}
-              onClick={() => setShowMainContent(true)}
-            >
-              New Claim Processing
-            </button>
-          </div>
-          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
-        </>
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <p>Loading data...</p>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>FileName</th>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.file_name}</td>
+                <td>{row.rec_number}</td>
+                <td>{row.policy_id}</td>
+                <td>{row.prod_sheet_type}</td>
+                <td>{row.summary}</td>
+                <td>{row.status || "Pending"}</td>
+                <td>
+                  <button className={styles.reloadButton}>Reload</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       ) : (
-        <>
-          <Sidebar
-            onFileChange={handleFileChange}
-            onUpload={handleUpload}
-            uploading={uploading}
-          />
-          {isUploaded ? (
-            <MainContent
-              message={message}
-              rows={rows}
-              handleReload={handleReload}
-            />
-          ) : (
-            <p className={styles.infoMessage}>
-              Please upload a document to view the data.
-            </p>
-          )}
-        </>
+        <p className={styles.noData}>No data available</p>
       )}
     </div>
   );
 };
 
-export default ProductSheetsPage;
-
-
-
-.header {
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: 20px;
-}
-
-.newClaimButton {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.newClaimButton:hover {
-  background-color: #0056b3;
-}
+export default DataTable;
