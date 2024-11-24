@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { ClipLoader } from "react-spinners"; // Spinner for loading
 import styles from "./DataTable.module.css";
 
 const DataTable = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [spinningRow, setSpinningRow] = useState(null); // Track which row's icon is spinning
 
   const fetchData = async () => {
     setLoading(true);
@@ -38,8 +38,7 @@ const DataTable = () => {
   };
 
   const handleReloadRow = async (recNumber) => {
-    // Simulate reloading individual row data (dummy functionality)
-    setLoading(true);
+    setSpinningRow(recNumber); // Set the spinning row
     try {
       console.log(`Reloading data for RecNum: ${recNumber}`);
       // Add logic to reload the specific row if necessary
@@ -47,7 +46,7 @@ const DataTable = () => {
     } catch (err) {
       console.error("Error reloading row:", err);
     } finally {
-      setLoading(false);
+      setSpinningRow(null); // Stop spinning after the reload
     }
   };
 
@@ -59,7 +58,7 @@ const DataTable = () => {
     <div className={styles.tableContainer}>
       {loading ? (
         <div style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}>
-          <ClipLoader color="#007bff" size={50} />
+          <p>Loading data...</p>
         </div>
       ) : error ? (
         <p className={styles.error}>{error}</p>
@@ -90,10 +89,11 @@ const DataTable = () => {
                     className={styles.reloadButton}
                     onClick={() => handleReloadRow(row.rec_number)}
                   >
-                    Reload
-                    <i className={`${styles.reloadIcon} ${loading ? styles.active : ""}`}>
-                      &#x21bb;
-                    </i>
+                    {spinningRow === row.rec_number ? (
+                      <i className={`${styles.reloadIcon} ${styles.spinning}`}>&#x21bb;</i>
+                    ) : (
+                      <span>Reload</span>
+                    )}
                   </button>
                 </td>
               </tr>
@@ -108,7 +108,6 @@ const DataTable = () => {
 };
 
 export default DataTable;
-
 
 
 
@@ -199,16 +198,15 @@ export default DataTable;
   transform: scale(1.05);
 }
 
-/* Reload icon animation */
+/* Reload icon */
 .reloadIcon {
-  margin-left: 10px;
   font-size: 16px;
-  animation: spin 1s linear infinite;
-  display: none; /* Initially hidden */
+  margin-left: 8px;
 }
 
-.reloadIcon.active {
-  display: inline-block; /* Visible when active */
+/* Spinning animation */
+.spinning {
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
