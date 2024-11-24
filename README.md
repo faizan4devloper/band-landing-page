@@ -1,145 +1,116 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import DataTable from './DataTable';
-import styles from './ProductSheetsPage.module.css';
+  
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { HashLoader } from "react-spinners";
+import styles from "./DataTable.module.css";
 
-const ProductSheetsPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [uploading, setUploading] = useState(false);
+const DataTable = () => {
   const [rows, setRows] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [showMainContent, setShowMainContent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [spinningRows, setSpinningRows] = useState({});
 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setMessage("");
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const response = await axios.post("https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/", {
-        payload: { filename: file.name },
-      });
-
-      const { presignedUrl, key, recNum } = response.data;
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        tasktype: "SEND_TO_QUEUE",
-      };
-
-      const sqsResponse = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", sqsPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      console.log("SQS API Response:", sqsResponse.data);
-
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          recNum,
-          policyid: "",
-          type: "",
-          summary: "",
-          previewLink: presignedUrl,
-          status: "Pending",
-        },
-      ]);
-
-      setMessage("File uploaded successfully!");
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleReload = async (recNum) => {
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
     try {
       const payload = {
-        tasktype: "FETCH_SINGLE_CLAIM",
-        claimid: recNum,
+        tasktype: "FETCH_ALL_CLAIMS",
       };
 
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const headers = {
+        "Content-Type": "application/json",
+      };
 
-      console.log("Reload Data:", recNum, response.data);
-      const data = response.data;
+      const response = await axios.post("dummy", payload, { headers });
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policyid: data.policyid,
-                type: data.type,
-                summary: data.summary,
-                status: "Completed️✅",
-              }
-            : row
-        )
-      );
-    } catch (error) {
-      setMessage("Failed to fetch data for RecNum: " + recNum);
+      console.log("API Response:", response.data);
+
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
+
+      setRows(claimData);
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleReloadRow = async (uniqueKey) => {
+    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
+    try {
+      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err) {
+      console.error("Error reloading row:", err);
+    } finally {
+      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className={styles.container}>
-      {!showMainContent ? (
-        <>
-          {/* New Claim Processing Button */}
-          <div className={styles.header}>
-            <button
-              className={styles.newClaimButton}
-              onClick={() => setShowMainContent(true)}
-            >
-              New Claim Processing
-            </button>
-          </div>
-          <DataTable rows={rows} handleReload={handleReload} /> {/* DataTable component */}
-        </>
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
+        </div>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>FileName</th>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              return (
+                <tr key={uniqueKey}>
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  <td>
+                    <button
+                      className={styles.reloadButton}
+                      onClick={() => handleReloadRow(uniqueKey)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faSyncAlt}
+                        className={`${styles.reloadIcon} ${
+                          spinningRows[uniqueKey] ? "fa-spin" : ""
+                        }`}
+                      />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       ) : (
-        <>
-          <Sidebar
-            onFileChange={handleFileChange}
-            onUpload={handleUpload}
-            uploading={uploading}
-          />
-          {isUploaded ? (
-            <MainContent
-              message={message}
-              rows={rows}
-              handleReload={handleReload}
-            />
-          ) : (
-            <p className={styles.infoMessage}>
-              Please upload a document to view the data.
-            </p>
-          )}
-        </>
+        <p className={styles.noData}>No data available</p>
       )}
     </div>
   );
 };
 
-export default ProductSheetsPage;
+export default DataTable;
