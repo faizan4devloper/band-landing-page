@@ -1,209 +1,68 @@
+/* Container for the table */
+.tableContainer {
+  margin-top: 20px;
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
 
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-// import styles from "./DataTable.module.css";
+/* Table styling */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+}
 
-// const DataTable = () => {
-//   const [rows, setRows] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState("");
+/* Header styling */
+.table th {
+  background-color: #4CAF50; /* Green header */
+  color: white;
+  text-align: left;
+  padding: 12px;
+  font-weight: bold;
+}
 
-//   // Fetch data from the API
-//   const fetchData = async () => {
-//     setLoading(true);
-//     setError(""); // Clear any previous errors
-//     try {
-//       const payload = {
-//         tasktype: "FETCH_ALL_CLAIMS",
-//       };
+/* Row styling */
+.table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
 
-//       const headers = {
-//         "Content-Type": "application/json",
-//       };
+/* Alternate row color for zebra effect */
+.table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
 
-//       const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, {
-//         headers,
-//       });
+/* Hover effect */
+.table tr:hover {
+  background-color: #f1f1f1;
+  transition: background-color 0.3s;
+}
 
-//       console.log("API Response:", response.data);
+/* No data styling */
+.noData {
+  text-align: center;
+  color: #666;
+  padding: 20px;
+  font-style: italic;
+}
 
-//       // Adjusting the data mapping based on the console data structure
-//       setRows(response.data || []); // Ensure it's mapped properly from response
-//     } catch (err) {
-//       setError("Failed to fetch data. Please try again.");
-//       console.error("API Error:", err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+/* Reload button styling */
+.reloadButton {
+  padding: 8px 15px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
 
-//   // Fetch data on component mount
-//   useEffect(() => {
-//     fetchData();
-//   }, []);
-
-//   const handleReload = async (recNum) => {
-//     try {
-//       const payload = {
-//         tasktype: "FETCH_SINGLE_CLAIM",
-//         claimid: recNum,
-//       };
-
-//       const headers = {
-//         "Content-Type": "application/json",
-//       };
-
-//       const response = await axios.post("dummy2", payload, {
-//         headers,
-//       });
-
-//       console.log(`Reloaded Data for ${recNum}:`, response.data);
-
-//       // Update specific row based on recNum
-//       const updatedRow = response.data;
-//       setRows((prevRows) =>
-//         prevRows.map((row) =>
-//           row.rec_number === recNum ? { ...row, ...updatedRow } : row
-//         )
-//       );
-//     } catch (error) {
-//       console.error("Error reloading row:", error);
-//     }
-//   };
-
-//   return (
-//     <div className={styles.tableContainer}>
-//       {loading ? (
-//         <p>Loading data...</p>
-//       ) : error ? (
-//         <p className={styles.error}>{error}</p>
-//       ) : rows.length > 0 ? (
-//         <table className={styles.table}>
-//           <thead>
-//             <tr>
-//               <th>RecNum</th>
-//               <th>Policy ID</th>
-//               <th>Type</th>
-//               <th>Summary</th>
-//               <th>File Name</th>
-//               <th>Actions</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {rows.map((row, index) => (
-//               <tr key={index}>
-//                 <td>{row.rec_number}</td>
-//                 <td>{row.policy_id}</td>
-//                 <td>{row.prod_sheet_type}</td>
-//                 <td>{row.summary}</td>
-//                 <td>{row.file_name}</td>
-//                 <td>
-//                   <button
-//                     className={styles.reloadButton}
-//                     onClick={() => handleReload(row.rec_number)}
-//                   >
-//                     Reload
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       ) : (
-//         <p className={styles.noData}>No data available</p>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default DataTable;
-
-
-
-
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './DataTable.module.css';
-
-const DataTable = () => {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const payload = {
-        tasktype: "FETCH_ALL_CLAIMS",
-      };
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      const response = await axios.post("dummy", payload, { headers });
-
-      console.log("API Response:", response.data);
-
-      // Extract values from the object
-      const claimData = Object.values(response.data.allclaimdata || {});
-      console.log("Extracted Claim Data:", claimData);
-
-      setRows(claimData);
-    } catch (err) {
-      setError("Failed to fetch data. Please try again.");
-      console.error("API Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  return (
-    <div className={styles.tableContainer}>
-      {loading ? (
-        <p>Loading data...</p>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : rows.length > 0 ? (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>FileName</th>
-              <th>RecNum</th>
-              <th>Policy ID</th>
-              <th>Type</th>
-              <th>Summary</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.file_name}</td>
-                <td>{row.rec_number}</td>
-                <td>{row.policy_id}</td>
-                <td>{row.prod_sheet_type}</td>
-                <td>{row.summary}</td>
-                <td>{row.status || "Pending"}</td>
-                <td>
-                  <button className={styles.reloadButton}>Reload</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className={styles.noData}>No data available</p>
-      )}
-    </div>
-  );
-};
-
-export default DataTable;
+.reloadButton:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
