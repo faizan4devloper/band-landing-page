@@ -1,104 +1,90 @@
-/* Container for the table */
-.tableContainer {
-  margin-top: 20px;
-  overflow-x: auto;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import styles from './DataTable.module.css';
 
-/* Table styling */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16px;
-}
+const DataTable = () => {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-/* Header styling */
-.table th {
-  background-color: #4CAF50; /* Green header */
-  color: white;
-  text-align: left;
-  padding: 12px;
-  font-weight: bold;
-}
+  // Fetch data from the API
+  const fetchData = async () => {
+    setLoading(true);
+    setError(""); // Clear any previous errors
+    try {
+      const payload = {
+        tasktype: "FETCH_ALL_CLAIMS",
+      };
 
-/* Row styling */
-.table td {
-  border: 1px solid #ddd;
-  padding: 10px;
-  text-align: left;
-}
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: "Bearer your-auth-token-here",
+      };
 
-/* Alternate row color for zebra effect */
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
+      const response = await axios.post("https://your-api-endpoint.com/fetchClaims", payload, {
+        headers,
+      });
 
-/* Hover effect */
-.table tr:hover {
-  background-color: #f1f1f1;
-  transition: background-color 0.3s;
-}
+      console.log("API Response:", response.data);
 
-/* No data styling */
-.noData {
-  text-align: center;
-  color: #666;
-  padding: 20px;
-  font-style: italic;
-}
+      // Assuming the data is an array of objects
+      setRows(response.data.claims || []); // Adjust based on API response structure
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-/* Reload button styling */
-.reloadButton {
-  padding: 8px 15px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-.reloadButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
+  return (
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <p>Loading data...</p>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.recNum}</td>
+                <td>{row.policyid}</td>
+                <td>{row.type}</td>
+                <td>{row.summary}</td>
+                <td>{row.status}</td>
+                <td>
+                  <button
+                    className={styles.reloadButton}
+                    onClick={() => handleReload(row.recNum)}
+                  >
+                    Reload
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className={styles.noData}>No data available</p>
+      )}
+    </div>
+  );
+};
 
-
-
-
-/* Container styling */
-.container {
-  padding: 20px;
-  font-family: 'Roboto', sans-serif;
-}
-
-/* Back button styling */
-.toggleButton {
-  padding: 10px 20px;
-  background-color: #FF5722; /* Vibrant orange */
-  color: white;
-  font-size: 16px;
-  font-weight: bold;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-bottom: 20px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-}
-
-/* Hover effect for back button */
-.toggleButton:hover {
-  background-color: #E64A19;
-  transform: translateY(-2px);
-}
-
-/* Active effect */
-.toggleButton:active {
-  background-color: #D84315;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
+export default DataTable;
