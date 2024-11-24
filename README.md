@@ -1,199 +1,82 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { HashLoader } from "react-spinners";
-import styles from "./DataTable.module.css";
+import React, { useRef, useState } from "react";
+import styles from "./Sidebar.module.css";
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-const DataTable = () => {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [spinningRows, setSpinningRows] = useState({});
-  const [showMainContent, setShowMainContent] = useState(false);
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const payload = {
-        tasktype: "FETCH_ALL_CLAIMS",
-      };
 
-      const headers = {
-        "Content-Type": "application/json",
-      };
 
-      const response = await axios.post("dummy", payload, { headers });
+const Sidebar = ({ onFileChange, onUpload, uploading }) => {
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState("");
+    const navigate = useNavigate();
 
-      console.log("API Response:", response.data);
 
-      const claimData = Object.values(response.data.allclaimdata || {});
-      console.log("Extracted Claim Data:", claimData);
-
-      setRows(claimData);
-    } catch (err) {
-      setError("Failed to fetch data. Please try again.");
-      console.error("API Error:", err);
-    } finally {
-      setLoading(false);
+  // Trigger the file input when the container is clicked
+  const handleContainerClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
-
-  const handleReloadRow = async (uniqueKey) => {
-    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
-    try {
-      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (err) {
-      console.error("Error reloading row:", err);
-    } finally {
-      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
-    }
+  
+  const handleBackClick = () => {
+    navigate(-1);
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+
+  // Handle file selection and store the file name
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFileName(file.name);
+    }
+    onFileChange(event); // Pass the file to the parent component
+  };
 
   return (
-    <div className={styles.tableContainer}>
-      {/* Button to toggle main content */}
-      {!showMainContent ? (
-        <button
-          className={styles.newClaimButton}
-          onClick={() => setShowMainContent(true)}
-        >
-          New Claim Processing
-        </button>
-      ) : (
-        <p className={styles.mainContentMessage}>
-          Main content goes here after processing the claim.
-        </p>
+    <div className={styles.sidebar}>
+      <button className={styles.backButton} onClick={handleBackClick}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h2 className={styles.heading}>Upload Product Sheet</h2>
+
+      {/* File Input Container */}
+      <div
+        className={styles.fileInputContainer}
+        onClick={handleContainerClick}
+      >
+        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className={styles.fileInput}
+          style={{ display: "none" }}
+        />
+      </div>
+
+      {/* File Name Display */}
+      {fileName && (
+        <div className={styles.fileNameContainer}>
+          <p className={styles.fileName}>{fileName}</p>
+        </div>
       )}
 
-      {loading ? (
-        <div className={styles.spinnerContainer}>
-          <HashLoader color="#0f5fdc" size={40} />
-        </div>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : rows.length > 0 ? (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>FileName</th>
-              <th>RecNum</th>
-              <th>Policy ID</th>
-              <th>Type</th>
-              <th>Summary</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => {
-              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
-              return (
-                <tr key={uniqueKey}>
-                  <td>{row.file_name}</td>
-                  <td>{row.rec_number}</td>
-                  <td>{row.policy_id}</td>
-                  <td>{row.prod_sheet_type}</td>
-                  <td>{row.summary}</td>
-                  <td>{row.status || "Pending"}</td>
-                  <td>
-                    <button
-                      className={styles.reloadButton}
-                      onClick={() => handleReloadRow(uniqueKey)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faSyncAlt}
-                        className={`${styles.reloadIcon} ${
-                          spinningRows[uniqueKey] ? "fa-spin" : ""
-                        }`}
-                      />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      ) : (
-        <p className={styles.noData}>No data available</p>
-      )}
+      {/* Upload Button */}
+      <button
+        className={styles.uploadButton}
+        onClick={onUpload}
+        disabled={uploading}
+      >
+        {uploading ? (
+          <div className={styles.loader}></div>
+        ) : (
+          "Upload"
+        )}
+      </button>
     </div>
   );
 };
 
-export default DataTable;
-
-
-
-.newClaimButton {
-  background-color: #007bff;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-bottom: 20px;
-}
-
-.newClaimButton:hover {
-  background-color: #0056b3;
-}
-
-.mainContentMessage {
-  text-align: center;
-  margin-top: 20px;
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.spinnerContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-
-.error {
-  color: red;
-  text-align: center;
-  font-size: 1.1rem;
-}
-
-.noData {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #555;
-}
-
-.tableContainer {
-  padding: 20px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th,
-.table td {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-}
-
-.reloadButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.reloadIcon {
-  font-size: 20px;
-}
+export default Sidebar;
