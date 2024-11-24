@@ -1,225 +1,240 @@
-import React from "react";
-import styles from "./ManageClaims.module.css";
-import AllDataTable from "./AllDataTable";
-import { useNavigate } from "react-router-dom";
 
-const ManageClaims = () => {
-  const navigate = useNavigate();
+// import React, { useEffect, useState } from "react";
+// import axios from "axios";
+// import styles from "./DataTable.module.css";
 
-  return (
-    <div className={styles.manageClaimsContainer}>
-      <header className={styles.header}>
-        <h1 className={styles.title}>Manage Claims</h1>
-        <button
-          className={styles.newClaimButton}
-          onClick={() => navigate("/new-claim")}
-        >
-          New Claim Processing
-        </button>
-      </header>
-      <AllDataTable />
-    </div>
-  );
-};
+// const DataTable = () => {
+//   const [rows, setRows] = useState([]);
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
 
-export default ManageClaims;
+//   // Fetch data from the API
+//   const fetchData = async () => {
+//     setLoading(true);
+//     setError(""); // Clear any previous errors
+//     try {
+//       const payload = {
+//         tasktype: "FETCH_ALL_CLAIMS",
+//       };
+
+//       const headers = {
+//         "Content-Type": "application/json",
+//       };
+
+//       const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, {
+//         headers,
+//       });
+
+//       console.log("API Response:", response.data);
+
+//       // Adjusting the data mapping based on the console data structure
+//       setRows(response.data || []); // Ensure it's mapped properly from response
+//     } catch (err) {
+//       setError("Failed to fetch data. Please try again.");
+//       console.error("API Error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Fetch data on component mount
+//   useEffect(() => {
+//     fetchData();
+//   }, []);
+
+//   const handleReload = async (recNum) => {
+//     try {
+//       const payload = {
+//         tasktype: "FETCH_SINGLE_CLAIM",
+//         claimid: recNum,
+//       };
+
+//       const headers = {
+//         "Content-Type": "application/json",
+//       };
+
+//       const response = await axios.post("dummy2", payload, {
+//         headers,
+//       });
+
+//       console.log(`Reloaded Data for ${recNum}:`, response.data);
+
+//       // Update specific row based on recNum
+//       const updatedRow = response.data;
+//       setRows((prevRows) =>
+//         prevRows.map((row) =>
+//           row.rec_number === recNum ? { ...row, ...updatedRow } : row
+//         )
+//       );
+//     } catch (error) {
+//       console.error("Error reloading row:", error);
+//     }
+//   };
+
+//   return (
+//     <div className={styles.tableContainer}>
+//       {loading ? (
+//         <p>Loading data...</p>
+//       ) : error ? (
+//         <p className={styles.error}>{error}</p>
+//       ) : rows.length > 0 ? (
+//         <table className={styles.table}>
+//           <thead>
+//             <tr>
+//               <th>RecNum</th>
+//               <th>Policy ID</th>
+//               <th>Type</th>
+//               <th>Summary</th>
+//               <th>File Name</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {rows.map((row, index) => (
+//               <tr key={index}>
+//                 <td>{row.rec_number}</td>
+//                 <td>{row.policy_id}</td>
+//                 <td>{row.prod_sheet_type}</td>
+//                 <td>{row.summary}</td>
+//                 <td>{row.file_name}</td>
+//                 <td>
+//                   <button
+//                     className={styles.reloadButton}
+//                     onClick={() => handleReload(row.rec_number)}
+//                   >
+//                     Reload
+//                   </button>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       ) : (
+//         <p className={styles.noData}>No data available</p>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default DataTable;
 
 
 
-.manageClaimsContainer {
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background-color: #f8f9fa;
-  height: 100vh;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  background-color: #fff;
-  padding: 10px 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #343a40;
-}
-
-.newClaimButton {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 15px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.newClaimButton:hover {
-  background-color: #0056b3;
-}
 
 
-
-
+  
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import styles from "./AllDataTable.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { HashLoader } from "react-spinners";
+import styles from "./DataTable.module.css";
 
-const AllDataTable = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const DataTable = () => {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [spinningRows, setSpinningRows] = useState({});
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const payload = {
+        tasktype: "FETCH_ALL_CLAIMS",
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post("dummy1", payload, { headers });
+
+      console.log("API Response:", response.data);
+
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
+
+      setRows(claimData);
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReloadRow = async (uniqueKey) => {
+    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
+    try {
+      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err) {
+      console.error("Error reloading row:", err);
+    } finally {
+      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
+    }
+  };
 
   useEffect(() => {
-    axios.get("https://api.example.com/claims") // Replace with your API URL
-      .then((response) => {
-        setData(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
+    fetchData();
   }, []);
 
-  if (loading) return <div className={styles.loader}>Loading...</div>;
-
   return (
-    <table className={styles.table}>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Claimant Name</th>
-          <th>Status</th>
-          <th>Date Submitted</th>
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((claim) => (
-          <tr key={claim.id}>
-            <td>{claim.id}</td>
-            <td>{claim.claimantName}</td>
-            <td>{claim.status}</td>
-            <td>{claim.dateSubmitted}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
-export default AllDataTable;
-
-
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.table th, .table td {
-  padding: 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.table th {
-  background-color: #007bff;
-  color: #fff;
-}
-
-.table tr:hover {
-  background-color: #f1f1f1;
-}
-
-
-
-
-import React from "react";
-import styles from "./NewClaimPage.module.css";
-
-const NewClaimPage = () => {
-  return (
-    <div className={styles.newClaimPage}>
-      <aside className={styles.sidebar}>
-        <nav>
-          <ul>
-            <li>Option 1</li>
-            <li>Option 2</li>
-            <li>Option 3</li>
-          </ul>
-        </nav>
-      </aside>
-      <main className={styles.mainContent}>
-        <h2>New Claim Processing</h2>
-        {/* Add your form or content here */}
-      </main>
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
+        </div>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>FileName</th>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              return (
+                <tr key={uniqueKey}>
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  <td>
+                    <button
+                      className={styles.reloadButton}
+                      onClick={() => handleReloadRow(uniqueKey)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faSyncAlt}
+                        className={`${styles.reloadIcon} ${
+                          spinningRows[uniqueKey] ? "fa-spin" : ""
+                        }`}
+                      />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <p className={styles.noData}>No data available</p>
+      )}
     </div>
   );
 };
 
-export default NewClaimPage;
-
-
-
-
-.newClaimPage {
-  display: flex;
-  height: 100vh;
-}
-
-.sidebar {
-  width: 20%;
-  background-color: #343a40;
-  color: #fff;
-  padding: 20px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-
-.sidebar li {
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.sidebar li:hover {
-  text-decoration: underline;
-}
-
-.mainContent {
-  width: 80%;
-  padding: 20px;
-  background-color: #f8f9fa;
-}
-
-
-
-
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import ManageClaims from "./ManageClaims";
-import NewClaimPage from "./NewClaimPage";
-
-const App = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<ManageClaims />} />
-        <Route path="/new-claim" element={<NewClaimPage />} />
-      </Routes>
-    </Router>
-  );
-};
-
-export default App;
+export default DataTable;
