@@ -22,7 +22,12 @@ const DataTable = () => {
       const response = await axios.post("dummy1", payload, { headers });
 
       console.log("API Response:", response.data);
-      setRows(response.data.allclaimdata || []); // Match the exact key in API response
+
+      // Extract values from the object
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
+
+      setRows(claimData);
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
       console.error("API Error:", err);
