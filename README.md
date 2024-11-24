@@ -8,7 +8,7 @@ const DataTable = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [spinningRows, setSpinningRows] = useState({}); // Track spinning state for each row
+  const [spinningRows, setSpinningRows] = useState({});
 
   const fetchData = async () => {
     setLoading(true);
@@ -26,7 +26,6 @@ const DataTable = () => {
 
       console.log("API Response:", response.data);
 
-      // Extract values from the object
       const claimData = Object.values(response.data.allclaimdata || {});
       console.log("Extracted Claim Data:", claimData);
 
@@ -39,16 +38,15 @@ const DataTable = () => {
     }
   };
 
-  const handleReloadRow = async (recNumber) => {
-    setSpinningRows((prev) => ({ ...prev, [recNumber]: true })); // Start spinning for the row
+  const handleReloadRow = async (uniqueKey) => {
+    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
     try {
-      console.log(`Reloading data for RecNum: ${recNumber}`);
-      // Simulate reload logic (e.g., refreshing row data)
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulated delay
+      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (err) {
       console.error("Error reloading row:", err);
     } finally {
-      setSpinningRows((prev) => ({ ...prev, [recNumber]: false })); // Stop spinning for the row
+      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
     }
   };
 
@@ -78,27 +76,30 @@ const DataTable = () => {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.file_name}</td>
-                <td>{row.rec_number}</td>
-                <td>{row.policy_id}</td>
-                <td>{row.prod_sheet_type}</td>
-                <td>{row.summary}</td>
-                <td>{row.status || "Pending"}</td>
-                <td>
-                  <button
-                    className={styles.reloadButton}
-                    onClick={() => handleReloadRow(row.rec_number)}
-                  >
-                    <FontAwesomeIcon
-                      icon={faSyncAlt}
-                      className={spinningRows[row.rec_number] ? "fa-spin" : ""}
-                    />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {rows.map((row, index) => {
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              return (
+                <tr key={uniqueKey}>
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  <td>
+                    <button
+                      className={styles.reloadButton}
+                      onClick={() => handleReloadRow(uniqueKey)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faSyncAlt}
+                        className={spinningRows[uniqueKey] ? "fa-spin" : ""}
+                      />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       ) : (
