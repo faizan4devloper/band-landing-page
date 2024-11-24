@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Sidebar from './Sidebar';
 import MainContent from './MainContent';
-import DataTable from './DataTable'; // Import the new DataTable component
+import DataTable from './DataTable';
 import styles from './ProductSheetsPage.module.css';
 
 const ProductSheetsPage = () => {
@@ -44,12 +44,11 @@ const ProductSheetsPage = () => {
         tasktype: "SEND_TO_QUEUE",
       };
 
-         // Step 4: Send the payload to the new API
-    const sqsResponse = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", sqsPayload, {
-      headers: { "Content-Type": "application/json" },
-    });
+      const sqsResponse = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", sqsPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-    console.log("SQS API Response:", sqsResponse.data);
+      console.log("SQS API Response:", sqsResponse.data);
 
       setRows((prevRows) => [
         ...prevRows,
@@ -107,7 +106,7 @@ const ProductSheetsPage = () => {
   return (
     <div className={styles.container}>
       {!showMainContent ? (
-        <>
+        <div className={styles.mainContentWrapper}>
           {/* New Claim Processing Button */}
           <div className={styles.header}>
             <button
@@ -118,7 +117,7 @@ const ProductSheetsPage = () => {
             </button>
           </div>
           <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
-        </>
+        </div>
       ) : (
         <>
           <Sidebar
@@ -147,26 +146,18 @@ export default ProductSheetsPage;
 
 
 .container {
-  /*display: flex;*/
   padding: 5px 20px;
+  display: grid;
+  grid-template-columns: 1fr 3fr; /* 1 part for Sidebar, 3 parts for MainContent */
+  gap: 20px; /* Adds space between Sidebar and MainContent */
 }
 
-.container > div {
-  margin-right: 20px;
-}
-
-.infoMessage{
+.infoMessage {
   text-align: center;
-  margin: 180px;
+  margin-top: 180px;
   font-size: 1.2rem;
-  color:#555;
+  color: #555;
 }
-
-/*.header {*/
-/*  display: flex;*/
-/*  justify-content: flex-start;*/
-/*  margin-bottom: 20px;*/
-/*}*/
 
 .newClaimButton {
   background-color: #007bff;
@@ -177,8 +168,17 @@ export default ProductSheetsPage;
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: fit-content; /* Ensure button does not take unnecessary space */
+  margin-bottom: 20px; /* To provide some space between button and table */
 }
 
 .newClaimButton:hover {
   background-color: #0056b3;
+}
+
+/* Adjusting the layout of the DataTable or MainContent when displayed */
+.mainContentWrapper {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  gap: 20px; /* Space between content elements */
 }
