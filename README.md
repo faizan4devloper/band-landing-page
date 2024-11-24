@@ -1,15 +1,11 @@
-
-
-
-  
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { HashLoader } from "react-spinners";
-import styles from "./DataTable.module.css";
+import styles from "./AllDataTable.module.css";
 
-const DataTable = () => {
+const AllDataTable = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -20,21 +16,21 @@ const DataTable = () => {
     setError("");
     try {
       const payload = {
-        tasktype: "FETCH_ALL_CLAIMS",
+        tasktype: "FETCH_ALL_DATA", // Different payload
       };
 
       const headers = {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post("dummy1", payload, { headers });
+      const response = await axios.post("https://api.example.com/fetch-data", payload, { headers }); // Different API URL
 
       console.log("API Response:", response.data);
 
-      const claimData = Object.values(response.data.allclaimdata || {});
-      console.log("Extracted Claim Data:", claimData);
+      const allData = Object.values(response.data.alldata || {});
+      console.log("Extracted All Data:", allData);
 
-      setRows(claimData);
+      setRows(allData);
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
       console.error("API Error:", err);
@@ -71,26 +67,24 @@ const DataTable = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>FileName</th>
-              <th>RecNum</th>
-              <th>Policy ID</th>
-              <th>Type</th>
-              <th>Summary</th>
-              <th>Status</th>
+              <th>Column 1</th>
+              <th>Column 2</th>
+              <th>Column 3</th>
+              <th>Column 4</th>
+              <th>Column 5</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => {
-              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              const uniqueKey = `${index}_${row.uniqueField}`; // Adjust unique key based on available data
               return (
                 <tr key={uniqueKey}>
-                  <td>{row.file_name}</td>
-                  <td>{row.rec_number}</td>
-                  <td>{row.policy_id}</td>
-                  <td>{row.prod_sheet_type}</td>
-                  <td>{row.summary}</td>
-                  <td>{row.status || "Pending"}</td>
+                  <td>{row.field1}</td>
+                  <td>{row.field2}</td>
+                  <td>{row.field3}</td>
+                  <td>{row.field4}</td>
+                  <td>{row.field5}</td>
                   <td>
                     <button
                       className={styles.reloadButton}
@@ -116,4 +110,4 @@ const DataTable = () => {
   );
 };
 
-export default DataTable;
+export default AllDataTable;
