@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { PuffLoader } from "react-spinners";
 import styles from "./DataTable.module.css";
 
 const DataTable = () => {
@@ -57,8 +58,8 @@ const DataTable = () => {
   return (
     <div className={styles.tableContainer}>
       {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}>
-          <p>Loading data...</p>
+        <div className={styles.spinnerContainer}>
+          <PuffLoader color="#0f5fdc" size={60} />
         </div>
       ) : error ? (
         <p className={styles.error}>{error}</p>
@@ -93,7 +94,9 @@ const DataTable = () => {
                     >
                       <FontAwesomeIcon
                         icon={faSyncAlt}
-                        className={spinningRows[uniqueKey] ? "fa-spin" : ""}
+                        className={`${styles.reloadIcon} ${
+                          spinningRows[uniqueKey] ? "fa-spin" : ""
+                        }`}
                       />
                     </button>
                   </td>
@@ -113,12 +116,13 @@ export default DataTable;
 
 
 
+
 /* Container for the table */
 .tableContainer {
   margin-top: 20px;
   overflow-x: auto;
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
   background-color: #fff;
   padding: 20px;
 }
@@ -128,25 +132,26 @@ export default DataTable;
   width: 100%;
   border-collapse: collapse;
   font-family: "Roboto", sans-serif;
-  font-size: 16px;
+  font-size: 15px;
   color: #333;
 }
 
 /* Header styling */
 .table th {
-  background: linear-gradient(90deg, #4caf50, #66bb6a);
+  background: #0f5fdc;
   color: white;
   text-align: left;
-  padding: 14px;
+  padding: 16px;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.6px;
+  border-bottom: 2px solid #e0e0e0;
 }
 
 /* Cell styling */
 .table td {
   border: 1px solid #ddd;
-  padding: 12px;
+  padding: 14px;
   text-align: left;
   color: #555;
 }
@@ -158,8 +163,16 @@ export default DataTable;
 
 /* Hover effect */
 .table tr:hover {
-  background-color: #e8f5e9;
+  background-color: #eef3fc;
   transition: background-color 0.3s ease-in-out;
+}
+
+/* Spinner container */
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
 }
 
 /* Error styling */
@@ -184,7 +197,7 @@ export default DataTable;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 10px;
   background-color: #007bff;
   color: white;
   border: none;
@@ -202,11 +215,10 @@ export default DataTable;
 /* Reload icon */
 .reloadIcon {
   font-size: 16px;
-  margin-left: 8px;
 }
 
 /* Spinning animation */
-.spinning {
+.fa-spin {
   animation: spin 1s linear infinite;
 }
 
