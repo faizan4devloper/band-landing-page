@@ -1,4 +1,3 @@
-  
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -11,6 +10,7 @@ const DataTable = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [spinningRows, setSpinningRows] = useState({});
+  const [showMainContent, setShowMainContent] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -58,6 +58,20 @@ const DataTable = () => {
 
   return (
     <div className={styles.tableContainer}>
+      {/* Button to toggle main content */}
+      {!showMainContent ? (
+        <button
+          className={styles.newClaimButton}
+          onClick={() => setShowMainContent(true)}
+        >
+          New Claim Processing
+        </button>
+      ) : (
+        <p className={styles.mainContentMessage}>
+          Main content goes here after processing the claim.
+        </p>
+      )}
+
       {loading ? (
         <div className={styles.spinnerContainer}>
           <HashLoader color="#0f5fdc" size={40} />
@@ -114,3 +128,72 @@ const DataTable = () => {
 };
 
 export default DataTable;
+
+
+
+.newClaimButton {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.newClaimButton:hover {
+  background-color: #0056b3;
+}
+
+.mainContentMessage {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.error {
+  color: red;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.noData {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.tableContainer {
+  padding: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+.reloadButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.reloadIcon {
+  font-size: 20px;
+}
