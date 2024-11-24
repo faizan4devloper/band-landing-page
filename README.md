@@ -1,31 +1,6 @@
-API Response: allclaimdata
-: 
-0
-: 
-{policy_id: 'PI1711049', prod_sheet_type: 'CANCER', summary: 'The product sheet outlines the Cancer Premium Waiv…rs, subject to certain exclusions and conditions.', file_name: 'R95.01-CancerPremWaiver.pdf', rec_number: 'PS123456', …}
-1
-: 
-{policy_id: 'PI2027251', prod_sheet_type: 'CANCER', summary: 'The product sheet provides details on the Cancer P…rs, subject to certain exclusions and conditions.', file_name: 'R95.01-CancerPremWaiver.pdf', rec_number: 'PS123456', …}
-2
-: 
-{policy_id: 'PI1155085', prod_sheet_type: 'CANCER', summary: 'The product sheet details a life assured who has b…urgery and is recommended for adjuvant treatment.', file_name: 'Case_CI_Cancer_3.1.pdf', rec_number: 'CL1234567', …}
-3
-: 
-{policy_id: 'PI1233710', prod_sheet_type: 'CANCER', summary: 'The product sheet outlines the Cancer Premium Waiv…cancers, subject to certain terms and conditions.', file_name: 'R95.01-CancerPremWaiver.pdf', rec_number: 'PS908123', …}
-[[Prototype]]
-: 
-Object
-[[Prototype]]
-: 
-Object
-
-
-
-
-
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import styles from './DataTable.module.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import styles from "./DataTable.module.css";
 
 const DataTable = () => {
   const [rows, setRows] = useState([]);
@@ -51,8 +26,8 @@ const DataTable = () => {
 
       console.log("API Response:", response.data);
 
-      // Assuming the data is an array of objects
-      setRows(response.data.claims || []); // Adjust based on API response structure
+      // Adjusting the data mapping based on the console data structure
+      setRows(response.data || []); // Ensure it's mapped properly from response
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
       console.error("API Error:", err);
@@ -65,6 +40,35 @@ const DataTable = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const handleReload = async (recNum) => {
+    try {
+      const payload = {
+        tasktype: "FETCH_SINGLE_CLAIM",
+        claimid: recNum,
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post("dummy2", payload, {
+        headers,
+      });
+
+      console.log(`Reloaded Data for ${recNum}:`, response.data);
+
+      // Update specific row based on recNum
+      const updatedRow = response.data;
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.rec_number === recNum ? { ...row, ...updatedRow } : row
+        )
+      );
+    } catch (error) {
+      console.error("Error reloading row:", error);
+    }
+  };
 
   return (
     <div className={styles.tableContainer}>
@@ -80,21 +84,22 @@ const DataTable = () => {
               <th>Policy ID</th>
               <th>Type</th>
               <th>Summary</th>
-              <th>Status</th>
+              <th>File Name</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => (
               <tr key={index}>
-                <td>{row.recNum}</td>
-                <td>{row.policyid}</td>
-                <td>{row.type}</td>
+                <td>{row.rec_number}</td>
+                <td>{row.policy_id}</td>
+                <td>{row.prod_sheet_type}</td>
                 <td>{row.summary}</td>
-                <td>{row.status}</td>
+                <td>{row.file_name}</td>
                 <td>
                   <button
                     className={styles.reloadButton}
+                    onClick={() => handleReload(row.rec_number)}
                   >
                     Reload
                   </button>
