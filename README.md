@@ -7,7 +7,7 @@ const DataTable = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Fetch data from the API
+  // Fetch all data initially
   const fetchData = async () => {
     setLoading(true);
     setError(""); // Clear any previous errors
@@ -37,7 +37,48 @@ const DataTable = () => {
     }
   };
 
-  // Fetch data on component mount
+  // Reload a single row's data
+  const handleReload = async (recNum) => {
+    try {
+      const payload = {
+        tasktype: "FETCH_SINGLE_CLAIM",
+        claimid: recNum,
+      };
+
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: "Bearer your-auth-token-here",
+      };
+
+      const response = await axios.post("https://your-api-endpoint.com/fetchSingleClaim", payload, {
+        headers,
+      });
+
+      console.log("Reload Response for RecNum:", recNum, response.data);
+
+      const updatedData = response.data;
+
+      // Update the specific row in the table
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.recNum === recNum
+            ? {
+                ...row,
+                policyid: updatedData.policyid,
+                type: updatedData.type,
+                summary: updatedData.summary,
+                status: updatedData.status || "Updated",
+              }
+            : row
+        )
+      );
+    } catch (error) {
+      console.error("Reload Error:", error);
+      setError(`Failed to reload data for RecNum: ${recNum}`);
+    }
+  };
+
+  // Fetch all data on mount
   useEffect(() => {
     fetchData();
   }, []);
