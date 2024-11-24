@@ -1,232 +1,146 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { PuffLoader } from "react-spinners";
-import styles from "./DataTable.module.css";
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import DataTable from './DataTable'; // Import the new DataTable component
+import styles from './ProductSheetsPage.module.css';
 
-const DataTable = () => {
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [spinningRows, setSpinningRows] = useState({});
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [showMainContent, setShowMainContent] = useState(false);
 
-  const fetchData = async () => {
-    setLoading(true);
-    setError("");
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage("");
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const response = await axios.post("https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/", {
+        payload: { filename: file.name },
+      });
+
+      const { presignedUrl, key, recNum } = response.data;
+
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      const sqsPayload = {
+        claimid: recNum,
+        s3filename: key,
+        tasktype: "SEND_TO_QUEUE",
+      };
+
+         // Step 4: Send the payload to the new API
+    const sqsResponse = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", sqsPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("SQS API Response:", sqsResponse.data);
+
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: presignedUrl,
+          status: "Pending",
+        },
+      ]);
+
+      setMessage("File uploaded successfully!");
+      setIsUploaded(true);
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReload = async (recNum) => {
     try {
       const payload = {
-        tasktype: "FETCH_ALL_CLAIMS",
+        tasktype: "FETCH_SINGLE_CLAIM",
+        claimid: recNum,
       };
 
-      const headers = {
-        "Content-Type": "application/json",
-      };
+      const response = await axios.post(`dummy`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-      const response = await axios.post("dummy", payload, { headers });
+      console.log("Reload Data:", recNum, response.data);
+      const data = response.data;
 
-      console.log("API Response:", response.data);
-
-      const claimData = Object.values(response.data.allclaimdata || {});
-      console.log("Extracted Claim Data:", claimData);
-
-      setRows(claimData);
-    } catch (err) {
-      setError("Failed to fetch data. Please try again.");
-      console.error("API Error:", err);
-    } finally {
-      setLoading(false);
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.recNum === recNum
+            ? {
+                ...row,
+                policyid: data.policyid,
+                type: data.type,
+                summary: data.summary,
+                status: "Completed️✅",
+              }
+            : row
+        )
+      );
+    } catch (error) {
+      setMessage("Failed to fetch data for RecNum: " + recNum);
     }
   };
-
-  const handleReloadRow = async (uniqueKey) => {
-    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
-    try {
-      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    } catch (err) {
-      console.error("Error reloading row:", err);
-    } finally {
-      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return (
-    <div className={styles.tableContainer}>
-      {loading ? (
-        <div className={styles.spinnerContainer}>
-          <PuffLoader color="#0f5fdc" size={60} />
-        </div>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : rows.length > 0 ? (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>FileName</th>
-              <th>RecNum</th>
-              <th>Policy ID</th>
-              <th>Type</th>
-              <th>Summary</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => {
-              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
-              return (
-                <tr key={uniqueKey}>
-                  <td>{row.file_name}</td>
-                  <td>{row.rec_number}</td>
-                  <td>{row.policy_id}</td>
-                  <td>{row.prod_sheet_type}</td>
-                  <td>{row.summary}</td>
-                  <td>{row.status || "Pending"}</td>
-                  <td>
-                    <button
-                      className={styles.reloadButton}
-                      onClick={() => handleReloadRow(uniqueKey)}
-                    >
-                      <FontAwesomeIcon
-                        icon={faSyncAlt}
-                        className={`${styles.reloadIcon} ${
-                          spinningRows[uniqueKey] ? "fa-spin" : ""
-                        }`}
-                      />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+    <div className={styles.container}>
+      {!showMainContent ? (
+        <>
+          {/* New Claim Processing Button */}
+          <div className={styles.header}>
+            <button
+              className={styles.newClaimButton}
+              onClick={() => setShowMainContent(true)}
+            >
+              New Claim Processing
+            </button>
+          </div>
+          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
+        </>
       ) : (
-        <p className={styles.noData}>No data available</p>
+        <>
+          <Sidebar
+            onFileChange={handleFileChange}
+            onUpload={handleUpload}
+            uploading={uploading}
+          />
+          {isUploaded ? (
+            <MainContent
+              message={message}
+              rows={rows}
+              handleReload={handleReload}
+            />
+          ) : (
+            <p className={styles.infoMessage}>
+              Please upload a document to view the data.
+            </p>
+          )}
+        </>
       )}
     </div>
   );
 };
 
-export default DataTable;
-
-
-
-
-/* Container for the table */
-.tableContainer {
-  margin-top: 20px;
-  overflow-x: auto;
-  border-radius: 10px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-  background-color: #fff;
-  padding: 20px;
-}
-
-/* Table styling */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: "Roboto", sans-serif;
-  font-size: 15px;
-  color: #333;
-}
-
-/* Header styling */
-.table th {
-  background: #0f5fdc;
-  color: white;
-  text-align: left;
-  padding: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  border-bottom: 2px solid #e0e0e0;
-}
-
-/* Cell styling */
-.table td {
-  border: 1px solid #ddd;
-  padding: 14px;
-  text-align: left;
-  color: #555;
-}
-
-/* Alternate row color for zebra effect */
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-/* Hover effect */
-.table tr:hover {
-  background-color: #eef3fc;
-  transition: background-color 0.3s ease-in-out;
-}
-
-/* Spinner container */
-.spinnerContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-}
-
-/* Error styling */
-.error {
-  color: red;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* No data styling */
-.noData {
-  text-align: center;
-  color: #999;
-  padding: 20px;
-  font-style: italic;
-  font-size: 18px;
-}
-
-/* Reload button styling */
-.reloadButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease-in-out;
-}
-
-.reloadButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-/* Reload icon */
-.reloadIcon {
-  font-size: 16px;
-}
-
-/* Spinning animation */
-.fa-spin {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+export default ProductSheetsPage;
