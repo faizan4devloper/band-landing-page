@@ -1,9 +1,14 @@
+import React, { useState } from 'react';
+import Modal from 'react-modal';
+import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import { faRotateRight, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+
 
 const MainContent = ({ message, rows, handleReload }) => {
   const [filter, setFilter] = useState("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null);
   const [loadingRecNums, setLoadingRecNums] = useState([]); // Track reloading state
   const [statuses, setStatuses] = useState({}); // Store the status of each row
 
@@ -13,6 +18,16 @@ const MainContent = ({ message, rows, handleReload }) => {
 
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
+  };
+
+  const openModal = (previewLink) => {
+    setModalContent(previewLink);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
   };
 
   const handleReloadClick = async (recNum) => {
@@ -27,7 +42,7 @@ const MainContent = ({ message, rows, handleReload }) => {
     await handleReload(recNum);  // Simulate the reload action
 
     // Once the data is available, update the status to "Completed"
-    const row = rows.find((row) => row.recNum === recNum);
+    const row = rows.find(row => row.recNum === recNum);
     if (row.policyid && row.type && row.summary) {
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
@@ -145,6 +160,35 @@ const MainContent = ({ message, rows, handleReload }) => {
           )}
         </tbody>
       </table>
+
+      {/* Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.modalOverlay}
+        ariaHideApp={false}
+      >
+        <div className={styles.modalContent}>
+          <button className={styles.closeButton} onClick={closeModal}>
+            Close
+          </button>
+          {modalContent ? (
+            <iframe
+              src={modalContent}
+              title="Preview"
+              className={styles.modalIframe}
+            ></iframe>
+          ) : (
+            <p>No preview available</p>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };
+
+export default MainContent;
+
+
+handleReload reload icons spinning infinte i dont want that i want the icon spin or load after i click and clickable untill data is displaying and then show complete status
