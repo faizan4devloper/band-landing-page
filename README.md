@@ -1,3 +1,5 @@
+handleReload reload icons spinning infinte i dont want that i want the icon spin or load after i click and clickable untill data is displaying and then show complete status
+
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styles from './MainContent.module.css';
@@ -191,4 +193,4 @@ const MainContent = ({ message, rows, handleReload }) => {
 export default MainContent;
 
 
-handleReload reload icons spinning infinte i dont want that i want the icon spin or load after i click and clickable untill data is displaying and then show complete status
+
