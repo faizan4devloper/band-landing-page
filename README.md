@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
-import DataTable from "./DataTable";
-import styles from "./ProductSheetsPage.module.css";
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import DataTable from './DataTable'; // Import the new DataTable component
+import styles from './ProductSheetsPage.module.css';
 
 const ProductSheetsPage = () => {
   const [file, setFile] = useState(null);
@@ -28,13 +29,24 @@ const ProductSheetsPage = () => {
     }
     setUploading(true);
     try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      
       const response = await axios.post("dummy", {
         payload: { filename: sanitizedFileName },
       });
+      
+      console.log("API Response 1:", response.data);
 
       const { presignedUrl, key, recNum } = response.data;
+      
+      // Ensure recNum starts with "PS"
+    // if (!recNum.startsWith("PS")) {
+    //   recNum = `PS${recNum}`;
+    // }
+    
+    // if (recNum.startsWith("CI")) {
+    //   recNum = recNum.replace(/^CI/, "PS");
+    // }
 
       await axios.put(presignedUrl, file, {
         headers: { "Content-Type": file.type },
@@ -47,16 +59,19 @@ const ProductSheetsPage = () => {
         tasktype: "SEND_TO_PS_QUEUE",
       };
 
-      await axios.post("dummy", sqsPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
+         // Step 4: Send the payload to the new API
+    const sqsResponse = await axios.post("dummy", sqsPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("SQS API Response:", sqsResponse.data);
 
       setRows((prevRows) => [
         ...prevRows,
         {
           recNum,
-          policy_id: "",
-          prod_sheet_type: "",
+          policyid: "",
+          type: "",
           summary: "",
           previewLink: presignedUrl,
           status: "Pending",
@@ -82,36 +97,38 @@ const ProductSheetsPage = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const singleclaimdata = response.data?.[0]; // Ensure valid response
-      if (!singleclaimdata) {
-        console.error("Invalid API response: ", response.data);
-        setMessage("Failed to fetch data for RecNum: " + recNum);
-        return;
-      }
+    const singleclaimdata = response.data;
+      console.log("Reload Data:", response.data);
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policy_id: singleclaimdata?.policy_id || "",
-                prod_sheet_type: singleclaimdata?.prod_sheet_type || "",
-                summary: singleclaimdata?.summary || "",
-                status: singleclaimdata?.status || "Pending",
-                previewLink: singleclaimdata?.previewLink || row.previewLink,
-              }
-            : row
-        )
-      );
-    } catch (error) {
-      setMessage("Failed to fetch data for RecNum: " + recNum);
-    }
-  };
+     // Now update rows using this data
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.recNum === recNum
+          ? {
+              ...row,
+              policyid: singleclaimdata.policy_id,
+              prod_sheet_type: singleclaimdata.prod_sheet_type,
+              summary: singleclaimdata.summary,
+              status: singleclaimdata.status,
+              previewLink: singleclaimdata.previewLink,
+            }
+          : row
+      )
+    );
+
+    
+  } catch (error) {
+    setMessage("Failed to fetch data for RecNum: " + recNum);
+  }
+  
+};
+
 
   return (
     <div className={styles.container}>
       {!showMainContent ? (
         <>
+          {/* New Claim Processing Button */}
           <div className={styles.header}>
             <button
               className={styles.newClaimButton}
@@ -120,7 +137,7 @@ const ProductSheetsPage = () => {
               New Claim Processing
             </button>
           </div>
-          <DataTable rows={rows} handleReload={handleReload} />
+          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
         </>
       ) : (
         <>
@@ -306,3 +323,31 @@ const MainContent = ({ message, rows, handleReload }) => {
 };
 
 export default MainContent;
+
+
+
+singleclaimdata
+: 
+0
+: 
+file_name
+: 
+"Case_CI_Cancer_3.1.pdf"
+policy_id
+: 
+"PI2514940"
+prod_sheet_type
+: 
+"CANCER"
+rec_number
+: 
+"PS178705"
+status
+: 
+"Processed"
+summary
+: 
+"The product sheet is for a critical illness claim related to cancer, specifically a malignant neoplasm of the sigmoid colon with secondary neoplasm of the ovary. The patient underwent minimally invasive surgery and is receiving adjuvant treatment post-surgery."
+[[Prototype]]
+: 
+Object
