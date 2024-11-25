@@ -1,3 +1,5 @@
+i want recNum start with ps not like that CI871093 not CI i want PS
+
 
 import React, { useState } from 'react';
 import axios from 'axios';
