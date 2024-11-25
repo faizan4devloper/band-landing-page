@@ -1,387 +1,117 @@
+i want this type of handleReloadRow for the MainContent
 
-import React, { useState } from 'react';
-import Modal from 'react-modal';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { HashLoader } from "react-spinners";
+import styles from "./DataTable.module.css";
 
-const MainContent = ({ message, rows, handleReload }) => {
-  const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
-  const [loadingRecNums, setLoadingRecNums] = useState([]); // Track reloading state
-  const [statuses, setStatuses] = useState({}); // Store the status of each row
+const DataTable = () => {
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [spinningRows, setSpinningRows] = useState({});
 
-  const filteredRows = rows.filter((row) =>
-    filter === "All" ? true : row.status.includes(filter)
-  );
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const payload = {
+        tasktype: "FETCH_ALL_CLAIMS",
+      };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
+      const headers = {
+        "Content-Type": "application/json",
+      };
 
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
+      const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, { headers });
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-  };
+      console.log("API Response:", response.data);
 
-  const handleReloadClick = async (recNum) => {
-    // Set status to "Reloading" immediately upon clicking
-    setStatuses((prevStatuses) => ({
-      ...prevStatuses,
-      [recNum]: "Reloading",
-    }));
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
 
-    setLoadingRecNums((prev) => [...prev, recNum]); // Add recNum to loading state
-    
-    await handleReload(recNum);  // Simulate the reload action
-
-    // Once the data is available, update the status to "Completed"
-    const row = rows.find(row => row.recNum === recNum);
-    if (row.policyid && row.type && row.summary) {
-      setStatuses((prevStatuses) => ({
-        ...prevStatuses,
-        [recNum]: "Completed", // Update the status to "Completed" once data is loaded
-      }));
+      setRows(claimData);
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setLoadingRecNums((prev) => prev.filter((id) => id !== recNum)); // Remove recNum from loading state once done
   };
+
+  const handleReloadRow = async (uniqueKey) => {
+    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
+    try {
+      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err) {
+      console.error("Error reloading row:", err);
+    } finally {
+      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
-    <div className={styles.mainContent}>
-      {message && <p className={styles.message}>{message}</p>}
-
-      {/* Filter Dropdown */}
-      <div className={styles.filterContainer}>
-        <label htmlFor="statusFilter" className={styles.filterLabel}>
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className={styles.filterDropdown}
-          value={filter}
-          onChange={handleFilterChange}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum}</td>
-                <td>
-                  {row.policyid ? (
-                    row.policyid
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.type ? (
-                    row.type
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.summary ? (
-                    row.summary
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {statuses[row.recNum] === "Reloading" ? (
-                    // Show reload icon while reloading
-                    <FontAwesomeIcon
-                      icon={faSyncAlt}
-                      spin
-                      className={styles.reloadIcon}
-                    />
-                  ) : statuses[row.recNum] === "Completed" ? (
-                    // Show "Completed" when data is loaded
-                    "Completed"
-                  ) : (
-                    <span>
-                      Pending
-                      <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReloadClick(row.recNum)}
-                        disabled={loadingRecNums.includes(row.recNum)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faSyncAlt}
-                          className={styles.reloadIcon}
-                        />
-                      </button>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.modalOverlay}
-        ariaHideApp={false}
-      >
-        <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
-            Close
-          </button>
-          {modalContent ? (
-            <iframe
-              src={modalContent}
-              title="Preview"
-              className={styles.modalIframe}
-            ></iframe>
-          ) : (
-            <p>No preview available</p>
-          )}
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
         </div>
-      </Modal>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>FileName</th>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              return (
+                <tr key={uniqueKey}>
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  <td>
+                    <button
+                      className={styles.reloadButton}
+                      onClick={() => handleReloadRow(uniqueKey)}
+                    >
+                      <FontAwesomeIcon
+                        icon={faSyncAlt}
+                        className={`${styles.reloadIcon} ${
+                          spinningRows[uniqueKey] ? "fa-spin" : ""
+                        }`}
+                      />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <p className={styles.noData}>No data available</p>
+      )}
     </div>
   );
 };
 
-export default MainContent;
-handleReload reload icons spinning infinte i dont want that i want the icon spin or load after i click and clickable untill data is displaying and then show complete status
-
-import React, { useState } from 'react';
-import Modal from 'react-modal';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-
-
-const MainContent = ({ message, rows, handleReload }) => {
-  const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
-  const [loadingRecNums, setLoadingRecNums] = useState([]); // Track reloading state
-  const [statuses, setStatuses] = useState({}); // Store the status of each row
-
-  const filteredRows = rows.filter((row) =>
-    filter === "All" ? true : row.status.includes(filter)
-  );
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
-
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-  };
-
-  const handleReloadClick = async (recNum) => {
-    // Set status to "Reloading" immediately upon clicking
-    setStatuses((prevStatuses) => ({
-      ...prevStatuses,
-      [recNum]: "Reloading",
-    }));
-
-    setLoadingRecNums((prev) => [...prev, recNum]); // Add recNum to loading state
-    
-    await handleReload(recNum);  // Simulate the reload action
-
-    // Once the data is available, update the status to "Completed"
-    const row = rows.find(row => row.recNum === recNum);
-    if (row.policyid && row.type && row.summary) {
-      setStatuses((prevStatuses) => ({
-        ...prevStatuses,
-        [recNum]: "Completed", // Update the status to "Completed" once data is loaded
-      }));
-    }
-
-    setLoadingRecNums((prev) => prev.filter((id) => id !== recNum)); // Remove recNum from loading state once done
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      {message && <p className={styles.message}>{message}</p>}
-
-      {/* Filter Dropdown */}
-      <div className={styles.filterContainer}>
-        <label htmlFor="statusFilter" className={styles.filterLabel}>
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className={styles.filterDropdown}
-          value={filter}
-          onChange={handleFilterChange}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
-
-      {/* Table */}
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum}</td>
-                <td>
-                  {row.policyid ? (
-                    row.policyid
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.type ? (
-                    row.type
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.summary ? (
-                    row.summary
-                  ) : (
-                    <span className={styles.loader}>Pending</span>
-                  )}
-                </td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {statuses[row.recNum] === "Reloading" ? (
-                    // Show reload icon while reloading
-                    <FontAwesomeIcon
-                      icon={faSyncAlt}
-                      spin
-                      className={styles.reloadIcon}
-                    />
-                  ) : statuses[row.recNum] === "Completed" ? (
-                    // Show "Completed" when data is loaded
-                    "Completed"
-                  ) : (
-                    <span>
-                      Pending
-                      <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReloadClick(row.recNum)}
-                        disabled={loadingRecNums.includes(row.recNum)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faSyncAlt}
-                          className={styles.reloadIcon}
-                        />
-                      </button>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.modalOverlay}
-        ariaHideApp={false}
-      >
-        <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
-            Close
-          </button>
-          {modalContent ? (
-            <iframe
-              src={modalContent}
-              title="Preview"
-              className={styles.modalIframe}
-            ></iframe>
-          ) : (
-            <p>No preview available</p>
-          )}
-        </div>
-      </Modal>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
+export default DataTable;
