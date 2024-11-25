@@ -15,6 +15,66 @@ const handleUpload = async () => {
 
     let { presignedUrl, key, recNum } = response.data;
 
+    // Convert "CI" to "PS" if recNum starts with "CI"
+    if (recNum.startsWith("CI")) {
+      recNum = recNum.replace(/^CI/, "PS");
+    }
+
+    await axios.put(presignedUrl, file, {
+      headers: { "Content-Type": file.type },
+    });
+
+    const sqsPayload = {
+      claimid: recNum,
+      s3filename: key,
+      actionn: "transform",
+      tasktype: "SEND_TO_PS_QUEUE",
+    };
+
+    // Step 4: Send the payload to the new API
+    const sqsResponse = await axios.post("dummy", sqsPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("SQS API Response:", sqsResponse.data);
+
+    setRows((prevRows) => [
+      ...prevRows,
+      {
+        recNum,
+        policyid: "",
+        type: "",
+        summary: "",
+        previewLink: presignedUrl,
+        status: "Pending",
+      },
+    ]);
+
+    setIsUploaded(true);
+  } catch (error) {
+    setMessage("Upload failed: " + error.message);
+  } finally {
+    setUploading(false);
+  }
+};
+
+const handleUpload = async () => {
+  if (!file) {
+    setMessage("Please select a file to upload.");
+    return;
+  }
+  setUploading(true);
+  try {
+    const sanitizedFileName = file.name.replace(/\s+/g, '_');
+
+    const response = await axios.post("dummy", {
+      payload: { filename: sanitizedFileName },
+    });
+
+    console.log("API Response 1:", response.data);
+
+    let { presignedUrl, key, recNum } = response.data;
+
     // Ensure recNum starts with "PS"
     if (!recNum.startsWith("PS")) {
       recNum = `PS${recNum}`;
