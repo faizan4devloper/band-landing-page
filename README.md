@@ -1,3 +1,32 @@
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    // Extract the file extension
+    const fileExtension = file.name.split('.').pop();
+    // Sanitize the file name and append the extension
+    const sanitizedFileName = file.name
+      .replace(/\s+/g, '_')
+      .replace(/\.[^/.]+$/, '') + `.${fileExtension}`;
+
+    setFileName(sanitizedFileName);
+
+    const renamedFile = new File([file], sanitizedFileName, { type: file.type });
+    onFileChange({ target: { files: [renamedFile] } });
+  }
+  onFileChange(event); // Pass the file to the parent component
+};
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useRef, useState } from "react";
 import styles from "./Sidebar.module.css";
 import { useNavigate } from 'react-router-dom';
