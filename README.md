@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import Sidebar from "./Sidebar";
 import MainContent from "./MainContent";
-import DataTable from "./DataTable"; // Import the DataTable component
+import DataTable from "./DataTable";
 import styles from "./ProductSheetsPage.module.css";
 
 const ProductSheetsPage = () => {
@@ -59,7 +59,7 @@ const ProductSheetsPage = () => {
         ...prevRows,
         {
           recNum,
-          policy_id: "", // Default values for properties
+          policy_id: "",
           prod_sheet_type: "",
           summary: "",
           previewLink: presignedUrl,
@@ -86,24 +86,48 @@ const ProductSheetsPage = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      const singleClaimData = response.data?.[0] || {}; // Fallback to an empty object if undefined
-      console.log("Reload Data:", singleClaimData);
+      console.log("API Response:", response);
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policy_id: singleClaimData.policy_id || "N/A", // Safe default
-                prod_sheet_type: singleClaimData.prod_sheet_type || "Unknown",
-                summary: singleClaimData.summary || "No summary available",
-                status: singleClaimData.status || "Unknown",
-                previewLink: singleClaimData.previewLink || row.previewLink,
-              }
-            : row
-        )
-      );
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        const singleClaimData = response.data[0];
+        console.log("Single Claim Data:", singleClaimData);
+
+        const {
+          policy_id = "N/A",
+          file_name = "N/A",
+          status = "Unknown",
+          summary = "No summary available",
+          prod_sheet_type = "Unknown",
+          rec_number = recNum,
+        } = singleClaimData;
+
+        console.log("Policy ID:", policy_id);
+        console.log("File Name:", file_name);
+        console.log("Status:", status);
+        console.log("Summary:", summary);
+        console.log("Product Sheet Type:", prod_sheet_type);
+        console.log("Record Number:", rec_number);
+
+        setRows((prevRows) =>
+          prevRows.map((row) =>
+            row.recNum === recNum
+              ? {
+                  ...row,
+                  policy_id,
+                  prod_sheet_type,
+                  summary,
+                  status,
+                  previewLink: row.previewLink,
+                }
+              : row
+          )
+        );
+      } else {
+        console.error("Unexpected response format:", response.data);
+        setMessage("Failed to fetch claim details.");
+      }
     } catch (error) {
+      console.error("Error fetching claim data:", error.message);
       setMessage("Failed to fetch data for RecNum: " + recNum);
     }
   };
@@ -147,4 +171,3 @@ const ProductSheetsPage = () => {
 };
 
 export default ProductSheetsPage;
-
