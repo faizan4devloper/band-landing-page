@@ -1,124 +1,144 @@
-Uncaught TypeError: Cannot read properties of undefined (reading 'policy_id')
-    at ProductSheetsPage.js:413:1
-    at Array.map (<anonymous>)
-    at ProductSheetsPage.js:408:1
-    at basicStateReducer (react-dom.development.js:15721:1)
-    at updateReducer (react-dom.development.js:15845:1)
-    at updateState (react-dom.development.js:16185:1)
-    at Object.useState (react-dom.development.js:17096:1)
-    at useState (react.development.js:1622:1)
-    at ProductSheetsPage (ProductSheetsPage.js:328:1)
-    at renderWithHooks (react-dom.development.js:15486:1)
-(anonymous) @ ProductSheetsPage.js:413
-(anonymous) @ ProductSheetsPage.js:408
-basicStateReducer @ react-dom.development.js:15721
-updateReducer @ react-dom.development.js:15845
-updateState @ react-dom.development.js:16185
-useState @ react-dom.development.js:17096
-useState @ react.development.js:1622
-ProductSheetsPage @ ProductSheetsPage.js:328
-renderWithHooks @ react-dom.development.js:15486
-updateFunctionComponent @ react-dom.development.js:19617
-beginWork @ react-dom.development.js:21640
-callCallback @ react-dom.development.js:4164
-invokeGuardedCallbackDev @ react-dom.development.js:4213
-invokeGuardedCallback @ react-dom.development.js:4277
-beginWork$1 @ react-dom.development.js:27490
-performUnitOfWork @ react-dom.development.js:26596
-workLoopSync @ react-dom.development.js:26505
-renderRootSync @ react-dom.development.js:26473
-performConcurrentWorkOnRoot @ react-dom.development.js:25777
-workLoop @ scheduler.development.js:266
-flushWork @ scheduler.development.js:239
-performWorkUntilDeadline @ scheduler.development.js:533Understand this errorAI
-ProductSheetsPage.js:413 Uncaught TypeError: Cannot read properties of undefined (reading 'policy_id')
-    at ProductSheetsPage.js:413:1
-    at Array.map (<anonymous>)
-    at ProductSheetsPage.js:408:1
-    at basicStateReducer (react-dom.development.js:15721:1)
-    at updateReducer (react-dom.development.js:15845:1)
-    at updateState (react-dom.development.js:16185:1)
-    at Object.useState (react-dom.development.js:17096:1)
-    at useState (react.development.js:1622:1)
-    at ProductSheetsPage (ProductSheetsPage.js:328:1)
-    at renderWithHooks (react-dom.development.js:15486:1)
-(anonymous) @ ProductSheetsPage.js:413
-(anonymous) @ ProductSheetsPage.js:408
-basicStateReducer @ react-dom.development.js:15721
-updateReducer @ react-dom.development.js:15845
-updateState @ react-dom.development.js:16185
-useState @ react-dom.development.js:17096
-useState @ react.development.js:1622
-ProductSheetsPage @ ProductSheetsPage.js:328
-renderWithHooks @ react-dom.development.js:15486
-updateFunctionComponent @ react-dom.development.js:19617
-beginWork @ react-dom.development.js:21640
-callCallback @ react-dom.development.js:4164
-invokeGuardedCallbackDev @ react-dom.development.js:4213
-invokeGuardedCallback @ react-dom.development.js:4277
-beginWork$1 @ react-dom.development.js:27490
-performUnitOfWork @ react-dom.development.js:26596
-workLoopSync @ react-dom.development.js:26505
-renderRootSync @ react-dom.development.js:26473
-recoverFromConcurrentError @ react-dom.development.js:25889
-performConcurrentWorkOnRoot @ react-dom.development.js:25789
-workLoop @ scheduler.development.js:266
-flushWork @ scheduler.development.js:239
-performWorkUntilDeadline @ scheduler.development.js:533Understand this errorAI
-react-dom.development.js:18704 The above error occurred in the <ProductSheetsPage> component:
+import React, { useState } from "react";
+import Modal from "react-modal";
+import styles from "./MainContent.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateRight, faSpinner } from "@fortawesome/free-solid-svg-icons";
 
-    at ProductSheetsPage (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:2314:74)
-    at RenderedRoute (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50679:5)
-    at Routes (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:51413:5)
-    at Router (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:51347:15)
-    at BrowserRouter (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49248:5)
-    at App
+const MainContent = ({ message, rows, handleReload }) => {
+  const [filter, setFilter] = useState("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null);
+  const [loadingRows, setLoadingRows] = useState([]);
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-logCapturedError @ react-dom.development.js:18704
-update.callback @ react-dom.development.js:18737
-callCallback @ react-dom.development.js:15036
-commitUpdateQueue @ react-dom.development.js:15057
-commitLayoutEffectOnFiber @ react-dom.development.js:23430
-commitLayoutMountEffects_complete @ react-dom.development.js:24727
-commitLayoutEffects_begin @ react-dom.development.js:24713
-commitLayoutEffects @ react-dom.development.js:24651
-commitRootImpl @ react-dom.development.js:26862
-commitRoot @ react-dom.development.js:26721
-finishConcurrentRender @ react-dom.development.js:25931
-performConcurrentWorkOnRoot @ react-dom.development.js:25848
-workLoop @ scheduler.development.js:266
-flushWork @ scheduler.development.js:239
-performWorkUntilDeadline @ scheduler.development.js:533Understand this errorAI
-ProductSheetsPage.js:413 Uncaught TypeError: Cannot read properties of undefined (reading 'policy_id')
-    at ProductSheetsPage.js:413:1
-    at Array.map (<anonymous>)
-    at ProductSheetsPage.js:408:1
-    at basicStateReducer (react-dom.development.js:15721:1)
-    at updateReducer (react-dom.development.js:15845:1)
-    at updateState (react-dom.development.js:16185:1)
-    at Object.useState (react-dom.development.js:17096:1)
-    at useState (react.development.js:1622:1)
-    at ProductSheetsPage (ProductSheetsPage.js:328:1)
-    at renderWithHooks (react-dom.development.js:15486:1)
-(anonymous) @ ProductSheetsPage.js:413
-(anonymous) @ ProductSheetsPage.js:408
-basicStateReducer @ react-dom.development.js:15721
-updateReducer @ react-dom.development.js:15845
-updateState @ react-dom.development.js:16185
-useState @ react-dom.development.js:17096
-useState @ react.development.js:1622
-ProductSheetsPage @ ProductSheetsPage.js:328
-renderWithHooks @ react-dom.development.js:15486
-updateFunctionComponent @ react-dom.development.js:19617
-beginWork @ react-dom.development.js:21640
-beginWork$1 @ react-dom.development.js:27465
-performUnitOfWork @ react-dom.development.js:26596
-workLoopSync @ react-dom.development.js:26505
-renderRootSync @ react-dom.development.js:26473
-recoverFromConcurrentError @ react-dom.development.js:25889
-performConcurrentWorkOnRoot @ react-dom.development.js:25789
-workLoop @ scheduler.development.js:266
-flushWork @ scheduler.development.js:239
-performWorkUntilDeadline @ scheduler.development.js:533Understand this errorAI
+  const filteredRows = rows.filter((row) =>
+    filter === "All" ? true : row.status.includes(filter)
+  );
+
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+  };
+
+  const openModal = (previewLink) => {
+    setModalContent(previewLink);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+  };
+
+  const handleRowReload = async (recNum) => {
+    setLoadingRows((prev) => [...prev, recNum]);
+    await handleReload(recNum);
+    setLoadingRows((prev) => prev.filter((id) => id !== recNum));
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      {message && <p className={styles.message}>{message}</p>}
+
+      <div className={styles.filterContainer}>
+        <label htmlFor="statusFilter" className={styles.filterLabel}>
+          Filter by Status:
+        </label>
+        <select
+          id="statusFilter"
+          className={styles.filterDropdown}
+          value={filter}
+          onChange={handleFilterChange}
+        >
+          <option value="All">All</option>
+          <option value="Pending">Pending</option>
+          <option value="Completed">Completed</option>
+        </select>
+      </div>
+
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>RecNum</th>
+            <th>Policy ID</th>
+            <th>Product Sheet Type</th>
+            <th>Summary</th>
+            <th>Preview Link</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredRows.length > 0 ? (
+            filteredRows.map((row, index) => (
+              <tr key={index}>
+                <td>{row.recNum || "Unknown"}</td>
+                <td>{row.policy_id || "Pending"}</td>
+                <td>{row.prod_sheet_type || "Pending"}</td>
+                <td>{row.summary || "Pending"}</td>
+                <td>
+                  {row.previewLink ? (
+                    <button
+                      className={styles.previewButton}
+                      onClick={() => openModal(row.previewLink)}
+                    >
+                      Preview
+                    </button>
+                  ) : (
+                    "Pending"
+                  )}
+                </td>
+                <td>
+                  {row.status}
+                  {row.status === "Pending" && (
+                    <button
+                      className={styles.reloadButton}
+                      onClick={() => handleRowReload(row.recNum)}
+                      disabled={loadingRows.includes(row.recNum)}
+                    >
+                      {loadingRows.includes(row.recNum) ? (
+                        <FontAwesomeIcon
+                          icon={faSpinner}
+                          spin
+                          className={styles.spinnerIcon}
+                        />
+                      ) : (
+                        <FontAwesomeIcon icon={faRotateRight} />
+                      )}
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6">No data available</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.modalOverlay}
+        ariaHideApp={false}
+      >
+        <div className={styles.modalContent}>
+          <button className={styles.closeButton} onClick={closeModal}>
+            Close
+          </button>
+          {modalContent ? (
+            <iframe
+              src={modalContent}
+              title="Preview"
+              className={styles.modalIframe}
+            ></iframe>
+          ) : (
+            <p>No preview available</p>
+          )}
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+export default MainContent;
