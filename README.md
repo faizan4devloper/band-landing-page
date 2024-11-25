@@ -1,8 +1,201 @@
-import React, { useState } from "react";
-import Modal from "react-modal";
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateRight, faSpinner } from "@fortawesome/free-solid-svg-icons";
+this is my data printing in the console but not diplaying in the table or UI
+singleclaimdata
+: 
+0
+: 
+file_name
+: 
+"R95.01_-_Cancer_Prem_Waiver.pdf"
+policy_id
+: 
+"PI4346708"
+prod_sheet_type
+: 
+"CANCER"
+rec_number
+: 
+"PS553555"
+status
+: 
+"Processed"
+summary
+: 
+"The product sheet covers
+
+
+this is my code:- 
+
+
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import DataTable from './DataTable'; // Import the new DataTable component
+import styles from './ProductSheetsPage.module.css';
+
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [showMainContent, setShowMainContent] = useState(false);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage("");
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      
+      const response = await axios.post("dummy", {
+        payload: { filename: sanitizedFileName },
+      });
+      
+      console.log("API Response 1:", response.data);
+
+      const { presignedUrl, key, recNum } = response.data;
+      
+      // Ensure recNum starts with "PS"
+    // if (!recNum.startsWith("PS")) {
+    //   recNum = `PS${recNum}`;
+    // }
+    
+    // if (recNum.startsWith("CI")) {
+    //   recNum = recNum.replace(/^CI/, "PS");
+    // }
+
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      const sqsPayload = {
+        claimid: recNum,
+        s3filename: key,
+        actionn: "transform",
+        tasktype: "SEND_TO_PS_QUEUE",
+      };
+
+         // Step 4: Send the payload to the new API
+    const sqsResponse = await axios.post("dummy", sqsPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("SQS API Response:", sqsResponse.data);
+
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: presignedUrl,
+          status: "Pending",
+        },
+      ]);
+
+      setIsUploaded(true);
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleReload = async (recNum) => {
+    try {
+      const payload = {
+        tasktype: "FETCH_SINGLE_CLAIM",
+        claimid: recNum,
+      };
+
+      const response = await axios.post(`dummy`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = response.data;
+      console.log("Reload Data:", response.data);
+
+      setRows((prevRows) =>
+        prevRows.map((row) =>
+          row.recNum === recNum
+            ? {
+                ...row,
+                policyid: data.policyid,
+                type: data.type,
+                summary: data.summary,
+                status: data.status,
+              }
+            : row
+        )
+      );
+    } catch (error) {
+      setMessage("Failed to fetch data for RecNum: " + recNum);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      {!showMainContent ? (
+        <>
+          {/* New Claim Processing Button */}
+          <div className={styles.header}>
+            <button
+              className={styles.newClaimButton}
+              onClick={() => setShowMainContent(true)}
+            >
+              New Claim Processing
+            </button>
+          </div>
+          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
+        </>
+      ) : (
+        <>
+          <Sidebar
+            onFileChange={handleFileChange}
+            onUpload={handleUpload}
+            uploading={uploading}
+          />
+          {isUploaded ? (
+            <MainContent
+              message={message}
+              rows={rows}
+              handleReload={handleReload}
+            />
+          ) : (
+            <p className={styles.infoMessage}>
+              Please upload a document to view the data.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default ProductSheetsPage;
+
+
+
+
+
+import React, { useState } from 'react';
+import Modal from 'react-modal';
+import styles from './MainContent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRotateRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
 
 const MainContent = ({ message, rows, handleReload }) => {
   const [filter, setFilter] = useState("All");
@@ -60,7 +253,7 @@ const MainContent = ({ message, rows, handleReload }) => {
       <table className={styles.table}>
         <thead>
           <tr>
-            <th>Rec Number</th>
+            <th>RecNum</th>
             <th>Policy ID</th>
             <th>Product Sheet Type</th>
             <th>Summary</th>
@@ -72,7 +265,7 @@ const MainContent = ({ message, rows, handleReload }) => {
           {filteredRows.length > 0 ? (
             filteredRows.map((row, index) => (
               <tr key={index}>
-                <td>{row.rec_number}</td>
+                <td>{row.recNum}</td>
                 <td>{row.policy_id || <span className={styles.loader}>Pending</span>}</td>
                 <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
                 <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
@@ -85,28 +278,31 @@ const MainContent = ({ message, rows, handleReload }) => {
                       Preview
                     </button>
                   ) : (
-                    "No Link"
+                    "Pending"
                   )}
                 </td>
                 <td>
-                  {row.status === "Completed" ? (
+                  {row.policyid && row.type && row.summary ? (
                     <span>Completed</span>
                   ) : (
-                    <button
-                      className={styles.reloadButton}
-                      onClick={() => handleRowReload(row.rec_number)}
-                      disabled={loadingRows.includes(row.rec_number)}
-                    >
-                      {loadingRows.includes(row.rec_number) ? (
-                        <FontAwesomeIcon
-                          icon={faSpinner}
-                          spin
-                          className={styles.spinnerIcon}
-                        />
-                      ) : (
-                        <FontAwesomeIcon icon={faRotateRight} />
-                      )}
-                    </button>
+                    <span>
+                      
+                      <button
+                        className={styles.reloadButton}
+                        onClick={() => handleRowReload(row.recNum)}
+                        disabled={loadingRows.includes(row.recNum)}
+                      >
+                        {loadingRows.includes(row.recNum) ? (
+                          <FontAwesomeIcon
+                            icon={faSpinner}
+                            spin
+                            className={styles.spinnerIcon}
+                          />
+                        ) : (
+                          <FontAwesomeIcon icon={faRotateRight} />
+                        )}
+                      </button>
+                    </span>
                   )}
                 </td>
               </tr>
