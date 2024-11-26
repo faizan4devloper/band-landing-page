@@ -1,114 +1,86 @@
-return (
-  <div className={styles.mainContent}>
-    {/* Left: Document Preview */}
-    <div className={styles.previewSection}>
-      <h3>Document Preview</h3>
-      {data?.document_name?.length > 0 ? (
-        <ul className={styles.documentList}>
-          {data.document_name.map((doc, index) => (
-            <li key={index}>
-              <button
-                className={styles.previewButton}
-                onClick={() => setModalContent(doc.S)}
-              >
-                {doc.S}
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No document available</p>
-      )}
-    </div>
-
-    {/* Right: Extracted Content */}
-    <div className={styles.extractContentSection}>
-      <h3>Extracted Content</h3>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        renderReadableContent(data?.total_extracted_data)
-      )}
-    </div>
-
-    {/* Centered Verify Button */}
-    <div className={styles.verifyButtonContainer}>
-      <button
-        className={styles.verifyButton}
-        onClick={() => console.log("Verify action triggered")}
-      >
-        Verify
-      </button>
-    </div>
-
-    {/* Modal for Document Preview */}
-    <Modal
-      isOpen={isModalOpen}
-      onRequestClose={() => setModalContent(null)}
-      className={styles.modal}
-      overlayClassName={styles.modalOverlay}
-      ariaHideApp={false}
-    >
-      <div className={styles.modalContent}>
-        <button
-          className={styles.closeButton}
-          onClick={() => setModalContent(null)}
-        >
-          Close
-        </button>
-        {modalContent ? (
-          <iframe
-            src={modalContent}
-            title="Preview"
-            className={styles.modalIframe}
-          ></iframe>
-        ) : (
-          <p>No preview available</p>
-        )}
-      </div>
-    </Modal>
-  </div>
-);
-
-
-
 .mainContent {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* Two equal sections */
-  grid-template-rows: auto 50px; /* Rows for content and button */
+  display: flex;
   gap: 20px;
   padding: 20px;
-  align-items: start; /* Align sections to the top */
-  position: relative;
 }
 
 .previewSection,
 .extractContentSection {
+  flex: 1;
+  padding: 10px;
   background: #fff;
-  padding: 15px;
   border: 1px solid #ddd;
   border-radius: 5px;
 }
 
-.verifyButtonContainer {
-  grid-column: span 2; /* Span across both columns */
-  display: flex;
-  justify-content: center; /* Center the button */
-  align-items: center;
-  margin-top: 20px;
+.documentList {
+  list-style: none;
+  padding: 0;
 }
 
-.verifyButton {
-  padding: 12px 24px;
-  font-size: 16px;
-  background-color: #28a745; /* Green */
+.documentList li {
+  margin-bottom: 10px;
+}
+
+.previewButton {
+  background-color: #007bff;
   color: white;
+  padding: 8px 12px;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.verifyButton:hover {
-  background-color: #218838; /* Darker green */
+.previewButton:hover {
+  background-color: #0056b3;
+}
+
+.extractedData {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.reloadButton {
+  margin-top: 10px;
+  background:linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reloadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.readableContent {
+  background: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+.readableContent h4 {
+  color: #333;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+.readableContent p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.readableContent strong {
+  color: #000;
+}
+
+h5 {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  color: #444;
 }
