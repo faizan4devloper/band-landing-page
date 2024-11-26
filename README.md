@@ -1,64 +1,99 @@
-.mainContent {
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  font-family: Arial, sans-serif;
-}
 
-.extractContentSection {
-  padding: 15px;
-  background: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
+import React, { useState } from 'react';
+import axios from 'axios';
 
-.heading {
-  font-size: 1.5rem;
-  color: #333;
-  margin-bottom: 10px;
-}
+import Sidebar from './Sidebar'; // Import Sidebar component
+import MainContent from './MainContent'; // Import MainContent component
+import styles from './NewClaimPage.module.css';
 
-.subheading {
-  font-size: 1.2rem;
-  color: #007bff;
-  margin-top: 10px;
-  margin-bottom: 5px;
-}
+const NewClaimPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
 
-.paragraph {
-  font-size: 1rem;
-  color: #555;
-  margin-left: 10px;
-}
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage("");
+    }
+  };
 
-.contentContainer {
-  margin-top: 20px;
-}
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      const response = await axios.post("https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/", {
+        payload: { filename: sanitizedFileName, filetype: "CL" },
+      });
+      console.log("API Response 1:", response.data);
 
-.documentList {
-  list-style: disc;
-  margin-left: 20px;
-  color: #333;
-}
+      const { presignedUrl, key, recNum } = response.data;
 
-.nestedContent {
-  margin-left: 20px;
-  border-left: 2px solid #007bff;
-  padding-left: 10px;
-  margin-bottom: 10px;
-}
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
 
-.reloadButton {
-  margin-top: 15px;
-  background-color: #28a745;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+      const sqsPayload = {
+        claimid: recNum,
+        s3filename: key,
+        // actionn: "transform",
+        tasktype: "SEND_TO_QUEUE",
+      };
 
-.reloadButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+      const sqsResponse = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", sqsPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("SQS API Response:", sqsResponse.data);
+
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: presignedUrl,
+          status: "Pending",
+        },
+      ]);
+
+      setIsUploaded(true);
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <Sidebar
+        onFileChange={handleFileChange}
+        onUpload={handleUpload}
+        uploading={uploading}
+      />
+      {isUploaded ? (
+        <MainContent message={message} rows={rows} setRows={setRows} />
+      ) : (
+        <p className={styles.infoMessage}>
+          Please upload a document to view the data.
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default NewClaimPage;
+
+
+.container {
+  display: flex;
+  height: 100vh; /* Adjust to fit the full viewport height */
 }
