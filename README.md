@@ -23,7 +23,7 @@ const DataTable = () => {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, { headers });
+      const response = await axios.post("dummy", payload, { headers });
 
       console.log("API Response:", response.data);
 
