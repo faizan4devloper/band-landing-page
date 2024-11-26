@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
-import DataTable from "./DataTable";
-import styles from "./ProductSheetsPage.module.css";
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import DataTable from './DataTable'; // Import the new DataTable component
+import styles from './ProductSheetsPage.module.css';
 
 const ProductSheetsPage = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [rows, setRows] = useState(() => {
-    // Initialize rows from localStorage, or set to empty array if not available
-    const savedRows = localStorage.getItem("rows");
-    return savedRows ? JSON.parse(savedRows) : [];
-  });
+  const [rows, setRows] = useState([]);
   const [isUploaded, setIsUploaded] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
-
-  // Save rows to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem("rows", JSON.stringify(rows));
-  }, [rows]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -37,15 +29,24 @@ const ProductSheetsPage = () => {
     }
     setUploading(true);
     try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      
       const response = await axios.post("dummy", {
         payload: { filename: sanitizedFileName },
       });
-
+      
       console.log("API Response 1:", response.data);
 
       const { presignedUrl, key, recNum } = response.data;
+      
+      // Ensure recNum starts with "PS"
+    // if (!recNum.startsWith("PS")) {
+    //   recNum = `PS${recNum}`;
+    // }
+    
+    // if (recNum.startsWith("CI")) {
+    //   recNum = recNum.replace(/^CI/, "PS");
+    // }
 
       await axios.put(presignedUrl, file, {
         headers: { "Content-Type": file.type },
@@ -58,18 +59,19 @@ const ProductSheetsPage = () => {
         tasktype: "SEND_TO_PS_QUEUE",
       };
 
-      const sqsResponse = await axios.post("dummy", sqsPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
+         // Step 4: Send the payload to the new API
+    const sqsResponse = await axios.post("dummy", sqsPayload, {
+      headers: { "Content-Type": "application/json" },
+    });
 
-      console.log("SQS API Response:", sqsResponse.data);
+    console.log("SQS API Response:", sqsResponse.data);
 
       setRows((prevRows) => [
         ...prevRows,
         {
           recNum,
-          policy_id: "",
-          prod_sheet_type: "",
+          policyid: "",
+          type: "",
           summary: "",
           previewLink: presignedUrl,
           status: "Pending",
@@ -91,53 +93,42 @@ const ProductSheetsPage = () => {
         claimid: recNum,
       };
 
-      const response = await axios.post("dummy", payload, {
+      const response = await axios.post(`dummy`, payload, {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log("API Response:", response);
+    const singleclaimdata = response.data;
+      console.log("Reload Data:", response.data);
 
-      if (Array.isArray(response.data) && response.data.length > 0) {
-        const singleClaimData = response.data[0];
-        console.log("Single Claim Data:", singleClaimData);
+     // Now update rows using this data
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.recNum === recNum
+          ? {
+              ...row,
+              policyid: singleclaimdata.policy_id,
+              prod_sheet_type: singleclaimdata.prod_sheet_type,
+              summary: singleclaimdata.summary,
+              status: singleclaimdata.status,
+              previewLink: singleclaimdata.previewLink,
+            }
+          : row
+      )
+    );
 
-        const {
-          policy_id = "N/A",
-          file_name = "N/A",
-          status = "Unknown",
-          summary = "No summary available",
-          prod_sheet_type = "Unknown",
-          rec_number = recNum,
-        } = singleClaimData;
+    
+  } catch (error) {
+    setMessage("Failed to fetch data for RecNum: " + recNum);
+  }
+  
+};
 
-        setRows((prevRows) =>
-          prevRows.map((row) =>
-            row.recNum === recNum
-              ? {
-                  ...row,
-                  policy_id,
-                  prod_sheet_type,
-                  summary,
-                  status,
-                  previewLink: row.previewLink,
-                }
-              : row
-          )
-        );
-      } else {
-        console.error("Unexpected response format:", response.data);
-        setMessage("Failed to fetch claim details.");
-      }
-    } catch (error) {
-      console.error("Error fetching claim data:", error.message);
-      setMessage("Failed to fetch data for RecNum: " + recNum);
-    }
-  };
 
   return (
     <div className={styles.container}>
       {!showMainContent ? (
         <>
+          {/* New Claim Processing Button */}
           <div className={styles.header}>
             <button
               className={styles.newClaimButton}
@@ -146,7 +137,7 @@ const ProductSheetsPage = () => {
               New Claim Processing
             </button>
           </div>
-          <DataTable rows={rows} handleReload={handleReload} />
+          <DataTable rows={rows} handleReload={handleReload} /> {/* Use DataTable */}
         </>
       ) : (
         <>
@@ -175,9 +166,7 @@ const ProductSheetsPage = () => {
 export default ProductSheetsPage;
 
 
-
-
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import Modal from 'react-modal';
 import styles from './MainContent.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -208,15 +197,11 @@ const MainContent = ({ message, rows, handleReload }) => {
     setModalContent(null);
   };
 
-  // useCallback to avoid unnecessary re-renders
-  const handleRowReload = useCallback(
-    async (recNum) => {
-      setLoadingRows((prev) => [...prev, recNum]); // Add the row to the loading state
-      await handleReload(recNum);
-      setLoadingRows((prev) => prev.filter((id) => id !== recNum)); // Remove the row from the loading state
-    },
-    [handleReload] // Ensure the function is only re-created if handleReload changes
-  );
+  const handleRowReload = async (recNum) => {
+    setLoadingRows((prev) => [...prev, recNum]); // Add the row to the loading state
+    await handleReload(recNum);
+    setLoadingRows((prev) => prev.filter((id) => id !== recNum)); // Remove the row from the loading state
+  };
 
   return (
     <div className={styles.mainContent}>
@@ -276,6 +261,7 @@ const MainContent = ({ message, rows, handleReload }) => {
                     <span>Completed</span>
                   ) : (
                     <span>
+                      
                       <button
                         className={styles.reloadButton}
                         onClick={() => handleRowReload(row.recNum)}
