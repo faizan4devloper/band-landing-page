@@ -1,1 +1,173 @@
-"{  \"CLAIM_FORM_DETAILS\": {    \"CLAIM_FORM_DETAILED_SUMMARY\": \"The claim form provided is a Living & Disability Benefit Claim Form for Singlife with AVIVA. The form is for a critical illness claim, specifically for a myocardial infarction (heart attack) that occurred on January 2, 2022. The claimant, L C K @L C L., is a 23-year-old male who was diagnosed with acute myocardial infarction and underwent emergency angioplasty. The form provides details of the claimant's medical history, including a previous diagnosis of ischemic heart disease and hyperlipidemia. The form also includes information on the claimant's daily activities before and after the illness, as well as details on the claimant's employment and income. The form requires the claimant to provide various supporting documents, including medical reports and test results, to substantiate the claim. The claim form indicates that the type of claim is for a Critical Illness premium waiver.\",    \"CLAIM_FORM_TYPE\": \"HEART\"  },  \"CLINICAL_ABSTRACT_APPLICATION\": {    \"NAME_OF_PATIENT\": \"l c k @LCL\",    \"NRIC_FIN_BC\": \"S 64B\",    \"NAME\": \"L C K @L C L.\",    \"ADDRESS\": \"Blk Street # Singapore Country Singapore\",    \"NRIC_NO\": \"S 64B\",    \"DATE\": \"02/03/2022\"  },  \"CLAIMANT_STATEMENT\": {    \"POLICY_DETAILS\": {      \"POLICY_NUMBERS\": \"05909420\",      \"TYPE_OF_CLAIM\": \"Critical Illness premium waiver\"    },    \"DETAILS_OF_LIFE_ASSURED\": {      \"NAME_OF_LIFE_ASSURED\": \"L C K @L C L.\",      \"GENDER\": \"Male\",      \"MARITAL_STATUS\": \"Married\"    }  }}"
+import React, { useState } from "react";
+import axios from "axios";
+import Modal from "react-modal";
+import styles from "./MainContent.module.css";
+
+const MainContent = ({ message, rows, setRows }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null); // To store fetched data
+
+  const handleReload = async (recNum) => {
+    setLoading(true);
+    try {
+      const payload = {
+        tasktype: "FETCH_SINGLE_ACT_CLAIM",
+        claimid: recNum,
+      };
+
+      const response = await axios.post(`dummy`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log(response.data);
+
+      setData(response.data.allclaimactdata); // Store fetched data
+    } catch (error) {
+      console.error("Failed to fetch data for RecNum:", recNum, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openModal = (previewLink) => {
+    setModalContent(previewLink);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalContent(null);
+  };
+
+  return (
+    <div className={styles.mainContent}>
+      <div className={styles.previewSection}>
+        <h3>Document Preview</h3>
+        {data?.document_name?.length > 0 ? (
+          <ul className={styles.documentList}>
+            {data.document_name.map((doc, index) => (
+              <li key={index}>
+                <button
+                  className={styles.previewButton}
+                  onClick={() => openModal(doc.S)}
+                >
+                  {doc.S}
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No document available</p>
+        )}
+      </div>
+
+      <div className={styles.extractContentSection}>
+        <h3>Extract Content</h3>
+        {loading ? (
+          <p>Loading...</p>
+        ) : data?.total_extracted_data ? (
+          <pre className={styles.extractedData}>
+            {JSON.stringify(JSON.parse(data.total_extracted_data), null, 2)}
+          </pre>
+        ) : (
+          <p>No data available</p>
+        )}
+
+        <button
+          className={styles.reloadButton}
+          onClick={() => handleReload("CL928697")}
+          disabled={loading}
+        >
+          Reload
+        </button>
+      </div>
+
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.modalOverlay}
+        ariaHideApp={false}
+      >
+        <div className={styles.modalContent}>
+          <button className={styles.closeButton} onClick={closeModal}>
+            Close
+          </button>
+          {modalContent ? (
+            <iframe
+              src={modalContent}
+              title="Preview"
+              className={styles.modalIframe}
+            ></iframe>
+          ) : (
+            <p>No preview available</p>
+          )}
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+export default MainContent;
+
+
+.mainContent {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.previewSection,
+.extractContentSection {
+  flex: 1;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.documentList {
+  list-style: none;
+  padding: 0;
+}
+
+.documentList li {
+  margin-bottom: 10px;
+}
+
+.previewButton {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.previewButton:hover {
+  background-color: #0056b3;
+}
+
+.extractedData {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.reloadButton {
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reloadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
