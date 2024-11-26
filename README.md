@@ -1,272 +1,207 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Modal from 'react-modal';
-import styles from './MainContent.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
-
-const MainContent = ({ message, rows, setRows }) => {
-  const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
-  const [loadingRows, setLoadingRows] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const handleReload = async (recNum) => {
-    setLoadingRows((prev) => [...prev, recNum]);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: recNum,
-      };
-
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const singleclaimdata = response.data.singleclaimdata[0] || {};
-
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policy_id: singleclaimdata.policy_id,
-                prod_sheet_type: singleclaimdata.prod_sheet_type,
-                summary: singleclaimdata.summary,
-                status: singleclaimdata.status,
-                previewLink: singleclaimdata.previewLink,
-              }
-            : row
-        )
-      );
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoadingRows((prev) => prev.filter((id) => id !== recNum));
-    }
-  };
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    try {
-      // Simulate an API call to refresh all data
-      const payload = {
-        tasktype: "FETCH_ALL_CLAIMS",
-      };
-
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // Assuming the refreshed data is returned as an array
-      setRows(response.data.claims || []);
-    } catch (error) {
-      console.error("Failed to refresh data:", error);
-    } finally {
-      setRefreshing(false);
-    }
-  };
-
-  const filteredRows = rows.filter((row) =>
-    filter === "All" ? true : row.status.includes(filter)
-  );
-
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      <div className={styles.previewSection}>
-        <h3>Preview</h3>
-        <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
-          className={styles.modal}
-          overlayClassName={styles.modalOverlay}
-          ariaHideApp={false}
-        >
-          <div className={styles.modalContent}>
-            <button className={styles.closeButton} onClick={closeModal}>
-              Close
-            </button>
-            {modalContent ? (
-              <iframe
-                src={modalContent}
-                title="Preview"
-                className={styles.modalIframe}
-              ></iframe>
-            ) : (
-              <p>No preview available</p>
-            )}
-          </div>
-        </Modal>
-      </div>
-
-      <div className={styles.extractContentSection}>
-        <div className={styles.refreshContainer}>
-          <h3>Extract Content</h3>
-          <button
-            className={styles.refreshButton}
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            {refreshing ? (
-              <FontAwesomeIcon
-                icon={faSpinner}
-                spin
-                className={styles.spinnerIcon}
-              />
-            ) : (
-              <FontAwesomeIcon icon={faRotateRight} />
-            )}
-          </button>
-        </div>
-
-        <div className={styles.filterContainer}>
-          <label htmlFor="statusFilter" className={styles.filterLabel}>
-            Filter by Status:
-          </label>
-          <select
-            id="statusFilter"
-            className={styles.filterDropdown}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="All">All</option>
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>RecNum</th>
-              <th>Policy ID</th>
-              <th>Product Sheet Type</th>
-              <th>Summary</th>
-              <th>Preview Link</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRows.length > 0 ? (
-              filteredRows.map((row, index) => (
-                <tr key={index}>
-                  <td>{row.recNum || <span className={styles.loader}>Pending</span>}</td>
-                  <td>{row.policy_id || <span className={styles.loader}>Pending</span>}</td>
-                  <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
-                  <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
-                  <td>
-                    {row.previewLink ? (
-                      <button
-                        className={styles.previewButton}
-                        onClick={() => openModal(row.previewLink)}
-                      >
-                        Preview
-                      </button>
-                    ) : (
-                      "Pending"
-                    )}
-                  </td>
-                  <td>
-                    {row.policy_id && row.prod_sheet_type && row.summary ? (
-                      <span>Completed</span>
-                    ) : (
-                      <span>
-                        <button
-                          className={styles.reloadButton}
-                          onClick={() => handleReload(row.recNum)}
-                          disabled={loadingRows.includes(row.recNum)}
-                        >
-                          {loadingRows.includes(row.recNum) ? (
-                            <FontAwesomeIcon
-                              icon={faSpinner}
-                              spin
-                              className={styles.spinnerIcon}
-                            />
-                          ) : (
-                            <FontAwesomeIcon icon={faRotateRight} />
-                          )}
-                        </button>
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6">No data available</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
+/* MainContent.module.css */
 
 .mainContent {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f2f2f2, #e6f7ff);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.previewSection,
-.extractContentSection {
+.previewSection {
   flex: 1;
-  border: 1px solid #ccc;
-  padding: 1rem;
-  border-radius: 5px;
-  background: #f9f9f9;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
 }
 
-.refreshContainer {
+.extractContent {
+  flex: 2;
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.filterContainer {
+  margin-bottom: 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  justify-content: space-between;
 }
 
-.refreshButton {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
+.filterLabel {
+  font-weight: bold;
+  color: #333;
+}
+
+.filterDropdown {
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-
-.refreshButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+  font-size: 14px;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 14px;
 }
 
-.table th,
-.table td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
-}
-
-.table th {
+.table thead th {
   background-color: #007bff;
   color: #fff;
   text-align: left;
+  padding: 10px;
 }
+
+.table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.table td,
+.table th {
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+.previewButton,
+.reloadButton {
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.previewButton:hover,
+.reloadButton:hover {
+  background-color: #0056b3;
+}
+
+.spinnerIcon {
+  font-size: 14px;
+  color: #007bff;
+}
+
+.modal {
+  max-width: 90%;
+  max-height: 90%;
+  margin: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.modalOverlay {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modalContent {
+  padding: 20px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+}
+
+
+
+
+
+<div className={styles.mainContent}>
+  {/* Left - Preview Section */}
+  <div className={styles.previewSection}>
+    <h2>Preview Area</h2>
+    {/* Add preview content here */}
+  </div>
+
+  {/* Right - Extract Content */}
+  <div className={styles.extractContent}>
+    <div className={styles.filterContainer}>
+      <h2>Extract Content</h2>
+      <button className={styles.reloadButton}>
+        <FontAwesomeIcon icon={faRotateRight} /> Refresh
+      </button>
+    </div>
+
+    {/* Filter Dropdown */}
+    <div className={styles.filterContainer}>
+      <label htmlFor="statusFilter" className={styles.filterLabel}>
+        Filter by Status:
+      </label>
+      <select
+        id="statusFilter"
+        className={styles.filterDropdown}
+        value={filter}
+        onChange={handleFilterChange}
+      >
+        <option value="All">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+
+    {/* Table */}
+    <table className={styles.table}>
+      <thead>
+        <tr>
+          <th>RecNum</th>
+          <th>Policy ID</th>
+          <th>Product Sheet Type</th>
+          <th>Summary</th>
+          <th>Preview Link</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {filteredRows.length > 0 ? (
+          filteredRows.map((row, index) => (
+            <tr key={index}>
+              <td>{row.recNum}</td>
+              <td>{row.policy_id}</td>
+              <td>{row.prod_sheet_type}</td>
+              <td>{row.summary}</td>
+              <td>
+                <button
+                  className={styles.previewButton}
+                  onClick={() => openModal(row.previewLink)}
+                >
+                  Preview
+                </button>
+              </td>
+              <td>
+                <button
+                  className={styles.reloadButton}
+                  onClick={() => handleReload(row.recNum)}
+                >
+                  Reload
+                </button>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="6">No data available</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
