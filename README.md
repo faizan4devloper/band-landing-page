@@ -10,9 +10,10 @@ const MainContent = ({ message, rows, setRows }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [loadingRows, setLoadingRows] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleReload = async (recNum) => {
-    setLoadingRows((prev) => [...prev, recNum]); // Add the row to the loading state
+    setLoadingRows((prev) => [...prev, recNum]);
     try {
       const payload = {
         tasktype: "FETCH_SINGLE_ACT_CLAIM",
@@ -22,13 +23,8 @@ const MainContent = ({ message, rows, setRows }) => {
       const response = await axios.post(`dummy`, payload, {
         headers: { "Content-Type": "application/json" },
       });
-      
-      console.log(response.data)
 
       const singleclaimdata = response.data.singleclaimdata[0] || {};
-      console.log("Reload Data:", response.data);
-      // console.log("single Data:", singleclaimdata.data);
-      console.log("policy Data:", response.data.singleclaimdata[0].policy_id);
 
       setRows((prevRows) =>
         prevRows.map((row) =>
@@ -44,22 +40,37 @@ const MainContent = ({ message, rows, setRows }) => {
             : row
         )
       );
-      console.log("Update rows:", rows)
-      
     } catch (error) {
       console.error("Failed to fetch data for RecNum:", recNum, error);
     } finally {
-      setLoadingRows((prev) => prev.filter((id) => id !== recNum)); // Remove the row from the loading state
+      setLoadingRows((prev) => prev.filter((id) => id !== recNum));
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      // Simulate an API call to refresh all data
+      const payload = {
+        tasktype: "FETCH_ALL_CLAIMS",
+      };
+
+      const response = await axios.post(`dummy`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // Assuming the refreshed data is returned as an array
+      setRows(response.data.claims || []);
+    } catch (error) {
+      console.error("Failed to refresh data:", error);
+    } finally {
+      setRefreshing(false);
     }
   };
 
   const filteredRows = rows.filter((row) =>
     filter === "All" ? true : row.status.includes(filter)
   );
-
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
 
   const openModal = (previewLink) => {
     setModalContent(previewLink);
@@ -73,112 +84,189 @@ const MainContent = ({ message, rows, setRows }) => {
 
   return (
     <div className={styles.mainContent}>
-      {message && <p className={styles.message}>{message}</p>}
-
-      <div className={styles.filterContainer}>
-        <label htmlFor="statusFilter" className={styles.filterLabel}>
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className={styles.filterDropdown}
-          value={filter}
-          onChange={handleFilterChange}
+      <div className={styles.previewSection}>
+        <h3>Preview</h3>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          className={styles.modal}
+          overlayClassName={styles.modalOverlay}
+          ariaHideApp={false}
         >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
+          <div className={styles.modalContent}>
+            <button className={styles.closeButton} onClick={closeModal}>
+              Close
+            </button>
+            {modalContent ? (
+              <iframe
+                src={modalContent}
+                title="Preview"
+                className={styles.modalIframe}
+              ></iframe>
+            ) : (
+              <p>No preview available</p>
+            )}
+          </div>
+        </Modal>
       </div>
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.policy_id || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {row.policy_id && row.prod_sheet_type && row.summary ? (
-                    <span>Completed</span>
-                  ) : (
-                    <span>
-                      <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReload(row.recNum)}
-                        disabled={loadingRows.includes(row.recNum)}
-                      >
-                        {loadingRows.includes(row.recNum) ? (
-                          <FontAwesomeIcon
-                            icon={faSpinner}
-                            spin
-                            className={styles.spinnerIcon}
-                          />
-                        ) : (
-                          <FontAwesomeIcon icon={faRotateRight} />
-                        )}
-                      </button>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.modalOverlay}
-        ariaHideApp={false}
-      >
-        <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
-            Close
+      <div className={styles.extractContentSection}>
+        <div className={styles.refreshContainer}>
+          <h3>Extract Content</h3>
+          <button
+            className={styles.refreshButton}
+            onClick={handleRefresh}
+            disabled={refreshing}
+          >
+            {refreshing ? (
+              <FontAwesomeIcon
+                icon={faSpinner}
+                spin
+                className={styles.spinnerIcon}
+              />
+            ) : (
+              <FontAwesomeIcon icon={faRotateRight} />
+            )}
           </button>
-          {modalContent ? (
-            <iframe
-              src={modalContent}
-              title="Preview"
-              className={styles.modalIframe}
-            ></iframe>
-          ) : (
-            <p>No preview available</p>
-          )}
         </div>
-      </Modal>
+
+        <div className={styles.filterContainer}>
+          <label htmlFor="statusFilter" className={styles.filterLabel}>
+            Filter by Status:
+          </label>
+          <select
+            id="statusFilter"
+            className={styles.filterDropdown}
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          >
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Product Sheet Type</th>
+              <th>Summary</th>
+              <th>Preview Link</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredRows.length > 0 ? (
+              filteredRows.map((row, index) => (
+                <tr key={index}>
+                  <td>{row.recNum || <span className={styles.loader}>Pending</span>}</td>
+                  <td>{row.policy_id || <span className={styles.loader}>Pending</span>}</td>
+                  <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
+                  <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
+                  <td>
+                    {row.previewLink ? (
+                      <button
+                        className={styles.previewButton}
+                        onClick={() => openModal(row.previewLink)}
+                      >
+                        Preview
+                      </button>
+                    ) : (
+                      "Pending"
+                    )}
+                  </td>
+                  <td>
+                    {row.policy_id && row.prod_sheet_type && row.summary ? (
+                      <span>Completed</span>
+                    ) : (
+                      <span>
+                        <button
+                          className={styles.reloadButton}
+                          onClick={() => handleReload(row.recNum)}
+                          disabled={loadingRows.includes(row.recNum)}
+                        >
+                          {loadingRows.includes(row.recNum) ? (
+                            <FontAwesomeIcon
+                              icon={faSpinner}
+                              spin
+                              className={styles.spinnerIcon}
+                            />
+                          ) : (
+                            <FontAwesomeIcon icon={faRotateRight} />
+                          )}
+                        </button>
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6">No data available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
 
 export default MainContent;
+
+
+
+.mainContent {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.previewSection,
+.extractContentSection {
+  flex: 1;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 5px;
+  background: #f9f9f9;
+}
+
+.refreshContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.refreshButton {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.refreshButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+.table th {
+  background-color: #007bff;
+  color: #fff;
+  text-align: left;
+}
