@@ -21,8 +21,6 @@ const MainContent = ({ message, rows, setRows }) => {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log(response.data);
-
       setData(response.data.allclaimactdata); // Store fetched data
     } catch (error) {
       console.error("Failed to fetch data for RecNum:", recNum, error);
@@ -31,14 +29,34 @@ const MainContent = ({ message, rows, setRows }) => {
     }
   };
 
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
+  const renderReadableContent = (data) => {
+    if (!data) return <p>No data available</p>;
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
+    const parsedData = JSON.parse(data);
+
+    return (
+      <div className={styles.readableContent}>
+        <h4>Claim Form Details</h4>
+        <p><strong>Summary:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY}</p>
+        <p><strong>Type:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE}</p>
+
+        <h4>Clinical Abstract Application</h4>
+        <p><strong>Name of Patient:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NAME_OF_PATIENT}</p>
+        <p><strong>NRIC/FIN/BC:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NRIC_FIN_BC}</p>
+        <p><strong>Address:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.ADDRESS}</p>
+        <p><strong>Date:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.DATE}</p>
+
+        <h4>Claimant Statement</h4>
+        <h5>Policy Details</h5>
+        <p><strong>Policy Numbers:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.POLICY_NUMBERS}</p>
+        <p><strong>Type of Claim:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.TYPE_OF_CLAIM}</p>
+
+        <h5>Details of Life Assured</h5>
+        <p><strong>Name:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.NAME_OF_LIFE_ASSURED}</p>
+        <p><strong>Gender:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.GENDER}</p>
+        <p><strong>Marital Status:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.MARITAL_STATUS}</p>
+      </div>
+    );
   };
 
   return (
@@ -51,7 +69,7 @@ const MainContent = ({ message, rows, setRows }) => {
               <li key={index}>
                 <button
                   className={styles.previewButton}
-                  onClick={() => openModal(doc.S)}
+                  onClick={() => setModalContent(doc.S)}
                 >
                   {doc.S}
                 </button>
@@ -64,15 +82,11 @@ const MainContent = ({ message, rows, setRows }) => {
       </div>
 
       <div className={styles.extractContentSection}>
-        <h3>Extract Content</h3>
+        <h3>Extracted Content</h3>
         {loading ? (
           <p>Loading...</p>
-        ) : data?.total_extracted_data ? (
-          <pre className={styles.extractedData}>
-            {JSON.stringify(JSON.parse(data.total_extracted_data), null, 2)}
-          </pre>
         ) : (
-          <p>No data available</p>
+          renderReadableContent(data?.total_extracted_data)
         )}
 
         <button
@@ -86,13 +100,16 @@ const MainContent = ({ message, rows, setRows }) => {
 
       <Modal
         isOpen={isModalOpen}
-        onRequestClose={closeModal}
+        onRequestClose={() => setModalContent(null)}
         className={styles.modal}
         overlayClassName={styles.modalOverlay}
         ariaHideApp={false}
       >
         <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
+          <button
+            className={styles.closeButton}
+            onClick={() => setModalContent(null)}
+          >
             Close
           </button>
           {modalContent ? (
@@ -113,61 +130,30 @@ const MainContent = ({ message, rows, setRows }) => {
 export default MainContent;
 
 
-.mainContent {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-}
-
-.previewSection,
-.extractContentSection {
-  flex: 1;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.documentList {
-  list-style: none;
-  padding: 0;
-}
-
-.documentList li {
-  margin-bottom: 10px;
-}
-
-.previewButton {
-  background-color: #007bff;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.previewButton:hover {
-  background-color: #0056b3;
-}
-
-.extractedData {
+.readableContent {
   background: #f8f8f8;
-  padding: 10px;
-  border-radius: 5px;
-  overflow-x: auto;
+  padding: 15px;
+  border-radius: 8px;
+  line-height: 1.6;
 }
 
-.reloadButton {
-  margin-top: 10px;
-  background-color: #28a745;
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.readableContent h4 {
+  color: #333;
+  margin-bottom: 10px;
+  text-decoration: underline;
 }
 
-.reloadButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.readableContent p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.readableContent strong {
+  color: #000;
+}
+
+h5 {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  color: #444;
 }
