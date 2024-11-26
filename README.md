@@ -1,85 +1,64 @@
-import React, { useState } from "react";
-import axios from "axios";
-import styles from "./MainContent.module.css";
+.mainContent {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+}
 
-const MainContent = () => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(false);
+.extractContentSection {
+  padding: 15px;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
 
-  const handleReload = async () => {
-    setLoading(true);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: "CL928697",
-      };
+.heading {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 10px;
+}
 
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
+.subheading {
+  font-size: 1.2rem;
+  color: #007bff;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
 
-      console.log(response.data);
-      setData(response.data.allclaimactdata);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+.paragraph {
+  font-size: 1rem;
+  color: #555;
+  margin-left: 10px;
+}
 
-  const renderContent = (content) => {
-    if (typeof content === "object") {
-      return (
-        <div className={styles.nestedContent}>
-          {Object.entries(content).map(([key, value]) => (
-            <div key={key}>
-              <h3 className={styles.subheading}>{key}</h3>
-              {renderContent(value)}
-            </div>
-          ))}
-        </div>
-      );
-    } else {
-      return <p className={styles.paragraph}>{content}</p>;
-    }
-  };
+.contentContainer {
+  margin-top: 20px;
+}
 
-  return (
-    <div className={styles.mainContent}>
-      <div className={styles.extractContentSection}>
-        <h2 className={styles.heading}>Extract Content</h2>
-        {loading ? (
-          <p>Loading...</p>
-        ) : data ? (
-          <div className={styles.contentContainer}>
-            <h3>Claim ID: {data.claimid}</h3>
-            <div>
-              <h3>Document Name:</h3>
-              <ul className={styles.documentList}>
-                {data.document_name.map((doc, index) => (
-                  <li key={index}>{doc.S}</li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h3>Total Extracted Data:</h3>
-              {renderContent(JSON.parse(data.total_extracted_data))}
-            </div>
-          </div>
-        ) : (
-          <p>No data available</p>
-        )}
+.documentList {
+  list-style: disc;
+  margin-left: 20px;
+  color: #333;
+}
 
-        <button
-          className={styles.reloadButton}
-          onClick={handleReload}
-          disabled={loading}
-        >
-          Reload Data
-        </button>
-      </div>
-    </div>
-  );
-};
+.nestedContent {
+  margin-left: 20px;
+  border-left: 2px solid #007bff;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
 
-export default MainContent;
+.reloadButton {
+  margin-top: 15px;
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reloadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
