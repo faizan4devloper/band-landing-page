@@ -111,3 +111,65 @@ const MainContent = ({ message, rows, setRows }) => {
 };
 
 export default MainContent;
+
+
+
+
+.mainContent {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.previewSection,
+.extractContentSection {
+  flex: 1;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.documentList {
+  list-style: none;
+  padding: 0;
+}
+
+.documentList li {
+  margin-bottom: 10px;
+}
+
+.previewButton {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.previewButton:hover {
+  background-color: #0056b3;
+}
+
+.extractedData {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+
+.reloadButton {
+  margin-top: 10px;
+  background-color: #28a745;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.reloadButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
