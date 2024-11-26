@@ -1,22 +1,5 @@
-singleclaimdata
-: 
-0
-: 
-file_name
-: 
-"Case_CI_Heart_3.1.pdf"
-policy_id
-: 
-"PI1776685"
-prod_sheet_type
-: 
-"HEART"
-rec_number
-: 
-"PS678346"
-status
-: 
-"Processed"
-summary
-: 
-"The product 
+if (singleclaimdata && singleclaimdata[0]) {
+      const claimData = singleclaimdata[0]; // Get the first element
+
+      // Log the claim data to verify
+      console.log("Claim Data:", claimData);
