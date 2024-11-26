@@ -1,179 +1,115 @@
 import React, { useEffect, useState } from "react";
-import styles from "./MainContent.module.css";
+import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faRotateRight } from "@fortawesome/free-solid-svg-icons";
-import { v4 as uuidv4 } from "uuid"; // For generating unique IDs
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { HashLoader } from "react-spinners";
+import styles from "./DataTable.module.css";
 
-const MainContent = ({ fetchedData }) => {
+const DataTable = () => {
   const [rows, setRows] = useState([]);
-  const [loadingRows, setLoadingRows] = useState([]);
-  const [filterText, setFilterText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [spinningRows, setSpinningRows] = useState({});
 
-  // Initialize rows with unique IDs
-  useEffect(() => {
-    const initialData = fetchedData.map((row) => ({
-      id: row.policy_id || uuidv4(), // Use unique ID from API or generate one
-      policyid: row.policyid || null,
-      prod_sheet_type: row.prod_sheet_type || null,
-      summary: row.summary || null,
-      status: row.status || null,
-      previewLink: row.previewLink || null,
-    }));
-    setRows(initialData);
-  }, [fetchedData]);
-
-  const handleReload = async (id) => {
+  const fetchData = async () => {
+    setLoading(true);
+    setError("");
     try {
-      setLoadingRows((prev) => [...prev, id]); // Add ID to loading state
-      const singleClaimData = await fetchData(id); // Replace fetchData with your API call
-      console.log("Single Claim Data:", singleClaimData);
+      const payload = {
+        tasktype: "FETCH_ALL_CLAIMS",
+      };
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === id
-            ? {
-                ...row,
-                policyid: singleClaimData.policy_id,
-                prod_sheet_type: singleClaimData.prod_sheet_type,
-                summary: singleClaimData.summary,
-                status: singleClaimData.status,
-                previewLink: singleClaimData.previewLink,
-              }
-            : row
-        )
-      );
-    } catch (error) {
-      console.error("Error reloading row data:", error);
+      const headers = {
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, { headers });
+
+      console.log("API Response:", response.data);
+
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
+
+      setRows(claimData);
+    } catch (err) {
+      setError("Failed to fetch data. Please try again.");
+      console.error("API Error:", err);
     } finally {
-      setLoadingRows((prev) => prev.filter((rowId) => rowId !== id)); // Remove from loading state
+      setLoading(false);
     }
   };
 
-  const filteredRows = rows.filter((row) =>
-    row.policyid?.toLowerCase().includes(filterText.toLowerCase())
-  );
-
-  const openModal = (link) => {
-    // Handle modal opening for the preview link
-    console.log("Opening modal for link:", link);
+  const handleReloadRow = async (uniqueKey) => {
+    setSpinningRows((prev) => ({ ...prev, [uniqueKey]: true }));
+    try {
+      console.log(`Reloading data for uniqueKey: ${uniqueKey}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } catch (err) {
+      console.error("Error reloading row:", err);
+    } finally {
+      setSpinningRows((prev) => ({ ...prev, [uniqueKey]: false }));
+    }
   };
 
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
-    <div className={styles.container}>
-      <input
-        type="text"
-        placeholder="Filter by policy ID..."
-        className={styles.filterInput}
-        value={filterText}
-        onChange={(e) => setFilterText(e.target.value)}
-      />
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Policy ID</th>
-            <th>Prod Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row) => (
-              <tr key={row.id}>
-                <td>{row.id}</td>
-                <td>{row.policyid || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {row.policyid && row.prod_sheet_type && row.summary ? (
-                    <span>Completed</span>
-                  ) : (
+    <div className={styles.tableContainer}>
+      {loading ? (
+        <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
+        </div>
+      ) : error ? (
+        <p className={styles.error}>{error}</p>
+      ) : rows.length > 0 ? (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>FileName</th>
+              <th>RecNum</th>
+              <th>Policy ID</th>
+              <th>Type</th>
+              <th>Summary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, index) => {
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
+              return (
+                <tr key={uniqueKey}>
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  <td>
                     <button
                       className={styles.reloadButton}
-                      onClick={() => handleReload(row.id)}
-                      disabled={loadingRows.includes(row.id)}
+                      onClick={() => handleReloadRow(uniqueKey)}
                     >
-                      {loadingRows.includes(row.id) ? (
-                        <FontAwesomeIcon icon={faSpinner} spin className={styles.spinnerIcon} />
-                      ) : (
-                        <FontAwesomeIcon icon={faRotateRight} />
-                      )}
+                      <FontAwesomeIcon
+                        icon={faSyncAlt}
+                        className={`${styles.reloadIcon} ${
+                          spinningRows[uniqueKey] ? "fa-spin" : ""
+                        }`}
+                      />
                     </button>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className={styles.noData}>
-                No matching data found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <p className={styles.noData}>No data available</p>
+      )}
     </div>
   );
 };
 
-export default MainContent;
-
-// Mock API call for fetching data (Replace this with actual API logic)
-const fetchData = async (id) => {
-  // Simulate API call delay
-  return new Promise((resolve) =>
-    setTimeout(() => {
-      resolve({
-        policy_id: `Policy-${id}`,
-        prod_sheet_type: "Type-A",
-        summary: "Sample Summary",
-        status: "Active",
-        previewLink: "https://example.com/preview",
-      });
-    }, 1000)
-  );
-};
-
-
-
-
-const handleReload = async (id) => {
-  try {
-    setLoadingRows((prev) => [...prev, id]); // Mark row as loading
-    const singleclaimdata = await fetchData(id); // Fetch data for the specific ID
-    console.log("Single Claim Data:", singleclaimdata);
-
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === id
-          ? {
-              ...row,
-              policyid: singleclaimdata.policy_id,
-              prod_sheet_type: singleclaimdata.prod_sheet_type,
-              summary: singleclaimdata.summary,
-              status: singleclaimdata.status,
-              previewLink: singleclaimdata.previewLink,
-            }
-          : row
-      )
-    );
-  } catch (error) {
-    console.error("Error reloading row data:", error);
-  } finally {
-    setLoadingRows((prev) => prev.filter((rowId) => rowId !== id)); // Remove row from loading state
-  }
-};
+export default DataTable;
