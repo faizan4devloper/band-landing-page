@@ -1,18 +1,14 @@
-
 import React, { useState } from 'react';
-import axios from 'axios';
-import Sidebar from './Sidebar';
-import MainContent from './MainContent';
-import DataTable from './DataTable'; // Import the new DataTable component
-import styles from './ProductSheetsPage.module.css';
+import Sidebar from './Sidebar'; // Import Sidebar component
+import MainContent from './MainContent'; // Import MainContent component
+import styles from './NewClaimPage.module.css';
 
-const ProductSheetsPage = () => {
+const NewClaimPage = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [uploading, setUploading] = useState(false);
   const [rows, setRows] = useState([]);
   const [isUploaded, setIsUploaded] = useState(false);
-  const [showMainContent, setShowMainContent] = useState(false);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -31,7 +27,7 @@ const ProductSheetsPage = () => {
     try {
       const sanitizedFileName = file.name.replace(/\s+/g, '_');
       const response = await axios.post("dummy", {
-        payload: { filename: sanitizedFileName, filetype:"PS" },
+        payload: { filename: sanitizedFileName, filetype: "PS" },
       });
       console.log("API Response 1:", response.data);
 
@@ -75,37 +71,20 @@ const ProductSheetsPage = () => {
 
   return (
     <div className={styles.container}>
-      {!showMainContent ? (
-        <>
-          <div className={styles.header}>
-            <button
-              className={styles.newClaimButton}
-              onClick={() => setShowMainContent(true)}
-            >
-              New Claim Processing
-            </button>
-          </div>
-          <DataTable rows={rows} /> {/* Use DataTable */}
-        </>
+      <Sidebar
+        onFileChange={handleFileChange}
+        onUpload={handleUpload}
+        uploading={uploading}
+      />
+      {isUploaded ? (
+        <MainContent message={message} rows={rows} setRows={setRows} />
       ) : (
-        <>
-          <Sidebar
-            onFileChange={handleFileChange}
-            onUpload={handleUpload}
-            uploading={uploading}
-          />
-          {isUploaded ? (
-            <MainContent message={message} rows={rows} setRows={setRows} />
-          ) : (
-            <p className={styles.infoMessage}>
-              Please upload a document to view the data.
-            </p>
-          )}
-        </>
+        <p className={styles.infoMessage}>
+          Please upload a document to view the data.
+        </p>
       )}
     </div>
   );
 };
 
-export default ProductSheetsPage;
-
+export default NewClaimPage;
