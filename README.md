@@ -1,20 +1,52 @@
-Verify.js:7 Uncaught TypeError: Cannot destructure property 'summary' of 'location.state' as it is null.
-    at Verify (Verify.js:7:1)
+import React, { useState } from "react";
+import styles from "./Verify.module.css";
 
-Verify.js:7 Uncaught TypeError: Cannot destructure property 'summary' of 'location.state' as it is null.
-    at Verify (Verify.js:7:1)
-react-dom.development.js:18704 The above error occurred in the <Verify> component:
+const Verify = () => {
+  const [isLoading, setIsLoading] = useState(false);
 
-    at Verify (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1997:81)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:51312:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:52046:5)
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:51980:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:49881:5)
-    at App
+  // Handle the "Generate Email" button click
+  const handleGenerateEmail = () => {
+    setIsLoading(true);
+    // Logic to generate email goes here
+    setTimeout(() => {
+      alert("Email Generated Successfully!");
+      setIsLoading(false);
+    }, 2000);
+  };
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-Verify.js:7 Uncaught TypeError: Cannot destructure property 'summary' of 'location.state' as it is null.
-    at Verify (Verify.js:7:1)
-manifest.json:1 
- GET https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/manifest.json 499
+  return (
+    <div className={styles.mainContent}>
+      {/* Flex container for two beautiful windows */}
+      <div className={styles.windowContainer}>
+        {/* Left window for Claim Summary */}
+        <div className={styles.windowLeft}>
+          <h3>Claim Summary</h3>
+          <p>This is the claim summary content.</p>
+          {/* You can add dynamic content here */}
+        </div>
+
+        {/* Right window for Recommendations */}
+        <div className={styles.windowRight}>
+          <h3>Recommendations</h3>
+          <p>This is the recommendations content.</p>
+          {/* You can add dynamic content here */}
+        </div>
+      </div>
+
+      {/* Generate Email Button */}
+      <div className={styles.buttonContainer}>
+        <button
+          className={styles.generateButton}
+          onClick={handleGenerateEmail}
+          disabled={isLoading}
+        >
+          {isLoading ? "Generating..." : "Generate Email"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Verify;
+
+
