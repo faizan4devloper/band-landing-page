@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./GenerateEmail.css"; // Add styles for layout
+import styles from "./GenerateEmail.module.css"; // Import CSS Module
 
 const GenerateEmail = () => {
   const [loading, setLoading] = useState(false);
@@ -33,31 +33,35 @@ const GenerateEmail = () => {
   };
 
   return (
-    <div className="generate-email-container">
-      <div className="left-section">
-        <div className="section-window claim-summary">
+    <div className={styles.container}>
+      <div className={styles.leftSection}>
+        <div className={styles.sectionWindow}>
           <h2>Claim Summary</h2>
           <p>Details about the claim go here.</p>
         </div>
-        <div className="section-window recommendations">
+        <div className={styles.sectionWindow}>
           <h2>Recommendations</h2>
           <p>Suggestions based on the claim details go here.</p>
         </div>
       </div>
-      <div className="right-section">
-        <div className="section-window draft-email">
+      <div className={styles.rightSection}>
+        <div className={styles.sectionWindow}>
           <h2>Draft Email</h2>
-          <button onClick={handleGenerateEmail} disabled={loading}>
+          <button
+            className={styles.generateButton}
+            onClick={handleGenerateEmail}
+            disabled={loading}
+          >
             {loading ? "Generating Email..." : "Generate Email"}
           </button>
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {responseData && <p>Email Generated Successfully!</p>}
+          {error && <p className={styles.errorText}>{error}</p>}
+          {responseData && <p className={styles.successText}>Email Generated Successfully!</p>}
         </div>
-        <div className="section-window llm-response">
+        <div className={styles.sectionWindow}>
           <h2>LLM Response</h2>
           <p>Generated response from the LLM goes here.</p>
         </div>
-        <button className="submit-button">Submit</button>
+        <button className={styles.submitButton}>Submit</button>
       </div>
     </div>
   );
@@ -67,7 +71,11 @@ export default GenerateEmail;
 
 
 
-.generate-email-container {
+
+
+
+
+.container {
   display: flex;
   gap: 20px;
   padding: 20px;
@@ -76,31 +84,46 @@ export default GenerateEmail;
   font-family: Arial, sans-serif;
 }
 
-.left-section,
-.right-section {
+.leftSection,
+.rightSection {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.section-window {
+.sectionWindow {
   background: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 20px;
 }
 
-.section-window h2 {
+.sectionWindow h2 {
   margin-bottom: 10px;
   font-size: 1.25rem;
 }
 
-.section-window p {
+.sectionWindow p {
   color: #555;
 }
 
-.submit-button {
+.generateButton {
+  padding: 10px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.generateButton:disabled {
+  background-color: #b0c4de;
+  cursor: not-allowed;
+}
+
+.submitButton {
   align-self: flex-end;
   padding: 10px 20px;
   background-color: #4caf50;
@@ -112,6 +135,14 @@ export default GenerateEmail;
   margin-top: 20px;
 }
 
-.submit-button:hover {
+.submitButton:hover {
   background-color: #45a049;
+}
+
+.errorText {
+  color: red;
+}
+
+.successText {
+  color: green;
 }
