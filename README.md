@@ -1,59 +1,59 @@
-
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./Verify.module.css";
-import { useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
-
 
 const Verify = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Define state variables for storing the data, loading state, and error
   const [summary, setSummary] = useState(null);
   const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-      const navigate = useNavigate();
 
+  // Handle the action of navigating to generate email page
+  const handleEmail = () => {
+    navigate("/generate-email");
+  };
 
-const HandleEmail = ()=>{
-    
- navigate("/generate-email")
-}
-
-  // Use effect to fetch data when component mounts
+  // Fetch data when component mounts or location.state changes
   useEffect(() => {
     const fetchData = async (recNum) => {
       try {
         // Prepare your payload
         const payload = {
-         tasktype: "VERIFY_CLAIM",
-         claimid: recNum,
-         PSID: "PS391481" 
+          tasktype: "VERIFY_CLAIM",
+          claimid: recNum,
+          PSID: "PS391481", // Replace with actual PSID or retrieve from state
         };
 
-        // Prepare custom headers (if needed)
+        // Custom headers for API request
         const headers = {
           "Content-Type": "application/json", // Adjust content type based on your needs
-
         };
 
-        // Example API call with payload and headers
+        // API call to fetch data
         const response = await axios.post(
           "dummy", // Replace with your actual endpoint
           payload,
           { headers } // Pass headers as part of the request
         );
-        
-        console.log('Summary:', response.data)
 
-      // Parse the response body (since it's a JSON string)
+        console.log("Summary:", response.data);
+
+        // Parse the response body (assuming it's a JSON string)
         const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
 
         // Extract the summary details and recommendation
-        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
+        const {
+          CLAIM_FORM_BRIEF_SUMMARY,
+          CLAIM_FORM_TYPE,
+          CLAIM_STATUS,
+          DETAILED_SUMMARY,
+        } = responseBody.SUMMARY_DETAILS;
 
         // Set the state variables with parsed data
         setSummary({
@@ -72,7 +72,7 @@ const HandleEmail = ()=>{
 
     // Check if location.state exists, otherwise fetch the data
     if (!location.state) {
-      fetchData();
+      fetchData("sampleRecNum"); // Replace with actual recNum or pass from state if needed
     } else {
       const { summary, recommendation } = location.state;
       setSummary(summary);
@@ -82,10 +82,10 @@ const HandleEmail = ()=>{
   }, [location.state]);
 
   // Show loading or error message while fetching data
- if (loading) {
+  if (loading) {
     return (
       <div className={styles.spinnerContainer}>
-          <HashLoader color="#0f5fdc" size={40} />
+        <HashLoader color="#0f5fdc" size={40} />
       </div>
     );
   }
@@ -101,23 +101,28 @@ const HandleEmail = ()=>{
 
   return (
     <div className={styles.verifyContainer}>
-      {/* Left side: Summary */}
+      {/* Left side: Claim Summary */}
       <div className={styles.leftPanel}>
         <h3>Claim Summary</h3>
-        <p><strong>Claim Type:</strong> {summary.claimType}</p>
-        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
+        <p>
+          <strong>Claim Type:</strong> {summary.claimType}
+        </p>
+        <p>
+          <strong>Claim Status:</strong> {summary.claimStatus}
+        </p>
       </div>
 
-      {/* Right side: Recommendations */}
+      {/* Right side: Detailed Summary */}
       <div className={styles.rightPanel}>
         <h3>Detailed Summary</h3>
         <p>{recommendation}</p>
       </div>
-      
-      <div className={styles.genrateEmailContainer}>
-          <button className={styles.generateEmailButton} onClick={HandleEmail}>
+
+      {/* Generate Email Button */}
+      <div className={styles.generateEmailContainer}>
+        <button className={styles.generateEmailButton} onClick={handleEmail}>
           Generate Email
-          </button>
+        </button>
       </div>
     </div>
   );
