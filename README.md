@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import styles from "./GenerateEmail.module.css"; // Import CSS Module
+import styles from "./GenerateEmail.module.css";
 
 const GenerateEmail = () => {
   const [loading, setLoading] = useState(false);
@@ -34,6 +34,7 @@ const GenerateEmail = () => {
 
   return (
     <div className={styles.container}>
+      {/* Left Section */}
       <div className={styles.leftSection}>
         <div className={styles.sectionWindow}>
           <h2>Claim Summary</h2>
@@ -44,9 +45,17 @@ const GenerateEmail = () => {
           <p>Suggestions based on the claim details go here.</p>
         </div>
       </div>
+
+      {/* Right Section */}
       <div className={styles.rightSection}>
-        <div className={styles.sectionWindow}>
+        <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
           <h2>Draft Email</h2>
+          <p>Enter your draft email content or view suggestions.</p>
+        </div>
+        <div
+          className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
+        >
+          <h2>LLM Response</h2>
           <button
             className={styles.generateButton}
             onClick={handleGenerateEmail}
@@ -55,11 +64,11 @@ const GenerateEmail = () => {
             {loading ? "Generating Email..." : "Generate Email"}
           </button>
           {error && <p className={styles.errorText}>{error}</p>}
-          {responseData && <p className={styles.successText}>Email Generated Successfully!</p>}
-        </div>
-        <div className={styles.sectionWindow}>
-          <h2>LLM Response</h2>
-          <p>Generated response from the LLM goes here.</p>
+          {responseData && (
+            <p className={styles.successText}>
+              Response: {JSON.stringify(responseData)}
+            </p>
+          )}
         </div>
         <button className={styles.submitButton}>Submit</button>
       </div>
@@ -84,30 +93,67 @@ export default GenerateEmail;
   font-family: Arial, sans-serif;
 }
 
+/* Left and Right Section Styling */
 .leftSection,
 .rightSection {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d0d0d0;
 }
 
+.leftSection {
+  background-color: #e3f2fd;
+}
+
+.rightSection {
+  background-color: #fff8e1;
+}
+
+/* Individual Window Styling */
 .sectionWindow {
   background: #ffffff;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, height 0.3s ease;
+}
+
+.sectionWindow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .sectionWindow h2 {
   margin-bottom: 10px;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
+  color: #333;
 }
 
 .sectionWindow p {
   color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
+/* Draft Email Section */
+.draftEmail {
+  min-height: 200px; /* Increased height */
+}
+
+/* Expanded Section */
+.expanded {
+  min-height: 200px;
+  background-color: #f3f3f3;
+  transition: height 0.3s ease;
+}
+
+/* Buttons */
 .generateButton {
   padding: 10px 15px;
   background-color: #007bff;
@@ -116,6 +162,11 @@ export default GenerateEmail;
   border-radius: 4px;
   cursor: pointer;
   font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.generateButton:hover {
+  background-color: #0056b3;
 }
 
 .generateButton:disabled {
@@ -133,16 +184,20 @@ export default GenerateEmail;
   cursor: pointer;
   font-size: 1rem;
   margin-top: 20px;
+  transition: background-color 0.2s ease;
 }
 
 .submitButton:hover {
   background-color: #45a049;
 }
 
+/* Error and Success Messages */
 .errorText {
   color: red;
+  font-weight: bold;
 }
 
 .successText {
   color: green;
+  font-weight: bold;
 }
