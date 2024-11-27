@@ -1,127 +1,49 @@
-import React, { useState } from "react";
-import axios from "axios";
-import styles from "./GenerateEmail.module.css";
+react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
+    at reconcileChildFibers (react-dom.development.js:14064:1)
+    at reconcileChildren (react-dom.development.js:19193:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
 
-const GenerateEmail = () => {
-  const [loading, setLoading] = useState(false);
-  const [draftLoading, setDraftLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [draftError, setDraftError] = useState(null);
-  const [responseData, setResponseData] = useState(null);
-  const [draftEmail, setDraftEmail] = useState("");  // Updated state to store draft email content
+react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
+    at reconcileChildFibers (react-dom.development.js:14064:1)
+    at reconcileChildren (react-dom.development.js:19193:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
+    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
+    at invokeGuardedCallback (react-dom.development.js:4277:1)
+    at beginWork$1 (react-dom.development.js:27490:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+react-dom.development.js:18704 The above error occurred in the <p> component:
 
-  // API payloads
-  const draftPayload = {
-    claimid : "CL1234567", 
-    recnumber: "PS391481",
-    tasktype : "FETCH_EMAIL",
-  };
+    at p
+    at div
+    at div
+    at div
+    at GenerateEmail (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1050:80)
+    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:51688:5)
+    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:52422:5)
+    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:52356:15)
+    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:50257:5)
+    at App
 
-  const generatePayload = {
-    claimid: "CL123456",
-    recnumber: "PS391481",
-    tasktype: "GENERATE_EMAIL",
-  };
-
-  // Fetch draft email
-  const handleFetchDraftEmail = async () => {
-    setDraftLoading(true);
-    setDraftError(null);
-
-    try {
-      const Emailresponse = await axios.post("", draftPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // Extract emailbody from the response and update the state
-      if (Emailresponse.data && Emailresponse.data.emailbody) {
-        setDraftEmail(Emailresponse.data.emailbody);  // Update draftEmail state
-      }
-
-      console.log("Draft Email:", Emailresponse.data);
-    } catch (err) {
-      setDraftError("Failed to fetch draft email");
-      console.error("Draft Email Error:", err);
-    } finally {
-      setDraftLoading(false);
-    }
-  };
-
-  // Generate email with LLM
-  const handleGenerateEmail = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const LLMresponse = await axios.post("your-generate-email-api-endpoint", generatePayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setResponseData(LLMresponse.data);
-      console.log("LLMresponse Email Response:", LLMresponse.data);
-    } catch (err) {
-      setError("Failed to generate email");
-      console.error("Generate Email Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      {/* Left Section */}
-      <div className={styles.leftSection}>
-        <div className={styles.sectionWindow}>
-          <h2>Claim Summary</h2>
-          <p>Details about the claim go here.</p>
-        </div>
-        <div className={styles.sectionWindow}>
-          <h2>Recommendations</h2>
-          <p>Suggestions based on the claim details go here.</p>
-        </div>
-      </div>
-
-      {/* Right Section */}
-      <div className={styles.rightSection}>
-        <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
-          <h2>Draft Email</h2>
-          {draftLoading ? (
-            <p>Loading draft email...</p>
-          ) : draftError ? (
-            <p className={styles.errorText}>{draftError}</p>
-          ) : (
-            <p>{draftEmail}</p>  {/* Display email body here */}
-          )}
-          <button
-            className={styles.fetchButton}
-            onClick={handleFetchDraftEmail}
-            disabled={draftLoading}
-          >
-            {draftLoading ? "Fetching Draft..." : "Generate Draft Email"}
-          </button>
-        </div>
-        <div
-          className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
-        >
-          <h2>LLM Response</h2>
-          <button
-            className={styles.generateButton}
-            onClick={handleGenerateEmail}
-            disabled={loading}
-          >
-            {loading ? "LLMresponse Email..." : "LLMresponse Email"}
-          </button>
-          {error && <p className={styles.errorText}>{error}</p>}
-          {responseData && (
-            <p className={styles.successText}>
-              Response: {JSON.stringify(responseData)}
-            </p>
-          )}
-        </div>
-        <button className={styles.submitButton}>Submit</button>
-      </div>
-    </div>
-  );
-};
-
-export default GenerateEmail;
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
+    at reconcileChildFibers (react-dom.development.js:14064:1)
+    at reconcileChildren (react-dom.development.js:19193:1)
+    at updateHostComponent (react-dom.development.js:19953:1)
+    at beginWork (react-dom.development.js:21657:1)
+    at beginWork$1 (react-dom.development.js:27465:1)
+    at performUnitOfWork (react-dom.development.js:26596:1)
+    at workLoopSync (react-dom.development.js:26505:1)
+    at renderRootSync (react-dom.development.js:26473:1)
+    at recoverFromConcurrentError (react-dom.development.js:25889:1)
