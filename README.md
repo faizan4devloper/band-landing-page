@@ -8,60 +8,61 @@ const Verify = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Define state variables for storing the data, loading state, and error
+  // State variables for storing the data, loading state, and error
   const [summary, setSummary] = useState(null);
   const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Handle the action of navigating to generate email page
+  // Handle the navigation to generate email page
   const handleEmail = () => {
     navigate("/generate-email");
   };
 
-  // Fetch data when component mounts or location.state changes
+  // Fetch the data when the component mounts or when location.state changes
   useEffect(() => {
     const fetchData = async (recNum) => {
       try {
-        // Prepare your payload
+        // Prepare the payload for the API request
         const payload = {
           tasktype: "VERIFY_CLAIM",
           claimid: recNum,
-          PSID: "PS391481", // Replace with actual PSID or retrieve from state
+          PSID: "PS391481", // Replace with actual PSID or retrieve it dynamically
         };
 
-        // Custom headers for API request
+        // Custom headers for the API request (if needed)
         const headers = {
-          "Content-Type": "application/json", // Adjust content type based on your needs
+          "Content-Type": "application/json", // Adjust content type if needed
         };
 
-        // API call to fetch data
+        // Send the API request
         const response = await axios.post(
-          "dummy", // Replace with your actual endpoint
+          "dummy", // Replace with actual endpoint URL
           payload,
-          { headers } // Pass headers as part of the request
+          { headers }
         );
 
-        console.log("Summary:", response.data);
+        // Log the response to verify the data structure
+        console.log("API Response:", response.data);
 
         // Parse the response body (assuming it's a JSON string)
         const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
 
-        // Extract the summary details and recommendation
+        // Extract the required fields
         const {
           CLAIM_FORM_BRIEF_SUMMARY,
           CLAIM_FORM_TYPE,
           CLAIM_STATUS,
-          DETAILED_SUMMARY,
+          CLAIM_FORM_DETAILED_SUMMARY, // Extract the detailed summary here
         } = responseBody.SUMMARY_DETAILS;
 
-        // Set the state variables with parsed data
+        // Set the state with the extracted data
         setSummary({
           briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
           claimType: CLAIM_FORM_TYPE,
           claimStatus: CLAIM_STATUS,
         });
-        setRecommendation(DETAILED_SUMMARY);
+        setRecommendation(CLAIM_FORM_DETAILED_SUMMARY); // Store detailed summary as recommendation
       } catch (error) {
         setError("Failed to load data");
         console.error(error);
@@ -70,9 +71,9 @@ const Verify = () => {
       }
     };
 
-    // Check if location.state exists, otherwise fetch the data
+    // If location.state exists, use it directly; otherwise, fetch the data
     if (!location.state) {
-      fetchData("sampleRecNum"); // Replace with actual recNum or pass from state if needed
+      fetchData("sampleRecNum"); // Replace with actual recNum or get it from location.state if needed
     } else {
       const { summary, recommendation } = location.state;
       setSummary(summary);
@@ -81,7 +82,7 @@ const Verify = () => {
     }
   }, [location.state]);
 
-  // Show loading or error message while fetching data
+  // Show loading spinner or error message
   if (loading) {
     return (
       <div className={styles.spinnerContainer}>
@@ -90,11 +91,12 @@ const Verify = () => {
     );
   }
 
+  // Show error if the data couldn't be fetched
   if (error) {
     return <p>{error}</p>;
   }
 
-  // Check if summary or recommendation is not available and handle it
+  // Show message if summary or recommendation data is unavailable
   if (!summary || !recommendation) {
     return <p>No data available.</p>;
   }
@@ -112,10 +114,10 @@ const Verify = () => {
         </p>
       </div>
 
-      {/* Right side: Detailed Summary */}
+      {/* Right side: Detailed Summary (Recommendation) */}
       <div className={styles.rightPanel}>
         <h3>Detailed Summary</h3>
-        <p>{recommendation}</p>
+        <p>{recommendation}</p> {/* This will display the CLAIM_FORM_DETAILED_SUMMARY */}
       </div>
 
       {/* Generate Email Button */}
