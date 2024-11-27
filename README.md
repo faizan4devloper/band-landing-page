@@ -1,180 +1,108 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Modal from 'react-modal';
-import styles from './MainContent.module.css';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";  // Correct import
+import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateRight, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faSync } from '@fortawesome/free-solid-svg-icons';
 
-const MainContent = ({ message, rows, setRows }) => {
-  const [filter, setFilter] = useState("All");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
-  const [loadingRows, setLoadingRows] = useState([]);
+const MainContent = ({ rows }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const handleReload = async (recNum) => {
-    setLoadingRows((prev) => [...prev, recNum]); // Add the row to the loading state
+  // Handle the "Verify" button click
+  const handleVerify = async () => {
+    setIsLoading(true);
     try {
+      // Make the same API call used in handleReload
       const payload = {
-        tasktype: "FETCH_SINGLE_CLAIM",
-        claimid: recNum,
+        tasktype: "FETCH_SINGLE_ACT_CLAIM",
+        claimid: rows[0]?.recNum,  // Using recNum from the first row as an example
       };
 
-      const response = await axios.post(`dummy`, payload, {
+      const response = await axios.post("dummy-api-endpoint", payload, {
         headers: { "Content-Type": "application/json" },
       });
 
-      const singleclaimdata = response.data.singleclaimdata[0] || {};
-      console.log("Reload Data:", response.data);
-      // console.log("single Data:", singleclaimdata.data);
-      console.log("policy Data:", response.data.singleclaimdata[0].policy_id);
+      // Assuming the response has summary and recommendations data
+      const { summary, recommendations } = response.data;
 
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.recNum === recNum
-            ? {
-                ...row,
-                policy_id: singleclaimdata.policy_id,
-                prod_sheet_type: singleclaimdata.prod_sheet_type,
-                summary: singleclaimdata.summary,
-                status: singleclaimdata.status,
-                previewLink: singleclaimdata.previewLink,
-              }
-            : row
-        )
-      );
-      console.log("Update rows:", rows)
-      
+      // Navigate to Verify page and pass data
+      navigate("/verify", {
+        state: { summary, recommendations },
+      });
     } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
+      setError("Failed to fetch data.");
+      console.error(error);
     } finally {
-      setLoadingRows((prev) => prev.filter((id) => id !== recNum)); // Remove the row from the loading state
+      setIsLoading(false);
     }
   };
 
-  const filteredRows = rows.filter((row) =>
-    filter === "All" ? true : row.status.includes(filter)
-  );
+  const handleReload = async (recNum) => {
+    setIsLoading(true);
+    try {
+      const payload = {
+        tasktype: "FETCH_SINGLE_ACT_CLAIM",
+        claimid: recNum,
+      };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
+      const response = await axios.post("dummy-api-endpoint", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
-  const openModal = (previewLink) => {
-    setModalContent(previewLink);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalContent(null);
+      console.log("API Response:", response.data);
+      // Handle the data accordingly (e.g., setting state)
+    } catch (error) {
+      console.error("Failed to fetch data for RecNum:", recNum, error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className={styles.mainContent}>
-      {message && <p className={styles.message}>{message}</p>}
+      {/* Left and right windows as before */}
+      <div className={styles.windowContainer}>
+        <div className={styles.windowLeft}>
+          <h3>Claim Summary</h3>
+          <p>This is the claim summary content.</p>
+        </div>
 
-      <div className={styles.filterContainer}>
-        <label htmlFor="statusFilter" className={styles.filterLabel}>
-          Filter by Status:
-        </label>
-        <select
-          id="statusFilter"
-          className={styles.filterDropdown}
-          value={filter}
-          onChange={handleFilterChange}
-        >
-          <option value="All">All</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
+        <div className={styles.windowRight}>
+          <h3>Recommendations</h3>
+          <p>This is the recommendations content.</p>
+        </div>
       </div>
 
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>RecNum</th>
-            <th>Policy ID</th>
-            <th>Product Sheet Type</th>
-            <th>Summary</th>
-            <th>Preview Link</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredRows.length > 0 ? (
-            filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td>{row.recNum || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.policy_id || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.prod_sheet_type || <span className={styles.loader}>Pending</span>}</td>
-                <td>{row.summary || <span className={styles.loader}>Pending</span>}</td>
-                <td>
-                  {row.previewLink ? (
-                    <button
-                      className={styles.previewButton}
-                      onClick={() => openModal(row.previewLink)}
-                    >
-                      Preview
-                    </button>
-                  ) : (
-                    "Pending"
-                  )}
-                </td>
-                <td>
-                  {row.policy_id && row.prod_sheet_type && row.summary ? (
-                    <span>Completed</span>
-                  ) : (
-                    <span>
-                      <button
-                        className={styles.reloadButton}
-                        onClick={() => handleReload(row.recNum)}
-                        disabled={loadingRows.includes(row.recNum)}
-                      >
-                        {loadingRows.includes(row.recNum) ? (
-                          <FontAwesomeIcon
-                            icon={faSpinner}
-                            spin
-                            className={styles.spinnerIcon}
-                          />
-                        ) : (
-                          <FontAwesomeIcon icon={faRotateRight} />
-                        )}
-                      </button>
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6">No data available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {/* Verify Button */}
+      <div className={styles.buttonContainer}>
+        <button
+          className={styles.verifyButton}
+          onClick={handleVerify}
+          disabled={isLoading}
+        >
+          {isLoading ? "Verifying..." : "Verify"}
+        </button>
+      </div>
 
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.modalOverlay}
-        ariaHideApp={false}
-      >
-        <div className={styles.modalContent}>
-          <button className={styles.closeButton} onClick={closeModal}>
-            Close
+      {/* Reload Button */}
+      {rows.map((row, index) => (
+        <div key={index}>
+          <button
+            className={styles.reloadButton}
+            onClick={() => handleReload(row.recNum)} // Use dynamic recNum here
+            disabled={isLoading}
+          >
+            <FontAwesomeIcon
+              icon={faSync}
+              spin={isLoading} // Spin when loading is true
+              className={styles.icon}
+            />
+            {!isLoading && " Reload"} {/* Show text only when not loading */}
           </button>
-          {modalContent ? (
-            <iframe
-              src={modalContent}
-              title="Preview"
-              className={styles.modalIframe}
-            ></iframe>
-          ) : (
-            <p>No preview available</p>
-          )}
         </div>
-      </Modal>
+      ))}
     </div>
   );
 };
@@ -183,55 +111,44 @@ export default MainContent;
 
 
 
-import React, { useState } from "react";
-import styles from "./Verify.module.css";
+import React from "react";
+import { useLocation } from "react-router-dom";
+import styles from "./Verify.module.css";  // Ensure this file exists for styling
 
 const Verify = () => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Handle the "Generate Email" button click
-  const handleGenerateEmail = () => {
-    setIsLoading(true);
-    // Logic to generate email goes here
-    setTimeout(() => {
-      alert("Email Generated Successfully!");
-      setIsLoading(false);
-    }, 2000);
-  };
+  // Get passed data (summary and recommendations) using useLocation hook
+  const location = useLocation();
+  const { summary, recommendations } = location.state || {};
 
   return (
-    <div className={styles.mainContent}>
-      {/* Flex container for two beautiful windows */}
+    <div className={styles.verifyPage}>
       <div className={styles.windowContainer}>
-        {/* Left window for Claim Summary */}
+        {/* Left side: Claim Summary */}
         <div className={styles.windowLeft}>
           <h3>Claim Summary</h3>
-          <p>This is the claim summary content.</p>
-          {/* You can add dynamic content here */}
+          {summary ? (
+            <div>
+              <p>{summary}</p>
+            </div>
+          ) : (
+            <p>No summary available.</p>
+          )}
         </div>
 
-        {/* Right window for Recommendations */}
+        {/* Right side: Recommendations */}
         <div className={styles.windowRight}>
           <h3>Recommendations</h3>
-          <p>This is the recommendations content.</p>
-          {/* You can add dynamic content here */}
+          {recommendations ? (
+            <div>
+              <p>{recommendations}</p>
+            </div>
+          ) : (
+            <p>No recommendations available.</p>
+          )}
         </div>
-      </div>
-
-      {/* Generate Email Button */}
-      <div className={styles.buttonContainer}>
-        <button
-          className={styles.generateButton}
-          onClick={handleGenerateEmail}
-          disabled={isLoading}
-        >
-          {isLoading ? "Generating..." : "Generate Email"}
-        </button>
       </div>
     </div>
   );
 };
 
 export default Verify;
-
-
