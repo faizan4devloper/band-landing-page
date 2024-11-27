@@ -1,117 +1,59 @@
-const handleVerify = (recNum) => {
-  navigate("/verify", { state: { recNum } }); // Pass recNum in state
-};
 
-
-
-<div className={styles.verifyButtonContainer}>
-  <button
-    className={styles.verifyButton}
-    onClick={() => handleVerify(data?.claimid)} // Replace `data?.claimid` with the actual recNum or identifier
-  >
-    Verify
-  </button>
-</div>
-
-
-
-
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import axios from "axios";
-import styles from "./Verify.module.css";
-import { HashLoader } from "react-spinners";
 
-const Verify = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  // State variables
-  const [summary, setSummary] = useState(null);
-  const [recommendation, setRecommendation] = useState(null);
-  const [loading, setLoading] = useState(true);
+const GenerateEmail = () => {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [responseData, setResponseData] = useState(null);
 
-  // Fetch data function
-  const fetchData = async (recNum) => {
+  const handleGenerateEmail = async () => {
+    // Define the payload to be sent
+    const payload = {
+      claimid: "CL123456",
+      recnumber: "PS391481",
+      tasktype: "GENERATE_EMAIL"
+    };
+
+    // Start the loading state
+    setLoading(true);
+    setError(null);
+
     try {
-      const payload = {
-        tasktype: "VERIFY_CLAIM",
-        claimid: recNum,
-        PSID: "PS391481",
-      };
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      const response = await axios.post("dummy", payload, { headers });
-      console.log("Summary:", response.data);
-
-      // Parse the response
-      const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
-      const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
-
-      setSummary({
-        briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
-        claimType: CLAIM_FORM_TYPE,
-        claimStatus: CLAIM_STATUS,
+      // Make the POST request with the payload
+      const response = await axios.post("dummy", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      setRecommendation(DETAILED_SUMMARY);
-    } catch (error) {
-      setError("Failed to load data");
-      console.error(error);
+      
+      console.log("Email:", response.data)
+
+      // Handle the response data
+      setResponseData(response.data);
+      console.log("Response Data:", response.data);
+    } catch (err) {
+      // Handle error
+      setError("Failed to generate email");
+      console.error("Error:", err);
     } finally {
+      // Stop the loading state
       setLoading(false);
     }
   };
 
-  // UseEffect to fetch data when `recNum` is available
-  useEffect(() => {
-    if (location.state?.recNum) {
-      fetchData(location.state.recNum); // Use recNum from state
-    } else {
-      setError("No claim ID provided.");
-      setLoading(false);
-    }
-  }, [location.state]);
-
-  // Loading and error handling
-  if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-        <HashLoader color="#0f5fdc" size={40} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  if (!summary || !recommendation) {
-    return <p>No data available.</p>;
-  }
-
   return (
-    <div className={styles.verifyContainer}>
-      <div className={styles.leftPanel}>
-        <h3>Claim Summary</h3>
-        <p><strong>Brief Summary:</strong> {summary.briefSummary}</p>
-        <p><strong>Claim Type:</strong> {summary.claimType}</p>
-        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
-      </div>
-      <div className={styles.rightPanel}>
-        <h3>Detailed Summary</h3>
-        <p>{recommendation}</p>
-      </div>
-      <div className={styles.genrateEmailContainer}>
-        <button className={styles.generateEmailButton} onClick={() => navigate("/generate-email")}>
-          Generate Email
-        </button>
-      </div>
+    <div>
+      <button onClick={handleGenerateEmail} disabled={loading}>
+        {loading ? "Generating Email..." : "Generate Email"}
+      </button>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {responseData && <p>Email Generated Successfully!</p>}
     </div>
   );
 };
 
-export default Verify;
+export default GenerateEmail;
+
+
