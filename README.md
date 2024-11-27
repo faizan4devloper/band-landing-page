@@ -1,39 +1,132 @@
- <div className={styles.container}>
-      <div className={styles.leftWindow}>
-        <div className={styles.claimSummary}>
+import React, { useState } from "react";
+import axios from "axios";
+import styles from "./GenerateEmail.module.css";
+
+const GenerateEmail = () => {
+  const [loading, setLoading] = useState(false);
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [draftError, setDraftError] = useState(null);
+  const [responseData, setResponseData] = useState(null);
+  const [draftEmail, setDraftEmail] = useState("");
+
+  // API payloads
+  const draftPayload = {
+    claimid : "CL1234567", 
+      recnumber: "PS391481",
+      tasktype : "FETCH_EMAIL",
+
+
+};
+
+  const generatePayload = {
+    claimid: "CL123456",
+    recnumber: "PS391481",
+    tasktype: "GENERATE_EMAIL",
+  };
+
+  // Fetch draft email
+  const handleFetchDraftEmail = async () => {
+    setDraftLoading(true);
+    setDraftError(null);
+
+    try {
+      const response = await axios.post("dummy", draftPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      
+      console.log("Draft API:", response.data)
+      
+      const emailBody = response.data.emailbody;
+      if(emailBody){
+        setDraftEmail("No Draft Email Found.")
+      }
+      
+
+      console.log("Draft Email:", response.data);
+    } catch (err) {
+      setDraftError("Failed to fetch draft email");
+      console.error("Draft Email Error:", err);
+    } finally {
+      setDraftLoading(false);
+    }
+  };
+
+  // Generate email with LLM
+  const handleGenerateEmail = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await axios.post("your-generate-email-api-endpoint", generatePayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      setResponseData(response.data);
+      console.log("Generated Email Response:", response.data);
+    } catch (err) {
+      setError("Failed to generate email");
+      console.error("Generate Email Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      {/* Left Section */}
+      <div className={styles.leftSection}>
+        <div className={styles.sectionWindow}>
           <h2>Claim Summary</h2>
-          <p>Claim ID: CL1234567</p>
-          <p>Reference Number: PS391481</p>
-          <p>Task Type: FETCH_DRAFT_EMAIL</p>
+          <p>Details about the claim go here.</p>
         </div>
-        <div className={styles.recommendations}>
+        <div className={styles.sectionWindow}>
           <h2>Recommendations</h2>
-          <p>Some recommendation content goes here.</p>
+          <p>Suggestions based on the claim details go here.</p>
         </div>
       </div>
-      <div className={styles.rightWindow}>
-        <div className={styles.draftEmail}>
+
+      {/* Right Section */}
+      <div className={styles.rightSection}>
+        <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
           <h2>Draft Email</h2>
-          {draftEmail ? (
-            <textarea
-              value={draftEmail}
-              readOnly
-              className={styles.emailBody}
-            />
+          {draftLoading ? (
+            <p>Loading draft email...</p>
+          ) : draftError ? (
+            <p className={styles.errorText}>{draftError}</p>
           ) : (
-            <p>No draft email yet. Click "Generate Email" to fetch one.</p>
+            <p>{draftEmail}</p>
           )}
-        </div>
-        <div className={styles.llmResponse}>
-          <h2>LLM Response</h2>
-          <p>Generated responses will appear here.</p>
           <button
-            onClick={handleGenerateEmail}
-            disabled={loading}
-            className={styles.generateButton}
+            className={styles.fetchButton}
+            onClick={handleFetchDraftEmail}
+            disabled={draftLoading}
           >
-            {loading ? "Generating..." : "Generate Email"}
+            {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
           </button>
         </div>
+        <div
+          className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
+        >
+          <h2>LLM Response</h2>
+          <button
+            className={styles.generateButton}
+            onClick={handleGenerateEmail}
+            disabled={loading}
+          >
+            {loading ? "Generating Email..." : "Generate Email"}
+          </button>
+          {error && <p className={styles.errorText}>{error}</p>}
+          {responseData && (
+            <p className={styles.successText}>
+              Response: {JSON.stringify(responseData)}
+            </p>
+          )}
+        </div>
+        <button className={styles.submitButton}>Submit</button>
       </div>
     </div>
+  );
+};
+
+export default GenerateEmail;
