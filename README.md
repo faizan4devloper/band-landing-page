@@ -1,12 +1,12 @@
-<div className={styles.previewSection}>
+ <div className={styles.previewSection}>
         <h3>Document Preview</h3>
-        {previewUrl ? (
+        {uploadedDocumentUrl ? (
           <iframe
-            src={previewUrl}
+            src={uploadedDocumentUrl}
             title="Document Preview"
-            className={styles.documentPreview}
+            className={styles.documentPreviewIframe}
           ></iframe>
         ) : (
-          <p>No document available</p>
+          <p>No document uploaded yet.</p>
         )}
       </div>
