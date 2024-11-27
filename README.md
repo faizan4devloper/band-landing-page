@@ -1,6 +1,28 @@
-MainContent.js:44 TypeError: Converting circular structure to JSON
-    --> starting at object with constructor 'HTMLButtonElement'
-    |     property '__reactFiber$5ag6t2lldr5' -> object with constructor 'FiberNode'
-    --- property 'stateNode' closes the circle
-    at stringify (<anonymous>)
-    at async handleVerify (MainContent.js:31:1)
+const handleVerify = async () => {
+  setIsLoading(true);
+  try {
+    // Ensure the payload does not include any React or DOM elements.
+    const payload = {
+      tasktype: "FETCH_SINGLE_ACT_CLAIM",
+      claimid: rows[0]?.recNum,  // Using recNum from the first row as an example
+    };
+
+    // Make the API call
+    const response = await axios.post("dummy-api-endpoint", payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Assuming the response has summary and recommendations data
+    const { summary, recommendations } = response.data;
+
+    // Navigate to Verify page and pass data
+    navigate("/verify", {
+      state: { summary, recommendations },
+    });
+  } catch (error) {
+    setError("Failed to fetch data.");
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+};
