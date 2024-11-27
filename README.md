@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 const Verify = () => {
   const location = useLocation();
-  const navigate = useNavigate();
 
   // Define state variables for storing the data, loading state, and error
   const [summary, setSummary] = useState(null);
@@ -16,10 +15,24 @@ const Verify = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Example API call, you need to replace it with the actual API endpoint
-        const response = await axios.post("/api/verify-claim", {
-          claimId: "12345", // Replace with the actual claim ID or use location.state
-        });
+        // Prepare your payload
+        const payload = {
+          claimId: "12345", // You can dynamically change this based on your requirement
+        };
+
+        // Prepare custom headers (if needed)
+        const headers = {
+          "Content-Type": "application/json", // Adjust content type based on your needs
+          "Authorization": "Bearer YOUR_API_TOKEN", // Use your token or authentication details
+          "Custom-Header": "Header-Value", // Add other headers if necessary
+        };
+
+        // Example API call with payload and headers
+        const response = await axios.post(
+          "https://your-api-endpoint.com/verify-claim", // Replace with your actual endpoint
+          payload,
+          { headers } // Pass headers as part of the request
+        );
 
         // Parse the body response
         const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
