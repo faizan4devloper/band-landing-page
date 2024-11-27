@@ -12,15 +12,13 @@ const GenerateEmail = () => {
 
   // API payloads
   const draftPayload = {
-    claimid : "CL1234567", 
-      recnumber: "PS391481",
-      tasktype : "FETCH_EMAIL",
-
-
-};
+    claimid: "CL1234567",
+    recnumber: "PS391481",
+    tasktype: "FETCH_EMAIL",
+  };
 
   const generatePayload = {
-    claimid: "CL123456",
+    claimid: "CL1234567",  // Fixed claim ID to match the draftPayload
     recnumber: "PS391481",
     tasktype: "GENERATE_EMAIL",
   };
@@ -34,16 +32,15 @@ const GenerateEmail = () => {
       const response = await axios.post("dummy", draftPayload, {
         headers: { "Content-Type": "application/json" },
       });
-      
-      console.log("Draft API:", response.data)
-      
-      const emailBody = response.data.emailbody;
-      if(emailBody){
-        setDraftEmail("No Draft Email Found.")
-      }
-      
 
-      console.log("Draft Email:", response.data);
+      console.log("Draft API Response:", response.data);
+
+      const emailBody = response.data.emailbody;
+      if (emailBody) {
+        setDraftEmail(emailBody);  // Set the fetched email body to state
+      } else {
+        setDraftEmail("No Draft Email Found.");
+      }
     } catch (err) {
       setDraftError("Failed to fetch draft email");
       console.error("Draft Email Error:", err);
@@ -105,6 +102,7 @@ const GenerateEmail = () => {
             {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
           </button>
         </div>
+
         <div
           className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
         >
@@ -118,9 +116,10 @@ const GenerateEmail = () => {
           </button>
           {error && <p className={styles.errorText}>{error}</p>}
           {responseData && (
-            <p className={styles.successText}>
-              Response: {JSON.stringify(responseData)}
-            </p>
+            <div className={styles.successText}>
+              <p>Response:</p>
+              <pre>{JSON.stringify(responseData, null, 2)}</pre> {/* Pretty print JSON */}
+            </div>
           )}
         </div>
         <button className={styles.submitButton}>Submit</button>
