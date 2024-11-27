@@ -8,14 +8,16 @@ const GenerateEmail = () => {
   const [error, setError] = useState(null);
   const [draftError, setDraftError] = useState(null);
   const [responseData, setResponseData] = useState(null);
-  const [draftEmail, setDraftEmail] = useState(""); // Store draft email content as a string
+  const [draftEmail, setDraftEmail] = useState("");
 
   // API payloads
   const draftPayload = {
-    claimid: "CL1234567",
-    recnumber: "PS391481",
-    tasktype: "FETCH_EMAIL",
-  };
+    claimid : "CL1234567", 
+      recnumber: "PS391481",
+      tasktype : "FETCH_EMAIL"
+
+
+};
 
   const generatePayload = {
     claimid: "CL123456",
@@ -29,18 +31,14 @@ const GenerateEmail = () => {
     setDraftError(null);
 
     try {
-      const Emailresponse = await axios.post("", draftPayload, {
+      const response = await axios.post("DUMMY", draftPayload, {
         headers: { "Content-Type": "application/json" },
       });
+      
+      console.log("Draft API:", response.data)
 
-      // Extract emailbody and update state
-      if (Emailresponse.data && typeof Emailresponse.data.emailbody === "string") {
-        setDraftEmail(Emailresponse.data.emailbody);
-      } else {
-        setDraftEmail("No valid draft email found.");
-      }
-
-      console.log("Draft Email:", Emailresponse.data);
+      setDraftEmail(response.data.draft || "Draft email content not available.");
+      console.log("Draft Email:", response.data);
     } catch (err) {
       setDraftError("Failed to fetch draft email");
       console.error("Draft Email Error:", err);
@@ -55,12 +53,12 @@ const GenerateEmail = () => {
     setError(null);
 
     try {
-      const LLMresponse = await axios.post("your-generate-email-api-endpoint", generatePayload, {
+      const response = await axios.post("your-generate-email-api-endpoint", generatePayload, {
         headers: { "Content-Type": "application/json" },
       });
 
-      setResponseData(LLMresponse.data);
-      console.log("LLM Response:", LLMresponse.data);
+      setResponseData(response.data);
+      console.log("Generated Email Response:", response.data);
     } catch (err) {
       setError("Failed to generate email");
       console.error("Generate Email Error:", err);
@@ -85,28 +83,16 @@ const GenerateEmail = () => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
-        {/* Draft Email Section */}
         <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
-          <h2>Draft Email</h2>
-          {draftLoading ? (
-            <p>Loading draft email...</p>
-          ) : draftError ? (
-            <p className={styles.errorText}>{draftError}</p>
-          ) : draftEmail ? (
-            <p>{draftEmail}</p>
-          ) : (
-            <p>No draft email available.</p>
-          )}
+          
           <button
             className={styles.fetchButton}
             onClick={handleFetchDraftEmail}
             disabled={draftLoading}
           >
-            {draftLoading ? "Fetching Draft..." : "Generate Draft Email"}
+            {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
           </button>
         </div>
-
-        {/* LLM Response Section */}
         <div
           className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
         >
@@ -116,16 +102,10 @@ const GenerateEmail = () => {
             onClick={handleGenerateEmail}
             disabled={loading}
           >
-            {loading ? "Generating Email..." : "Generate Email"}
+            {loading ? "LLM Email..." : "LLM Email"}
           </button>
-          {error && <p className={styles.errorText}>{error}</p>}
-          {responseData && (
-            <pre className={styles.successText}>
-              Response: {JSON.stringify(responseData, null, 2)}
-            </pre>
-          )}
+          
         </div>
-
         <button className={styles.submitButton}>Submit</button>
       </div>
     </div>
