@@ -1,133 +1,36 @@
-import React, { useState } from "react";
-import axios from "axios";
-import styles from "./GenerateEmail.module.css";
-
-const GenerateEmail = () => {
-  const [loading, setLoading] = useState(false);
-  const [draftLoading, setDraftLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [draftError, setDraftError] = useState(null);
-  const [responseData, setResponseData] = useState(null);
-  const [draftEmail, setDraftEmail] = useState("");
-
-  // API payloads
-  const draftPayload = {
-    claimid: "CL1234567",
-    recnumber: "PS391481",
-    tasktype: "FETCH_EMAIL",
-  };
-
-  const generatePayload = {
-    claimid: "CL1234567",  // Fixed claim ID to match the draftPayload
-    recnumber: "PS391481",
-    tasktype: "GENERATE_EMAIL",
-  };
-
-  // Fetch draft email
-  const handleFetchDraftEmail = async () => {
-    setDraftLoading(true);
-    setDraftError(null);
-
-    try {
-      const response = await axios.post("dummy", draftPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      console.log("Draft API Response:", response.data);
-
-      const emailBody = response.data.emailbody;
-      if (emailBody) {
-        setDraftEmail(emailBody);  // Set the fetched email body to state
-      } else {
-        setDraftEmail("No Draft Email Found.");
-      }
-    } catch (err) {
-      setDraftError("Failed to fetch draft email");
-      console.error("Draft Email Error:", err);
-    } finally {
-      setDraftLoading(false);
-    }
-  };
-
-  // Generate email with LLM
-  const handleGenerateEmail = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await axios.post("your-generate-email-api-endpoint", generatePayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setResponseData(response.data);
-      console.log("Generated Email Response:", response.data);
-    } catch (err) {
-      setError("Failed to generate email");
-      console.error("Generate Email Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      {/* Left Section */}
-      <div className={styles.leftSection}>
-        <div className={styles.sectionWindow}>
-          <h2>Claim Summary</h2>
-          <p>Details about the claim go here.</p>
-        </div>
-        <div className={styles.sectionWindow}>
-          <h2>Recommendations</h2>
-          <p>Suggestions based on the claim details go here.</p>
-        </div>
-      </div>
-
-      {/* Right Section */}
-      <div className={styles.rightSection}>
-        <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
-          <h2>Draft Email</h2>
-          {draftLoading ? (
-            <p>Loading draft email...</p>
-          ) : draftError ? (
-            <p className={styles.errorText}>{draftError}</p>
-          ) : (
-            <p>{draftEmail}</p>
-          )}
-          <button
-            className={styles.fetchButton}
-            onClick={handleFetchDraftEmail}
-            disabled={draftLoading}
-          >
-            {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
-          </button>
-        </div>
-
-        <div
-          className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
-        >
-          <h2>LLM Response</h2>
-          <button
-            className={styles.generateButton}
-            onClick={handleGenerateEmail}
-            disabled={loading}
-          >
-            {loading ? "Generating Email..." : "Generate Email"}
-          </button>
-          {error && <p className={styles.errorText}>{error}</p>}
-          {responseData ? (
-            <div className={styles.successText}>
-              <p>Response:</p>
-              <pre>{JSON.stringify(responseData, null, 2)}</pre> {/* Pretty print JSON */}
-            </div>
-          ) : (
-            <p>No email generated yet.</p>
-          )}
-        </div>
-        <button className={styles.submitButton} disabled={!responseData}>Submit</button>
-      </div>
-    </div>
-  );
-};
-
-export default GenerateEmail;
+ERROR
+Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32839:13)
+    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33615:11)
+    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38037:32)
+    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38681:7)
+    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40133:18)
+    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25091:18)
+    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25135:20)
+    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25192:35)
+    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45090:11)
+    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44338:16)
+ERROR
+Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32839:13)
+    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33615:11)
+    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38037:32)
+    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38681:7)
+    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40133:18)
+    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25091:18)
+    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25135:20)
+    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25192:35)
+    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45090:11)
+    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44338:16)
+ERROR
+Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32839:13)
+    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33615:11)
+    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38037:32)
+    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38681:7)
+    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40133:18)
+    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45068:18)
+    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44338:16)
+    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44261:9)
+    at renderRootSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44234:11)
+    at recoverFromConcurrentError (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43726:24)
