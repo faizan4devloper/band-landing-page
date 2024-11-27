@@ -1,12 +1,71 @@
-Output: Take 'body' from the output and take the "DETAILED_SUMMARY" for the right side (recommendation)
-{
-    "verifyclaimactdata": {
-        "statusCode": 200,
-        "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Access-Control-Allow-Methods": "*"
+const handleVerify = async (recNum) => {
+  setIsLoading(true);
+  try {
+    const payload = {
+      tasktype: "VERIFY_CLAIM",
+      claimid: recNum,
+      PSID: "PS391481", // Using recNum from the first row as an example
+    };
+
+    const response = await axios.post("dummy", payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Parse the 'body' from the response data
+    const body = JSON.parse(response.data.verifyclaimactdata.body);
+
+    // Extract SUMMARY_DETAILS and DETAILED_SUMMARY
+    const summaryDetails = body.SUMMARY_DETAILS;
+    const detailedSummary = summaryDetails.DETAILED_SUMMARY;
+
+    // Extracting other summary details if needed
+    const briefSummary = summaryDetails.CLAIM_FORM_BRIEF_SUMMARY;
+    const claimType = summaryDetails.CLAIM_FORM_TYPE;
+    const claimStatus = summaryDetails.CLAIM_STATUS;
+
+    // Navigate to Verify page and pass summary and recommendation (detailed summary)
+    navigate("/verify", {
+      state: {
+        summary: {
+          briefSummary,
+          claimType,
+          claimStatus,
         },
-        "body": "{\n    \"SUMMARY_DETAILS\": {\n        \"CLAIM_FORM_BRIEF_SUMMARY\": \"The claimant, L C K @L C L, was diagnosed with acute myocardial infarction on 02/01/2022 and underwent emergency angioplasty treatment. The claim is for a critical illness of heart attack.\",\n        \"DETAILED_SUMMARY\": \"The claim form details the claimant's diagnosis of acute myocardial infarction, which is covered under the product sheet's 'Heart Attack / Cardiomyopathy / Pericardial Disease / Cardiac Arrhythmia' benefit. The clinical evidence provided, including ECG, cardiac biomarker tests, and details of the emergency angioplasty treatment, supports the diagnosis. As the claim meets the policy coverage criteria, the claim should be approved.\",\n        \"CLAIM_FORM_TYPE\": \"HEART\",\n        \"CLAIM_STATUS\": \"APPROVED\"\n    }\n}"
-    }
-}
+        recommendation: detailedSummary,
+      },
+    });
+  } catch (error) {
+    setError("Failed to fetch data.");
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
+
+import { useLocation } from "react-router-dom";
+
+const Verify = () => {
+  const location = useLocation();
+  const { summary, recommendation } = location.state;
+
+  return (
+    <div>
+      {/* Left side: Summary */}
+      <div>
+        <h3>Claim Summary</h3>
+        <p><strong>Brief Summary:</strong> {summary.briefSummary}</p>
+        <p><strong>Claim Type:</strong> {summary.claimType}</p>
+        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
+      </div>
+
+      {/* Right side: Recommendations */}
+      <div>
+        <h3>Detailed Summary</h3>
+        <p>{recommendation}</p>
+      </div>
+    </div>
+  );
+};
