@@ -1,36 +1,17 @@
-ERROR
-Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32808:13)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33584:11)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:37999:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38650:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40102:18)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25060:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25104:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25161:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45059:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44307:16)
-ERROR
-Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32808:13)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33584:11)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:37999:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38650:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40102:18)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25060:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25104:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:25161:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45059:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44307:16)
-ERROR
-Objects are not valid as a React child (found: object with keys {claimid, emailbody}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:32808:13)
-    at reconcileChildFibers (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:33584:11)
-    at reconcileChildren (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:37999:32)
-    at updateHostComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38650:7)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:40102:18)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:45037:18)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44307:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44230:9)
-    at renderRootSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:44203:11)
-    at recoverFromConcurrentError (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43695:24)
+<div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
+        <button
+          className={styles.fetchButton}
+          onClick={handleFetchDraftEmail}
+          disabled={draftLoading}
+        >
+          {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
+        </button>
+
+        {/* Display the draft email content */}
+        {draftEmail && (
+          <pre className={styles.emailContent}>{draftEmail}</pre>
+        )}
+
+        {/* Display error message if any */}
+        {draftError && <p className={styles.errorText}>{draftError}</p>}
+      </div>
