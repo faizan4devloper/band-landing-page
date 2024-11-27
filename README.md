@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import axios from "axios";
 import styles from "./GenerateEmail.module.css";
@@ -34,10 +33,8 @@ const GenerateEmail = () => {
         headers: { "Content-Type": "application/json" },
       });
 
-      console.log("Draft API:", response.data);
-
       setDraftEmail(response.data.emailbody || "Draft email content not available.");
-      console.log("Draft Email:", response.data);
+      console.log("Draft Email Response:", response.data);
     } catch (err) {
       setDraftError("Failed to fetch draft email");
       console.error("Draft Email Error:", err);
@@ -82,6 +79,7 @@ const GenerateEmail = () => {
 
       {/* Right Section */}
       <div className={styles.rightSection}>
+        {/* Draft Email Section */}
         <div className={`${styles.sectionWindow} ${styles.draftEmail}`}>
           <button
             className={styles.fetchButton}
@@ -90,20 +88,16 @@ const GenerateEmail = () => {
           >
             {draftLoading ? "Fetching Draft..." : "Fetch Draft Email"}
           </button>
-          {/* Display the fetched draft email content */}
-          {draftLoading ? (
-            <p>Loading draft email...</p>
-          ) : draftError ? (
-            <p className={styles.error}>{draftError}</p>
-          ) : (
-            draftEmail && (
-              <div className={styles.emailContent}>
-                <h3>Draft Email:</h3>
-                <pre>{draftEmail}</pre>
-              </div>
-            )
+          {draftError && <p className={styles.errorText}>{draftError}</p>}
+          {draftEmail && (
+            <div className={styles.emailContent}>
+              <h3>Draft Email:</h3>
+              <pre>{draftEmail}</pre>
+            </div>
           )}
         </div>
+
+        {/* Generate LLM Response Section */}
         <div
           className={`${styles.sectionWindow} ${responseData ? styles.expanded : ""}`}
         >
@@ -113,8 +107,15 @@ const GenerateEmail = () => {
             onClick={handleGenerateEmail}
             disabled={loading}
           >
-            {loading ? "LLM Email..." : "LLM Email"}
+            {loading ? "Generating..." : "Generate Email"}
           </button>
+          {error && <p className={styles.errorText}>{error}</p>}
+          {responseData && (
+            <div className={styles.emailContent}>
+              <h3>Generated Email:</h3>
+              <pre>{responseData.generatedEmail}</pre>
+            </div>
+          )}
         </div>
         <button className={styles.submitButton}>Submit</button>
       </div>
