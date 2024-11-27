@@ -1,168 +1,108 @@
-const [previewUrl, setPreviewUrl] = useState(null); // State for static preview URL
-
-const handleUpload = async () => {
-  if (!file) {
-    setMessage("Please select a file to upload.");
-    return;
-  }
-  setUploading(true);
-  try {
-    const sanitizedFileName = file.name.replace(/\s+/g, "_");
-    const response = await axios.post(
-      "dummy",
-      {
-        payload: { filename: sanitizedFileName, filetype: "CL" },
-      }
-    );
-
-    const { presignedUrl, key, recNum } = response.data;
-
-    await axios.put(presignedUrl, file, {
-      headers: { "Content-Type": file.type },
-    });
-
-    setRows((prevRows) => [
-      ...prevRows,
-      {
-        recNum,
-        policyid: "",
-        type: "",
-        summary: "",
-        previewLink: presignedUrl,
-        status: "Pending",
-      },
-    ]);
-
-    setPreviewUrl(presignedUrl); // Set the uploaded document URL for preview
-    setIsUploaded(true);
-  } catch (error) {
-    setMessage("Upload failed: " + error.message);
-  } finally {
-    setUploading(false);
-  }
-};
-
-return (
-  <div className={styles.container}>
-    <div className={styles.sidebar}>
-      <Sidebar
-        onFileChange={handleFileChange}
-        onUpload={handleUpload}
-        uploading={uploading}
-      />
-    </div>
-    <div className={styles.mainContent}>
-      {isUploaded ? (
-        <MainContent
-          message={message}
-          rows={rows}
-          setRows={setRows}
-          previewUrl={previewUrl} // Pass preview URL as prop
-        />
-      ) : (
-        <p className={styles.infoMessage}>
-          Please upload a document to view the data.
-        </p>
-      )}
-    </div>
-  </div>
-);
+import React, { useRef, useState } from "react";
+import styles from "./Sidebar.module.css";
+import { useNavigate } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 
 
 
+const Sidebar = ({ onFileChange, onUpload, uploading }) => {
+  const fileInputRef = useRef(null);
+  const [fileName, setFileName] = useState("");
+    const navigate = useNavigate();
 
 
-
-
-
-
-const MainContent = ({ message, rows, setRows, previewUrl }) => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
-
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: recNum,
-      };
-
-      const response = await axios.post(`DUMMY`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      setData(response.data.allclaimactdata);
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoading(false);
+  // Trigger the file input when the container is clicked
+  const handleContainerClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
-
-  const renderReadableContent = (data) => {
-    if (!data) return <p>No data available</p>;
-    const parsedData = JSON.parse(data);
-
-    return (
-      <div className={styles.readableContent}>
-        <h4>Claim Form Details</h4>
-        <p><strong>Type:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE}</p>
-        {/* More fields here */}
-      </div>
-    );
+  
+  const handleBackClick = () => {
+    navigate("/datatable");
   };
 
+
+  // Handle file selection and store the file name
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      
+      
+      setFileName(sanitizedFileName);
+      
+      const renamedFile = new File([file], sanitizedFileName, { type:file.type });
+      onFileChange({ target: { files: [renamedFile]}});
+    }
+    onFileChange(event); // Pass the file to the parent component
+  };
+  
+  
+//   const handleFileChange = (event) => {
+//   const file = event.target.files[0];
+//   if (file) {
+//     // Extract the file extension
+//     const fileExtension = file.name.split('.').pop();
+//     // Sanitize the file name and append the extension
+//     const sanitizedFileName = file.name
+//       .replace(/\s+/g, '_')
+//       .replace(/\.[^/.]+$/, '') + `.${fileExtension}`;
+
+//     setFileName(sanitizedFileName);
+
+//     const renamedFile = new File([file], sanitizedFileName, { type: file.type });
+//     onFileChange({ target: { files: [renamedFile] } });
+//   }
+//   onFileChange(event); // Pass the file to the parent component
+// };
+
   return (
-    <div className={styles.mainContent}>
-      {/* Left: Document Preview */}
-      <div className={styles.previewSection}>
-        <h3>Document Preview</h3>
-        {previewUrl ? (
-          <iframe
-            src={previewUrl}
-            title="Document Preview"
-            className={styles.documentPreview}
-          ></iframe>
-        ) : (
-          <p>No document available</p>
-        )}
+    <div className={styles.sidebar}>
+      <button className={styles.backButton} onClick={handleBackClick}>
+        <FontAwesomeIcon icon={faArrowLeft} />
+      </button>
+      <h2 className={styles.heading}>Manage Claim</h2>
+
+      {/* File Input Container */}
+      <div
+        className={styles.fileInputContainer}
+        onClick={handleContainerClick}
+      >
+        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className={styles.fileInput}
+          style={{ display: "none" }}
+        />
       </div>
 
-      {/* Right: Extracted Content */}
-      <div className={styles.extractContentSection}>
-        <h3>Extracted Content</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          renderReadableContent(data?.total_extracted_data)
-        )}
-        <button
-          className={styles.reloadButton}
-          onClick={() => handleReload("CL928697")}
-          disabled={loading}
-        >
-          <FontAwesomeIcon
-            icon={faSync}
-            spin={loading}
-            className={styles.icon}
-          />
-          {!loading && " Reload"}
-        </button>
-      </div>
+      {/* File Name Display */}
+      {fileName && (
+        <div className={styles.fileNameContainer}>
+          <p className={styles.fileName}>{fileName}</p>
+        </div>
+      )}
 
-      {/* Centered Verify Button */}
-      <div className={styles.verifyButtonContainer}>
-        <button
-          className={styles.verifyButton}
-          onClick={() => console.log("Verify action triggered")}
-        >
-          Verify
-        </button>
-      </div>
+      {/* Upload Button */}
+      <button
+        className={styles.uploadButton}
+        onClick={onUpload}
+        disabled={uploading}
+      >
+        {uploading ? (
+          <div className={styles.loader}></div>
+        ) : (
+          "Upload"
+        )}
+      </button>
     </div>
   );
 };
 
-export default MainContent;
+export default Sidebar;
