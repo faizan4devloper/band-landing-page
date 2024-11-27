@@ -1,104 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
-import styles from "./NewClaimPage.module.css";
-
-const NewClaimPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  const [uploading, setUploading] = useState(false);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [previewURL, setPreviewURL] = useState(null); // Store the local preview URL
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setMessage("");
-      const fileURL = URL.createObjectURL(selectedFile); // Generate a local preview URL
-      setPreviewURL(fileURL); // Set the preview URL
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-      const response = await axios.post("dummy", {
-        payload: { filename: sanitizedFileName, filetype: "CL" },
-      });
-
-      const { presignedUrl, key, recNum } = response.data;
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        tasktype: "SEND_TO_QUEUE",
-      };
-
-      await axios.post(
-        "https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest",
-        sqsPayload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <Sidebar
-          onFileChange={handleFileChange}
-          onUpload={handleUpload}
-          uploading={uploading}
-        />
-      </div>
-      <div className={styles.mainContent}>
-        {isUploaded || previewURL ? (
-          <MainContent previewURL={previewURL} />
-        ) : (
-          <p className={styles.infoMessage}>
-            Please upload a document to view the data.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default NewClaimPage;
-
-
-
-
-
-import React, { useState } from "react";
-import axios from "axios";
 import Modal from "react-modal";
 import styles from "./MainContent.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 
-const MainContent = ({ message, rows, setRows, previewURL }) => {
+const MainContent = ({ message, rows, setRows }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null); // To store fetched data
+  const [uploadedFile, setUploadedFile] = useState(null); // To store local preview URL
 
   const handleReload = async (recNum) => {
     setLoading(true);
@@ -119,6 +31,15 @@ const MainContent = ({ message, rows, setRows, previewURL }) => {
       console.error("Failed to fetch data for RecNum:", recNum, error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const fileURL = URL.createObjectURL(file); // Create a local object URL for preview
+      setUploadedFile(fileURL);
+      console.log("Uploaded file preview ready:", fileURL);
     }
   };
 
@@ -186,9 +107,15 @@ const MainContent = ({ message, rows, setRows, previewURL }) => {
       {/* Left: Document Preview */}
       <div className={styles.previewSection}>
         <h3>Document Preview</h3>
-        {previewURL ? (
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={handleUpload}
+          className={styles.uploadInput}
+        />
+        {uploadedFile ? (
           <iframe
-            src={previewURL}
+            src={uploadedFile}
             title="PDF Preview"
             className={styles.previewIframe}
           ></iframe>
@@ -261,4 +188,3 @@ const MainContent = ({ message, rows, setRows, previewURL }) => {
 };
 
 export default MainContent;
-
