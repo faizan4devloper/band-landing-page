@@ -1,59 +1,30 @@
+const handleVerify = () => {
+  const extractedData = JSON.parse(data?.total_extracted_data || "{}");
+  const detailedSummary = extractedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY;
 
-import React, { useState } from "react";
-import axios from "axios";
+  navigate("/verify", { state: { detailedSummary } });
+};
 
-const GenerateEmail = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [responseData, setResponseData] = useState(null);
 
-  const handleGenerateEmail = async () => {
-    // Define the payload to be sent
-    const payload = {
-      claimid: "CL123456",
-      recnumber: "PS391481",
-      tasktype: "GENERATE_EMAIL"
-    };
 
-    // Start the loading state
-    setLoading(true);
-    setError(null);
+import React from "react";
+import { useLocation } from "react-router-dom";
+import styles from "./Verify.module.css";
 
-    try {
-      // Make the POST request with the payload
-      const response = await axios.post("dummy", payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      
-      console.log("Email:", response.data)
-
-      // Handle the response data
-      setResponseData(response.data);
-      console.log("Response Data:", response.data);
-    } catch (err) {
-      // Handle error
-      setError("Failed to generate email");
-      console.error("Error:", err);
-    } finally {
-      // Stop the loading state
-      setLoading(false);
-    }
-  };
+const Verify = () => {
+  const location = useLocation();
+  const { detailedSummary } = location.state || {};
 
   return (
-    <div>
-      <button onClick={handleGenerateEmail} disabled={loading}>
-        {loading ? "Generating Email..." : "Generate Email"}
-      </button>
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {responseData && <p>Email Generated Successfully!</p>}
+    <div className={styles.verifyContainer}>
+      <h3>Claim Form Detailed Summary</h3>
+      {detailedSummary ? (
+        <p>{detailedSummary}</p>
+      ) : (
+        <p>No detailed summary available.</p>
+      )}
     </div>
   );
 };
 
-export default GenerateEmail;
-
-
+export default Verify;
