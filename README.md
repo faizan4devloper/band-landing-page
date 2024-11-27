@@ -1,132 +1,91 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import styles from "./MainContent.module.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
-
-const MainContent = ({ rows }) => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null); // To store fetched data
-  const navigate = useNavigate();
-
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: recNum,
-      };
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-      
-      console.log("Api", response.data);
-      setData(response.data.allclaimactdata); // Store fetched data
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerify = () => {
-    const claimSummary = data?.CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY;
-
-    // Pass the claim summary to Verify page through state
-    navigate("/verify", {
-      state: {
-        claimSummary, // Pass the detailed summary here
-      },
-    });
-  };
-
-  const renderReadableContent = (data) => {
-    if (!data) return <p>No data available</p>;
-
-    const parsedData = JSON.parse(data);
-    return (
-      <div>
-        <h4>Claim Form Details</h4>
-        <p><strong>Type:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE}</p>
-        <p><strong>Claim Detailed Summary:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY}</p>
-      </div>
-    );
-  };
-
-  return (
-    <div className={styles.mainContent}>
-      <div className={styles.extractContentSection}>
-        <h3>Extracted Content</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          renderReadableContent(data?.total_extracted_data)
-        )}
-        
-        {rows.map((row, index) => (
-          <div key={index}>
-            <button
-              className={styles.reloadButton}
-              onClick={() => handleReload(row.recNum)} // Use dynamic recNum here
-              disabled={loading}
-            >
-              <FontAwesomeIcon
-                icon={faSync}
-                spin={loading}
-                className={styles.icon}
-              />
-              {!loading && " Reload"}
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className={styles.verifyButtonContainer}>
-        <button className={styles.verifyButton} onClick={handleVerify}>
-          Verify
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default MainContent;
-
-
-
-
 
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { HashLoader } from "react-spinners";
+import axios from "axios";
 import styles from "./Verify.module.css";
+import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
+
 
 const Verify = () => {
   const location = useLocation();
 
+  // Define state variables for storing the data, loading state, and error
   const [summary, setSummary] = useState(null);
   const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+      const navigate = useNavigate();
 
+
+const HandleEmail = ()=>{
+    
+ navigate("/generate-email")
+}
+
+  // Use effect to fetch data when component mounts
   useEffect(() => {
-    if (location.state) {
-      // Directly receive data from state
-      const { claimSummary } = location.state;
-      setSummary(claimSummary); // Setting claim summary as summary
-      setRecommendation(claimSummary); // You can also customize this as per your data
-      setLoading(false);
+    const fetchData = async (recNum) => {
+      try {
+        // Prepare your payload
+        const payload = {
+         tasktype: "VERIFY_CLAIM",
+         claimid: recNum,
+         PSID: "PS391481" 
+        };
+
+        // Prepare custom headers (if needed)
+        const headers = {
+          "Content-Type": "application/json", // Adjust content type based on your needs
+
+        };
+
+        // Example API call with payload and headers
+        const response = await axios.post(
+          "dummy", // Replace with your actual endpoint
+          payload,
+          { headers } // Pass headers as part of the request
+        );
+        
+        console.log('Summary:', response.data)
+
+      // Parse the response body (since it's a JSON string)
+        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
+
+        // Extract the summary details and recommendation
+        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
+
+        // Set the state variables with parsed data
+        setSummary({
+          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
+          claimType: CLAIM_FORM_TYPE,
+          claimStatus: CLAIM_STATUS,
+        });
+        setRecommendation(DETAILED_SUMMARY);
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Check if location.state exists, otherwise fetch the data
+    if (!location.state) {
+      fetchData();
     } else {
-      setError("No data available.");
+      const { summary, recommendation } = location.state;
+      setSummary(summary);
+      setRecommendation(recommendation);
       setLoading(false);
     }
   }, [location.state]);
 
-  if (loading) {
+  // Show loading or error message while fetching data
+ if (loading) {
     return (
       <div className={styles.spinnerContainer}>
-        <HashLoader color="#0f5fdc" size={40} />
+          <HashLoader color="#0f5fdc" size={40} />
       </div>
     );
   }
@@ -135,12 +94,18 @@ const Verify = () => {
     return <p>{error}</p>;
   }
 
+  // Check if summary or recommendation is not available and handle it
+  if (!summary || !recommendation) {
+    return <p>No data available.</p>;
+  }
+
   return (
     <div className={styles.verifyContainer}>
-      {/* Left side: Claim Summary */}
+      {/* Left side: Summary */}
       <div className={styles.leftPanel}>
         <h3>Claim Summary</h3>
-        <p><strong>Claim Detailed Summary:</strong> {summary}</p>
+        <p><strong>Claim Type:</strong> {summary.claimType}</p>
+        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
       </div>
 
       {/* Right side: Recommendations */}
@@ -148,9 +113,11 @@ const Verify = () => {
         <h3>Detailed Summary</h3>
         <p>{recommendation}</p>
       </div>
-
-      <div className={styles.generateEmailContainer}>
-        <button className={styles.generateEmailButton}>Generate Email</button>
+      
+      <div className={styles.genrateEmailContainer}>
+          <button className={styles.generateEmailButton} onClick={HandleEmail}>
+          Generate Email
+          </button>
       </div>
     </div>
   );
