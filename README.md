@@ -1,3 +1,48 @@
+.verify-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+}
+
+.left-panel, .right-panel {
+  width: 48%; /* Each panel takes up 48% of the screen */
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.left-panel h3, .right-panel h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.left-panel p, .right-panel p {
+  font-size: 16px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.generate-email-container {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.generate-email-button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.generate-email-button:hover {
+  background-color: #0056b3;
+}
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
