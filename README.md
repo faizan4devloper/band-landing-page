@@ -1,53 +1,89 @@
-import React, { useState } from "react";
-import styles from "./Verify.module.css";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Verify = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
-  // Handle the "Generate Email" button click
-  const handleGenerateEmail = () => {
-    setIsLoading(true);
-    // Logic to generate email goes here
-    setTimeout(() => {
-      alert("Email Generated Successfully!");
-      setIsLoading(false);
-    }, 2000);
-  };
+  // Define state variables for storing the data, loading state, and error
+  const [summary, setSummary] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Use effect to fetch data when component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Example API call, you need to replace it with the actual API endpoint
+        const response = await axios.post("/api/verify-claim", {
+          claimId: "12345", // Replace with the actual claim ID or use location.state
+        });
+
+        // Parse the body response
+        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
+
+        // Extract the summary details and recommendation
+        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
+
+        // Set the state variables
+        setSummary({
+          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
+          claimType: CLAIM_FORM_TYPE,
+          claimStatus: CLAIM_STATUS,
+        });
+        setRecommendation(DETAILED_SUMMARY);
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Check if location.state exists, otherwise fetch the data
+    if (!location.state) {
+      fetchData();
+    } else {
+      const { summary, recommendation } = location.state;
+      setSummary(summary);
+      setRecommendation(recommendation);
+      setLoading(false);
+    }
+  }, [location.state]);
+
+  // Show loading or error message while fetching data
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  // Check if summary or recommendation is not available and handle it
+  if (!summary || !recommendation) {
+    return <p>No data available.</p>;
+  }
 
   return (
-    <div className={styles.mainContent}>
-      {/* Flex container for two beautiful windows */}
-      <div className={styles.windowContainer}>
-        {/* Left window for Claim Summary */}
-        <div className={styles.windowLeft}>
-          <h3>Claim Summary</h3>
-          <p>This is the claim summary content.</p>
-          {/* You can add dynamic content here */}
-        </div>
-
-        {/* Right window for Recommendations */}
-        <div className={styles.windowRight}>
-          <h3>Recommendations</h3>
-          <p>This is the recommendations content.</p>
-          {/* You can add dynamic content here */}
-        </div>
+    <div>
+      {/* Left side: Summary */}
+      <div>
+        <h3>Claim Summary</h3>
+        <p><strong>Brief Summary:</strong> {summary.briefSummary}</p>
+        <p><strong>Claim Type:</strong> {summary.claimType}</p>
+        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
       </div>
 
-      {/* Generate Email Button */}
-      <div className={styles.buttonContainer}>
-        <button
-          className={styles.generateButton}
-          onClick={handleGenerateEmail}
-          disabled={isLoading}
-        >
-          {isLoading ? "Generating..." : "Generate Email"}
-        </button>
+      {/* Right side: Recommendations */}
+      <div>
+        <h3>Detailed Summary</h3>
+        <p>{recommendation}</p>
       </div>
     </div>
   );
 };
 
 export default Verify;
-
-
-
