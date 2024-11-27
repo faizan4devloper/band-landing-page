@@ -1,164 +1,115 @@
-ERROR in ./src/components/ManageClaims/MainContent.js 9:0-49
-Module not found: Error: Can't resolve './react-router-dom' in '/home/ec2-user/environment/Claim-Assist/web-app/src/components/ManageClaims'
-
 import React, { useState } from "react";
-import axios from "axios";
-import Modal from "react-modal";
 import styles from "./MainContent.module.css";
-import { useNavigate } from "./react-router-dom";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
+const MainContent = () => {
+  const [isLoading, setIsLoading] = useState(false);
 
-
-const MainContent = ({ message, rows, setRows, staticPreviewUrl }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-    const navigate = useNavigate();
-
-  const [modalContent, setModalContent] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null); // To store fetched data
-
- const handleVerify = () =>{
-    navigate("/verify");
-  }
-
-
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: recNum,
-      };
-
-      const response = await axios.post(`dummy`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-      
-      console.log("Api", response.data)
-
-      setData(response.data.allclaimactdata); // Store fetched data
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoading(false);
-    }
+  // Handle the "Generate Email" button click
+  const handleGenerateEmail = () => {
+    setIsLoading(true);
+    // Logic to generate email goes here
+    setTimeout(() => {
+      alert("Email Generated Successfully!");
+      setIsLoading(false);
+    }, 2000);
   };
 
-  const renderReadableContent = (data) => {
-    if (!data) return <p>No data available</p>;
+  return (
+    <div className={styles.mainContent}>
+      {/* Flex container for two beautiful windows */}
+      <div className={styles.windowContainer}>
+        {/* Left window for Claim Summary */}
+        <div className={styles.windowLeft}>
+          <h3>Claim Summary</h3>
+          <p>This is the claim summary content.</p>
+          {/* You can add dynamic content here */}
+        </div>
 
-    const parsedData = JSON.parse(data);
-
-    return (
-      <div className={styles.readableContent}>
-        <h4>Claim Form Details</h4>
-        <p><strong>Type:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE}</p>
-
-        <h4>Clinical Abstract Application</h4>
-        <p><strong>Name of Patient:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NAME_OF_PATIENT}</p>
-        <p><strong>NRIC/FIN/BC:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NRIC_FIN_BC}</p>
-        <p><strong>Address:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.ADDRESS}</p>
-        <p><strong>Date:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.DATE}</p>
-
-        <h4>Claimant Statement</h4>
-        <h5>Policy Details</h5>
-        <p><strong>Policy Numbers:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.POLICY_NUMBERS}</p>
-        <p><strong>Type of Claim:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.TYPE_OF_CLAIM}</p>
-
-        <h5>Details of Life Assured</h5>
-        <p><strong>Name:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.NAME_OF_LIFE_ASSURED}</p>
-        <p><strong>Gender:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.GENDER}</p>
-        <p><strong>Marital Status:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.MARITAL_STATUS}</p>
-      </div>
-    );
-  };
-
-return (
-  <div className={styles.mainContent}>
-    {/* Left: Document Preview */}
-    
- <div className={styles.previewSection}>
-        <h3>Document Preview</h3>
-        {staticPreviewUrl ? (
-          <iframe
-            src={staticPreviewUrl}
-            title="Static Document Preview"
-            className={styles.documentPreviewIframe}
-          ></iframe>
-        ) : (
-          <p>No document available for preview.</p>
-        )}
+        {/* Right window for Recommendations */}
+        <div className={styles.windowRight}>
+          <h3>Recommendations</h3>
+          <p>This is the recommendations content.</p>
+          {/* You can add dynamic content here */}
+        </div>
       </div>
 
-    {/* Right: Extracted Content */}
-    <div className={styles.extractContentSection}>
-      <h3>Extracted Content</h3>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        renderReadableContent(data?.total_extracted_data)
-      )}
-      
-     
-{rows.map((row, index) => (
-          <div key={index}>
-            <button
-              className={styles.reloadButton}
-              onClick={() => handleReload(row.recNum)} // Use dynamic recNum here
-              disabled={loading}
-            >
-              <FontAwesomeIcon
-                icon={faSync}
-                spin={loading} // Spin when loading is true
-                className={styles.icon}
-              />
-              {!loading && " Reload"} {/* Show text only when not loading */}
-            </button>
-          </div>
-        ))}
-</div>
-
-    {/* Centered Verify Button */}
-    <div className={styles.verifyButtonContainer}>
-      <button
-        className={styles.verifyButton}
-        onClick={handleVerify}
-      >
-        Verify
-      </button>
-    </div>
-
-    {/* Modal for Document Preview */}
-    <Modal
-      isOpen={isModalOpen}
-      onRequestClose={() => setModalContent(null)}
-      className={styles.modal}
-      overlayClassName={styles.modalOverlay}
-      ariaHideApp={false}
-    >
-      <div className={styles.modalContent}>
+      {/* Generate Email Button */}
+      <div className={styles.buttonContainer}>
         <button
-          className={styles.closeButton}
-          onClick={() => setModalContent(null)}
+          className={styles.generateButton}
+          onClick={handleGenerateEmail}
+          disabled={isLoading}
         >
-          Close
+          {isLoading ? "Generating..." : "Generate Email"}
         </button>
-        {modalContent ? (
-          <iframe
-            src={modalContent}
-            title="Preview"
-            className={styles.modalIframe}
-          ></iframe>
-        ) : (
-          <p>No preview available</p>
-        )}
       </div>
-    </Modal>
-  </div>
-);
+    </div>
+  );
 };
 
 export default MainContent;
 
+
+
+
+/* MainContent.module.css */
+.mainContent {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fc; /* Background color for the whole section */
+}
+
+.windowContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.windowLeft,
+.windowRight {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 48%;
+}
+
+.windowLeft h3,
+.windowRight h3 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.windowLeft p,
+.windowRight p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.generateButton {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px 25px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.generateButton:hover {
+  background-color: #45a049;
+}
+
+.generateButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
