@@ -1,98 +1,132 @@
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 16px; /* Improved font size for readability */
-  color: #333; /* Text color */
-  background-color: #ffffff; /* White background for clean design */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for table */
-}
 
-.table th,
-.table td {
-  padding: 15px; /* Increased padding for better spacing */
-  border: 1px solid #ddd; /* Subtle border */
-  text-align: left; /* Align text to the left for consistency */
-}
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import styles from "./Verify.module.css";
+import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 
-.table th {
-  background: linear-gradient(135deg, #4a90e2, #357ae8); /* Gradient background */
-  color: #fff; /* White text for contrast */
-  font-weight: 600; /* Bolder text */
-  text-transform: uppercase; /* Uppercase headers for distinction */
-  font-size: 14px; /* Slightly smaller font for headers */
-}
 
-.table tr:nth-child(even) {
-  background-color: #f8f9fa; /* Light grey for alternate rows */
-}
+const Verify = () => {
+  const location = useLocation();
+  
 
-.table tr:hover {
-  background-color: #e8f0fe; /* Subtle blue hover effect */
-}
+  // Define state variables for storing the data, loading state, and error
+  const [summary, setSummary] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+      const navigate = useNavigate();
 
-.table td {
-  font-size: 15px; /* Slightly larger font for data cells */
-  line-height: 1.5; /* Improved line spacing for readability */
-}
 
-.reloadButton {
-  background: none;
-  border: none;
-  color: #357ae8;
-  cursor: pointer;
-  margin: 0;
-  padding: 6px;
-  font-size: 14px;
-  transition: color 0.3s ease;
-}
+const HandleEmail = () => {
+  navigate("/generate-email", {
+    state: {
+      summary,
+      recommendation,
+    },
+  });
+};
+  // Use effect to fetch data when component mounts
+  useEffect(() => {
+    const fetchData = async (recNum="CL1234567", psid="PS391481") => {
+      try {
+        // Prepare your payload
+        const payload = {
+         tasktype: "VERIFY_CLAIM",
+         claimid: recNum,
+        // CL1234567
+         psid: psid ,
+        };
 
-.reloadButton:hover {
-  color: #1d5dbf; /* Darker blue for hover state */
-}
+        // Prepare custom headers (if needed)
+        const headers = {
+          "Content-Type": "application/json", // Adjust content type based on your needs
 
-.previewButton {
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-  font-size: 14px; /* Consistent font size */
-}
+        };
 
-.previewButton:hover {
-  background-color: #357ae8; /* Darker blue hover effect */
-}
+        // Example API call with payload and headers
+        const response = await axios.post(
+          "https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", // Replace with your actual endpoint
+          payload,
+          { headers } // Pass headers as part of the request
+        );
+        
+        console.log('Summary:', response.data)
 
-/* Empty Table Message */
-.table-empty {
-  text-align: center;
-  color: #999;
-  font-size: 16px;
-  padding: 20px;
-}
+      // Parse the response body (since it's a JSON string)
+        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
 
-/* Loader Style */
-.loader {
-  font-style: italic;
-  color: #aaa;
-}
+        // Extract the summary details and recommendation
+        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
 
-/* Modal Close Button */
-.closeButton {
-  background-color: #ff4d4f;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  float: right;
-  font-size: 14px;
-}
+        // Set the state variables with parsed data
+        setSummary({
+          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
+          claimType: CLAIM_FORM_TYPE,
+          claimStatus: CLAIM_STATUS,
+        });
+        setRecommendation(DETAILED_SUMMARY);
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-.closeButton:hover {
-  background-color: #d9363e;
-}
+    // Check if location.state exists, otherwise fetch the data
+    if (!location.state) {
+      fetchData();
+    } else {
+      const { summary, recommendation } = location.state;
+      setSummary(summary);
+      setRecommendation(recommendation);
+      setLoading(false);
+    }
+  }, [location.state]);
+
+  // Show loading or error message while fetching data
+ if (loading) {
+    return (
+      <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  // Check if summary or recommendation is not available and handle it
+  if (!summary || !recommendation) {
+    return <p>No data available.</p>;
+  }
+
+  return (
+    <div className={styles.verifyContainer}>
+      {/* Left side: Summary */}
+      <div className={styles.leftPanel}>
+        <h3>Claim Summary</h3>
+        <p><strong>Brief Summary:</strong> {summary.briefSummary}</p>
+        <p><strong>Claim Type:</strong> {summary.claimType}</p>
+        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
+      </div>
+
+      {/* Right side: Recommendations */}
+      <div className={styles.rightPanel}>
+        <h3>Detailed Summary</h3>
+        <p>{recommendation}</p>
+      </div>
+      
+      <div className={styles.genrateEmailContainer}>
+          <button className={styles.generateEmailButton} onClick={HandleEmail}>
+          Generate Email
+          </button>
+      </div>
+    </div>
+  );
+};
+
+export default Verify;
