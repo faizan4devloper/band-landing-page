@@ -3,10 +3,14 @@ import axios from "axios";
 import styles from "./GenerateEmail.module.css"; // Import CSS Module
 
 const GenerateEmail = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loadingEmail, setLoadingEmail] = useState(false);
+  const [loadingLLM, setLoadingLLM] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(null);
+  const [errorLLM, setErrorLLM] = useState(null);
   const [parsedEmailBody, setParsedEmailBody] = useState("");
+  const [llmResponse, setLlmResponse] = useState("");
 
+  // Automatically fetch the email when the component mounts
   useEffect(() => {
     const fetchEmail = async () => {
       const payload = {
@@ -15,8 +19,8 @@ const GenerateEmail = () => {
         tasktype: "FETCH_EMAIL",
       };
 
-      setLoading(true);
-      setError(null);
+      setLoadingEmail(true);
+      setErrorEmail(null);
 
       try {
         const response = await axios.post("dummy", payload, {
@@ -26,21 +30,51 @@ const GenerateEmail = () => {
         // Safely parse response
         const emailBodyString = response.data?.emailbody?.emailbody;
         if (emailBodyString) {
-          const parsedBody = emailBodyString.trim();
-          setParsedEmailBody(parsedBody);
+          setParsedEmailBody(emailBodyString.trim());
         } else {
           throw new Error("Invalid email body format");
         }
       } catch (err) {
-        setError("Failed to fetch email");
+        setErrorEmail("Failed to fetch email");
         console.error("Error:", err);
       } finally {
-        setLoading(false);
+        setLoadingEmail(false);
       }
     };
 
     fetchEmail();
   }, []); // Runs only once on component mount
+
+  // Handle LLM Response generation
+  const handleGenerateLLMResponse = async () => {
+    const payload = {
+      claimid: "CL1234567",
+      recnumber: "PS391481",
+      tasktype: "FETCH_EMAIL",
+    };
+
+    setLoadingLLM(true);
+    setErrorLLM(null);
+
+    try {
+      const response = await axios.post("dummy", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      // Safely parse response
+      const llmResponseString = response.data?.emailbody?.emailbody;
+      if (llmResponseString) {
+        setLlmResponse(llmResponseString.trim());
+      } else {
+        throw new Error("Invalid LLM response format");
+      }
+    } catch (err) {
+      setErrorLLM("Failed to generate LLM response");
+      console.error("Error:", err);
+    } finally {
+      setLoadingLLM(false);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -57,8 +91,8 @@ const GenerateEmail = () => {
       <div className={styles.rightSection}>
         <div className={styles.sectionWindow}>
           <h2>Draft Email</h2>
-          {loading && <p>Loading email content...</p>}
-          {error && <p className={styles.errorText}>{error}</p>}
+          {loadingEmail && <p>Loading email content...</p>}
+          {errorEmail && <p className={styles.errorText}>{errorEmail}</p>}
           {parsedEmailBody && (
             <div className={styles.emailPreview}>
               <h3>Email Body:</h3>
@@ -68,7 +102,20 @@ const GenerateEmail = () => {
         </div>
         <div className={styles.sectionWindow}>
           <h2>LLM Response</h2>
-          <p>Generated response from the LLM goes here.</p>
+          <button
+            className={styles.generateButton}
+            onClick={handleGenerateLLMResponse}
+            disabled={loadingLLM}
+          >
+            {loadingLLM ? "Generating LLM Response..." : "Generate LLM Response"}
+          </button>
+          {errorLLM && <p className={styles.errorText}>{errorLLM}</p>}
+          {llmResponse && (
+            <div className={styles.emailPreview}>
+              <h3>LLM Response:</h3>
+              <pre className={styles.emailContent}>{llmResponse}</pre>
+            </div>
+          )}
         </div>
         <button className={styles.submitButton}>Submit</button>
       </div>
