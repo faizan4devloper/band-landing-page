@@ -1,161 +1,79 @@
-/* Main Container Styling */
-.container {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-}
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import styles from "./GenerateEmail.module.css"; // Import CSS Module
 
-/* Left and Right Section Styling */
-.leftSection,
-.rightSection {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid #d0d0d0;
-}
+const GenerateEmail = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [parsedEmailBody, setParsedEmailBody] = useState("");
 
-/* Individual Window Styling */
-.sectionWindow {
-  background: #ffffff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  padding: 20px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, height 0.3s ease;
-}
+  useEffect(() => {
+    const fetchEmail = async () => {
+      const payload = {
+        claimid: "CL1234567",
+        recnumber: "PS391481",
+        tasktype: "FETCH_EMAIL",
+      };
 
-.sectionWindow:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-}
+      setLoading(true);
+      setError(null);
 
-.sectionWindow h2 {
-  margin-bottom: 10px;
-  font-size: 1.4rem;
-  color: #333;
-}
+      try {
+        const response = await axios.post("dummy", payload, {
+          headers: { "Content-Type": "application/json" },
+        });
 
-.sectionWindow p {
-  color: #555;
-  font-size: 1rem;
-  line-height: 1.5;
-}
+        // Safely parse response
+        const emailBodyString = response.data?.emailbody?.emailbody;
+        if (emailBodyString) {
+          const parsedBody = emailBodyString.trim();
+          setParsedEmailBody(parsedBody);
+        } else {
+          throw new Error("Invalid email body format");
+        }
+      } catch (err) {
+        setError("Failed to fetch email");
+        console.error("Error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-/* Draft Email Section */
-.draftEmail {
-  min-height: 250px; /* Increased height */
-}
+    fetchEmail();
+  }, []); // Runs only once on component mount
 
-/* Expanded Section */
-.expanded {
-  min-height: 200px;
-  background-color: #f3f3f3;
-  transition: height 0.3s ease;
-}
+  return (
+    <div className={styles.container}>
+      <div className={styles.leftSection}>
+        <div className={styles.sectionWindow}>
+          <h2>Claim Summary</h2>
+          <p>Details about the claim go here.</p>
+        </div>
+        <div className={styles.sectionWindow}>
+          <h2>Recommendations</h2>
+          <p>Suggestions based on the claim details go here.</p>
+        </div>
+      </div>
+      <div className={styles.rightSection}>
+        <div className={styles.sectionWindow}>
+          <h2>Draft Email</h2>
+          {loading && <p>Loading email content...</p>}
+          {error && <p className={styles.errorText}>{error}</p>}
+          {parsedEmailBody && (
+            <div className={styles.emailPreview}>
+              <h3>Email Body:</h3>
+              <pre className={styles.emailContent}>{parsedEmailBody}</pre>
+            </div>
+          )}
+        </div>
+        <div className={styles.sectionWindow}>
+          <h2>LLM Response</h2>
+          <p>Generated response from the LLM goes here.</p>
+        </div>
+        <button className={styles.submitButton}>Submit</button>
+      </div>
+    </div>
+  );
+};
 
-/* Email Content Styling */
-.emailContent {
-  white-space: pre-wrap; /* Preserve line breaks and spacing */
-  background-color: #f8f9fa;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  padding: 15px;
-  margin-top: 15px;
-  color: #333;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  overflow-y: auto; /* Add scroll for long content */
-  max-height: 400px; /* Limit height for large content */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.emailContent::-webkit-scrollbar {
-  width: 8px;
-}
-
-.emailContent::-webkit-scrollbar-thumb {
-  background: #b0c4de;
-  border-radius: 4px;
-}
-
-.emailContent::-webkit-scrollbar-thumb:hover {
-  background: #7fa2cd;
-}
-
-/* Buttons */
-.generateButton {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s ease;
-}
-
-.generateButton:hover {
-  background-color: #0056b3;
-}
-
-.generateButton:disabled {
-  background-color: #b0c4de;
-  cursor: not-allowed;
-}
-
-.submitButton {
-  align-self: flex-end;
-  padding: 10px 20px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 20px;
-  transition: background-color 0.2s ease;
-}
-
-.submitButton:hover {
-  background-color: #45a049;
-}
-
-/* Error and Success Messages */
-.errorText {
-  color: red;
-  font-weight: bold;
-}
-
-.successText {
-  color: green;
-  font-weight: bold;
-}
-
-/* Fetch Draft Button */
-.fetchButton {
-  padding: 10px 15px;
-  background-color: #ffa726;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-top: 10px;
-  transition: background-color 0.2s ease;
-}
-
-.fetchButton:hover {
-  background-color: #fb8c00;
-}
-
-.fetchButton:disabled {
-  background-color: #ffcc80;
-  cursor: not-allowed;
-}
+export default GenerateEmail;
