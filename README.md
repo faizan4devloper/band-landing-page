@@ -1,297 +1,3 @@
-import React, { useState } from "react";
-import axios from "axios";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
-import Verify from "./Verify";
-import styles from "./NewClaimPage.module.css";
-
-const NewClaimPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
-  
-  
-  const [uploading, setUploading] = useState(false);
-  const [rows, setRows] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(""); // State for static preview URL
-
- 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-            setPreviewUrl(URL.createObjectURL(selectedFile)); // Generate preview URL
-
-      setMessage("");
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-      const response = await axios.post(
-        "",
-        {
-          payload: { filename: sanitizedFileName, filetype: "CL" },
-        }
-      );
-      
-      console.log("Presign url", response.data)
-
-      const { presignedUrl, key, recNum } = response.data;
-      
-      console.log("**Response Api",response.data)
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        tasktype: "SEND_TO_QUEUE",
-      };
-
-    const sqsResponse=  await axios.post(
-        "",
-        sqsPayload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      
-      console.log("SQS API Response:", sqsResponse.data);
-
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          recNum,
-          policyid: "",
-          type: "",
-          summary: "",
-          previewLink: presignedUrl,
-          status: "Pending",
-        },
-      ]);
-
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <Sidebar
-          onFileChange={handleFileChange}
-          onUpload={handleUpload}
-          uploading={uploading}
-        />
-      </div>
-      <div className={styles.mainContent}>
-        {isUploaded ? (
-          <MainContent 
-            message={message} 
-            rows={rows} 
-            setRows={setRows} 
-            staticPreviewUrl={previewUrl} // Pass the static preview URL
-          />
-        ) : (
-          <p className={styles.infoMessage}>
-            Please upload a document to view the data.
-          </p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default NewClaimPage;
-
-
-
-
-import React, { useState } from "react";
-import axios from "axios";
-import Modal from "react-modal";
-import styles from "./MainContent.module.css";
-import { useNavigate } from "react-router-dom";
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync } from '@fortawesome/free-solid-svg-icons';
-
-
-const MainContent = ({ message, rows, setRows, staticPreviewUrl }) => {
-  console.log("Rows:",rows)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-    const navigate = useNavigate();
-
-  const [modalContent, setModalContent] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null); // To store fetched data
-
- const handleVerify = () =>{
-    navigate("/verify");
-    // navigate('/verify', { state: rows });
-  }
-
-
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const payload = {
-        tasktype: "FETCH_SINGLE_ACT_CLAIM",
-        claimid: recNum,
-      };
-
-      const response = await axios.post(``, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-      
-      
-      console.log("Api", response.data)
-
-      setData(response.data.allclaimactdata); // Store fetched data
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const renderReadableContent = (data) => {
-    if (!data) return <p>No data available</p>;
-
-    const parsedData = JSON.parse(data);
-
-    return (
-      <div className={styles.readableContent}>
-        <h4>Claim Form Details</h4>
-        <p><strong>Type:</strong> {parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE}</p>
-
-        <h4>Clinical Abstract Application</h4>
-        <p><strong>Name of Patient:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NAME_OF_PATIENT}</p>
-        <p><strong>NRIC/FIN/BC:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.NRIC_FIN_BC}</p>
-        <p><strong>Address:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.ADDRESS}</p>
-        <p><strong>Date:</strong> {parsedData.CLINICAL_ABSTRACT_APPLICATION?.DATE}</p>
-
-        <h4>Claimant Statement</h4>
-        <h5>Policy Details</h5>
-        <p><strong>Policy Numbers:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.POLICY_NUMBERS}</p>
-        <p><strong>Type of Claim:</strong> {parsedData.CLAIMANT_STATEMENT?.POLICY_DETAILS?.TYPE_OF_CLAIM}</p>
-
-        <h5>Details of Life Assured</h5>
-        <p><strong>Name:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.NAME_OF_LIFE_ASSURED}</p>
-        <p><strong>Gender:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.GENDER}</p>
-        <p><strong>Marital Status:</strong> {parsedData.CLAIMANT_STATEMENT?.DETAILS_OF_LIFE_ASSURED?.MARITAL_STATUS}</p>
-      </div>
-    );
-  };
-
-return (
-  <div>
-    
-    {rows.length > 0 && (
-          <div className={styles.claimIdDisplay}>
-          <h3>Claim ID: {rows[0].recNum}</h3>  
-          </div>
-        )}
-  <div className={styles.mainContent}>
-    {/* Left: Document Preview */}
- <div className={styles.previewSection}>
-        <h3>Document Preview</h3>
-        {staticPreviewUrl ? (
-          <iframe
-            src={staticPreviewUrl}
-            title="Static Document Preview"
-            className={styles.documentPreviewIframe}
-          ></iframe>
-        ) : (
-          <p>No document available for preview.</p>
-        )}
-      </div>
-
-    {/* Right: Extracted Content */}
-    <div className={styles.extractContentSection}>
-      <h3>Extracted Content</h3>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        renderReadableContent(data?.total_extracted_data)
-      )}
-      
-     
-{rows.map((row, index) => (
-          <div key={index}>
-            <button
-              className={styles.reloadButton}
-              onClick={() => handleReload(row.recNum)} // Use dynamic recNum here
-              disabled={loading}
-            >
-              <FontAwesomeIcon
-                icon={faSync}
-                spin={loading} // Spin when loading is true
-                className={styles.icon}
-              />
-              {!loading && " Reload"} {/* Show text only when not loading */}
-            </button>
-          </div>
-        ))}
-        
-        
-</div>
-
-    {/* Centered Verify Button */}
-    <div className={styles.verifyButtonContainer}>
-      <button
-        className={styles.verifyButton}
-        onClick={handleVerify}
-      >
-        Verify
-      </button>
-    </div>
-
-    {/* Modal for Document Preview */}
-    <Modal
-      isOpen={isModalOpen}
-      onRequestClose={() => setModalContent(null)}
-      className={styles.modal}
-      overlayClassName={styles.modalOverlay}
-      ariaHideApp={false}
-    >
-      <div className={styles.modalContent}>
-        <button
-          className={styles.closeButton}
-          onClick={() => setModalContent(null)}
-        >
-          Close
-        </button>
-        {modalContent ? (
-          <iframe
-            src={modalContent}
-            title="Preview"
-            className={styles.modalIframe}
-          ></iframe>
-        ) : (
-          <p>No preview available</p>
-        )}
-      </div>
-    </Modal>
-  </div>
-    </div>
-
-);
-};
-
-export default MainContent;
-
-
 
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -301,8 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
 
 
-const Verify = () => {
+const Verify = ({rows}) => {
   const location = useLocation();
+  const recNum = location.state?.recNum || "CL1234567"
   
 
   // Define state variables for storing the data, loading state, and error
@@ -323,14 +30,14 @@ const HandleEmail = () => {
 };
   // Use effect to fetch data when component mounts
   useEffect(() => {
-    const fetchData = async (recNum="CL1234567", psid="PS391481") => {
+    const fetchData = async () => {
       try {
         // Prepare your payload
         const payload = {
          tasktype: "VERIFY_CLAIM",
          claimid: recNum,
         // CL1234567
-         psid: psid ,
+         psid: "PS391481" ,
         };
 
         // Prepare custom headers (if needed)
@@ -341,7 +48,7 @@ const HandleEmail = () => {
 
         // Example API call with payload and headers
         const response = await axios.post(
-          "", // Replace with your actual endpoint
+          "dummy", // Replace with your actual endpoint
           payload,
           { headers } // Pass headers as part of the request
         );
@@ -370,7 +77,7 @@ const HandleEmail = () => {
     };
 
     // Check if location.state exists, otherwise fetch the data
-    if (!location.state) {
+    if (location.state) {
       fetchData();
     } else {
       const { summary, recommendation } = location.state;
@@ -399,6 +106,11 @@ const HandleEmail = () => {
   }
 
   return (
+    <div>
+      
+          <div className={styles.claimIdDisplay}>
+          <h3>Claim ID: {recNum}</h3>  
+          </div>
     <div className={styles.verifyContainer}>
       {/* Left side: Summary */}
       <div className={styles.leftPanel}>
@@ -420,7 +132,146 @@ const HandleEmail = () => {
           </button>
       </div>
     </div>
+        </div>
+
   );
 };
 
-export default Verify;
+export default Verify; 
+
+
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import styles from "./GenerateEmail.module.css";
+
+const GenerateEmail = () => {
+  const location = useLocation();
+  const [summary, setSummary] = useState(location.state?.summary || null);
+  const [recommendation, setRecommendation] = useState(
+    location.state?.recommendation || null
+  );
+  const [loadingEmail, setLoadingEmail] = useState(false);
+  const [loadingLLM, setLoadingLLM] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(null);
+  const [errorLLM, setErrorLLM] = useState(null);
+  const [parsedEmailBody, setParsedEmailBody] = useState("");
+  const [llmResponse, setLlmResponse] = useState("");
+
+  // Automatically fetch the email when the component mounts
+  useEffect(() => {
+    const fetchEmail = async () => {
+      const payload = {
+        claimid: "CL1234567",
+        psid: "PS391481",
+        tasktype: "FETCH_EMAIL",
+      };
+
+      setLoadingEmail(true);
+      setErrorEmail(null);
+
+      try {
+        const response = await axios.post("dummy", payload, {
+          headers: { "Content-Type": "application/json" },
+        });
+
+        // Safely parse response
+        const emailBodyString = response.data?.emailbody?.emailbody;
+        if (emailBodyString) {
+          setParsedEmailBody(emailBodyString.trim());
+        } else {
+          throw new Error("Invalid email body format");
+        }
+      } catch (err) {
+        setErrorEmail("Failed to fetch email");
+        console.error("Error:", err);
+      } finally {
+        setLoadingEmail(false);
+      }
+    };
+
+    fetchEmail();
+  }, []);
+
+  // Handle LLM Response generation
+  const handleGenerateLLMResponse = async () => {
+    const payload = {
+      claimid: "CL1234567",
+      psid: "PS391481",
+      tasktype: "GENERATE_EMAIL",
+    };
+
+    setLoadingLLM(true);
+    setErrorLLM(null);
+
+    try {
+      const response = await axios.post("dummy", payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log("LLM Response:", response.data);
+
+      // Safely parse response
+      const llmResponseString = response.data?.generatedemaildata?.body;
+      if (llmResponseString) {
+        setLlmResponse(llmResponseString.trim());
+      } else {
+        throw new Error("Invalid LLM response format");
+      }
+    } catch (err) {
+      setErrorLLM("Failed to generate LLM response");
+      console.error("Error:", err);
+    } finally {
+      setLoadingLLM(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.leftSection}>
+        <div className={styles.sectionWindow}>
+          <h2>Claim Summary</h2>
+          <p><strong>Brief Summary:</strong> {summary?.briefSummary}</p>
+          <p><strong>Claim Type:</strong> {summary?.claimType}</p>
+          <p><strong>Claim Status:</strong> {summary?.claimStatus}</p>
+        </div>
+        <div className={styles.sectionWindow}>
+          <h2>Recommendations</h2>
+          <p>{recommendation}</p>
+        </div>
+      </div>
+      <div className={styles.rightSection}>
+        <div className={styles.sectionWindow}>
+          <h2>Template Based Email</h2>
+          {loadingEmail && <p>Loading email content...</p>}
+          {errorEmail && <p className={styles.errorText}>{errorEmail}</p>}
+          {parsedEmailBody && (
+            <div className={styles.emailPreview}>
+              <p className={styles.emailContent}>{parsedEmailBody}</p>
+            </div>
+          )}
+        </div>
+        <div className={styles.sectionWindow}>
+          <h2>Generated Email</h2>
+          <button
+            className={styles.generateButton}
+            onClick={handleGenerateLLMResponse}
+            disabled={loadingLLM}
+          >
+            {loadingLLM ? "Generating LLM Response..." : "Generate LLM Response"}
+          </button>
+          {errorLLM && <p className={styles.errorText}>{errorLLM}</p>}
+          {llmResponse && (
+            <div className={styles.emailPreview}>
+              <h3>LLM Response:</h3>
+              <p className={styles.emailContent}>{llmResponse}</p>
+            </div>
+          )}
+        </div>
+        <button className={styles.submitButton}>Submit</button>
+      </div>
+    </div>
+  );
+};
+
+export default GenerateEmail;
