@@ -1,131 +1,12 @@
-
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
-import styles from "./Verify.module.css";
-import { useNavigate } from "react-router-dom";
-import { HashLoader } from "react-spinners";
-
-
-const Verify = () => {
-  const location = useLocation();
-  
-
-  // Define state variables for storing the data, loading state, and error
-  const [summary, setSummary] = useState(null);
-  const [recommendation, setRecommendation] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-      const navigate = useNavigate();
-
-
-const HandleEmail = ()=>{
-    
- navigate("/generate-email")
-}
-
-  // Use effect to fetch data when component mounts
-  useEffect(() => {
-    const fetchData = async (recNum) => {
-      try {
-        // Prepare your payload
-        const payload = {
-         tasktype: "VERIFY_CLAIM",
-         claimid: "CL557724",
-         PSID: "PS485817" 
-        };
-
-        // Prepare custom headers (if needed)
-        const headers = {
-          "Content-Type": "application/json", // Adjust content type based on your needs
-
-        };
-
-        // Example API call with payload and headers
-        const response = await axios.post(
-          "", // Replace with your actual endpoint
-          payload,
-          { headers } // Pass headers as part of the request
-        );
-        
-        console.log('Summary:', response.data)
-
-      // Parse the response body (since it's a JSON string)
-        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
-
-        // Extract the summary details and recommendation
-        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
-
-        // Set the state variables with parsed data
-        setSummary({
-          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
-          claimType: CLAIM_FORM_TYPE,
-          claimStatus: CLAIM_STATUS,
-        });
-        setRecommendation(DETAILED_SUMMARY);
-      } catch (error) {
-        setError("Failed to load data");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Check if location.state exists, otherwise fetch the data
-    if (!location.state) {
-      fetchData();
-    } else {
-      const { summary, recommendation } = location.state;
-      setSummary(summary);
-      setRecommendation(recommendation);
-      setLoading(false);
-    }
-  }, [location.state]);
-
-  // Show loading or error message while fetching data
- if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-          <HashLoader color="#0f5fdc" size={40} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  // Check if summary or recommendation is not available and handle it
-  if (!summary || !recommendation) {
-    return <p>No data available.</p>;
-  }
-
-  return (
-    <div className={styles.verifyContainer}>
-      {/* Left side: Summary */}
-      <div className={styles.leftPanel}>
-        <h3>Claim Summary</h3>
-        <p><strong>Brief Summary:</strong> {summary.briefSummary}</p>
-        <p><strong>Claim Type:</strong> {summary.claimType}</p>
-        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
-      </div>
-
-      {/* Right side: Recommendations */}
-      <div className={styles.rightPanel}>
-        <h3>Detailed Summary</h3>
-        <p>{recommendation}</p>
-      </div>
-      
-      <div className={styles.genrateEmailContainer}>
-          <button className={styles.generateEmailButton} onClick={HandleEmail}>
-          Generate Email
-          </button>
-      </div>
-    </div>
-  );
+const HandleEmail = () => {
+  navigate("/generate-email", {
+    state: {
+      summary,
+      recommendation,
+    },
+  });
 };
 
-export default Verify;
 
 
 
@@ -133,10 +14,16 @@ export default Verify;
 
 
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import styles from "./GenerateEmail.module.css"; // Import CSS Module
+import styles from "./GenerateEmail.module.css";
 
 const GenerateEmail = () => {
+  const location = useLocation();
+  const [summary, setSummary] = useState(location.state?.summary || null);
+  const [recommendation, setRecommendation] = useState(
+    location.state?.recommendation || null
+  );
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingLLM, setLoadingLLM] = useState(false);
   const [errorEmail, setErrorEmail] = useState(null);
@@ -177,7 +64,7 @@ const GenerateEmail = () => {
     };
 
     fetchEmail();
-  }, []); // Runs only once on component mount
+  }, []);
 
   // Handle LLM Response generation
   const handleGenerateLLMResponse = async () => {
@@ -194,8 +81,8 @@ const GenerateEmail = () => {
       const response = await axios.post("", payload, {
         headers: { "Content-Type": "application/json" },
       });
-      
-      console.log("LLM Response:", response.data)
+
+      console.log("LLM Response:", response.data);
 
       // Safely parse response
       const llmResponseString = response.data?.generatedemaildata?.body;
@@ -217,11 +104,13 @@ const GenerateEmail = () => {
       <div className={styles.leftSection}>
         <div className={styles.sectionWindow}>
           <h2>Claim Summary</h2>
-          <p>Details about the claim go here.</p>
+          <p><strong>Brief Summary:</strong> {summary?.briefSummary}</p>
+          <p><strong>Claim Type:</strong> {summary?.claimType}</p>
+          <p><strong>Claim Status:</strong> {summary?.claimStatus}</p>
         </div>
         <div className={styles.sectionWindow}>
           <h2>Recommendations</h2>
-          <p>Suggestions based on the claim details go here.</p>
+          <p>{recommendation}</p>
         </div>
       </div>
       <div className={styles.rightSection}>
