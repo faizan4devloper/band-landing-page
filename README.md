@@ -1,77 +1,157 @@
-/* Updated Table Styling */
-.table {
-  table-layout: fixed; /* Enforces consistent column widths */
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 14px;
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Sidebar from './Sidebar';
+import MainContent from './MainContent';
+import DataTable from './DataTable'; // Import the new DataTable component
+import styles from './ProductSheetsPage.module.css';
+
+const ProductSheetsPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [showMainContent, setShowMainContent] = useState(false);
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setMessage("");
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const sanitizedFileName = file.name.replace(/\s+/g, '_');
+      const response = await axios.post("dummy", {
+        payload: { filename: sanitizedFileName, filetype:"PS" },
+      });
+      console.log("API Response 1:", response.data);
+
+      const { presignedUrl, key, recNum } = response.data;
+
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      const sqsPayload = {
+        claimid: recNum,
+        s3filename: key,
+        actionn: "transform",
+        tasktype: "SEND_TO_PS_QUEUE",
+      };
+
+      const sqsResponse = await axios.post("dummy", sqsPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log("SQS API Response:", sqsResponse.data);
+
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: presignedUrl,
+          status: "Pending",
+        },
+      ]);
+
+      setIsUploaded(true);
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className={styles.container}>
+      {!showMainContent ? (
+        <>
+          <div className={styles.header}>
+            <button
+              className={styles.newClaimButton}
+              onClick={() => setShowMainContent(true)}
+            >
+              New Claim Processing
+            </button>
+          </div>
+          <DataTable rows={rows} /> {/* Use DataTable */}
+        </>
+      ) : (
+        <>
+          <Sidebar
+            onFileChange={handleFileChange}
+            onUpload={handleUpload}
+            uploading={uploading}
+          />
+          {isUploaded ? (
+            <MainContent message={message} rows={rows} setRows={setRows} />
+          ) : (
+            <p className={styles.infoMessage}>
+              Please upload a document to view the data.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default ProductSheetsPage;
+
+
+
+.container {
+     display: flex
+;
+  padding: 5px 40px;
+
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
 }
 
-.table th, .table td {
-  padding: 12px;
-  border: 1px solid #ddd;
+.container > div {
+  margin-right: 20px;
+}
+
+.infoMessage{
   text-align: center;
-  word-wrap: break-word; /* Handles long content gracefully */
-  overflow: hidden;
+  margin: 180px;
+  font-size: 1.2rem;
+  color:#555;
 }
 
-.table th {
-  background: #0f5fdc;
-  color: white;
-  font-weight: bold;
-}
-
-.table tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.table tr:hover {
-  background-color: #f1f1f1;
-}
-
-/* Set specific column widths for better consistency */
-.table th:nth-child(1),
-.table td:nth-child(1) {
-  width: 10%; /* Adjust as per requirement */
-}
-
-.table th:nth-child(2),
-.table td:nth-child(2) {
-  width: 15%;
-}
-
-.table th:nth-child(3),
-.table td:nth-child(3) {
-  width: 20%;
-}
-
-.table th:nth-child(4),
-.table td:nth-child(4) {
-  width: 30%;
-}
-
-.table th:nth-child(5),
-.table td:nth-child(5) {
-  width: 15%;
-}
-
-.table th:nth-child(6),
-.table td:nth-child(6) {
-  width: 10%;
-}
-
-/* Adjust Sidebar Styling */
-.mainContent {
+.header {
   display: flex;
-  gap: 20px; /* Prevent elements from overlapping */
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }
 
-.sidebar {
-  flex-basis: 250px; /* Fixed width for the sidebar */
-  flex-shrink: 0; /* Prevent shrinking when table grows */
+.newClaimButton {
+     background-color: #007bff;
+     margin-top: 10px;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    position: absolute;
+    right: 80px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.mainContent .tableContainer {
-  flex-grow: 1; /* Allow table to take available space */
-  overflow-x: auto; /* Add horizontal scroll for narrow screens */
+.newClaimButton:hover {
+  background-color: #0056b3;
 }
