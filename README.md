@@ -1,3 +1,4 @@
+/* Main Container Styling */
 .container {
   display: flex;
   gap: 20px;
@@ -14,20 +15,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  /*background-color: #f0f0f0;*/
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border: 1px solid #d0d0d0;
 }
-
-/*.leftSection {*/
-/*  background-color: #e3f2fd;*/
-/*}*/
-
-/*.rightSection {*/
-/*  background-color: #fff8e1;*/
-/*}*/
 
 /* Individual Window Styling */
 .sectionWindow {
@@ -65,6 +57,36 @@
   min-height: 200px;
   background-color: #f3f3f3;
   transition: height 0.3s ease;
+}
+
+/* Email Content Styling */
+.emailContent {
+  white-space: pre-wrap; /* Preserve line breaks and spacing */
+  background-color: #f8f9fa;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 15px;
+  color: #333;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  overflow-y: auto; /* Add scroll for long content */
+  max-height: 400px; /* Limit height for large content */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.emailContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.emailContent::-webkit-scrollbar-thumb {
+  background: #b0c4de;
+  border-radius: 4px;
+}
+
+.emailContent::-webkit-scrollbar-thumb:hover {
+  background: #7fa2cd;
 }
 
 /* Buttons */
