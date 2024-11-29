@@ -1,138 +1,150 @@
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Sidebar from "./Sidebar";
-import MainContent from "./MainContent";
-import Verify from "./Verify";
-import styles from "./NewClaimPage.module.css";
-// import { useNavigate } from "react-router-dom";
+import styles from "./Verify.module.css";
+import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
-const NewClaimPage = () => {
-  const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("");
+
+
+const Verify = ({rows}) => {
+  const location = useLocation();
+  const recNum = location.state?.clid;
+  console.log("inside verify.js recnumber:",recNum)
+  console.log("inside verify.js rows is:",rows)
   
-  
-  const [uploading, setUploading] = useState(false);
-  const [rows, setRows] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(""); // State for static preview URL
-    const [selectedPolicy, setSelectedPolicy] = useState(""); // State for policy selection
-    // const navigate = useNavigate()
+    const Dsummary = location.state?.summary || "No Summary Available";
 
 
- 
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-            setPreviewUrl(URL.createObjectURL(selectedFile)); // Generate preview URL
+  // Define state variables for storing the data, loading state, and error
+  const [summary, setSummary] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+      const navigate = useNavigate();
 
-      setMessage("");
+
+const HandleEmail = () => {
+  console.log("inside handle email recnumber:", recNum)
+  navigate("/generate-email", {
+    state: {
+      summary,
+      recommendation,
+      recNum,
+    },
+  });
+};
+  // Use effect to fetch data when component mounts
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Prepare your payload
+        const payload = {
+         tasktype: "VERIFY_CLAIM",
+         claimid: recNum,
+        // CL1234567
+         psid: "PS391481" ,
+        };
+
+        // Prepare custom headers (if needed)
+        const headers = {
+          "Content-Type": "application/json", // Adjust content type based on your needs
+
+        };
+
+        // Example API call with payload and headers
+        const response = await axios.post(
+          "https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", // Replace with your actual endpoint
+          payload,
+          { headers } // Pass headers as part of the request
+        );
+        
+        console.log('Summary:', response.data)
+
+      // Parse the response body (since it's a JSON string)
+        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
+
+        // Extract the summary details and recommendation
+        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
+
+        // Set the state variables with parsed data
+        setSummary({
+          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
+          claimType: CLAIM_FORM_TYPE,
+          claimStatus: CLAIM_STATUS,
+        });
+        setRecommendation(DETAILED_SUMMARY);
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Check if location.state exists, otherwise fetch the data
+    if (location.state) {
+      fetchData();
+    } else {
+      const { summary, recommendation } = location.state;
+      setSummary(summary);
+      setRecommendation(recommendation);
+      setLoading(false);
     }
-  };
-  
-  
-   const handlePolicyChange = (policy) => {
-    setSelectedPolicy(policy);
-    console.log("Selected Policy:", policy);
-  };
-  
-  // const navigateToVerify = ()=>{
-  //   navigate("/verify", {state: {selectedPolicy, rows}})
-  // }
+  }, [location.state]);
 
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    
-    
-    setUploading(true);
-    try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-      const response = await axios.post(
-        "https://41aw3s5s3k.execute-api.us-east-1.amazonaws.com/dev/",
-        {
-          payload: { filename: sanitizedFileName, filetype: "CL" },
-        }
-      );
-      
-      console.log("Presign url", response.data)
-
-      const { presignedUrl, key, recNum } = response.data;
-      
-      console.log("**Response Api",response.data)
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        tasktype: "SEND_TO_QUEUE",
-      };
-
-    const sqsResponse=  await axios.post(
-        "https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest",
-        sqsPayload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-      
-      console.log("SQS API Response:", sqsResponse.data);
-
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          recNum,
-          policyid: "",
-          type: "",
-          summary: "",
-          previewLink: presignedUrl,
-         policy: selectedPolicy, // Include the selected policy
-
-          status: "Pending",
-        },
-      ]);
-
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.sidebar}>
-        <Sidebar
-          onFileChange={handleFileChange}
-          onUpload={handleUpload}
-          uploading={uploading}
-         onPolicyChange={handlePolicyChange}
-
-        />
+  // Show loading or error message while fetching data
+ if (loading) {
+    return (
+      <div className={styles.spinnerContainer}>
+          <HashLoader color="#0f5fdc" size={40} />
       </div>
-      <div className={styles.mainContent}>
-        {isUploaded ? (
-          <MainContent 
-            message={message} 
-            selectedPolicy={selectedPolicy}
-            rows={rows} 
-            clid={rows[0].recNum}
-            setRows={setRows} 
-            staticPreviewUrl={previewUrl} // Pass the static preview URL
-          />
-        ) : (
-          <p className={styles.infoMessage}>
-            Please upload a document to view the data.
-          </p>
-        )}
+    );
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  // Check if summary or recommendation is not available and handle it
+  if (!summary || !recommendation) {
+    return <p>No data available.</p>;
+  }
+
+ return (
+  <div>
+    {/* Claim ID Display */}
+    <div className={styles.claimIdDisplay}>
+      <h3>Claim ID: {recNum}</h3>
+    </div>
+
+    <div className={styles.verifyContainer}>
+      {/* Left Panel */}
+      <div className={styles.leftPanel}>
+        <h3>Claim Summary</h3>
+        <p><strong>Summary:</strong> {Dsummary}</p>
+        <p><strong>Claim Type:</strong> {summary.claimType}</p>
+        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
+      </div>
+
+      {/* Right Panel */}
+      <div className={styles.rightPanel}>
+        <h3>Detailed Summary</h3>
+        <p>{recommendation}</p>
       </div>
     </div>
-  );
-};
 
-export default NewClaimPage;
+    {/* Generate Email Button */}
+    <div className={styles.genrateEmailContainer}>
+      <button className={styles.generateEmailButton} onClick={HandleEmail}>
+        <FontAwesomeIcon icon={faEnvelope} />
+        Generate Email
+      </button>
+    </div>
+  </div>
+);}
+
+export default Verify;
