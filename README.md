@@ -1,113 +1,116 @@
-import React, { useRef, useState } from "react";
-import styles from "./Sidebar.module.css";
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import axios from "axios";
+import Sidebar from "./Sidebar";
+import MainContent from "./MainContent";
+import Verify from "./Verify";
+import styles from "./NewClaimPage.module.css";
 
+const NewClaimPage = () => {
+  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+  
+  
+  const [uploading, setUploading] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(""); // State for static preview URL
 
+ 
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+            setPreviewUrl(URL.createObjectURL(selectedFile)); // Generate preview URL
 
-
-const Sidebar = ({ onFileChange, onUpload, uploading }) => {
-  const fileInputRef = useRef(null);
-  const [fileName, setFileName] = useState("");
-    const navigate = useNavigate();
-
-
-  // Trigger the file input when the container is clicked
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+      setMessage("");
     }
   };
-  
-  const handleBackClick = () => {
-    navigate("/datatable");
-  };
 
-
-  // Handle file selection and store the file name
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      
-      const sanitizedFileName = file.name.replace(/\s+/g, '_');
-      
-      
-      setFileName(sanitizedFileName);
-      
-      const renamedFile = new File([file], sanitizedFileName, { type:file.type });
-      onFileChange({ target: { files: [renamedFile]}});
+  const handleUpload = async () => {
+    if (!file) {
+      setMessage("Please select a file to upload.");
+      return;
     }
-    onFileChange(event); // Pass the file to the parent component
+    setUploading(true);
+    try {
+      const sanitizedFileName = file.name.replace(/\s+/g, "_");
+      const response = await axios.post(
+        "dummy",
+        {
+          payload: { filename: sanitizedFileName, filetype: "CL" },
+        }
+      );
+      
+      console.log("Presign url", response.data)
+
+      const { presignedUrl, key, recNum } = response.data;
+      
+      console.log("**Response Api",response.data)
+
+      await axios.put(presignedUrl, file, {
+        headers: { "Content-Type": file.type },
+      });
+
+      const sqsPayload = {
+        claimid: recNum,
+        s3filename: key,
+        tasktype: "SEND_TO_QUEUE",
+      };
+
+    const sqsResponse=  await axios.post(
+        "dummy",
+        sqsPayload,
+        { headers: { "Content-Type": "application/json" } }
+      );
+      
+      console.log("SQS API Response:", sqsResponse.data);
+
+      setRows((prevRows) => [
+        ...prevRows,
+        {
+          recNum,
+          policyid: "",
+          type: "",
+          summary: "",
+          previewLink: presignedUrl,
+          status: "Pending",
+        },
+      ]);
+
+      setIsUploaded(true);
+    } catch (error) {
+      setMessage("Upload failed: " + error.message);
+    } finally {
+      setUploading(false);
+    }
   };
-  
-  
-//   const handleFileChange = (event) => {
-//   const file = event.target.files[0];
-//   if (file) {
-//     // Extract the file extension
-//     const fileExtension = file.name.split('.').pop();
-//     // Sanitize the file name and append the extension
-//     const sanitizedFileName = file.name
-//       .replace(/\s+/g, '_')
-//       .replace(/\.[^/.]+$/, '') + `.${fileExtension}`;
-
-//     setFileName(sanitizedFileName);
-
-//     const renamedFile = new File([file], sanitizedFileName, { type: file.type });
-//     onFileChange({ target: { files: [renamedFile] } });
-//   }
-//   onFileChange(event); // Pass the file to the parent component
-// };
 
   return (
-    <div className={styles.sidebar}>
-      <button className={styles.backButton} onClick={handleBackClick}>
-        <FontAwesomeIcon icon={faArrowLeft} />
-      </button>
-      <h2 className={styles.heading}>Manage Claim</h2>
-      
-      <select id="psDropdown">
-        <option value="PS391481"> Cancer - PS391481</option>
-        <option value="PS672908"> Heart - PS672908</option>  
-      </select>
-
-      {/* File Input Container */}
-      <div
-        className={styles.fileInputContainer}
-        onClick={handleContainerClick}
-      >
-        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className={styles.fileInput}
-          style={{ display: "none" }}
+    <div className={styles.container}>
+      <div className={styles.sidebar}>
+        <Sidebar
+          onFileChange={handleFileChange}
+          onUpload={handleUpload}
+          uploading={uploading}
         />
       </div>
-
-      {/* File Name Display */}
-      {fileName && (
-        <div className={styles.fileNameContainer}>
-          <p className={styles.fileName}>{fileName}</p>
-        </div>
-      )}
-
-      {/* Upload Button */}
-      <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
-      >
-        {uploading ? (
-          <div className={styles.loader}></div>
+      <div className={styles.mainContent}>
+        {isUploaded ? (
+          <MainContent 
+            message={message} 
+            rows={rows} 
+            clid={rows[0].recNum}
+            setRows={setRows} 
+            staticPreviewUrl={previewUrl} // Pass the static preview URL
+          />
         ) : (
-          "Upload"
+          <p className={styles.infoMessage}>
+            Please upload a document to view the data.
+          </p>
         )}
-      </button>
+      </div>
     </div>
   );
 };
 
-export default Sidebar;
+export default NewClaimPage;
