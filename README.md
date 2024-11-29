@@ -39,7 +39,7 @@ const handleVerify = (recNum, summary) => {
         claimid: recNum,
       };
 
-      const response = await axios.post(``, payload, {
+      const response = await axios.post(`dummy`, payload, {
         headers: { "Content-Type": "application/json" },
       });
       
@@ -191,147 +191,202 @@ export default MainContent;
 
 
 
+/* Main container layout */
+.mainContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal-width columns */
+  grid-template-rows: auto 60px; /* Rows: auto for content, fixed height for the button */
+  gap: 20px; /* Space between grid items */
+  padding: 20px; /* Space around the entire container */
+  align-items: start; /* Aligns sections to the top */
+}
 
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
-import styles from "./Verify.module.css";
-import { useNavigate } from "react-router-dom";
-import { HashLoader } from "react-spinners";
+/* Left Section: Document Preview */
+.previewSection {
+  background: #ffffff; /* White background for better contrast */
+  padding: 15px;
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px;
+}
+
+.documentList {
+  list-style: none; /* Remove default list styling */
+  padding: 0;
+  margin: 0;
+}
+
+.documentList li {
+  margin-bottom: 10px;
+}
+
+.previewButton {
+  background-color: #007bff; /* Blue background */
+  color: white;
+  padding: 10px 15px; /* Inner spacing */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px; /* Adjusted font size for buttons */
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+.previewButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Right Section: Extracted Content */
+.extractContentSection {
+  background: #ffffff; /* White background for better contrast */
+  padding: 15px;
+  border: 1px solid #ddd; /* Subtle border */
+  border-radius: 8px;
+}
+
+/* "Verify" Button Container */
+.verifyButtonContainer {
+  grid-column: span 2; /* Span across both columns in the grid */
+  display: flex;
+  justify-content: center; /* Horizontally center the button */
+  align-items: center; /* Vertically center the button */
+  margin-top: 10px; /* Space above the button */
+}
+
+/* "Verify" Button Styling */
+.verifyButton {
+  padding: 10px 180px; /* Spacing around text */
+  font-size: 16px; /* Larger font size for visibility */
+  font-weight: bold; /* Make text bold */
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  color: white; /* White text */
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transition for hover effects */
+}
 
 
-const Verify = ({rows}) => {
-  const location = useLocation();
-  const recNum = location.state?.recNum || "CL1234567"
-  
-    const Dsummary = location.state?.summary || "No Summary Available";
+
+.verifyButton:active {
+  background-color: #1e7e34; /* Even darker green when clicked */
+  transform: scale(0.95); /* Shrink effect on click */
+}
+
+/* Modal Styling */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 80%;
+  max-width: 800px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.modalContent {
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.closeButton:hover {
+  background: #cc0000;
+}
+
+/* Additional General Styles */
+.readableContent {
+  background: #f8f8f8;
+  padding: 15px;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+.readableContent h4 {
+  color: #333;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+
+.readableContent p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.readableContent strong {
+  color: #000;
+}
+
+h5 {
+  margin-top: 15px;
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.reloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+  margin-top: 10px;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
 
 
-  // Define state variables for storing the data, loading state, and error
-  const [summary, setSummary] = useState(null);
-  const [recommendation, setRecommendation] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-      const navigate = useNavigate();
 
+.reloadButton:disabled {
+  background-color: #ccc; /* Gray color when disabled */
+  cursor: not-allowed;
+}
 
-const HandleEmail = () => {
-  navigate("/generate-email", {
-    state: {
-      summary,
-      recommendation,
-      recNum,
-    },
-  });
-};
-  // Use effect to fetch data when component mounts
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Prepare your payload
-        const payload = {
-         tasktype: "VERIFY_CLAIM",
-         claimid: recNum,
-        // CL1234567
-         psid: "PS391481" ,
-        };
+.icon {
+  font-size: 18px; /* Icon size */
+}
 
-        // Prepare custom headers (if needed)
-        const headers = {
-          "Content-Type": "application/json", // Adjust content type based on your needs
+.documentPreviewIframe{
+  width: 100%;
+  height: 670px;
+  border: none;
+}
 
-        };
-
-        // Example API call with payload and headers
-        const response = await axios.post(
-          "", // Replace with your actual endpoint
-          payload,
-          { headers } // Pass headers as part of the request
-        );
-        
-        console.log('Summary:', response.data)
-
-      // Parse the response body (since it's a JSON string)
-        const responseBody = JSON.parse(response.data.verifyclaimactdata.body);
-
-        // Extract the summary details and recommendation
-        const { CLAIM_FORM_BRIEF_SUMMARY, CLAIM_FORM_TYPE, CLAIM_STATUS, DETAILED_SUMMARY } = responseBody.SUMMARY_DETAILS;
-
-        // Set the state variables with parsed data
-        setSummary({
-          briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
-          claimType: CLAIM_FORM_TYPE,
-          claimStatus: CLAIM_STATUS,
-        });
-        setRecommendation(DETAILED_SUMMARY);
-      } catch (error) {
-        setError("Failed to load data");
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Check if location.state exists, otherwise fetch the data
-    if (location.state) {
-      fetchData();
-    } else {
-      const { summary, recommendation } = location.state;
-      setSummary(summary);
-      setRecommendation(recommendation);
-      setLoading(false);
-    }
-  }, [location.state]);
-
-  // Show loading or error message while fetching data
- if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-          <HashLoader color="#0f5fdc" size={40} />
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
-
-  // Check if summary or recommendation is not available and handle it
-  if (!summary || !recommendation) {
-    return <p>No data available.</p>;
-  }
-
-  return (
-    <div>
-      
-          <div className={styles.claimIdDisplay}>
-          <h3>Claim ID: {recNum}</h3>  
-          </div>
-    <div className={styles.verifyContainer}>
-      {/* Left side: Summary */}
-      <div className={styles.leftPanel}>
-        <h3>Claim Summary</h3>
-                  <p><strong>Summary:</strong> {Dsummary}</p>
-
-        <p><strong>Claim Type:</strong> {summary.claimType}</p>
-        <p><strong>Claim Status:</strong> {summary.claimStatus}</p>
-      </div>
-
-      {/* Right side: Recommendations */}
-      <div className={styles.rightPanel}>
-        <h3>Detailed Summary</h3>
-        <p>{recommendation}</p>
-      </div>
-      
-      <div className={styles.genrateEmailContainer}>
-          <button className={styles.generateEmailButton} onClick={HandleEmail}>
-          Generate Email
-          </button>
-      </div>
-    </div>
-        </div>
-
-  );
-};
-
-export default Verify;
+.claimIdDisplay{
+     margin: 0px 25px;
+    font-size: 16px;
+    margin-bottom: 0px;
+    font-weight: bold;
+    color: #333;
+}
