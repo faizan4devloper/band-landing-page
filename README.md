@@ -1,12 +1,13 @@
 
+  
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { HashLoader } from "react-spinners";
-import styles from "./AllDataTable.module.css";
+import styles from "./DataTable.module.css";
 
-const AllDataTable = () => {
+const DataTable = () => {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,21 +18,21 @@ const AllDataTable = () => {
     setError("");
     try {
       const payload = {
-        tasktype: "FETCH_ALL_ACT_CLAIMS", // Different payload
+        tasktype: "FETCH_ALL_CLAIMS",
       };
 
       const headers = {
         "Content-Type": "application/json",
       };
 
-      const response = await axios.post("https://e21wxu9skj.execute-api.us-east-1.amazonaws.com/dev/querequest", payload, { headers }); // Different API URL
+      const response = await axios.post("dummy", payload, { headers });
 
       console.log("API Response:", response.data);
 
-      const allData = Object.values(response.data.allclaimactdata || {});
-      console.log("Extracted All Data:", allData);
+      const claimData = Object.values(response.data.allclaimdata || {});
+      console.log("Extracted Claim Data:", claimData);
 
-      setRows(allData);
+      setRows(claimData);
     } catch (err) {
       setError("Failed to fetch data. Please try again.");
       console.error("API Error:", err);
@@ -68,22 +69,26 @@ const AllDataTable = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Claim ID</th>
+              <th>File Name</th>
+              <th>Rec No.</th>
+              <th nowrap width="10%">Policy ID</th>
+              <th>Type</th>
               <th>Summary</th>
-              <th width="12%">claim Type</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row, index) => {
-              const uniqueKey = `${index}_${row.uniqueField}`; // Adjust unique key based on available data
+              const uniqueKey = `${index}_${row.rec_number}`; // Create a unique key
               return (
                 <tr key={uniqueKey}>
-                  <td>{row.claimid}</td>
-                  <td>{row.briefsummary}</td>
-                  <td>{row.claimtype}</td>
-                  <td>{row.status}</td>
-                 
+                  <td>{row.file_name}</td>
+                  <td>{row.rec_number}</td>
+                  <td>{row.policy_id}</td>
+                  <td>{row.prod_sheet_type}</td>
+                  <td>{row.summary}</td>
+                  <td>{row.status || "Pending"}</td>
+                  
                 </tr>
               );
             })}
@@ -96,4 +101,4 @@ const AllDataTable = () => {
   );
 };
 
-export default AllDataTable;
+export default DataTable;
