@@ -1,131 +1,189 @@
-<div class="chat-container">
-  <div class="message-area">
-    <!-- User Message -->
-    <div class="user-message">
-      <p>Hello! How can I enable trace?</p>
-    </div>
-    <!-- Bot Response -->
-    <div class="bot-response">
-      <p>To enable trace, click the "Enable Trace" button.</p>
+<div className="chat-input-container">
+  <div className="input-wrapper">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={handleKeyPress}
+      placeholder="Type your message..."
+      className="chat-input"
+    />
+    <div className="input-icons">
+      <button 
+        onClick={sendMessage} 
+        className="btn btn-send"
+      >
+        <FontAwesomeIcon icon={faPaperPlane} />
+      </button>
     </div>
   </div>
-  
-  <div class="input-area">
-    <input type="text" placeholder="Type your message..." class="chat-input">
-    <button class="btn btn-send">
-      <i class="fa fa-paper-plane"></i>
+  <div className="button-group">
+    <input
+      type="file"
+      id="image-upload"
+      onChange={(e) => handleUpload(e.target.files[0])}
+      style={{ display: 'none' }}
+    />
+    <button 
+      onClick={() => document.getElementById('image-upload').click()}
+      className="btn btn-secondary"
+    >
+      <FontAwesomeIcon icon={faUpload} className="btn-icon" />
+      Upload
     </button>
-  </div>
-  
-  <div class="button-group">
-    <button class="btn btn-secondary">Upload</button>
-    <button class="btn btn-trace">Enable Trace</button>
+    <button 
+      onClick={fetchTraceData} 
+      className="btn btn-trace"
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <BeatLoader color="#fff" size={15} />
+      ) : (
+        <>
+          <FontAwesomeIcon icon={faRedo} className="btn-icon" />
+          {isTraceEnabled ? 'Refresh Trace' : 'Enable Trace'}
+        </>
+      )}
+    </button>
   </div>
 </div>
 
 
 
 
-
-/* Chat Container */
-.chat-container {
+.chat-wrapper {
   display: flex;
-  flex-direction: column;
-  max-width: 600px;
-  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #f5f5f5;
 }
 
-/* Message Area */
-.message-area {
+.chat-container {
+  width: 100%;
+  max-width: 960px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  max-height: 700px;
+}
+
+.chat-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.chat-messages-container {
+  flex: 2;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  margin-bottom: 20px;
+  padding: 20px;
 }
 
-.user-message, .bot-response {
-  max-width: 70%;
-  padding: 10px 15px;
+.chat-header {
+  background-color: #5c6bc0;
+  color: #fff;
+  padding: 15px;
+  text-align: center;
+  font-weight: 600;
   border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #f9f9fc;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .user-message {
-  align-self: flex-start;
-  background-color: #e0f7fa;
-  color: #006064;
+  justify-content: flex-start;
 }
 
-.bot-response {
-  align-self: flex-end;
-  background-color: #eceff1;
-  color: #37474f;
+.bot-message {
+  justify-content: flex-end;
 }
 
-/* Input Area */
-.input-area {
+.message-icon {
+  margin-right: 10px;
+}
+
+.message-text {
+  background-color: #e1f5fe;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-size: 16px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+.user-message .message-text {
+  background-color: #c5e1f7;
+}
+
+.bot-message .message-text {
+  background-color: #bbdefb;
+}
+
+.chat-input-container {
+  margin-top: 10px;
+}
+
+.input-wrapper {
   display: flex;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
 }
 
 .chat-input {
-  flex-grow: 1;
+  flex: 1;
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  margin-right: 10px;
 }
 
-/* Send Button */
-.btn-send {
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  border-radius: 50%;
-  background-color: #5c6bc0;
+.input-icons {
+  display: flex;
+  align-items: center;
+}
+
+.input-icons .btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-send i {
-  color: white;
-  font-size: 18px;
-}
-
-.btn-send:hover {
-  background-color: #3949ab;
-}
-
-.btn-send:active {
-  background-color: #303f9f;
-  transform: scale(0.95);
-}
-
-/* Button Group */
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-/* General Button Styles */
-.btn {
-  padding: 10px 20px;
+  padding: 10px;
   font-size: 14px;
   font-weight: 600;
   color: #ffffff;
+  background-color: #5c6bc0;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-icon {
+  margin-right: 8px;
 }
 
 .btn:hover {
@@ -137,7 +195,6 @@
   background-color: #303f9f;
 }
 
-/* Secondary Button */
 .btn-secondary {
   background-color: #26a69a;
 }
@@ -150,7 +207,6 @@
   background-color: #177466;
 }
 
-/* Trace Button */
 .btn-trace {
   background-color: #ff7043;
 }
@@ -161,4 +217,31 @@
 
 .btn-trace:active {
   background-color: #e64a19;
+}
+
+.btn:disabled {
+  background-color: #bdbdbd;
+  cursor: not-allowed;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-send {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #5c6bc0;
+}
+
+.btn-send:hover {
+  background-color: #3949ab;
+}
+
+.btn-send:active {
+  background-color: #303f9f;
+  transform: scale(0.95);
 }
