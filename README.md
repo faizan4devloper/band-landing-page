@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { BeatLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPaperPlane,
-  faUpload,
-  faRedo,
-  faRobot,
-  faUser
+import { 
+  faPaperPlane, 
+  faUpload, 
+  faRedo, 
+  faRobot, 
+  faUser 
 } from '@fortawesome/free-solid-svg-icons';
 
 import './Chat.css';
@@ -67,14 +67,14 @@ const Chat = () => {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
       });
-
+      
       if (!response.ok) {
         throw new Error('Failed to fetch trace data');
       }
-
+      
       const data = await response.json();
       console.log('Raw Trace API Response:', data);
-
+      
       setTraceData(data);
       setIsTraceEnabled(true);
     } catch (error) {
@@ -92,23 +92,23 @@ const Chat = () => {
           <div className="chat-messages-container">
             <div className="chat-header">
               <FontAwesomeIcon icon={faRobot} className="header-icon" />
-              AWS Bedrock Agent - Demo
+              HCLTech Insurance Agent - Demo
             </div>
-
+            
             <div className="chat-messages">
               <AnimatePresence>
                 {messages.map((msg, index) => (
-                  <motion.div
-                    key={index}
+                  <motion.div 
+                    key={index} 
                     className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <div className="message-icon">
-                      <FontAwesomeIcon
-                        icon={msg.type === 'user' ? faUser : faRobot}
-                        className={`${msg.type}-icon`}
+                      <FontAwesomeIcon 
+                        icon={msg.type === 'user' ? faUser : faRobot} 
+                        className={`${msg.type}-icon`} 
                       />
                     </div>
                     <div className="message-text">
@@ -117,7 +117,7 @@ const Chat = () => {
                   </motion.div>
                 ))}
               </AnimatePresence>
-
+              
               {typing && (
                 <div className="typing-indicator">
                   <BeatLoader color="#785ce5" size={20} />
@@ -135,8 +135,8 @@ const Chat = () => {
                   className="chat-input"
                 />
                 <div className="input-icons">
-                  <button
-                    onClick={sendMessage}
+                  <button 
+                    onClick={sendMessage} 
                     className="btn btn-send"
                   >
                     <FontAwesomeIcon icon={faPaperPlane} />
@@ -150,15 +150,15 @@ const Chat = () => {
                   onChange={(e) => handleUpload(e.target.files[0])}
                   style={{ display: 'none' }}
                 />
-                <button
+                <button 
                   onClick={() => document.getElementById('image-upload').click()}
                   className="btn btn-secondary"
                 >
                   <FontAwesomeIcon icon={faUpload} className="btn-icon" />
                   Upload
                 </button>
-                <button
-                  onClick={fetchTraceData}
+                <button 
+                  onClick={fetchTraceData} 
                   className="btn btn-trace"
                   disabled={isLoading}
                 >
@@ -175,9 +175,10 @@ const Chat = () => {
             </div>
           </div>
 
+          {/* Trace Panel */}
           <AnimatePresence>
             {isTraceEnabled && (
-              <motion.div
+              <motion.div 
                 className="trace-panel"
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: '300px', opacity: 1 }}
@@ -194,8 +195,8 @@ const Chat = () => {
                     </div>
                   ) : traceData.length > 0 ? (
                     traceData.map((step, index) => (
-                      <motion.div
-                        key={index}
+                      <motion.div 
+                        key={index} 
                         className="trace-step"
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -223,20 +224,21 @@ const Chat = () => {
 export default Chat;
 
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
 
 :root {
-  --primary-color: #785ce5;
-  --secondary-color: #6a4fa3;
-  --background-light: #f4f4f8;
+  --primary-color: #5c6bc0;
+  --secondary-color: #7986cb;
+  --background-light: #f5f5f5;
   --white: #ffffff;
   --text-color: #333;
   --border-color: #e0e0e0;
+  --button-hover: #3f51b5;
 }
 
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--background-light);
+  line-height: 1.6;
   color: var(--text-color);
 }
 
@@ -246,28 +248,18 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  background-color: var(--background-light);
 }
 
 .chat-container {
-  width: 900px;
+  width: 100%;
+  max-width: 960px;
   background-color: var(--white);
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   max-height: 700px;
-}
-
-.chat-content {
-  display: flex;
-  width: 100%;
-}
-
-.chat-messages-container {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  border-right: 1px solid var(--border-color);
 }
 
 .chat-header {
@@ -279,120 +271,98 @@ body {
 }
 
 .chat-messages {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding: 15px;
+  padding: 20px;
   background-color: #f9f9fc;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .message {
-  max-width: 80%;
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
+}
+
+.message-icon {
+  margin-right: 10px;
+}
+
+.message-text {
+  background-color: #e1f5fe;
   padding: 10px 15px;
-  border-radius: 12px;
+  border-radius: 10px;
+  font-size: 16px;
+  max-width: 70%;
   word-wrap: break-word;
 }
 
-.user-message {
-  background-color: var(--primary-color);
-  color: var(--white);
-  align-self: flex-end;
+.user-message .message-text {
+  background-color: #c5e1f7;
 }
 
-.bot-message {
-  background-color: #e6e6f3;
-  color: var(--text-color);
-  align-self: flex-start;
+.bot-message .message-text {
+  background-color: #bbdefb;
 }
 
 .chat-input-container {
   padding: 15px;
+  background-color: var(--white);
   border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
 }
 
 .input-wrapper {
   display: flex;
+  justify-content: space-between;
   align-items: center;
 }
 
 .chat-input {
-  flex-grow: 1;
-  padding: 10px 15px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  margin-right: 10px;
-}
-
-.btn {
+  width: 80%;
   padding: 10px;
-  background-color: var(--primary-color);
-  color: var(--white);
-  border: none;
   border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.btn:hover {
-  background-color: var(--secondary-color);
-}
-
-.btn-send {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-icon {
-  margin-right: 5px;
+  border: 1px solid var(--border-color);
 }
 
 .input-icons {
   display: flex;
+  align-items: center;
 }
 
-.typing-indicator {
+.input-icons .btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.button-group {
   display: flex;
-  justify-content: center;
-  padding: 10px 0;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
 .trace-panel {
-  background-color: #f3f3f9;
-  overflow-y: auto;
-}
-
-.trace-header {
-  background-color: var(--secondary-color);
+  width: 0;
+  padding: 20px;
+  background-color: var(--primary-color);
   color: var(--white);
-  padding: 10px;
-  text-align: center;
+  transition: width 0.3s;
 }
 
-.trace-content {
-  padding: 15px;
+.trace-header h3 {
+  font-size: 18px;
 }
 
 .trace-step {
-  margin-bottom: 10px;
-}
-
-.trace-step-header {
-  font-weight: 600;
+  margin-bottom: 15px;
+  background-color: #b3e5fc;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .no-trace {
-  color: var(--text-color);
   text-align: center;
-}
-
-.chat-messages::-webkit-scrollbar,
-.trace-content::-webkit-scrollbar {
-  width: 5px;
-}
-
-.chat-messages::-webkit-scrollbar-thumb,
-.trace-content::-webkit-scrollbar-thumb {
-  background-color: var(--primary-color);
-  border-radius: 5px;
+  color: #aaa;
 }
