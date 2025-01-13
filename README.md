@@ -1,3 +1,45 @@
+.chat-container {
+  width: 500px;
+  margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.chat-header {
+  font-size: 20px;
+  text-align: center;
+  background: #785ce5;
+  color: #fff;
+  padding: 10px;
+  border-radius: 10px 10px 0 0;
+}
+.chat-messages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.user-message {
+  text-align: right;
+  background: #ccccff;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+.bot-message {
+  text-align: left;
+  background: #eee;
+  padding: 5px 10px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+
+
+
+
 import os
 import json
 import base64
