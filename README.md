@@ -85,6 +85,12 @@ const Chat = () => {
     }
   };
 
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   return (
     <div className="chat-wrapper">
       <div className="chat-container">
@@ -131,6 +137,7 @@ const Chat = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyPress}
                   placeholder="Type your message..."
                   className="chat-input"
                 />
