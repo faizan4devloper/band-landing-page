@@ -2,14 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BeatLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPaperPlane, 
-  faUpload, 
-  faRedo, 
-  faRobot, 
-  faUser 
-} from '@fortawesome/free-solid-svg-icons';
-
+import { faPaperPlane, faUpload, faRedo, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import './Chat.css';
 
 const Chat = () => {
@@ -26,14 +19,12 @@ const Chat = () => {
 
   useEffect(() => {
     const ws = new WebSocket(websocketUrl);
-
     ws.onopen = () => console.log('Connected to WebSocket');
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       setTyping(false);
       setMessages((prev) => [...prev, { type: 'bot', text: data.message }]);
     };
-
     ws.onclose = () => console.log('WebSocket connection closed');
     return () => ws.close();
   }, []);
@@ -67,14 +58,12 @@ const Chat = () => {
         method: 'GET',
         headers: { 'Accept': 'application/json' },
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch trace data');
       }
-      
+
       const data = await response.json();
-      console.log('Raw Trace API Response:', data);
-      
       setTraceData(data);
       setIsTraceEnabled(true);
     } catch (error) {
@@ -100,7 +89,7 @@ const Chat = () => {
               <FontAwesomeIcon icon={faRobot} className="header-icon" />
               HCLTech Insurance Agent - Demo
             </div>
-            
+
             <div className="chat-messages">
               <AnimatePresence>
                 {messages.map((msg, index) => (
@@ -123,7 +112,7 @@ const Chat = () => {
                   </motion.div>
                 ))}
               </AnimatePresence>
-              
+
               {typing && (
                 <div className="typing-indicator">
                   <BeatLoader color="#785ce5" size={20} />
@@ -229,147 +218,3 @@ const Chat = () => {
 };
 
 export default Chat;
-
-
-
-:root {
-  --primary-color: #5c6bc0;
-  --secondary-color: #7986cb;
-  --background-light: #f5f5f5;
-  --white: #ffffff;
-  --text-color: #333;
-  --border-color: #e0e0e0;
-  --button-hover: #3f51b5;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  background-color: var(--background-light);
-  line-height: 1.6;
-  color: var(--text-color);
-}
-
-.chat-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background-color: var(--background-light);
-}
-
-.chat-container {
-  width: 100%;
-  max-width: 960px;
-  background-color: var(--white);
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  display: flex;
-  max-height: 700px;
-}
-
-.chat-header {
-  background-color: var(--primary-color);
-  color: var(--white);
-  padding: 15px;
-  text-align: center;
-  font-weight: 600;
-}
-
-.chat-messages {
-  padding: 20px;
-  background-color: #f9f9fc;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.message-icon {
-  margin-right: 10px;
-}
-
-.message-text {
-  background-color: #e1f5fe;
-  padding: 10px 15px;
-  border-radius: 10px;
-  font-size: 16px;
-  max-width: 70%;
-  word-wrap: break-word;
-}
-
-.user-message .message-text {
-  background-color: #c5e1f7;
-}
-
-.bot-message .message-text {
-  background-color: #bbdefb;
-}
-
-.chat-input-container {
-  padding: 15px;
-  background-color: var(--white);
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-}
-
-.input-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.chat-input {
-  width: 80%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-}
-
-.input-icons {
-  display: flex;
-  align-items: center;
-}
-
-.input-icons .btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.trace-panel {
-  width: 0;
-  padding: 20px;
-  background-color: var(--primary-color);
-  color: var(--white);
-  transition: width 0.3s;
-}
-
-.trace-header h3 {
-  font-size: 18px;
-}
-
-.trace-step {
-  margin-bottom: 15px;
-  background-color: #b3e5fc;
-  padding: 10px;
-  border-radius: 8px;
-}
-
-.no-trace {
-  text-align: center;
-  color: #aaa;
-}
