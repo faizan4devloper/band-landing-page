@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { BeatLoader } from 'react-spinners';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,138 +14,69 @@ const Chat = () => {
   const [isTraceEnabled, setIsTraceEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  
+  const [isSending, setIsSending] = useState(false); // For send button loader
+
+  const chatEndRef = useRef(null); // Reference for auto-scrolling
+  const wsRef = useRef(null);
 
   const websocketUrl = "dummy";
   const httpEndpoint = "dummy2";
   const traceApiEndpoint = "dummy3";
 
-  const wsRef = useRef(null);
-
-  // Establish WebSocket connection
   useEffect(() => {
-    // Create WebSocket connection
     wsRef.current = new WebSocket(websocketUrl);
 
-    wsRef.current.onopen = () => {
-      console.log('Connected to WebSocket');
-    };
+    wsRef.current.onopen = () => console.log('Connected to WebSocket');
 
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received WebSocket message:', data);
-
-        // Handle different message types
         if (data.type === 'bot_response') {
           setTyping(false);
           setMessages((prev) => [...prev, { type: 'bot', text: data.data }]);
-          
-          // Update session ID if provided
-          if (data.sessionId) {
-            setSessionId(data.sessionId);
-          }
+          if (data.sessionId) setSessionId(data.sessionId);
         }
       } catch (error) {
         console.error('Error parsing WebSocket message:', error);
       }
     };
 
-    wsRef.current.onerror = (error) => {
-      console.error('WebSocket Error:', error);
-    };
+    wsRef.current.onerror = (error) => console.error('WebSocket Error:', error);
+    wsRef.current.onclose = () => console.log('WebSocket connection closed');
 
-    wsRef.current.onclose = () => {
-      console.log('WebSocket connection closed');
-    };
-
-    // Cleanup on component unmount
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
+    return () => wsRef.current?.close();
   }, [websocketUrl]);
 
-  // Send message via WebSocket
+  useEffect(() => {
+    // Auto-scroll to the latest message
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const sendMessage = useCallback(() => {
     if (!input.trim()) return;
 
-    // Add user message
     setMessages((prev) => [...prev, { type: 'user', text: input }]);
     setTyping(true);
+    setIsSending(true);
 
-    // Prepare payload
-    const payload = {
-      action: 'sendmessage',
-      inputText: input,
-    };
+    const payload = { action: 'sendmessage', inputText: input };
+    if (sessionId) payload.sessionId = sessionId;
 
-    // Include session ID if available
-    if (sessionId) {
-      payload.sessionId = sessionId;
-    }
-
-    // Send message if WebSocket is open
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      try {
-        wsRef.current.send(JSON.stringify(payload));
-      } catch (error) {
-        console.error('Error sending message:', error);
-        setTyping(false);
-      }
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(payload));
     } else {
       console.warn('WebSocket is not open');
       setTyping(false);
     }
 
-    // Clear input
     setInput('');
+    setIsSending(false);
   }, [input, sessionId]);
 
-  // Handle file upload
-  const handleUpload = async (file) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result.split(',')[1];
-      
-      try {
-        const response = await fetch(httpEndpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: base64 }),
-        });
-        
-        const data = await response.json();
-        
-        // Send image URL as a message
-        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-          const payload = {
-            action: 'sendmessage',
-            inputText: data.imageUrl,
-          };
-
-          if (sessionId) {
-            payload.sessionId = sessionId;
-          }
-
-          wsRef.current.send(JSON.stringify(payload));
-          
-          // Add user message about image upload
-          setMessages((prev) => [
-            ...prev, 
-            { type: 'user', text: 'Image uploaded' }
-          ]);
-          setTyping(true);
-        }
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
-    };
-    reader.readAsDataURL(file);
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') sendMessage();
   };
 
-  // Fetch trace data
   const fetchTraceData = async () => {
     setIsLoading(true);
     try {
@@ -154,34 +84,86 @@ const Chat = () => {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch trace data');
-      }
-
       const data = await response.json();
       setTraceData(data);
       setIsTraceEnabled(true);
     } catch (error) {
       console.error('Error fetching trace data:', error);
-      setTraceData([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle key press for sending message
-  const handleKeyPress = (event) => {
-    if (event.key === 'Enter') {
-      sendMessage();
-    }
-  };
-
-
   return (
     <div className="chat-wrapper">
-      {/* Left Panel - Chatbot */}
       <div className="chatbot-panel">
+        <div className="chat-header">
+          <FontAwesomeIcon icon={faRobot} className="header-icon" />
+          HCLTech Insurance Agent - Demo
+        </div>
+        <div className="chat-messages">
+          <AnimatePresence>
+            {messages.map((msg, index) => (
+              <motion.div
+                key={index}
+                className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="message-icon">
+                  <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faRobot} />
+                </div>
+                <div className="message-text">{msg.text}</div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+          {typing && (
+            <div className="typing-indicator">
+              <BeatLoader color="#785ce5" size={12} />
+            </div>
+          )}
+          <div ref={chatEndRef} />
+        </div>
+
+        <div className="chat-input-container">
+          <div className="input-wrapper">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Type your message..."
+              className="chat-input"
+            />
+            <button onClick={sendMessage} className="btn btn-send" disabled={isSending}>
+              {isSending ? <BeatLoader color="#fff" size={8} /> : <FontAwesomeIcon icon={faPaperPlane} />}
+            </button>
+          </div>
+          <div className="button-group">
+            <button onClick={fetchTraceData} className="btn btn-trace" disabled={isLoading}>
+              {isLoading ? <BeatLoader color="#fff" size={12} /> : 'Enable Trace'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Chat;
+
+
+
+
+
+
+
+
+
+
+
+
         <div className="chat-header">
           <FontAwesomeIcon icon={faRobot} className="header-icon" />
           HCLTech Insurance Agent - Demo
