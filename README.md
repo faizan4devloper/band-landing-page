@@ -1,3 +1,110 @@
+import React, { useState } from 'react';
+import { BeatLoader } from 'react-spinners';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp, faCopy, faCode } from '@fortawesome/free-solid-svg-icons';
+
+import './TracePanel.css';
+
+const JSONViewer = ({ data }) => {
+  const renderJSON = (obj, depth = 0) => {
+    if (obj === null) return <span className="json-null">null</span>;
+    
+    if (typeof obj !== 'object') {
+      return (
+        <span className={`json-\${typeof obj}`}>
+          {JSON.stringify(obj)}
+        </span>
+      );
+    }
+
+    if (Array.isArray(obj)) {
+      return (
+        <div className="json-array">
+          [
+          {obj.map((item, index) => (
+            <div 
+              key={index} 
+              style={{ paddingLeft: `\${depth * 20}px` }} 
+              className="json-array-item"
+            >
+              {renderJSON(item, depth + 1)}
+              {index < obj.length - 1 && ','}
+            </div>
+          ))}
+          ]
+        </div>
+      );
+    }
+
+    return (
+      <div className="json-object">
+        {'{'}
+        {Object.entries(obj).map(([key, value]) => (
+          <div 
+            key={key} 
+            style={{ paddingLeft: `\${depth * 20}px` }} 
+            className="json-object-item"
+          >
+            <span className="json-key">"{key}":</span> 
+            {renderJSON(value, depth + 1)}
+          </div>
+        ))}
+        {'}'}
+      </div>
+    );
+  };
+
+  return (
+    <div className="custom-json-viewer">
+      {renderJSON(data)}
+    </div>
+  );
+};
+
+const TracePanel = ({ isLoading, traceData, isTraceEnabled }) => {
+  const [expandedSteps, setExpandedSteps] = useState({});
+  const [copiedSteps, setCopiedSteps] = useState({});
+
+  if (!isTraceEnabled) return null;
+
+  const toggleStepExpansion = (stepIndex) => {
+    setExpandedSteps(prev => ({
+      ...prev,
+      [stepIndex]: !prev[stepIndex]
+    }));
+  };
+
+  const copyTraceDetails = (details, stepIndex) => {
+    const jsonString = JSON.stringify(details, null, 2);
+    navigator.clipboard.writeText(jsonString).then(() => {
+      setCopiedSteps(prev => ({
+        ...prev,
+        [stepIndex]: true
+      }));
+      
+      // Reset copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedSteps(prev => ({
+          ...prev,
+          [stepIndex]: false
+        }));
+      }, 2000);
+    });
+  };
+
+  return (
+    <div className="trace-panel">
+      <div className="trace-header">
+        <h3>Agent Trace Steps</h3>
+      </div>
+      <div className="trace-content">
+        {isLoading ? (
+          <div className="trace-loading">
+            <BeatLoader color="#785ce5" size={30} />
+          </div>
+        ) : traceData.traces && traceData.traces.length > 0 ? (
+          traceData.traces.map((step, index) => (
             <div key={index} className="trace-step-card">
               <div 
                 className="trace-step-header"
@@ -54,10 +161,18 @@
                 )}
               </AnimatePresence>
             </div>
+          ))
+        ) : (
+          <div className="no-trace-data">
+            <p>No trace data available</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-
-
-
+export default TracePanel;
 
 :root {
   /* Color Palette */
