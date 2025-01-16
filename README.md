@@ -1,3 +1,33 @@
+{
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Content-Type": "application/json"
+}
+
+
+
+
+[
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "POST", "PUT", "DELETE"],
+    "AllowedOrigins": ["*"],  // Replace "*" with your frontend's origin if needed
+    "ExposeHeaders": ["ETag", "x-amz-meta-custom-header"],
+    "MaxAgeSeconds": 3000
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
 def lambda_handler(event, context):
     print(f"Received event: {json.dumps(event)}")
     http_method = event['requestContext']['http']['method']
