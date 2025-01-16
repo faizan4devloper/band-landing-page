@@ -1,616 +1,539 @@
-.chat-wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  gap: 20px;
-  padding: 20px;
-}
+Error uploading image: Error: HTTP error! status: 0, message: 
+    at reader.onload (Chat.js:583:1)
+
+
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { BeatLoader } from 'react-spinners';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faUpload, faRobot, faUser, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import TracePanel from './TracePanel';
+import './Chat.css';
+
+const Chat = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [traceData, setTraceData] = useState([]);
+  const [isTraceEnabled, setIsTraceEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+    const [showTracePanel, setShowTracePanel] = useState(false);
+    const messagesEndRef = useRef(null); // For auto-scrolling
 
-.chatbot-panel,
-.trace-panel {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-.chatbot-panel {
-  /*flex: 3;*/
-  max-width: 600px;
-  height: 90vh;
-}
-
-.trace-panel {
-  flex: 2;
-  height: 90vh;
-}
-
-/*.chat-header {*/
-/*  font-size: 20px;*/
-/*  font-weight: bold;*/
-/*  margin-bottom: 15px;*/
-/*  color: #1462dd;*/
-/*}*/
-
-.message {
-  margin-bottom: 10px;
-}
-
-.bot-message .message-text {
-  background: #e3f2fd;
-}
-
-.user-message .message-text {
-  background: #fbfbfb;
-}
-
-.btn {
-  background-color: #5c6bc0;
-  color: white;
-  margin: 5px 0;
-}
-
-
-.chat-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #eceff1, #f5f5f5);
-}
-
-.chat-container {
-  width: 100%;
-  max-width: 960px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  max-height: 700px;
-}
-
-.chat-content {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-.chat-messages-container {
-  flex: 2;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-}
-
-.chat-header {    
-  background: linear-gradient(304deg, #499dfd 3.03%, #2678f5 27.62%, #6628c5 76.39%, #5b0bb1 112.44%);
-  color: #ffffff;
-  padding: 15px;
-  text-align: center;
-  font-weight: 600;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.header-icon {
-  font-size: 24px;
-  /*margin-right: 10px;*/
-}
-
-.powered-by {
-  position: relative;
-  font-style: italic;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.powered-by::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(to right, #ff9966, #ff5e62);
-  transition: width 0.3s ease;
-}
-
-.powered-by:hover::after {
-  width: 100%;
-}
-
-.chat-messages {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f9f9fc;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.message {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-.user-message {
-  justify-content: flex-start;
-}
-
-.bot-message {
-  justify-content: flex-end;
-}
-
-.message-icon {
-  margin-right: 10px;
-}
-
-.message-text {
-  background-color: #e1f5fe;
-  padding: 10px 15px;
-  border-radius: 10px;
-  font-size: 14px;
-  max-width: 70%;
-  word-wrap: break-word;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.user-message .message-text {
-  background-color: #fbfbfb;
-}
-
-.bot-message .message-text {
-  background-color: #bbdefb;
-}
-
-.chat-input-container {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-}
-
-.input-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #ffffff;
-  padding: 8px;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.chat-input {
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  margin-right: 10px;
-  font-size: 16px;
-}
-
-.input-icons .btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
-}
-
-.input-icons .btn-send {
-  background:
-linear-gradient(304deg,#499dfd 3.03%,#2678f5 27.62%,#6628c5 76.39%,#5b0bb1 112.44%)
-;
-  color: #ffffff;
-  border-radius: 50%;
-  padding: 12px;
-  font-size: 18px;
-  transition: background-color 0.3s ease;
-}
-
-.input-icons .btn-send:hover {
-  background-color: #3949ab;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-}
-
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
-  background:
-linear-gradient(304deg,#499dfd 3.03%,#2678f5 27.62%,#6628c5 76.39%,#5b0bb1 112.44%)
-;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.btn-icon {
-  margin-right: 8px;
-}
-
-.btn:hover {
-  background-color: #3949ab;
-}
-
-.btn:active {
-  transform: scale(0.95);
-  background-color: #303f9f;
-}
-
-.btn-secondary {
-  background-color: #26a69a;
-}
-
-.btn-secondary:hover {
-  background-color: #1b8779;
-}
-
-.btn-secondary:active {
-  background-color: #177466;
-}
-
-.btn-trace {
-  background-color: #ff7043;
-}
-
-.btn-trace:hover {
-  background-color: #ff5722;
-}
-
-.btn-trace:active {
-  background-color: #e64a19;
-}
-
-.btn:disabled {
-  background-color: #bdbdbd;
-  cursor: not-allowed;
-}
-
-.trace-panel {
-  width: 300px;
-  padding: 20px;
-  /*background-color: #5c6bc0;*/
-  color: #000;
-  overflow-y: auto;
-  border-left: 1px solid #e0e0e0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.trace-header h3 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
-
-.trace-content {
-  width: 100%;
-}
-
-.trace-step {
-  margin-bottom: 15px;
-  background-color: #9fa8da;
-  padding: 15px;
-  border-radius: 8px;
-  color: #ffffff;
-}
-
-.trace-step-header {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.no-trace {
-  text-align: center;
-  color: #ddd;
-}
-.error-trace{
-    text-align: center;
-
-
-}
-
-
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-.typing-indicator {
-  display: flex;
-  justify-content: flex-end;
-  padding: 10px;
-}
-
-.btn-send {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #5c6bc0;
-  border: none;
-  color: white;
-  padding: 10px;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-send:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-.right-chevron{
-  padding-left: 5px;
-}
-.btn-trace {
-  background-color: #ff7043;
-  transition: all 0.3s ease;
-}
-
-.btn-trace.active {
-  background-color: #e64a19;
-}
-//////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-trace.css
-
-
-:root {
-  /* Color Palette */
-  --primary-color: #785ce5;
-  --secondary-color: #6a47c3;
-  --background-light: #f5f5f5;
-  --background-dark: #f4f4f4;
-  --text-primary: #333;
-  --text-secondary: #666;
-  --border-color: #e0e0e0;
   
-  /* Typography */
-  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-family-mono: 'Courier New', Courier, monospace;
   
-  /* Spacing */
-  --space-xs: 0.5rem;
-  --space-sm: 0.75rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
+
+  const websocketUrl = "api";
+  const httpEndpoint = "api1";
+  const traceApiEndpoint = "api2";
+
+  const wsRef = useRef(null);
   
-  /* Transitions */
-  --transition-speed: 0.3s;
+  // Auto-scroll to the bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typing]);
+
+  // Establish WebSocket connection
+  useEffect(() => {
+    // Create WebSocket connection
+    wsRef.current = new WebSocket(websocketUrl);
+
+    wsRef.current.onopen = () => {
+      console.log('Connected to WebSocket');
+    };
+
+    wsRef.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Received WebSocket message:', data);
+
+        // Handle different message types
+        if (data.type === 'bot_response') {
+          setTyping(false);
+          setMessages((prev) => [...prev, { type: 'bot', text: data.data }]);
+          
+          // Update session ID if provided
+          if (data.sessionId) {
+            setSessionId(data.sessionId);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    wsRef.current.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+    };
+
+    wsRef.current.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    // Cleanup on component unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [websocketUrl]);
+
+  // Send message via WebSocket
+  const sendMessage = useCallback(() => {
+    if (!input.trim()) return;
+
+    // Add user message
+    setMessages((prev) => [...prev, { type: 'user', text: input }]);
+    setTyping(true);
+
+    // Prepare payload
+    const payload = {
+      action: 'sendmessage',
+      inputText: input,
+    };
+
+    // Include session ID if available
+    if (sessionId) {
+      payload.sessionId = sessionId;
+    }
+
+    // Send message if WebSocket is open
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      try {
+        wsRef.current.send(JSON.stringify(payload));
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setTyping(false);
+      }
+    } else {
+      console.warn('WebSocket is not open');
+      setTyping(false);
+    }
+
+    // Clear input
+    setInput('');
+  }, [input, sessionId]);
+
+  // Handle file upload
+  // const handleUpload = async (file) => {
+  //   const reader = new FileReader();
+  //   reader.onload = async (e) => {
+  //     const base64 = e.target.result.split(',')[1];
+      
+  //     try {
+  //       const response = await fetch(httpEndpoint, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ image: base64 }),
+  //       });
+        
+  //       const data = await response.json();
+        
+  //       // Send image URL as a message
+  //       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+  //         const payload = {
+  //           action: 'sendmessage',
+  //           inputText: data.imageUrl,
+  //         };
+
+  //         if (sessionId) {
+  //           payload.sessionId = sessionId;
+  //         }
+
+  //         wsRef.current.send(JSON.stringify(payload));
+          
+  //         // Add user message about image upload
+  //         setMessages((prev) => [
+  //           ...prev, 
+  //           { type: 'user', text: 'Image uploaded' }
+  //         ]);
+  //         setTyping(true);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error uploading image:', error);
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
   
-  /* Shadows */
-  --shadow-subtle: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.trace-panel {
-  width: 100%;
-  max-width: 600px;
-  background-color: white;
-  border-radius: 16px;
-  box-shadow: var(--shadow-subtle);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  font-family: var(--font-family-base);
-}
-
-.trace-header {
-     padding: 15px;
-    background: linear-gradient(304deg, #499dfd 3.03%, #2678f5 27.62%, #6628c5 76.39%, #5b0bb1 112.44%);
-    border-bottom: 1px solid var(--border-color);
-    display: flex
-;
-    border-radius: 10px;
-    color: #fff;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    overflow: hidden;
-    font-weight: 600;
-    font-size: 16px;
-    margin-bottom: 10px;
-}
-
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .trace-header {
-    padding: var(--space-sm) var(--space-md);
-  }
+  const handleUpload = async (file) => {
+  const reader = new FileReader();
   
-  .trace-header h3 {
-    font-size: 1rem;
-  }
-}
+  reader.onload = async (e) => {
+    const base64 = e.target.result.split(',')[1];
+    
+    try {
+      // Validate file size (optional but recommended)
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSizeInBytes) {
+        alert('File is too large. Maximum file size is 5MB.');
+        return;
+      }
 
-.trace-content {
-  max-height: 600px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Please upload a JPEG, PNG, or GIF.');
+        return;
+      }
 
-.trace-step-card {
-  border-bottom: 1px solid var(--border-color);
-  transition: background-color var(--transition-speed) ease;
-   box-shadow: 
-    0 1px 2px rgba(0, 0, 0, 0.04);
-}
+      const response = await fetch(httpEndpoint, {
+  method: 'POST',
+  // mode: 'cors', // Ensure CORS mode is enabled
+  mode: 'no-cors', // Ensure CORS mode is enabled
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    image: base64,
+    filename: file.name,
+    fileType: file.type,
+  }),
+});
+      // Check if response is ok
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: \${response.status}, message: \${errorText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Validate response
+      if (!data.imageUrl) {
+        throw new Error('No image URL received');
+      }
+      
+      // Send image URL via WebSocket
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        const payload = {
+          action: 'sendmessage',
+          inputText: data.imageUrl,
+          sessionId: sessionId || null, // Use null if no sessionId
+        };
 
+        wsRef.current.send(JSON.stringify(payload));
+        
+        // Add user message about image upload
+        setMessages((prev) => [
+          ...prev, 
+          { 
+            type: 'user', 
+            text: 'Image uploaded', 
+            imageUrl: data.imageUrl 
+          }
+        ]);
+        
+        setTyping(true);
+      } else {
+        console.warn('WebSocket is not open. Unable to send image message.');
+      }
+    
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      
+      // User-friendly error handling
+      const errorMessage = error.message || 'Failed to upload image';
+      setMessages((prev) => [
+        ...prev, 
+        { 
+          type: 'user', 
+          text: `Error: \${errorMessage}` 
+        }
+      ]);
+    }
+  };
 
-.trace-step-header {
+  // Error handling for FileReader
+  reader.onerror = (error) => {
+    console.error('Error reading file:', error);
+    alert('Failed to read file. Please try again.');
+  };
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--space-md) var(--space-lg);
-  cursor: pointer;
-  transition: background-color var(--transition-speed) ease;
-}
-
-.trace-step-header:hover {
-  background-color: var(--background-light);
-}
-
-.trace-step-header-content {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-}
-
-.trace-step-number {
-  font-weight: 600;
+  // Trigger file reading
+  reader.readAsDataURL(file);
+};
   
-  color: var(--primary-color);
-  font-size: 1rem;
-}
+    // Modify fetchTraceData function
+//   const toggleTraceData = async () => {
+//     // If panel is already showing, just hide it
+//     if (showTracePanel) {
+//       setShowTracePanel(false);
+//       return;
+//     }
 
-.trace-agent-name {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: var(--space-xs);
-}
+// }
 
-.expand-icon {
-  color: var(--primary-color);
-  transition: transform var(--transition-speed) ease;
-}
+  // Fetch trace data
+  const toggleTraceData = async () => {
+     if (showTracePanel) {
+      setShowTracePanel(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const response = await fetch(traceApiEndpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
 
-.trace-step-details {
-  background-color: white;
-  padding: var(--space-lg);
-}
+      if (!response.ok) {
+        throw new Error('Failed to fetch trace data');
+      }
 
-.trace-step-metadata {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-  align-items: center;
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--border-color);
-}
+      const data = await response.json();
+      setTraceData(data);
+      setIsTraceEnabled(true);
+            setShowTracePanel(true);  // Show trace panel
+    } catch (error) {
+      console.error('Error fetching trace data:', error);
+      setTraceData([]);
+            setShowTracePanel(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-.copy-btn {
-      display: flex
-;
-    align-items: center;
-    gap: 4px;
-    /* background: linear-gradient(304deg, #499dfd 3.03%, #2678f5 27.62%, #6628c5 76.39%, #5b0bb1 112.44%); */
-    color: #785ce5;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: background-color var(--transition-speed) ease;
-}
+  // Handle key press for sending message
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
-/*.copy-btn:hover {*/
-/*  background-color: var(--secondary-color);*/
-/*}*/
 
-.copy-btn.copied {
-  background-color: #4CAF50;
-}
+  return (
+    <div className="chat-wrapper">
+      {/* Left Panel - Chatbot */}
+      <div className="chatbot-panel">
+        <div className="chat-header">
+  <FontAwesomeIcon icon={faRobot} className="header-icon" />
+  Insurance Claim Assist 
+  <span className="powered-by">Powered by Agentic AI</span>
+</div>
+        <div className="chat-messages">
+          <AnimatePresence>
+            {messages.map((msg, index) => (
+              <motion.div
+                key={index}
+                className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="message-icon">
+                  <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faRobot} className={`${msg.type}-icon`} />
+                </div>
+                <div className="message-text">{msg.text}</div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
-.json-viewer-container {
-  background-color: var(--background-dark);
-  border-radius: 12px;
-  padding: var(--space-md);
-  max-height: 220px;
-  overflow-y: auto;
-}
+          {typing && (
+            <div className="typing-indicator">
+              <BeatLoader color="#785ce5" size={12} />
+            </div>
+          )}
+                    <div ref={messagesEndRef} />
 
-.custom-json-viewer {
-  font-family: var(--font-family-mono);
-  font-size: 0.8rem;
-  line-height: 1.6;
-}
+        </div>
 
-/* JSON Syntax Highlighting */
-.json-key { color: var(--primary-color); }
-.json-string { color: #2ea44f; }
-.json-number { color: #0366d6; }
-.json-boolean { color: #d73a49; }
-.json-null { 
-  color: #6a737d; 
-  font-style: italic; 
-}
+        <div className="chat-input-container">
+          <div className="input-wrapper">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Type your message..."
+              className="chat-input"
+            />
+            <button onClick={sendMessage} className="btn btn-send">
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div>
+          <div className="button-group">
+            <input
+              type="file"
+              id="image-upload"
+              onChange={(e) => handleUpload(e.target.files[0])}
+              style={{ display: 'none' }}
+            />
+            <button onClick={() => document.getElementById('image-upload').click()} className="btn btn-secondary">
+              <FontAwesomeIcon icon={faUpload} className="btn-icon" />
+              Upload
+            </button>
+                      <button 
+            onClick={toggleTraceData} 
+            className="btn btn-trace" 
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <BeatLoader color="#fff" size={12} />
+            ) : showTracePanel ? (
+              <>
+                Hide Trace 
+                <FontAwesomeIcon 
+                  icon={faChevronRight} 
+                  className="btn-icon right-chevron" 
+                />
+              </>
+            ) : (
+              <>
+                Enable Trace 
+                <FontAwesomeIcon 
+                  icon={faChevronRight} 
+                  className="btn-icon right-chevron" 
+                />
+              </>
+            )}
+          </button>
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .trace-panel {
-    max-width: 100%;
-    border-radius: 0;
-  }
+          </div>
+        </div>
+      </div>
 
-  .trace-step-header,
-  .trace-step-details {
-    padding: var(--space-sm) var(--space-md);
-  }
+      {/* Trace Panel */}
+           {showTracePanel && (
+        <TracePanel 
+          isLoading={isLoading}
+          traceData={traceData}
+          isTraceEnabled={isTraceEnabled}
+          onClose={() => setShowTracePanel(false)}
+        />
+      )}
 
-  .trace-step-metadata {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-sm);
-  }
-}
+    </div>
+  );
+};
 
-/* Accessibility and Focus States */
-.trace-step-header:focus-visible,
-.copy-btn:focus-visible {
-  outline: 2px solid var(--primary-color);
-  outline-offset: 2px;
-}
+export default Chat;
 
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+import os
+import json
+import base64
+import boto3
+from botocore.exceptions import ClientError
 
-.trace-step-details {
-  animation: fadeIn var(--transition-speed) ease-in-out;
-}
+s3 = boto3.client('s3')
+
+# def lambda_handler(event, context):
+#     print(f"Received event: {json.dumps(event)}")
+#     http_method = event['requestContext']['http']['method']
+#     domain_name = event['requestContext']['domainName']
+#     stage = event['requestContext']['stage']
+#     http_endpoint = f"https://{domain_name}/{stage}/"
+#     websocket_url = os.environ['WEBSOCKET_URL']
+#     bucket_name = os.environ['IMAGE_BUCKET_SUBMITTED_BY_UI']
+
+#     if http_method == 'GET':
+#         # Return the HTML content
+#         return {
+#             'statusCode': 200,
+#             'headers': {'Content-Type': 'text/html'},
+#             'body': "Frontend is separate. Use React app."
+#         }
+
+#     elif http_method == 'POST':
+#         try:
+#             body = json.loads(event['body'])
+#             image_data = body.get('image')
+#             if not image_data:
+#                 return {
+#                     'statusCode': 400,
+#                     'body': json.dumps({'message': 'Image data not provided'})
+#                 }
+#             image_data = base64.b64decode(image_data)
+#             image_key = f"images/{context.aws_request_id}.png"
+#             s3.put_object(Bucket=bucket_name, Key=image_key, Body=image_data, ContentType='image/png')
+#             image_url = f"{bucket_name}.s3.amazonaws.com/{image_key}"
+
+#             return {
+#                 'statusCode': 200,
+#                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+#                 'body': json.dumps({'imageUrl': image_url})
+#             }
+#         except ClientError as e:
+#             print(e)
+#             return {
+#                 'statusCode': 500,
+#                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+#                 'body': json.dumps({'message': 'Error uploading image to S3'})
+#             }
+#         except Exception as e:
+#             print(e)
+#             return {
+#                 'statusCode': 500,
+#                 'body': json.dumps({'message': 'Internal server error'})
+#             }
+
+#     else:
+#         return {
+#             'statusCode': 405,
+#             'body': json.dumps({'message': 'Method not allowed'})
+#         }
+
+def lambda_handler(event, context):
+    print(f"Received event: {json.dumps(event)}")
+    http_method = event['requestContext']['http']['method']
+    domain_name = event['requestContext']['domainName']
+    stage = event['requestContext']['stage']
+    http_endpoint = f"https://{domain_name}/{stage}/"
+    websocket_url = os.environ['WEBSOCKET_URL']
+    bucket_name = os.environ['IMAGE_BUCKET_SUBMITTED_BY_UI']
+
+    if http_method == 'OPTIONS':  # Handle preflight request
+        return {
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
+        }
+
+    if http_method == 'POST':
+        try:
+            body = json.loads(event['body'])
+            image_data = body.get('image')
+            if not image_data:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'message': 'Image data not provided'})
+                }
+
+            image_data = base64.b64decode(image_data)
+            image_key = f"images/{context.aws_request_id}.png"
+            s3.put_object(Bucket=bucket_name, Key=image_key, Body=image_data, ContentType='image/png')
+
+            image_url = f"{bucket_name}.s3.amazonaws.com/{image_key}"
+            return {
+                'statusCode': 200,
+                'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'imageUrl': image_url})
+            }
+        except ClientError as e:
+            print(e)
+            return {
+                'statusCode': 500,
+                'headers': {'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'message': 'Error uploading image to S3'})
+            }
+        except Exception as e:
+            print(e)
+            return {
+                'statusCode': 500,
+                'headers': {'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'message': 'Internal server error'})
+            }
+    else:
+        return {
+            'statusCode': 405,
+            'headers': {'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'message': 'Method not allowed'})
+        }
+
+
