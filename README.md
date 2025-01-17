@@ -1,3 +1,19 @@
+def lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Origin': 'https://29874210d84844ba8a40b817ea6de60c.vfs.cloud9.us-east-1.amazonaws.com',
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+        },
+        'body': json.dumps({'message': 'Success'})
+    }
+
+
+
+
+
 import os
 import json
 import base64
