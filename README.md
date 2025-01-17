@@ -1,3 +1,119 @@
+import os
+import json
+import base64
+import boto3
+from botocore.exceptions import ClientError
+
+# Initialize the S3 client
+s3 = boto3.client('s3')
+
+def lambda_handler(event, context):
+    try:
+        # Log the received event for debugging
+        print(f"Received event: {json.dumps(event)}")
+        
+        # Extract necessary values from the event
+        http_method = event['requestContext']['http']['method']
+        domain_name = event['requestContext']['domainName']
+        stage = event['requestContext']['stage']
+        http_endpoint = f"https://{domain_name}/{stage}/"
+        
+        # Retrieve environment variables
+        websocket_url = os.environ.get('WEBSOCKET_URL')
+        bucket_name = os.environ.get('IMAGE_BUCKET_SUBMITTED_BY_UI')
+
+        # Ensure required environment variables are set
+        if not websocket_url or not bucket_name:
+            raise EnvironmentError("Missing required environment variables.")
+
+        # Handle preflight requests for CORS
+        if http_method == 'OPTIONS':
+            return {
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                },
+            }
+
+        # Handle POST requests
+        if http_method == 'POST':
+            body = json.loads(event.get('body', '{}'))  # Safely handle missing or invalid body
+            image_data = body.get('image')
+
+            if not image_data:
+                return {
+                    'statusCode': 400,
+                    'headers': {'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'message': 'Image data not provided'})
+                }
+
+            try:
+                # Decode the base64 image data
+                image_data = base64.b64decode(image_data)
+            except base64.binascii.Error as decode_error:
+                print(f"Base64 decode error: {decode_error}")
+                return {
+                    'statusCode': 400,
+                    'headers': {'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'message': 'Invalid base64 image data'})
+                }
+
+            # Generate a unique key for the image
+            image_key = f"images/{context.aws_request_id}.png"
+
+            try:
+                # Upload the image to S3
+                s3.put_object(
+                    Bucket=bucket_name,
+                    Key=image_key,
+                    Body=image_data,
+                    ContentType='image/png'
+                )
+
+                # Generate the public image URL
+                image_url = f"https://{bucket_name}.s3.amazonaws.com/{image_key}"
+
+                return {
+                    'statusCode': 200,
+                    'headers': {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': json.dumps({'imageUrl': image_url})
+                }
+            except ClientError as e:
+                print(f"S3 upload error: {e}")
+                return {
+                    'statusCode': 500,
+                    'headers': {'Access-Control-Allow-Origin': '*'},
+                    'body': json.dumps({'message': 'Error uploading image to S3'})
+                }
+
+        # Handle unsupported HTTP methods
+        else:
+            return {
+                'statusCode': 405,
+                'headers': {'Access-Control-Allow-Origin': '*'},
+                'body': json.dumps({'message': 'Method not allowed'})
+            }
+
+    except Exception as e:
+        print(f"Unhandled error: {e}")
+        return {
+            'statusCode': 500,
+            'headers': {'Access-Control-Allow-Origin': '*'},
+            'body': json.dumps({'message': 'Internal server error'})
+        }
+
+
+
+
+
+
+
+
 Access to fetch at 'api' from origin 'https://29874210d84844ba8a40b817ea6de60c.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'.
 
 
