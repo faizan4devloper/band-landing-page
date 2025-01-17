@@ -1,6 +1,4 @@
-Error uploading image: Error: HTTP error! status: 0, message: 
-    at reader.onload (Chat.js:583:1)
-
+Access to fetch at 'api' from origin 'https://29874210d84844ba8a40b817ea6de60c.vfs.cloud9.us-east-1.amazonaws.com' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'.
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -25,9 +23,9 @@ const Chat = () => {
   
   
 
-  const websocketUrl = "api";
-  const httpEndpoint = "api1";
-  const traceApiEndpoint = "api2";
+  const websocketUrl = "api1";
+  const httpEndpoint = "api2";
+  const traceApiEndpoint = "api3";
 
   const wsRef = useRef(null);
   
@@ -166,45 +164,37 @@ const Chat = () => {
     const base64 = e.target.result.split(',')[1];
     
     try {
-      // Validate file size (optional but recommended)
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-      if (file.size > maxSizeInBytes) {
-        alert('File is too large. Maximum file size is 5MB.');
-        return;
-      }
-
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Invalid file type. Please upload a JPEG, PNG, or GIF.');
-        return;
-      }
-
       const response = await fetch(httpEndpoint, {
-  method: 'POST',
-  // mode: 'cors', // Ensure CORS mode is enabled
-  mode: 'no-cors', // Ensure CORS mode is enabled
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    image: base64,
-    filename: file.name,
-    fileType: file.type,
-  }),
-});
-      // Check if response is ok
+        method: 'POST',
+        mode: 'cors', // Add this line
+        credentials: 'include', // Optional
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          // Add origin header if needed
+          'Origin': 'https://29874210d84844ba8a40b817ea6de60c.vfs.cloud9.us-east-1.amazonaws.com'
+        },
+        body: JSON.stringify({
+          image: base64,
+          filename: file.name,
+          fileType: file.type,
+        }),
+      });
+
+      // Comprehensive error handling
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(`HTTP error! status: \${response.status}, message: \${errorText}`);
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
       }
       
       const data = await response.json();
+
       
       // Validate response
       if (!data.imageUrl) {
         throw new Error('No image URL received');
       }
+      
       
       // Send image URL via WebSocket
       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -411,6 +401,9 @@ const Chat = () => {
 
 export default Chat;
 
+
+
+
 import os
 import json
 import base64
@@ -418,63 +411,6 @@ import boto3
 from botocore.exceptions import ClientError
 
 s3 = boto3.client('s3')
-
-# def lambda_handler(event, context):
-#     print(f"Received event: {json.dumps(event)}")
-#     http_method = event['requestContext']['http']['method']
-#     domain_name = event['requestContext']['domainName']
-#     stage = event['requestContext']['stage']
-#     http_endpoint = f"https://{domain_name}/{stage}/"
-#     websocket_url = os.environ['WEBSOCKET_URL']
-#     bucket_name = os.environ['IMAGE_BUCKET_SUBMITTED_BY_UI']
-
-#     if http_method == 'GET':
-#         # Return the HTML content
-#         return {
-#             'statusCode': 200,
-#             'headers': {'Content-Type': 'text/html'},
-#             'body': "Frontend is separate. Use React app."
-#         }
-
-#     elif http_method == 'POST':
-#         try:
-#             body = json.loads(event['body'])
-#             image_data = body.get('image')
-#             if not image_data:
-#                 return {
-#                     'statusCode': 400,
-#                     'body': json.dumps({'message': 'Image data not provided'})
-#                 }
-#             image_data = base64.b64decode(image_data)
-#             image_key = f"images/{context.aws_request_id}.png"
-#             s3.put_object(Bucket=bucket_name, Key=image_key, Body=image_data, ContentType='image/png')
-#             image_url = f"{bucket_name}.s3.amazonaws.com/{image_key}"
-
-#             return {
-#                 'statusCode': 200,
-#                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-#                 'body': json.dumps({'imageUrl': image_url})
-#             }
-#         except ClientError as e:
-#             print(e)
-#             return {
-#                 'statusCode': 500,
-#                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-#                 'body': json.dumps({'message': 'Error uploading image to S3'})
-#             }
-#         except Exception as e:
-#             print(e)
-#             return {
-#                 'statusCode': 500,
-#                 'body': json.dumps({'message': 'Internal server error'})
-#             }
-
-#     else:
-#         return {
-#             'statusCode': 405,
-#             'body': json.dumps({'message': 'Method not allowed'})
-#         }
-
 def lambda_handler(event, context):
     print(f"Received event: {json.dumps(event)}")
     http_method = event['requestContext']['http']['method']
@@ -535,5 +471,7 @@ def lambda_handler(event, context):
             'headers': {'Access-Control-Allow-Origin': '*'},
             'body': json.dumps({'message': 'Method not allowed'})
         }
+
+
 
 
