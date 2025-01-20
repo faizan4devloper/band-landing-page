@@ -1,3 +1,49 @@
+const toggleTraceData = async (index) => {
+  setIsTraceLoading(true); // Start loading
+
+  // Update specific message's loading state
+  setMessages((prevMessages) =>
+    prevMessages.map((msg, i) =>
+      i === index ? { ...msg, isTraceLoading: true } : msg
+    )
+  );
+
+  try {
+    const response = await fetch(traceApiEndpoint, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    });
+
+    if (!response.ok) throw new Error('Trace fetch failed');
+
+    const data = await response.json();
+    setTraceData(data);
+    setIsTraceEnabled(true);
+
+    // Update specific message's trace panel and loading state
+    setMessages((prevMessages) =>
+      prevMessages.map((msg, i) =>
+        i === index
+          ? { ...msg, isTraceLoading: false, showTracePanel: !msg.showTracePanel }
+          : msg
+      )
+    );
+  } catch (error) {
+    console.error('Trace error:', error);
+
+    // Reset loading state even on error
+    setMessages((prevMessages) =>
+      prevMessages.map((msg, i) =>
+        i === index ? { ...msg, isTraceLoading: false } : msg
+      )
+    );
+  } finally {
+    setIsTraceLoading(false); // Reset global loading state
+  }
+};
+
+
+
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
