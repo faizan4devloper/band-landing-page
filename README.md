@@ -1,3 +1,86 @@
+<div className="chat-messages">
+  <AnimatePresence>
+    {messages.map((msg, index) => (
+      <motion.div
+        key={index}
+        className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="message-icon">
+          <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faRobot} className={`${msg.type}-icon`} />
+        </div>
+        <div className="message-text">{msg.text}</div>
+
+        {/* Add Enable/Hide Trace Button next to bot messages */}
+        {msg.type === 'bot' && (
+          <div className="trace-button-container">
+            <button
+              onClick={toggleTraceData}
+              className={`btn btn-trace ${showTracePanel ? 'active' : ''}`}
+              disabled={isTraceLoading}
+            >
+              {isTraceLoading ? (
+                <BeatLoader color="#fff" size={12} />
+              ) : showTracePanel ? (
+                'Hide Trace'
+              ) : (
+                'Enable Trace'
+              )}
+            </button>
+          </div>
+        )}
+      </motion.div>
+    ))}
+  </AnimatePresence>
+
+  {typing && (
+    <div className="typing-indicator">
+      <BeatLoader color="#785ce5" size={12} />
+    </div>
+  )}
+  <div ref={messagesEndRef} />
+</div>
+
+
+
+
+
+.trace-button-container {
+  margin-top: 5px;
+  text-align: right;
+}
+
+.trace-button-container .btn-trace {
+  padding: 5px 10px;
+  font-size: 12px;
+  background-color: #785ce5;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.trace-button-container .btn-trace:hover {
+  background-color: #6041c7;
+}
+
+.trace-button-container .btn-trace.active {
+  background-color: #ff6b6b;
+}
+
+
+
+
+
+
+
+
+
+
+
 <div className="chat-wrapper">
   {/* Left Panel - Chatbot */}
   <div className="chatbot-panel">
