@@ -1,3 +1,19 @@
+const toggleTraceData = (index) => {
+  setMessages((prevMessages) =>
+    prevMessages.map((msg, i) => ({
+      ...msg,
+      showTracePanel: i === index ? !msg.showTracePanel : false, // Only toggle the clicked one
+    }))
+  );
+};
+
+
+
+
+
+
+
+
 <div className="chat-messages">
   <AnimatePresence>
     {messages.map((msg, index) => (
