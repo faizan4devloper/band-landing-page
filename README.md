@@ -1,54 +1,165 @@
-.chat-wrapper {
-  display: flex;
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  gap: 20px;
-  padding: 20px;
-}
-
-.upload-panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-}
-
-.upload-plus-icon {
-  font-size: 40px;
-  color: #5c6bc0;
-  cursor: pointer;
-}
-
-.upload-wrapper p {
-  margin-top: 10px;
-  font-size: 16px;
-  color: #424242;
-}
-
-.chat-container {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-}
 
 
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { BeatLoader } from 'react-spinners';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane, faUpload, faRobot, faUser, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import TracePanel from './TracePanel';
+import './Chat.css';
 
-
-
-
-
-
+const Chat = () => {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [traceData, setTraceData] = useState([]);
+  const [isTraceEnabled, setIsTraceEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+    const [showTracePanel, setShowTracePanel] = useState(false);
+    const messagesEndRef = useRef(null); // For auto-scrolling
 const [isUploadLoading, setIsUploadLoading] = useState(false);
 const [isTraceLoading, setIsTraceLoading] = useState(false);
+
+  
+  
+
+  const websocketUrl = "dummy";
+ 
+  const httpEndpoint = "dummy";
+  
+  const traceApiEndpoint = "dummy";
+
+  const wsRef = useRef(null);
+  
+  // Auto-scroll to the bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, typing]);
+
+  // Establish WebSocket connection
+  useEffect(() => {
+    // Create WebSocket connection
+    wsRef.current = new WebSocket(websocketUrl);
+
+    wsRef.current.onopen = () => {
+      console.log('Connected to WebSocket');
+    };
+
+    wsRef.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Received WebSocket message:', data);
+
+        // Handle different message types
+        if (data.type === 'bot_response') {
+          setTyping(false);
+          setMessages((prev) => [...prev, { type: 'bot', text: data.data }]);
+          
+          // Update session ID if provided
+          if (data.sessionId) {
+            setSessionId(data.sessionId);
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    wsRef.current.onerror = (error) => {
+      console.error('WebSocket Error:', error);
+    };
+
+    wsRef.current.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    // Cleanup on component unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, [websocketUrl]);
+
+  // Send message via WebSocket
+  const sendMessage = useCallback(() => {
+    if (!input.trim()) return;
+
+    // Add user message
+    setMessages((prev) => [...prev, { type: 'user', text: input }]);
+    setTyping(true);
+
+    // Prepare payload
+    const payload = {
+      action: 'sendmessage',
+      inputText: input,
+    };
+
+    // Include session ID if available
+    if (sessionId) {
+      payload.sessionId = sessionId;
+    }
+
+    // Send message if WebSocket is open
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      try {
+        wsRef.current.send(JSON.stringify(payload));
+      } catch (error) {
+        console.error('Error sending message:', error);
+        setTyping(false);
+      }
+    } else {
+      console.warn('WebSocket is not open');
+      setTyping(false);
+    }
+
+    // Clear input
+    setInput('');
+  }, [input, sessionId]);
+
+  // Handle file upload
+  // const handleUpload = async (file) => {
+  //   const reader = new FileReader();
+  //   reader.onload = async (e) => {
+  //     const base64 = e.target.result.split(',')[1];
+      
+  //     try {
+  //       const response = await fetch(httpEndpoint, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ image: base64 }),
+  //       });
+        
+  //       const data = await response.json();
+        
+  //       // Send image URL as a message
+  //       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+  //         const payload = {
+  //           action: 'sendmessage',
+  //           inputText: data.imageUrl,
+  //         };
+
+  //         if (sessionId) {
+  //           payload.sessionId = sessionId;
+  //         }
+
+  //         wsRef.current.send(JSON.stringify(payload));
+          
+  //         // Add user message about image upload
+  //         setMessages((prev) => [
+  //           ...prev, 
+  //           { type: 'user', text: 'Image uploaded' }
+  //         ]);
+  //         setTyping(true);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error uploading image:', error);
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
+  
 
 const handleUpload = async (file) => {
   const reader = new FileReader();
@@ -136,16 +247,121 @@ const toggleTraceData = async () => {
   } finally {
     setIsTraceLoading(false); // Reset trace loading state
   }
-};
+};  
+    // Modify fetchTraceData function
+//   const toggleTraceData = async () => {
+//     // If panel is already showing, just hide it
+//     if (showTracePanel) {
+//       setShowTracePanel(false);
+//       return;
+//     }
+
+// }
+
+  // Fetch trace data
+  // const toggleTraceData = async () => {
+  //   if (showTracePanel) {
+  //     setShowTracePanel(false);
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch(traceApiEndpoint, {
+  //       method: 'GET',
+  //       headers: { Accept: 'application/json' },
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error('Failed to fetch trace data');
+  //     }
+
+  //     const data = await response.json();
+  //     setTraceData(data);
+  //     setIsTraceEnabled(true);
+  //           setShowTracePanel(true);  // Show trace panel
+  //   } catch (error) {
+  //     console.error('Error fetching trace data:', error);
+  //     setTraceData([]);
+  //           setShowTracePanel(false);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+  // Handle key press for sending message
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
 
 
+  return (
+    <div className="chat-wrapper">
+      {/* Left Panel - Chatbot */}
+      <div className="chatbot-panel">
+        <div className="chat-header">
+  <FontAwesomeIcon icon={faRobot} className="header-icon" />
+  Insurance Claim Assist 
+  <span className="powered-by">Powered by Agentic AI</span>
+</div>
+        <div className="chat-messages">
+          <AnimatePresence>
+            {messages.map((msg, index) => (
+              <motion.div
+                key={index}
+                className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="message-icon">
+                  <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faRobot} className={`${msg.type}-icon`} />
+                </div>
+                <div className="message-text">{msg.text}</div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
+          {typing && (
+            <div className="typing-indicator">
+              <BeatLoader color="#785ce5" size={12} />
+            </div>
+          )}
+                    <div ref={messagesEndRef} />
 
+        </div>
 
-
-
-
-<button
+        <div className="chat-input-container">
+<div className="input-wrapper">
+    <input
+      type="text"
+      value={input}
+      onChange={(e) => setInput(e.target.value)}
+      onKeyDown={handleKeyPress}
+      placeholder="Type your message..."
+      className="chat-input"
+    />
+    <input
+      type="file"
+      id="image-upload"
+      onChange={(e) => handleUpload(e.target.files[0])}
+      style={{ display: 'none' }}
+    />
+    <div className="input-icons">
+      <FontAwesomeIcon 
+        icon={faUpload} 
+        className="upload-icon" 
+        onClick={() => document.getElementById('image-upload').click()}
+      />
+    </div>
+      <button onClick={sendMessage} className="btn btn-send">
+        <FontAwesomeIcon icon={faPaperPlane} />
+      </button>
+  </div>
+          <div className="button-group">
+          
+                      <button
   onClick={toggleTraceData}
   className={`btn btn-trace ${showTracePanel ? 'active' : ''}`}
   disabled={isTraceLoading}
@@ -165,22 +381,23 @@ const toggleTraceData = async () => {
   )}
 </button>
 
+          </div>
+        </div>
+      </div>
 
+      {/* Trace Panel */}
+           {showTracePanel && (
+        <TracePanel 
+          isLoading={isLoading}
+          traceData={traceData}
+          isTraceEnabled={isTraceEnabled}
+          onClose={() => setShowTracePanel(false)}
+        />
+      )}
 
+    </div>
+  );
+};
 
+export default Chat;
 
-
-
-
-<div className="upload-wrapper">
-  {isUploadLoading ? (
-    <BeatLoader color="#5c6bc0" size={16} />
-  ) : (
-    <FontAwesomeIcon
-      icon={faPlusCircle}
-      className="upload-plus-icon"
-      onClick={() => document.getElementById('file-upload').click()}
-    />
-  )}
-  <p>Upload File</p>
-</div>
