@@ -1,3 +1,50 @@
+<div className="chat-messages">
+  <AnimatePresence>
+    {messages.map((msg, index) => (
+      <motion.div
+        key={index}
+        className={`message ${msg.type === 'user' ? 'user-message' : 'bot-message'}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="message-icon">
+          <FontAwesomeIcon icon={msg.type === 'user' ? faUser : faRobot} className={`${msg.type}-icon`} />
+        </div>
+        <div className="message-text">
+          {msg.text}
+
+          {msg.type === 'bot' && (
+            <span className="trace-button-container">
+              <button
+                onClick={() => toggleTraceData(index)} // Pass the message index
+                className={`btn btn-trace ${msg.showTracePanel ? 'active' : ''}`}
+              >
+                {msg.showTracePanel ? 'Hide Trace' : 'Enable Trace'}
+              </button>
+            </span>
+          )}
+
+          {/* Render Trace Panel */}
+          {msg.showTracePanel && <div className="trace-panel">Trace Data for this message</div>}
+        </div>
+      </motion.div>
+    ))}
+  </AnimatePresence>
+
+  {typing && (
+    <div className="typing-indicator">
+      <BeatLoader color="#785ce5" size={12} />
+    </div>
+  )}
+  <div ref={messagesEndRef} />
+</div>
+
+
+
+
+
+
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
