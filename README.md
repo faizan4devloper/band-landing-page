@@ -1,43 +1,3 @@
-const toggleTraceData = async (index) => {
-  // Toggle trace panel visibility for clicked message
-  setMessages((prevMessages) =>
-    prevMessages.map((msg, i) => ({
-      ...msg,
-      showTracePanel: i === index ? !msg.showTracePanel : msg.showTracePanel,
-      isTraceLoading: i === index ? true : msg.isTraceLoading, // Start loading state
-    }))
-  );
-
-  // If the trace panel is enabled, fetch trace data
-  if (!showTracePanel) {
-    setIsTraceLoading(true); // Set trace loading state
-    try {
-      const response = await fetch(traceApiEndpoint, {
-        method: 'GET',
-        headers: { Accept: 'application/json' },
-      });
-
-      if (!response.ok) throw new Error('Trace fetch failed');
-
-      const data = await response.json();
-      setTraceData(data);
-      setIsTraceEnabled(true);
-      setShowTracePanel(true);
-    } catch (error) {
-      console.error('Trace error:', error);
-      setTraceData([]);
-      setShowTracePanel(false);
-    } finally {
-      setIsTraceLoading(false); // Reset trace loading state
-    }
-  }
-};
-
-
-
-
-
-
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -56,7 +16,7 @@ const Chat = () => {
   const [isTraceEnabled, setIsTraceEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-    const [showTracePanel, setShowTracePanel] = useState(false);
+    // const [showTracePanel, setShowTracePanel] = useState(false);
     const messagesEndRef = useRef(null); // For auto-scrolling
 const [isUploadLoading, setIsUploadLoading] = useState(false);
 const [isTraceLoading, setIsTraceLoading] = useState(false);
@@ -158,7 +118,49 @@ const [isTraceLoading, setIsTraceLoading] = useState(false);
     setInput('');
   }, [input, sessionId]);
 
- 
+  // Handle file upload
+  // const handleUpload = async (file) => {
+  //   const reader = new FileReader();
+  //   reader.onload = async (e) => {
+  //     const base64 = e.target.result.split(',')[1];
+      
+  //     try {
+  //       const response = await fetch(httpEndpoint, {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({ image: base64 }),
+  //       });
+        
+  //       const data = await response.json();
+        
+  //       // Send image URL as a message
+  //       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+  //         const payload = {
+  //           action: 'sendmessage',
+  //           inputText: data.imageUrl,
+  //         };
+
+  //         if (sessionId) {
+  //           payload.sessionId = sessionId;
+  //         }
+
+  //         wsRef.current.send(JSON.stringify(payload));
+          
+  //         // Add user message about image upload
+  //         setMessages((prev) => [
+  //           ...prev, 
+  //           { type: 'user', text: 'Image uploaded' }
+  //         ]);
+  //         setTyping(true);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error uploading image:', error);
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
+  
+
 const handleUpload = async (file) => {
   const reader = new FileReader();
 
