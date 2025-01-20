@@ -118,49 +118,7 @@ const [isTraceLoading, setIsTraceLoading] = useState(false);
     setInput('');
   }, [input, sessionId]);
 
-  // Handle file upload
-  // const handleUpload = async (file) => {
-  //   const reader = new FileReader();
-  //   reader.onload = async (e) => {
-  //     const base64 = e.target.result.split(',')[1];
-      
-  //     try {
-  //       const response = await fetch(httpEndpoint, {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({ image: base64 }),
-  //       });
-        
-  //       const data = await response.json();
-        
-  //       // Send image URL as a message
-  //       if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-  //         const payload = {
-  //           action: 'sendmessage',
-  //           inputText: data.imageUrl,
-  //         };
-
-  //         if (sessionId) {
-  //           payload.sessionId = sessionId;
-  //         }
-
-  //         wsRef.current.send(JSON.stringify(payload));
-          
-  //         // Add user message about image upload
-  //         setMessages((prev) => [
-  //           ...prev, 
-  //           { type: 'user', text: 'Image uploaded' }
-  //         ]);
-  //         setTyping(true);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error uploading image:', error);
-  //     }
-  //   };
-  //   reader.readAsDataURL(file);
-  // };
-  
-
+ 
 const handleUpload = async (file) => {
   const reader = new FileReader();
 
@@ -272,46 +230,7 @@ const toggleTraceData = async (index) => {
     setIsTraceLoading(false); // Reset trace loading state
   }
 };  
-    // Modify fetchTraceData function
-//   const toggleTraceData = async () => {
-//     // If panel is already showing, just hide it
-//     if (showTracePanel) {
-//       setShowTracePanel(false);
-//       return;
-//     }
-
-// }
-
-  // Fetch trace data
-  // const toggleTraceData = async () => {
-  //   if (showTracePanel) {
-  //     setShowTracePanel(false);
-  //     return;
-  //   }
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await fetch(traceApiEndpoint, {
-  //       method: 'GET',
-  //       headers: { Accept: 'application/json' },
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch trace data');
-  //     }
-
-  //     const data = await response.json();
-  //     setTraceData(data);
-  //     setIsTraceEnabled(true);
-  //           setShowTracePanel(true);  // Show trace panel
-  //   } catch (error) {
-  //     console.error('Error fetching trace data:', error);
-  //     setTraceData([]);
-  //           setShowTracePanel(false);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
-
+   
   // Handle key press for sending message
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
