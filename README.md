@@ -1,3 +1,43 @@
+const toggleTraceData = async (index) => {
+  // Toggle trace panel visibility for clicked message
+  setMessages((prevMessages) =>
+    prevMessages.map((msg, i) => ({
+      ...msg,
+      showTracePanel: i === index ? !msg.showTracePanel : msg.showTracePanel,
+      isTraceLoading: i === index ? true : msg.isTraceLoading, // Start loading state
+    }))
+  );
+
+  // If the trace panel is enabled, fetch trace data
+  if (!showTracePanel) {
+    setIsTraceLoading(true); // Set trace loading state
+    try {
+      const response = await fetch(traceApiEndpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+      });
+
+      if (!response.ok) throw new Error('Trace fetch failed');
+
+      const data = await response.json();
+      setTraceData(data);
+      setIsTraceEnabled(true);
+      setShowTracePanel(true);
+    } catch (error) {
+      console.error('Trace error:', error);
+      setTraceData([]);
+      setShowTracePanel(false);
+    } finally {
+      setIsTraceLoading(false); // Reset trace loading state
+    }
+  }
+};
+
+
+
+
+
+
 
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
