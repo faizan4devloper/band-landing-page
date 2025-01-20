@@ -1,3 +1,136 @@
+<div className="chat-wrapper">
+  <div className="upload-panel">
+    <input
+      type="file"
+      id="file-upload"
+      onChange={(e) => handleUpload(e.target.files[0])}
+      style={{ display: 'none' }}
+    />
+    <div className="upload-wrapper">
+      <FontAwesomeIcon
+        icon={faPlusCircle}
+        className="upload-plus-icon"
+        onClick={() => document.getElementById('file-upload').click()}
+      />
+      <p>Upload File</p>
+    </div>
+  </div>
+
+  <div className="chat-container">
+    <div className="chat-content">
+      <div className="chat-messages-container">
+        <div className="chat-header">
+          <FontAwesomeIcon icon={faComments} className="header-icon" />
+          Chat with AI Ninja
+        </div>
+
+        <div className="chat-messages">
+          {/* Chat messages go here */}
+        </div>
+
+        <div className="chat-input-container">
+          <div className="input-wrapper">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Type your message..."
+              className="chat-input"
+            />
+            <button onClick={sendMessage} className="btn btn-send">
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
+          </div>
+
+          <div className="button-group">
+            <button
+              onClick={toggleTraceData}
+              className={`btn btn-trace ${showTracePanel ? 'active' : ''}`}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <BeatLoader color="#fff" size={12} />
+              ) : showTracePanel ? (
+                <>
+                  Hide Trace
+                  <FontAwesomeIcon icon={faChevronRight} className="btn-icon right-chevron" />
+                </>
+              ) : (
+                <>
+                  Enable Trace
+                  <FontAwesomeIcon icon={faChevronRight} className="btn-icon right-chevron" />
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+        .chat-wrapper {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: linear-gradient(135deg, #eceff1, #f5f5f5);
+}
+
+.upload-panel {
+  width: 250px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.upload-plus-icon {
+  font-size: 36px;
+  color: #5c6bc0;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.upload-plus-icon:hover {
+  color: #3949ab;
+}
+
+.upload-wrapper p {
+  font-size: 14px;
+  color: #5c6bc0;
+  text-align: center;
+}
+
+.chat-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.btn-trace.active {
+  background-color: #e64a19;
+}
+        
+        
+        
+        
+        
+        
+        
+        
+        
         <div className="chat-input-container">
 <div className="input-wrapper">
     <input
