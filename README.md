@@ -1,3 +1,89 @@
+.landing-content h1 {
+  font-size: 3.5rem; /* Adjust font size for a sleek look */
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(
+    45deg, 
+    #ffffff, 
+    #d4d4d4
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -1.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-content h1::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.4), 
+    transparent
+  );
+  transform: skewX(-45deg);
+  animation: shine 2.5s infinite linear;
+}
+
+.landing-content p {
+  font-size: 1.2rem; /* Make it slightly smaller */
+  font-weight: 400;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.8;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 0.4px;
+  position: relative;
+}
+
+.landing-content p:first-of-type {
+  font-size: 1.6rem; /* Emphasize the tagline */
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.get-started-btn {
+  position: relative;
+  padding: 15px 50px;
+  font-size: 1rem; /* Make the text size consistent */
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(
+    304deg,
+    #499dfd 3.03%,
+    #2678f5 27.62%,
+    #6628c5 76.39%,
+    #5b0bb1 112.44%
+  );
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.get-started-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+
+
+
+
+
+
 
 import React from 'react';
 import { motion } from 'framer-motion';
