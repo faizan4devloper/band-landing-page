@@ -18,3 +18,31 @@
   justify-content: center;
   gap: 10px;
 }
+
+
+
+ <div className="trace-header">
+        Agentic Orchestration - Routing & Tracing
+      </div>
+
+
+
+.trace-step-header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  transition: background-color var(--transition-speed) ease;
+}
+
+.trace-step-header:hover {
+  background-color: var(--background-light);
+}
+
+.trace-step-header-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
