@@ -1,3 +1,5 @@
+i want add functionality like hide and show on the sidebar in beutiful way animation and smooth like real time sidebar toggle used:-
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import styles from './Dashboard.module.css';
