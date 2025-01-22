@@ -20,19 +20,13 @@ function Dashboard({ userEmail }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState('');
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+  
 
   const handleFileChange = (file) => {
     if (file) {
       setSelectedFile(file);
     }
   };
-  
-  
-    const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
-
 
   const handleUpload = async () => {
     // Keep the existing upload logic
@@ -61,7 +55,7 @@ function Dashboard({ userEmail }) {
 
       // Rest of the upload logic remains the same...
       const urlResponse = await axios.post(
-        'dummy', 
+        'https://xk5c351fsc.execute-api.us-east-1.amazonaws.com/dev/file-uploading', 
         payload,
         {
           headers: {
@@ -113,40 +107,25 @@ function Dashboard({ userEmail }) {
 
   return (
     <div className={styles.dashboardLayout}>
-            {isSidebarVisible && (
-        <Sidebar 
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          selectedFile={selectedFile}
-          handleFileChange={handleFileChange}
-          handleUpload={handleUpload}
-          uploadProgress={uploadProgress}
-          uploadStatus={uploadStatus}
-          fileTypeMappings={FILE_TYPE_MAPPINGS}
-        />
-      )}
+      <Sidebar 
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedFile={selectedFile}
+        handleFileChange={handleFileChange}
+        handleUpload={handleUpload}
+        uploadProgress={uploadProgress}
+        uploadStatus={uploadStatus}
+        fileTypeMappings={FILE_TYPE_MAPPINGS}
+      />
 
-
-
-            <div className={`${styles.mainContent} ${!isSidebarVisible ? styles.fullWidth : ''}`}>
-        {/* Add a toggle button for the sidebar */}
-        <button 
-          className={styles.sidebarToggleBtn} 
-          onClick={toggleSidebar}
-        >
-          {isSidebarVisible ? '←' : '→'}
-        </button>
-        
+      <div className={styles.mainContent}>
         <DashboardTable userEmail={userEmail} />
       </div>
     </div>
   );
-
-
 }
 
 export default Dashboard;
-
 
 
 .dashboardLayout {
@@ -219,26 +198,118 @@ export default Dashboard;
   }
 }
 
-.sidebarToggleBtn {
+
+import React from 'react';
+import styles from './Sidebar.module.css';
+import DocumentCategorySelect from '../Category/DocumentCategorySelect';
+import FileUploadSection from '../Upload/FileUploadSection';
+import UploadProgressBar from '../Upload/UploadProgressBar';
+
+
+function Sidebar({ 
+  selectedCategory, 
+  setSelectedCategory, 
+  selectedFile, 
+  handleFileChange, 
+  handleUpload, 
+  uploadProgress, 
+  uploadStatus,
+  fileTypeMappings 
+}) {
+  return (
+    <div className={styles.sidebar}>
+      <div className={styles.sidebarContent}>
+        <h2 className={styles.sidebarTitle}>Dashboard</h2>
+        
+        <div className={styles.sidebarSection}>
+          <h3>Upload Document</h3>
+          <DocumentCategorySelect 
+            selectedCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
+            fileTypeMappings={fileTypeMappings}
+          />
+          
+          <FileUploadSection 
+            selectedFile={selectedFile}
+            onFileChange={handleFileChange}
+            onUpload={handleUpload}
+          />
+
+          <UploadProgressBar 
+            progress={uploadProgress} 
+            status={uploadStatus}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Sidebar;
+
+
+
+.sidebar {
+  width: 350px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  /*overflow-y: auto;*/
+  border-right: 1px solid #e9ecef;
+}
+
+.sidebar {
+  width: 350px;
+  background-color: #ffffff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+  border-right: 1px solid #e9ecef;
+  transition: transform 0.3s ease;
+}
+
+.sidebarClosed {
+  transform: translateX(-100%);
+  width: 0;
+}
+
+.sidebarToggle {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background-color: #6a11cb;
   color: white;
   border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  padding: 10px;
+  z-index: 1000;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.sidebarToggleBtn:hover {
-  background-color: #2575fc;
+.sidebarContent {
+  padding: 20px;
+  /* Rest of your existing styles */
 }
 
-.mainContent.fullWidth {
-  width: 100%;
-  flex-grow: 1;
+
+.sidebarContent {
+  padding: 20px;
+}
+
+.sidebarTitle {
+  font-size: 18px;
+  color: #333;
+  /*margin-bottom: 20px;*/
+  border-bottom: 1.5px solid #6a11cb;
+  padding-bottom: 10px;
+}
+
+.sidebarSection {
+  margin-bottom: 30px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.sidebarSection h3 {
+  color: #6a11cb;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
 }
