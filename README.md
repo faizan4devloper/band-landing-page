@@ -1,3 +1,33 @@
+import React, { useState } from 'react';
+import axios from 'axios';
+import styles from './Dashboard.module.css';
+import Sidebar from './Sidebar';
+
+import DashboardTable from './DashboardTable';
+
+// Define file type mappings (keep this the same)
+const FILE_TYPE_MAPPINGS = {
+  'aimlusecasesv1': 'AI',
+    'umo-privilegestatement': 'PS',
+  'umo-invoice': 'CL',
+  'umo-creditnote': 'MD',
+  'umo-returnauthorisation': 'IN',
+  'umo-accountstatement': 'OT'
+};
+
+function Dashboard({ userEmail }) {
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState('');
+  
+
+  const handleFileChange = (file) => {
+    if (file) {
+      setSelectedFiles(file);
+    }
+  };
+
 const handleUpload = async () => {
   if (!selectedFiles || selectedFiles.length === 0 || !selectedCategory) {
     alert('Please select at least one file and a category');
@@ -91,3 +121,25 @@ const handleUpload = async () => {
     setUploadStatus('Upload failed: An unexpected error occurred.');
   }
 };
+
+  return (
+    <div className={styles.dashboardLayout}>
+      <Sidebar 
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedFile={selectedFiles}
+        handleFileChange={handleFileChange}
+        handleUpload={handleUpload}
+        uploadProgress={uploadProgress}
+        uploadStatus={uploadStatus}
+        fileTypeMappings={FILE_TYPE_MAPPINGS}
+      />
+
+      <div className={styles.mainContent}>
+        <DashboardTable userEmail={userEmail} />
+      </div>
+    </div>
+  );
+}
+
+export default Dashboard;
