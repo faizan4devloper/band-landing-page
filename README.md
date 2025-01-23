@@ -1,3 +1,32 @@
+i want the afteri click the filenames like dummy.pdf then open modal and in that preview doc in iframe
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faSync,
+  faFileAlt,
+  faEye,
+  faDownload,
+  faFilter,
+  faRotateRight
+} from '@fortawesome/free-solid-svg-icons';
+import { motion, AnimatePresence } from 'framer-motion';
+import Modal from 'react-modal';
+import styles from './DashboardTable.module.css';
+
+// Set app element for accessibility
+Modal.setAppElement('#root');
+
+const DashboardTable = ({ userEmail }) => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(2);
+  const [nextStartKey, setNextStartKey] = useState(null);
+  const [selectedMetadata, setSelectedMetadata] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const API_ENDPOINT = 'dummy'; // Replace with the actual API endpoint
 
@@ -220,7 +249,6 @@
 };
 
 export default DashboardTable;
-
 
 /* DashboardTable.module.css */
 
