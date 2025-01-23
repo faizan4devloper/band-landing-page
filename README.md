@@ -1,397 +1,261 @@
-const handleUpload = async () => {
-  if (!selectedFiles || selectedFiles.length === 0 || !selectedCategory) {
-    alert('Please select at least one file and a category.');
-    return;
-  }
-
-  try {
-    setUploadProgress(0);
-    setUploadStatus('Uploading...');
-
-    const uploadedFiles = [];
-    const failedFiles = [];
-
-    for (let file of selectedFiles) {
-      try {
-        const fileTypeCode = FILE_TYPE_MAPPINGS[selectedCategory] || 'OT';
-        const payload = {
-          payload: {
-            filename: file.name,
-            filetype: fileTypeCode,
-            fileSize: file.size,
-            fileType: file.type,
-          },
-        };
-
-        // Step 1: Request presigned URL for the current file
-        const urlResponse = await axios.post(
-          'dummy', // Replace 'dummy' with your actual API endpoint
-          payload,
-          { headers: { 'Content-Type': 'application/json' } }
-        );
-
-        const { presignedUrl, key, recNum, bucket } = urlResponse.data;
-
-        // Step 2: Upload the current file to S3 using the presigned URL
-        await axios.put(presignedUrl, file, {
-          headers: { 'Content-Type': file.type },
-          onUploadProgress: (progressEvent) => {
-            const percentCompleted = Math.round(
-              (progressEvent.loaded * 100) / progressEvent.total
-            );
-            setUploadProgress(percentCompleted);
-          },
-        });
-
-        uploadedFiles.push({ 
-          fileName: file.name, 
-          recordNumber: recNum, 
-          s3Key: key, 
-          bucket 
-        });
-      } catch (error) {
-        console.error(`Failed to upload file: ${file.name}`, error);
-        failedFiles.push(file.name);
-      }
-    }
-
-    // Update upload status
-    if (failedFiles.length === 0) {
-      setUploadStatus('All files uploaded successfully!');
-    } else if (failedFiles.length === selectedFiles.length) {
-      setUploadStatus('All uploads failed.');
-    } else {
-      setUploadStatus(
-        `Partial success: ${uploadedFiles.length} files uploaded, ${failedFiles.length} failed.`
-      );
-    }
-
-    // Reset state after upload
-    setSelectedFiles(null);
-    setSelectedCategory('');
-    setUploadProgress(0);
-
-  } catch (error) {
-    console.error('Error during upload', error);
-    setUploadStatus('Upload failed: An unexpected error occurred.');
-  }
-};
-
-
-
-
-
-
-
-
-all good from folder i am able to select multiple docs in the select its see the document and uploaded to s3 only 1 file why and in the presign url also see only on doc why i want multiple upload to s3 bucket
-
-import React, { useState, useRef } from 'react';
-import axios from 'axios';
-import styles from './Dashboard.module.css';
-import Sidebar from './Sidebar';
-import DashboardTable from './DashboardTable';
-
-// Define file type mappings
-const FILE_TYPE_MAPPINGS = {
-  'aimlusecasesv1': 'AI',
-  'umo-privilegestatement': 'PS',
-  'umo-invoice': 'CL',
-  'umo-creditnote': 'MD',
-  'umo-returnauthorisation': 'IN',
-  'umo-accountstatement': 'OT',
-};
-
-function Dashboard({ userEmail }) {
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedFiles, setSelectedFiles] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [uploadStatus, setUploadStatus] = useState('');
-  const fileInputRef = useRef(null);
-
-  // Handle file selection
-  const handleFileChange = (fileList) => {
-    // If fileList is null, reset selected files
-    if (!fileList) {
-      setSelectedFiles(null);
-      return;
-    }
-
-    // Convert fileList to array if it's not null
-    setSelectedFiles(fileList.length > 0 ? Array.from(fileList) : null);
-  };
-
-  // Trigger file input (optional, can be used if needed)
-  const triggerFileInput = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
-
-  // Handle file upload
-  const handleUpload = async () => {
-    if (!selectedFiles || selectedFiles.length === 0 || !selectedCategory) {
-      alert('Please select at least one file and a category.');
-      return;
-    }
-
-    try {
-      setUploadProgress(0);
-      setUploadStatus('Uploading...');
-      
-      const uploadedFiles = [];
-      const failedFiles = [];
-
-      for (let file of selectedFiles) {
-        try {
-          const fileTypeCode = FILE_TYPE_MAPPINGS[selectedCategory] || 'OT';
-          const payload = {
-            payload: {
-              filename: file.name,
-              filetype: fileTypeCode,
-              fileSize: file.size,
-              fileType: file.type,
-            },
-          };
-
-          // Step 1: Request presigned URL
-          const urlResponse = await axios.post(
-            'dummy',
-            payload,
-            { headers: { 'Content-Type': 'application/json' } }
-          );
-          
-                    console.log('Full URL Response:', urlResponse);
-          console.log('Presigned URL Response Data:', urlResponse.data);
-
-
-          const { presignedUrl, key, recNum, bucket } = urlResponse.data;
-          
-          console.log(presignedUrl)
-
-          // Step 2: Upload file to S3
-          await axios.put(presignedUrl, file, {
-            headers: { 'Content-Type': file.type },
-            onUploadProgress: (progressEvent) => {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              );
-              setUploadProgress(percentCompleted);
-            },
-          });
-
-          uploadedFiles.push({ 
-            fileName: file.name, 
-            recordNumber: recNum, 
-            s3Key: key, 
-            bucket 
-          });
-
-        } catch (error) {
-          console.error(`Failed to upload file: ${file.name}`, error);
-          failedFiles.push(file.name);
-        }
-      }
-
-      // Update upload status
-      if (failedFiles.length === 0) {
-        setUploadStatus('All files uploaded successfully!');
-      } else if (failedFiles.length === selectedFiles.length) {
-        setUploadStatus('All uploads failed.');
-      } else {
-        setUploadStatus(
-          `Partial success: ${uploadedFiles.length} files uploaded, ${failedFiles.length} failed.`
-        );
-      }
-
-      // Reset state after upload
-      setSelectedFiles(null);
-      setSelectedCategory('');
-      setUploadProgress(0);
-
-    } catch (error) {
-      console.error('Error during upload', error);
-      setUploadStatus('Upload failed: An unexpected error occurred.');
-    }
-  };
-
-  return (
-    <div className={styles.dashboardLayout}>
-      <Sidebar
-        selectedCategory={selectedCategory}
-        setSelectedCategory={setSelectedCategory}
-        selectedFiles={selectedFiles}
-        handleFileChange={handleFileChange}
-        handleUpload={handleUpload}
-        uploadProgress={uploadProgress}
-        uploadStatus={uploadStatus}
-        fileTypeMappings={FILE_TYPE_MAPPINGS}
-        fileInputRef={fileInputRef}
-        triggerFileInput={triggerFileInput}
-      />
-
-      <div className={styles.mainContent}>
-        <DashboardTable userEmail={userEmail} />
-      </div>
-    </div>
-  );
-}
-
-export default Dashboard;
-
-
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faCloudUploadAlt,
-  faPaperPlane,
-  faFile, 
-  faTimesCircle,
-  faCheckCircle
+  faChevronDown, 
+  faFolder, 
+  faCheck 
 } from '@fortawesome/free-solid-svg-icons';
-import styles from './FileUploadSection.module.css';
+import styles from './DocumentCategorySelect.module.css';
 
-function FileUploadSection({ 
-  selectedFiles, 
-  onFileChange, 
-  onUpload,
-  allowedFileTypes = ['.pdf', '.doc', '.docx'],
-  uploadProgress = 0,
-  uploadComplete = false,
-}) {
-  const [fileError, setFileError] = useState(null);
-  const fileInputRef = useRef(null);
-
-  const handleFileSelect = (event) => {
-    const fileList = event.target.files;
-    setFileError(null);
-
-    if (fileList.length === 0) {
-      setFileError('No file selected');
-      return;
-    }
-
-    const validFiles = Array.from(fileList).filter((file) => {
-      const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-      return allowedFileTypes.includes(fileExtension);
-    });
-
-    if (validFiles.length === 0) {
-      setFileError(`Invalid file type. Allowed types: ${allowedFileTypes.join(', ')}`);
-      return;
-    }
-
-    onFileChange(validFiles); // Pass all valid files
-  };
-
-  const clearSelectedFiles = () => {
-    onFileChange(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-
-
-   return (
-    <div className={styles.fileUploadContainer}>
-      <div className={styles.fileUploadSection}>
-        <input 
-          type="file" 
-          multiple
-          ref={fileInputRef}
-          onChange={handleFileSelect}
-          accept={allowedFileTypes.join(',')}
-          style={{ display: 'none' }}
-        />
-        <button 
-          onClick={() => fileInputRef.current?.click()}
-          className={styles.fileSelectBtn}
-          disabled={uploadProgress > 0 && uploadProgress < 100}
-        >
-          Select Files
-        </button>
-        {selectedFiles && selectedFiles.length > 0 && (
-          <div className={styles.selectedFilesInfo}>
-            {selectedFiles.map((file, index) => (
-              <div key={index} className={styles.fileInfo}>
-                <span>{file.name}</span>
-                <span>{(file.size / 1024).toFixed(2)} KB</span>
-              </div>
-            ))}
-            <button onClick={clearSelectedFiles} disabled={uploadProgress > 0 && uploadProgress < 100}>
-              Clear Files
-            </button>
-          </div>
-        )}
-        <button 
-          onClick={onUpload}
-          disabled={!selectedFiles || selectedFiles.length === 0 || (uploadProgress > 0 && uploadProgress < 100)}
-        >
-          Upload
-        </button>
-      </div>
-      {fileError && <div className={styles.fileErrorMessage}>{fileError}</div>}
-    </div>
-  );
-}
-
-export default FileUploadSection;
-
-
-
-
-
-
-
-
-
-import React from 'react';
-import styles from './Sidebar.module.css';
-import DocumentCategorySelect from '../Category/DocumentCategorySelect';
-import FileUploadSection from '../Upload/FileUploadSection';
-import UploadProgressBar from '../Upload/UploadProgressBar';
-
-function Sidebar({ 
+function DocumentCategorySelect({ 
   selectedCategory, 
-  setSelectedCategory, 
-  selectedFiles, 
-  handleFileChange, 
-  handleUpload, 
-  uploadProgress, 
-  uploadStatus,
-  fileTypeMappings,
-  fileInputRef,
-  triggerFileInput
+  onCategoryChange,
+  fileTypeMappings 
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const defaultFileTypeMappings = {
+    'aimlusecasesv1': { 
+      code: 'AI', 
+      description: 'AI Use Cases',
+      color: '#6a11cb'
+    },
+    'umo-privilegestatement': { 
+      code: 'PS', 
+      description: 'Privilege Statement',
+      color: '#2575fc'
+    },
+    'umo-invoice': { 
+      code: 'CL', 
+      description: 'Client Invoice',
+      color: '#48bb78'
+    },
+    'umo-creditnote': { 
+      code: 'MD', 
+      description: 'Credit Note',
+      color: '#ecc94b'
+    },
+    'umo-returnauthorisation': { 
+      code: 'IN', 
+      description: 'Return Authorization',
+      color: '#ed64a6'
+    },
+    'umo-accountstatement': { 
+      code: 'OT', 
+      description: 'Account Statement',
+      color: '#4299e1'
+    }
+  };
+
+  const mappingsToUse = fileTypeMappings || defaultFileTypeMappings;
+
+  const handleCategorySelect = (category) => {
+    onCategoryChange(category);
+    setIsOpen(false);
+  };
+
   return (
-    <div className={styles.sidebar}>
-      <div className={styles.sidebarContent}>
-        <h2 className={styles.sidebarTitle}>Dashboard</h2>
+    <div className={styles.documentCategorySelectContainer}>
+      <div className={styles.selectWrapper}>
+        <label className={styles.categoryLabel}>
+          Document Category
+        </label>
         
-        <div className={styles.sidebarSection}>
-          <h3>Upload Document</h3>
-          <DocumentCategorySelect 
-            selectedCategory={selectedCategory}
-            onCategoryChange={setSelectedCategory}
-            fileTypeMappings={fileTypeMappings}
-          />
-          
-          <FileUploadSection 
-  selectedFiles={selectedFiles} // Pass all files
-  onFileChange={handleFileChange}
-  onUpload={handleUpload}
-  uploadProgress={uploadProgress}
-  uploadComplete={uploadProgress === 100}
-/>
-          <UploadProgressBar 
-            progress={uploadProgress} 
-            status={uploadStatus}
+        <div 
+          className={`${styles.categorySelect} ${isOpen ? styles.active : ''}`}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {selectedCategory ? (
+            <div className={styles.selectedCategory}>
+              <FontAwesomeIcon 
+                icon={faFolder} 
+                color={mappingsToUse[selectedCategory]?.color} 
+                className={styles.categoryIcon}
+              />
+              <span className={styles.categoryName}>
+                {mappingsToUse[selectedCategory]?.description || selectedCategory}
+              </span>
+              <span className={styles.categoryCode}>
+                ({mappingsToUse[selectedCategory]?.code})
+              </span>
+            </div>
+          ) : (
+            <span className={styles.placeholder}>
+              Select Document Category
+            </span>
+          )}
+          <FontAwesomeIcon 
+            icon={faChevronDown} 
+            className={styles.dropdownIcon} 
           />
         </div>
+
+        {isOpen && (
+          <div className={styles.categoryDropdown}>
+            {Object.entries(mappingsToUse).map(([category, details]) => (
+              <div 
+                key={category}
+                className={`${styles.categoryOption} ${selectedCategory === category ? styles.selected : ''}`}
+                onClick={() => handleCategorySelect(category)}
+              >
+                <FontAwesomeIcon 
+                  icon={faFolder} 
+                  color={details.color} 
+                  className={styles.categoryIcon}
+                />
+                <div className={styles.categoryDetails}>
+                  <span className={styles.categoryName}>
+                    {details.description}
+                  </span>
+                  <span className={styles.categoryCode}>
+                    ({details.code})
+                  </span>
+                </div>
+                {selectedCategory === category && (
+                  <FontAwesomeIcon 
+                    icon={faCheck} 
+                    className={styles.checkIcon} 
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export default Sidebar;
+DocumentCategorySelect.propTypes = {
+  selectedCategory: PropTypes.string.isRequired,
+  onCategoryChange: PropTypes.func.isRequired,
+  fileTypeMappings: PropTypes.objectOf(
+    PropTypes.shape({
+      code: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      color: PropTypes.string
+    })
+  )
+};
+
+export default DocumentCategorySelect;
+
+
+
+.documentCategorySelectContainer {
+  max-width: 400px;
+  margin: 20px auto;
+  position: relative;
+}
+
+.selectWrapper {
+  width: 100%;
+}
+
+.categoryLabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 8px;
+}
+
+.categorySelect {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.categorySelect:hover {
+  border-color: #4299e1;
+  box-shadow: 0 4px 6px rgba(66, 153, 225, 0.1);
+}
+
+.categorySelect.active {
+  border-color: #6a11cb;
+}
+
+.selectedCategory {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.categoryIcon {
+  font-size: 20px;
+}
+
+.categoryName {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+.categoryCode {
+  color: #718096;
+  margin-left: 5px;
+  font-size: 0.9em;
+}
+
+.placeholder {
+  color: #a0aec0;
+}
+
+.dropdownIcon {
+  color: #a0aec0;
+  transition: transform 0.3s ease;
+}
+
+.categorySelect.active .dropdownIcon {
+  transform: rotate(180deg);
+}
+
+.categoryDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 2px solid #e2e8f0;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+  margin-top: 5px;
+}
+
+.categoryOption {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.categoryOption:hover {
+  background-color: #f7fafc;
+}
+
+.categoryOption.selected {
+  background-color: #e6f2ff;
+}
+
+.categoryDetails {
+  flex-grow: 1;
+  margin-left: 10px;
+}
+
+.checkIcon {
+  color: #48bb78;
+  margin-left: auto;
+}
+
