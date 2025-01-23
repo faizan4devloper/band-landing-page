@@ -1,261 +1,441 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faChevronDown, 
-  faFolder, 
-  faCheck 
-} from '@fortawesome/free-solid-svg-icons';
-import styles from './DocumentCategorySelect.module.css';
 
-function DocumentCategorySelect({ 
-  selectedCategory, 
-  onCategoryChange,
-  fileTypeMappings 
-}) {
-  const [isOpen, setIsOpen] = useState(false);
+  const API_ENDPOINT = 'dummy'; // Replace with the actual API endpoint
 
-  const defaultFileTypeMappings = {
-    'aimlusecasesv1': { 
-      code: 'AI', 
-      description: 'AI Use Cases',
-      color: '#6a11cb'
-    },
-    'umo-privilegestatement': { 
-      code: 'PS', 
-      description: 'Privilege Statement',
-      color: '#2575fc'
-    },
-    'umo-invoice': { 
-      code: 'CL', 
-      description: 'Client Invoice',
-      color: '#48bb78'
-    },
-    'umo-creditnote': { 
-      code: 'MD', 
-      description: 'Credit Note',
-      color: '#ecc94b'
-    },
-    'umo-returnauthorisation': { 
-      code: 'IN', 
-      description: 'Return Authorization',
-      color: '#ed64a6'
-    },
-    'umo-accountstatement': { 
-      code: 'OT', 
-      description: 'Account Statement',
-      color: '#4299e1'
+  const fetchDocuments = async (isRefresh = false) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const payload = {
+        queryStringParameters: isRefresh
+          ? { refresh: true, page_size: pageSize }
+          : {
+              start_page: currentPage,
+              page_size: pageSize,
+              ...(nextStartKey && { next_start_key: nextStartKey })
+            }
+      };
+
+      const response = await axios.post(API_ENDPOINT, payload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+
+      const parsedBody = parseResponse(response.data);
+
+      console.log(parsedBody)
+      if (!parsedBody || !parsedBody.data) {
+        throw new Error('No data in response');
+      }
+
+      const allTransactions = parsedBody.data.flatMap((page) =>
+        page.transactions.map((transaction) => {
+          try {
+            return {
+              Filename: transaction.Filename?.S || 'Unknown',
+              Category: transaction.Category?.S || 'Unknown',
+              DateTime: transaction.DateTime?.S || new Date().toISOString(),
+              TransactionID: transaction.TransactionID?.S || 'Unknown',
+              Metadata: Object.fromEntries(
+                Object.entries(transaction.Metadata?.M || {}).map(([key, value]) => [key, value.S || 'N/A'])
+              )
+            };
+          } catch {
+            return null;
+          }
+        }).filter(Boolean)
+      );
+
+      setDocuments(allTransactions);
+      setNextStartKey(parsedBody.next_start_key || null);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch documents');
+      setDocuments([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const mappingsToUse = fileTypeMappings || defaultFileTypeMappings;
+  useEffect(() => {
+    fetchDocuments();
+  }, [currentPage]);
 
-  const handleCategorySelect = (category) => {
-    onCategoryChange(category);
-    setIsOpen(false);
+  const parseResponse = (response) => {
+    try {
+      const responseData = typeof response === 'string' ? JSON.parse(response) : response;
+      return typeof responseData.body === 'string' ? JSON.parse(responseData.body) : responseData.body;
+    } catch {
+      setError('Failed to parse response');
+      return null;
+    }
+  };
+
+  const renderDocumentRow = (doc) => {
+    const displayFields = {
+      'AccountStatement': [doc.Metadata['Account No.'] || 'N/A', doc.Metadata['Date'] || 'N/A'],
+      'CreditNote': [doc.Metadata['Credit Note'] || 'N/A', doc.Metadata['Date/Tax Point'] || 'N/A']
+    };
+
+    return (
+      <motion.tr
+        key={doc.TransactionID}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={styles.documentRow}
+      >
+        <td>{doc.Filename.split('/').pop()}</td>
+        <td>{doc.Category}</td>
+        <td>
+          <button className={styles.seeMoreButton} onClick={() => handleMetadataClick(doc.Metadata)}>
+            See More
+          </button>
+        </td>
+        <td>{new Date(doc.DateTime).toLocaleString()}</td>
+        <td>
+          <div className={styles.actionButtons}>
+            <button className={styles.viewButton} title="View Document">
+              <FontAwesomeIcon icon={faEye} />
+            </button>
+            <button className={styles.downloadButton} title="Download Document">
+              <FontAwesomeIcon icon={faDownload} />
+            </button>
+          </div>
+        </td>
+      </motion.tr>
+    );
+  };
+
+  const handleMetadataClick = (metadata) => {
+    setSelectedMetadata(metadata);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.loadingRow}>
+            <div className={styles.loadingContent}>
+              <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
+              <p>Loading documents...</p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    if (documents.length === 0) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.emptyRow}>
+            <div className={styles.emptyContent}>
+              <FontAwesomeIcon icon={faFileAlt} className={styles.emptyIcon} />
+              <p>No documents found</p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+
+    return documents.map(renderDocumentRow);
+  };
+
+  const handlePageChange = (direction) => {
+    if (direction === 'next' && documents.length > 0) {
+      setCurrentPage((prev) => prev + 1);
+    } else if (direction === 'prev' && currentPage > 0) {
+      setCurrentPage((prev) => Math.max(0, prev - 1));
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchDocuments(true);
   };
 
   return (
-    <div className={styles.documentCategorySelectContainer}>
-      <div className={styles.selectWrapper}>
-        <label className={styles.categoryLabel}>
-          Document Category
-        </label>
-        
-        <div 
-          className={`${styles.categorySelect} ${isOpen ? styles.active : ''}`}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {selectedCategory ? (
-            <div className={styles.selectedCategory}>
-              <FontAwesomeIcon 
-                icon={faFolder} 
-                color={mappingsToUse[selectedCategory]?.color} 
-                className={styles.categoryIcon}
-              />
-              <span className={styles.categoryName}>
-                {mappingsToUse[selectedCategory]?.description || selectedCategory}
-              </span>
-              <span className={styles.categoryCode}>
-                ({mappingsToUse[selectedCategory]?.code})
-              </span>
-            </div>
-          ) : (
-            <span className={styles.placeholder}>
-              Select Document Category
-            </span>
-          )}
-          <FontAwesomeIcon 
-            icon={faChevronDown} 
-            className={styles.dropdownIcon} 
-          />
+    <div className={styles.documentTableContainer}>
+      <div className={styles.tableHeader}>
+        <h3>Dashboard</h3>
+        <div className={styles.headerActions}>
+          <motion.button
+            onClick={handleRefresh}
+            className={styles.refreshButton}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FontAwesomeIcon icon={faRotateRight} />
+            Refresh
+          </motion.button>
         </div>
-
-        {isOpen && (
-          <div className={styles.categoryDropdown}>
-            {Object.entries(mappingsToUse).map(([category, details]) => (
-              <div 
-                key={category}
-                className={`${styles.categoryOption} ${selectedCategory === category ? styles.selected : ''}`}
-                onClick={() => handleCategorySelect(category)}
-              >
-                <FontAwesomeIcon 
-                  icon={faFolder} 
-                  color={details.color} 
-                  className={styles.categoryIcon}
-                />
-                <div className={styles.categoryDetails}>
-                  <span className={styles.categoryName}>
-                    {details.description}
-                  </span>
-                  <span className={styles.categoryCode}>
-                    ({details.code})
-                  </span>
-                </div>
-                {selectedCategory === category && (
-                  <FontAwesomeIcon 
-                    icon={faCheck} 
-                    className={styles.checkIcon} 
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
+
+      <div className={styles.tableWrapper}>
+        <table className={styles.documentTable}>
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Category</th>
+              <th>Metadata</th>
+              <th>Date</th>
+              <th>Processed At</th>
+            </tr>
+          </thead>
+          <tbody>
+            <AnimatePresence>{renderTableContent()}</AnimatePresence>
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      <div className={styles.pagination}>
+        <button onClick={() => handlePageChange('prev')} disabled={currentPage === 0}>
+          Previous
+        </button>
+        <span>Page {currentPage + 1}</span>
+        <button onClick={() => handlePageChange('next')} disabled={!nextStartKey}>
+          Next
+        </button>
+      </div>
+
+      {/* Modal for Metadata */}
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeModal}
+        contentLabel="Metadata Details"
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <h2>Metadata Details</h2>
+        <pre>{JSON.stringify(selectedMetadata, null, 2)}</pre>
+        <button onClick={closeModal} className={styles.closeModalButton}>
+          Close
+        </button>
+      </Modal>
     </div>
   );
-}
-
-DocumentCategorySelect.propTypes = {
-  selectedCategory: PropTypes.string.isRequired,
-  onCategoryChange: PropTypes.func.isRequired,
-  fileTypeMappings: PropTypes.objectOf(
-    PropTypes.shape({
-      code: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired,
-      color: PropTypes.string
-    })
-  )
 };
 
-export default DocumentCategorySelect;
+export default DashboardTable;
 
 
+/* DashboardTable.module.css */
 
-.documentCategorySelectContainer {
-  max-width: 400px;
-  margin: 20px auto;
-  position: relative;
+.documentTableContainer {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.selectWrapper {
-  width: 100%;
-}
-
-.categoryLabel {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a5568;
-  margin-bottom: 8px;
-}
-
-.categorySelect {
+.tableHeader {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 10px;
-  background-color: #fff;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tableHeader h3 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+}
+
+.refreshButton {
+  background-color: #6a11cb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.categorySelect:hover {
-  border-color: #4299e1;
-  box-shadow: 0 4px 6px rgba(66, 153, 225, 0.1);
-}
-
-.categorySelect.active {
-  border-color: #6a11cb;
-}
-
-.selectedCategory {
+  transition: background-color 0.3s ease;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.categoryIcon {
-  font-size: 20px;
+.refreshButton:hover {
+  background-color: #45a049;
 }
 
-.categoryName {
-  font-weight: 500;
-  color: #2d3748;
+.refreshButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
-.categoryCode {
-  color: #718096;
-  margin-left: 5px;
-  font-size: 0.9em;
-}
-
-.placeholder {
-  color: #a0aec0;
-}
-
-.dropdownIcon {
-  color: #a0aec0;
-  transition: transform 0.3s ease;
-}
-
-.categorySelect.active .dropdownIcon {
-  transform: rotate(180deg);
-}
-
-.categoryDropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
+.documentTable {
   width: 100%;
-  max-height: 300px;
-  overflow-y: auto;
-  background-color: #fff;
-  border: 2px solid #e2e8f0;
-  border-top: none;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
-  z-index: 10;
-  margin-top: 5px;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-.categoryOption {
-  display: flex;
-  align-items: center;
+.documentTable th,
+.documentTable td {
+  border: 1px solid #ddd;
   padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+}
+
+.documentTable th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+}
+
+.documentTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.documentTable tr:hover {
+  background-color: #e2e2e2;
+}
+
+.documentRow td {
+  font-size: 14px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.viewButton, .downloadButton {
+  background-color: #6a11cb;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.categoryOption:hover {
-  background-color: #f7fafc;
+.viewButton:hover, .downloadButton:hover {
+  background-color: #0056b3;
 }
 
-.categoryOption.selected {
-  background-color: #e6f2ff;
+.seeMoreButton {
+  background-color: #6a11cb;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.categoryDetails {
-  flex-grow: 1;
-  margin-left: 10px;
+.seeMoreButton:hover {
+  background-color: #6a11ca;
 }
 
-.checkIcon {
-  color: #48bb78;
-  margin-left: auto;
+.emptyRow {
+  text-align: center;
 }
 
+.emptyContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  color: #ccc;
+}
+
+.loadingRow {
+  text-align: center;
+}
+
+.loadingContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.loadingIcon {
+  font-size: 36px;
+  margin-right: 8px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.pagination button:hover {
+  background-color: #0056b3;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.modal h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.closeModalButton {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.closeModalButton:hover {
+  background-color: #e53935;
+}
+
+.overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
