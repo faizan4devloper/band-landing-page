@@ -1,3 +1,248 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import Modal from "react-modal";
+import { motion, AnimatePresence } from "framer-motion";
+import styles from "./DashboardTable.module.css";
+
+// Set app element for accessibility
+Modal.setAppElement("#root");
+
+const DashboardTable = ({ userEmail }) => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+
+  const API_ENDPOINT = "https:dummy"; // Replace with your actual API endpoint
+
+  // Fetch documents
+  const fetchDocuments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.post(API_ENDPOINT, {
+        queryStringParameters: { page_size: 5 },
+      });
+
+      const parsedData = JSON.parse(response.data.body);
+      setDocuments(parsedData.data.flatMap((page) => page.transactions));
+    } catch (err) {
+      setError("Failed to fetch documents.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+
+  // Handle opening the modal
+  const openModal = async (doc) => {
+    setSelectedDocument(doc);
+
+    try {
+      // Request presigned URL for preview
+      const payload = {
+        category: doc.Category.S,
+        filename: doc.Metadata.M.Filename.S,
+      };
+
+      const response = await axios.post(
+        "https://dummypresignedurl", // Replace with your actual presigned URL endpoint
+        payload
+      );
+
+      setPreviewUrl(response.data.presignedUrl);
+      setIsModalOpen(true);
+    } catch (err) {
+      console.error("Failed to fetch presigned URL:", err);
+    }
+  };
+
+  // Close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedDocument(null);
+    setPreviewUrl("");
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
+  return (
+    <div>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Status</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {documents.map((doc, index) => (
+            <tr key={index}>
+              <td>{doc.Metadata.M.Filename.S}</td>
+              <td>{doc.Status.S}</td>
+              <td>{doc.Category.S}</td>
+              <td>
+                <FontAwesomeIcon
+                  icon={faEye}
+                  className={styles.icon}
+                  onClick={() => openModal(doc)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <Modal
+            isOpen={isModalOpen}
+            onRequestClose={closeModal}
+            className={styles.modal}
+            overlayClassName={styles.overlay}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 50 }}
+              className={styles.modalContent}
+            >
+              {/* Left: Document Preview */}
+              <div className={styles.preview}>
+                {previewUrl ? (
+                  <iframe
+                    src={previewUrl}
+                    title="Document Preview"
+                    className={styles.iframe}
+                  />
+                ) : (
+                  <p>Loading preview...</p>
+                )}
+              </div>
+
+              {/* Right: Metadata */}
+              <div className={styles.metadata}>
+                <h3>Metadata</h3>
+                {selectedDocument &&
+                  Object.entries(selectedDocument.Metadata.M).map(
+                    ([key, value]) => (
+                      <p key={key}>
+                        <strong>{key}:</strong> {value.S || "N/A"}
+                      </p>
+                    )
+                  )}
+              </div>
+
+              <button onClick={closeModal} className={styles.closeButton}>
+                Close
+              </button>
+            </motion.div>
+          </Modal>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default DashboardTable;
+
+
+
+
+/* DashboardTable.module.css */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.icon {
+  cursor: pointer;
+  color: #007bff;
+  transition: transform 0.3s ease;
+}
+
+.icon:hover {
+  transform: scale(1.2);
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  max-width: 80%;
+  margin: auto;
+  padding: 20px;
+  border-radius: 8px;
+  outline: none;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modalContent {
+  display: flex;
+  gap: 20px;
+}
+
+.preview {
+  flex: 1;
+  border-right: 1px solid #ddd;
+  padding-right: 20px;
+}
+
+.iframe {
+  width: 100%;
+  height: 400px;
+}
+
+.metadata {
+  flex: 1;
+}
+
+.closeButton {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background: #0056b3;
+}
+
+
+
+
+
+
+
 i want the after i click the icon then open beutiful modal and in that display the meta data right side and left side document preview this is my api data:- {
     "statusCode": 200,
     "headers": {
