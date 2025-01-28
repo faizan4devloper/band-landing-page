@@ -1,3 +1,47 @@
+/* Modal Container */
+.modalContainer {
+  display: flex;
+  flex-direction: row; /* Arrange children in a row (inline) */
+  width: 90%;
+  max-width: 1200px;
+  height: 80vh;
+  background-color: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Preview Section */
+.previewSection {
+  flex: 2; /* Take up more space for the preview section */
+  background-color: #f8f8f8;
+  border-right: 2px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewIframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Metadata Section */
+.metadataSection {
+  flex: 1; /* Take up less space for the metadata section */
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Space out content vertically */
+}
+ 
+ 
+ 
+ 
+ 
+ 
  <Modal
   isOpen={isDocumentPreviewOpen}
   onRequestClose={() => setIsDocumentPreviewOpen(false)}
