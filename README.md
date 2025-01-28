@@ -1,3 +1,5 @@
+the Modal look poor i want add styling consitent and flexible proper balancing both pdf and meta are in same width and height pls redesing it and i want the meta data display in the json format:- 
+
 <Modal
   isOpen={isDocumentPreviewOpen}
   onRequestClose={() => setIsDocumentPreviewOpen(false)}
