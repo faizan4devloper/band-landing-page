@@ -1,3 +1,6 @@
+i want create other one seprate component for reducing the code from one file DashboardTable and etc
+
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
