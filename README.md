@@ -1,3 +1,45 @@
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+import styles from "./TableLoader.module.css";
+
+const TableLoader = () => (
+  <tr>
+    <td colSpan="5" className={styles.loadingRow}>
+      <div className={styles.loadingContent}>
+        <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
+        <p>Loading documents...</p>
+      </div>
+    </td>
+  </tr>
+);
+
+export default TableLoader;
+
+
+
+
+
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileAlt } from "@fortawesome/free-solid-svg-icons";
+import styles from "./EmptyState.module.css";
+
+const EmptyState = () => (
+  <tr>
+    <td colSpan="5" className={styles.emptyRow}>
+      <div className={styles.emptyContent}>
+        <FontAwesomeIcon icon={faFileAlt} className={styles.emptyIcon} />
+        <p>No documents found</p>
+      </div>
+    </td>
+  </tr>
+);
+
+export default EmptyState;
+
+
+
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
