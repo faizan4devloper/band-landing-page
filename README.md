@@ -34,7 +34,7 @@ const DashboardTable = ({ userEmail }) => {
 const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
 
 
-  const API_ENDPOINT = 'https://gt94pee06i.execute-api.us-east-1.amazonaws.com/doc-indexer-dev/doc-indexer'; // Replace with the actual API endpoint
+  const API_ENDPOINT = 'https://'; // Replace with the actual API endpoint
 
   const fetchDocuments = async (isRefresh = false) => {
     setLoading(true);
@@ -119,7 +119,7 @@ const handleViewDocument = async (category, filename) => {
 
     // Make a POST request to get the presigned URL
     const presignedUrlResponse = await axios.post(
-      'https://mapz0hzanl.execute-api.us-east-1.amazonaws.com/dev/umo-indexer-presignedurl-v1', 
+      'https://', 
       presignedUrlPayload
     );
     
