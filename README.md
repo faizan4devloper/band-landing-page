@@ -8,6 +8,44 @@ const renderPercentageBar = () => {
         <div className={styles.loadingSpinner}>Processing claim status...</div>
       ) : (
         <div className={styles.splitPercentageBar}>
+          {emptyKeyPercentage > 0 && (
+            <div
+              className={styles.emptyKeysSection}
+              style={{ width: `${emptyKeyPercentage}%` }}
+            >
+              {emptyKeyPercentage > 10 && `${emptyKeyPercentage}% Empty`}
+            </div>
+          )}
+          <div
+            className={styles.filledKeysSection}
+            style={{
+              width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+            }}
+          >
+            {filledKeyPercentage > 10 && `${filledKeyPercentage}% Filled`}
+          </div>
+        </div>
+      )}
+      <p className={styles.statusLabel}>
+        {emptyKeyPercentage > 50 ? "Needs Attention" : "Looking Good!"}
+      </p>
+    </div>
+  );
+};
+
+
+
+
+const renderPercentageBar = () => {
+  const emptyKeyPercentage = percentage ? parseFloat(percentage) : 0;
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
+
+  return (
+    <div className={styles.percentageContainer}>
+      {isLoading ? (
+        <div className={styles.loadingSpinner}>Processing claim status...</div>
+      ) : (
+        <div className={styles.splitPercentageBar}>
           <div
             className={styles.emptyKeysSection}
             style={{ width: `${emptyKeyPercentage}%` }}
