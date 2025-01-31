@@ -1,71 +1,64 @@
+const handlePageChange = (direction) => {
+  setCurrentPage((prev) => {
+    if (direction === "next") return prev + 3;  // Moves to 4 → 7 → 10
+    if (direction === "prev") return Math.max(1, prev - 3); // Moves back safely
+    return prev;
+  });
+};
+
+
+const handlePageChange = (direction) => {
+  setCurrentPage((prev) => {
+    if (direction === "next") return prev + 3;  // Moves to 4 → 7 → 10
+    if (direction === "prev") return Math.max(1, prev - 3); // Moves back safely
+    return prev;
+  });
+};
+
+
+
 const fetchDocuments = async (isRefresh = false) => {
   setLoading(true);
   setError(null);
 
   try {
-    let payload;
+    let startPage = currentPage;
 
-    if (isRefresh || currentPage < 3) {
-      // Refresh should be true for the first three pages
-      payload = {
-        action_type: "pagination",
-        refresh: true,
-        start_page: currentPage + 1,
-        page_size: 20,
-      };
-    } else {
-      // Refresh should be false for pages 4, 5, 6, and onwards
-      payload = {
-        action_type: "pagination",
-        refresh: false,
-        start_page: currentPage + 1,
-        page_size: 20,
-      };
+    // Adjust start_page logic to enforce multiples of 3 (1, 4, 7, ...)
+    if (startPage > 1) {
+      startPage = Math.floor((startPage - 1) / 3) * 3 + 1;
     }
+
+    const payload = {
+      action_type: "pagination",
+      refresh: isRefresh, 
+      start_page: startPage,
+      page_size: 20,
+    };
+
+    console.log("Sending Payload:", payload);
 
     const response = await axios.post(API_ENDPOINT, payload, {
       headers: { "Content-Type": "application/json" },
     });
 
-    console.log("All Data:", response.data);
+    console.log("API Response:", response.data);
 
     const parsedBody = parseResponse(response.data);
-
     if (!parsedBody || !parsedBody.pages) {
       throw new Error("No pages found in response");
     }
 
-    // Extract transactions from the correct page structure
-    const pageKey = `page_${currentPage + 1}`;
+    // Extract transactions from the correct page
+    const pageKey = `page_${startPage}`;
     const transactions = parsedBody.pages[pageKey] || [];
 
-    const allTransactions = transactions.map((transaction) => ({
-      Filename: transaction.Filename || "Unknown",
-      DateTime: transaction.DateTime || new Date().toISOString(),
-      TransactionID: transaction.TransactionID || "Unknown",
-      Status: transaction.Status || "N/A",
-      Metadata: transaction.Metadata || {},
-    }));
-
-    setDocuments(allTransactions);
+    setDocuments(transactions);
+    setCurrentPage(startPage); // Ensure state update
   } catch (err) {
     setError(err.message || "Failed to fetch documents");
     setDocuments([]);
   } finally {
     setLoading(false);
   }
-};
-
-
-
-const handlePageChange = (direction) => {
-  if (direction === "next" && documents.length > 0) {
-    setCurrentPage((prev) => prev + 1);
-  } else if (direction === "prev" && currentPage > 0) {
-    setCurrentPage((prev) => Math.max(0, prev - 1));
-  }
-};
-
-const handleRefresh = () => {
-  fetchDocuments(true); // Pass true to ensure the refresh logic applies
 };
