@@ -1,33 +1,40 @@
-Summary Data: {data: {…}, status: 200, statusText: '', headers: AxiosHeaders, config: {…}, …}
-config
-: 
-{transitional: {…}, adapter: Array(3), transformRequest: Array(1), transformResponse: Array(1), timeout: 0, …}
-data
-: 
-body
-: 
-"{\"time_period\": \"previous_day\", \"total_count\": 410, \"successful_count\": 402, \"last_updated\": \"2025-01-31T08:41:46.314851\"}"
-headers
-: 
-{Access-Control-Allow-Origin: '*', Access-Control-Allow-Headers: 'Content-Type', Access-Control-Allow-Methods: 'OPTIONS,POST'}
-statusCode
-: 
-200
-[[Prototype]]
-: 
-Object
-headers
-: 
-AxiosHeaders {content-length: '310', content-type: 'application/json'}
-request
-: 
-XMLHttpRequest {onreadystatechange: null, readyState: 4, timeout: 0, withCredentials: false, upload: XMLHttpRequestUpload, …}
-status
-: 
-200
-statusText
-: 
-""
-[[Prototype]]
-: 
-Object
+const fetchData = async (payload, setData) => {
+  try {
+    const response = await axios.post(API_ENDPOINT, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (response.data?.body) {
+      const parsedData = JSON.parse(response.data.body); // ✅ Parse JSON string
+      setData(parsedData);
+    }
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  }
+};
+
+
+
+{/* Tile 2 - Previous Day Transactions */}
+<div className={`${styles.tile} ${styles.tile2}`}>
+  <div className={styles.tileHeader}>
+    <FontAwesomeIcon icon={faClipboardList} className={styles.tileIcon} />
+    <h4>Previous Day Transactions</h4>
+  </div>
+  <div className={styles.tileContent}>
+    <div className={styles.statItem}>
+      <span>Total</span>
+      <span className={styles.statValue}>{tile2Data.total_count || 0}</span>
+    </div>
+    <div className={styles.statItem}>
+      <span>Successful</span>
+      <span className={styles.statValue}>{tile2Data.successful_count || 0}</span>
+    </div>
+    <div className={styles.statItem}>
+      <span>Last Updated</span>
+      <span className={styles.statValue}>
+        {tile2Data.last_updated ? new Date(tile2Data.last_updated).toLocaleString() : "N/A"}
+      </span>
+    </div>
+  </div>
+</div>
