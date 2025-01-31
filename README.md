@@ -1,149 +1,4 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSync,
-  faEye,
-  faDownload,
-  faChevronLeft,
-  faChevronRight,
-  faFileLines
-} from "@fortawesome/free-solid-svg-icons";
-import styles from "./DashboardTable.module.css";
-
-const TableData = ({
-  documents,
-  loading,
-  currentPage,
-  nextStartKey,
-  handlePageChange,
-  handleRefresh,
-  handleViewDocument,
-  handleDownloadDocument,
-  handleMetadataClick
-}) => {
-  const renderDocumentRow = (doc) => (
-    <motion.tr
-      key={doc.TransactionID}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={styles.documentRow}
-    >
-      <td>{doc.Filename.split("/").pop()}</td>
-      <td>{doc.Category}</td>
-      <td>
-        <button
-          className={styles.seeMoreButton}
-          onClick={() => handleMetadataClick(doc.Metadata)}
-        >
-          See More
-        </button>
-      </td>
-      <td>{new Date(doc.DateTime).toLocaleString()}</td>
-      <td>
-        <div className={styles.actionButtons}>
-          <button
-            className={styles.viewButton}
-            title="View Document"
-            onClick={() =>
-              handleViewDocument(doc.Category, doc.Filename.split("/").pop())
-            }
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </button>
-          <button
-            className={styles.downloadButton}
-            title="Download Document"
-            onClick={() =>
-              handleDownloadDocument(doc.Category, doc.Filename.split("/").pop())
-            }
-          >
-            <FontAwesomeIcon icon={faDownload} />
-          </button>
-        </div>
-      </td>
-    </motion.tr>
-  );
-
-  const renderTableContent = () => {
-    if (loading) {
-      return (
-        <tr>
-          <td colSpan="6" className={styles.loadingRow}>
-            <div className={styles.loadingContent}>
-              <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
-              <p>Loading documents...</p>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    if (documents.length === 0) {
-      return (
-        <tr>
-          <td colSpan="6" className={styles.emptyRow}>
-            <div className={styles.emptyContent}>
-              <p>No documents found</p>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    return documents.map(renderDocumentRow);
-  };
-
-  return (
-    <div className={styles.tableWrapper}>
-      <table className={styles.documentTable}>
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Category</th>
-            <th>Metadata</th>
-            <th>Date</th>
-            <th>Processed At</th>
-          </tr>
-        </thead>
-        <tbody>
-          <AnimatePresence>{renderTableContent()}</AnimatePresence>
-        </tbody>
-      </table>
-
-      {/* Pagination */}
-      <div className={styles.pagination}>
-        <button
-          className={`${styles.paginationButton} ${currentPage === 0 ? styles.disabled : ""}`}
-          onClick={() => handlePageChange("prev")}
-          disabled={currentPage === 0}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} className={styles.paginationIcon} />
-          Prev
-        </button>
-
-        <div className={styles.paginationInfo}>
-          <FontAwesomeIcon icon={faFileLines} className={styles.paginationIcon} />
-          Page {currentPage + 1}
-        </div>
-
-        <button
-          className={`${styles.paginationButton} ${!nextStartKey ? styles.disabled : ""}`}
-          onClick={() => handlePageChange("next")}
-          disabled={currentPage === 0}
-        >
-          Next
-          <FontAwesomeIcon icon={faChevronRight} className={styles.paginationIcon} />
-        </button>
-      </div>
-    </div>
-  );
-};
-
-export default TableData;
-
-
+/* TableData.module.css */
 .documentTableContainer {
   background-color: #ffffff;
   border-radius: 12px;
@@ -306,25 +161,23 @@ export default TableData;
 }
 
 .paginationButton {
-     position: relative;
-    display: flex
-;
-    text-transform: capitalize;
-    align-items: center;
-    font-size: 12px;
-    justify-content: center;
-    padding: 8px 10px;
-    background-color: #4a90e2;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-weight: 600;
-    /* text-transform: uppercase; */
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    box-shadow: 0 3px 6px rgba(74, 144, 226, 0.3);
+  position: relative;
+  display: flex;
+  text-transform: capitalize;
+  align-items: center;
+  font-size: 12px;
+  justify-content: center;
+  padding: 8px 10px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(74, 144, 226, 0.3);
 }
 
 .paginationButton::before {
@@ -334,12 +187,7 @@ export default TableData;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    120deg, 
-    transparent, 
-    rgba(255, 255, 255, 0.3), 
-    transparent
-  );
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   transition: all 0.6s ease;
 }
 
@@ -392,7 +240,6 @@ export default TableData;
   gap: 15px;
 }
 
-/* Animated Hover Effects */
 @keyframes buttonPulse {
   0% {
     transform: scale(1);
@@ -427,21 +274,17 @@ export default TableData;
 }
 
 #toolbar {
-    align-items: center;
-    background-color: var(--viewer-pdf-toolbar-background-color);
-    color: rgb(255, 255, 255);
-    display: flex
-;
-    /* height: var(--viewer-pdf-toolbar-height); */
-    padding: 0px 16px;
-    display: none;
+  align-items: center;
+  background-color: var(--viewer-pdf-toolbar-background-color);
+  color: rgb(255, 255, 255);
+  display: flex;
+  padding: 0px 16px;
+  display: none;
 }
 
 .modalContent {
   display: flex;
   width: 100%;
-  width: 1000px;
-  height: 80vh;
   height: 560px;
   background-color: #ffffff;
   border-radius: 16px;
@@ -502,64 +345,4 @@ export default TableData;
   overflow-y: auto;
   background-color: #f9f9f9;
   border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.metadataContent h3 {
-  font-size: 18px;
-  color: #6a11cb;
-  margin-bottom: 15px;
-}
-
-.metadataJson {
-  background-color: #f0f0f0;
-  color: #333;
-  font-size: 14px;
-  font-family: 'Courier New', monospace;
-  padding: 15px;
-  border-radius: 8px;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: center;
-}
-
-.closeModalButton {
-        background-color: #e53935;
-    position: absolute;
-    top: 12px;
-    right: 131px;
-    cursor: pointer;
-    color: #ffffff;
-    border: none;
-    padding: 9px 19px;
-    border-radius: 0px 16px 0px 0px;
-    font-size: 16px;
-    transition: all 0.3s ease;
-}
-
-.closeModalButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Responsive Adjustments */
-@media (max-width: 768px) {
-  .modalContent {
-    flex-direction: column;
-    width: 95%;
-    height: 90vh;
-  }
-
-  .previewSection,
-  .metadataSection {
-    flex: none;
-    width: 100%;
-  }
 }
