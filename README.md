@@ -1,3 +1,54 @@
+API: 
+https:same api for all thing
+Paginations:
+ 
+refresh:
+{
+    "action_type": "pagination",
+    "refresh": true,
+    "start_page": 1,
+    "page_size": 20
+}
+ 
+1st three pages: you can use true or false for refresh here
+ 
+{
+    "action_type": "pagination",
+    "refresh": true,
+    "start_page": 1,
+    "page_size": 20
+}
+ 
+page 4,5,6 and so on:
+ 
+{
+    "action_type": "pagination",
+    "refresh": false,
+    "start_page": 4,
+    "page_size": 20
+}
+ 
+Tile 2: Previous day
+ 
+{
+    "action_type": "transaction_counts",
+    "time_period": "previous_day"
+}
+ 
+Tile 3: Day before yesterday
+{
+    "action_type": "transaction_counts",
+    "time_period": "day_before_yesterday"
+}
+ 
+Tile 4: last month
+ 
+{
+    "action_type": "transaction_counts",
+    "time_period": "last_month"
+}
+ 
+![image](https://github.com/user-attachments/assets/dddf61ca-9c4a-468e-818c-9ca486954db2)
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -23,7 +74,7 @@ const DashboardTable = ({ userEmail }) => {
   const [selectedDocument, setSelectedDocument] = useState(null);
   const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
 
-  const API_ENDPOINT = "https://gt94pee06i.execute-api.us-east-1.amazonaws.com/doc-indexer-dev/doc-indexer"; // Replace with the actual API endpoint
+  const API_ENDPOINT = "dummy"; // Replace with the actual API endpoint
 
   const fetchDocuments = async (isRefresh = false) => {
     setLoading(true);
@@ -114,7 +165,7 @@ const handleViewDocument = async (category, filename) => {
 
     // Make a POST request to get the presigned URL
     const presignedUrlResponse = await axios.post(
-      'https://mapz0hzanl.execute-api.us-east-1.amazonaws.com/dev/umo-indexer-presignedurl-v1', 
+      'dummy', 
       presignedUrlPayload
     );
     
@@ -154,7 +205,7 @@ const handleDownloadDocument = async (category, filename) => {
 
     // Make a POST request to get the presigned URL
     const presignedUrlResponse = await axios.post(
-      'https://mapz0hzanl.execute-api.us-east-1.amazonaws.com/dev/umo-indexer-presignedurl-v1', 
+      'dummy', 
       presignedUrlPayload
     );
 
@@ -286,3 +337,160 @@ export default DashboardTable;
 
 
 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faChartLine, 
+  faClipboardList, 
+  faChartPie, 
+  faCalendarCheck 
+} from '@fortawesome/free-solid-svg-icons';
+import styles from './Summary.module.css';
+
+const Summary = () => {
+  const [tile1Data, setTile1Data] = useState([]);
+  const [tile2Data, setTile2Data] = useState({ total: 0, successful: 0 });
+  const [tile3Data, setTile3Data] = useState({ total: 0, successful: 0 });
+  const [tile4Data, setTile4Data] = useState({ total: 0, successful: 0 });
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // APIs
+  const tile1Api = 'API_FOR_TILE_1'; // Replace with actual API endpoint
+  const tile2Api = 'API_FOR_TILE_2';
+  const tile3Api = 'API_FOR_TILE_3';
+  const tile4Api = 'API_FOR_TILE_4';
+
+  // Fetch data for Tile 1
+  useEffect(() => {
+    const fetchTile1Data = async () => {
+      try {
+        const responses = await Promise.all(
+          Array.from({ length: 3 }, (_, i) =>
+            axios.get(`${tile1Api}?page=${i + 1}`)
+          )
+        );
+        setTile1Data(responses.map((res) => res.data));
+      } catch (error) {
+        console.error('Error fetching Tile 1 data:', error);
+      }
+    };
+    fetchTile1Data();
+  }, [tile1Api]);
+
+  // Fetch data for Tile 2
+  useEffect(() => {
+    const fetchTile2Data = async () => {
+      try {
+        const response = await axios.get(tile2Api);
+        setTile2Data(response.data);
+      } catch (error) {
+        console.error('Error fetching Tile 2 data:', error);
+      }
+    };
+    fetchTile2Data();
+  }, [tile2Api]);
+
+  // Fetch data for Tile 3
+  useEffect(() => {
+    const fetchTile3Data = async () => {
+      try {
+        const response = await axios.get(tile3Api);
+        setTile3Data(response.data);
+      } catch (error) {
+        console.error('Error fetching Tile 3 data:', error);
+      }
+    };
+    fetchTile3Data();
+  }, [tile3Api]);
+
+  // Fetch data for Tile 4
+  useEffect(() => {
+    const fetchTile4Data = async () => {
+      try {
+        const response = await axios.get(tile4Api);
+        setTile4Data(response.data);
+      } catch (error) {
+        console.error('Error fetching Tile 4 data:', error);
+      }
+    };
+    fetchTile4Data();
+  }, [tile4Api]);
+  return (
+<div className={styles.summaryContainer}>
+      {/* Tile 1 */}
+      <div className={`\${styles.tile} \${styles.tile1}`}>
+        <div className={styles.tileHeader}>
+          <FontAwesomeIcon icon={faChartLine} className={styles.tileIcon} />
+          <h4>Pagination Data</h4>
+        </div>
+        <div className={styles.tileContent}>
+          <ul>
+            {tile1Data.flatMap((page, index) =>
+              page.map((item, idx) => (
+                <li key={`\${index}-\${idx}`}>
+                  {item.date} - {item.time}
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Tile 2 */}
+      <div className={`\${styles.tile} \${styles.tile2}`}>
+        <div className={styles.tileHeader}>
+          <FontAwesomeIcon icon={faClipboardList} className={styles.tileIcon} />
+          <h4>Today's Transactions</h4>
+        </div>
+        <div className={styles.tileContent}>
+          <div className={styles.statItem}>
+            <span>Total</span>
+            <span className={styles.statValue}>{tile2Data.total}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span>Successful</span>
+            <span className={styles.statValue}>{tile2Data.successful}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tile 3 */}
+      <div className={`\${styles.tile} \${styles.tile3}`}>
+        <div className={styles.tileHeader}>
+          <FontAwesomeIcon icon={faChartPie} className={styles.tileIcon} />
+          <h4>Transaction Counts</h4>
+        </div>
+        <div className={styles.tileContent}>
+          <div className={styles.statItem}>
+            <span>Total</span>
+            <span className={styles.statValue}>{tile3Data.total}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span>Successful</span>
+            <span className={styles.statValue}>{tile3Data.successful}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Tile 4 */}
+      <div className={`\${styles.tile} \${styles.tile4}`}>
+        <div className={styles.tileHeader}>
+          <FontAwesomeIcon icon={faCalendarCheck} className={styles.tileIcon} />
+          <h4>Last Month's Transactions</h4>
+        </div>
+        <div className={styles.tileContent}>
+          <div className={styles.statItem}>
+            <span>Total</span>
+            <span className={styles.statValue}>{tile4Data.total}</span>
+          </div>
+          <div className={styles.statItem}>
+            <span>Successful</span>
+            <span className={styles.statValue}>{tile4Data.successful}</span>
+          </div>
+        </div>
+      </div>
+    </div>  );
+};
+
+export default Summary;
