@@ -44,3 +44,19 @@ const fetchDocuments = async () => {
     setLoading(false);
   }
 };
+
+
+
+const handlePageChange = (direction) => {
+  if (direction === "next" && documents.length > 0) {
+    setCurrentPage((prev) => prev + 1);
+  } else if (direction === "prev" && currentPage > 1) {
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+  }
+};
+
+
+const handleRefresh = () => {
+  setCurrentPage(0); // Reset to first page
+  fetchDocuments();
+};
