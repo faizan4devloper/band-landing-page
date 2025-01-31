@@ -1,3 +1,30 @@
+refresh:
+{
+    "action_type": "pagination",
+    "refresh": true,
+    "start_page": 1,
+    "page_size": 20
+}
+ 
+1st three pages: you can use true or false for refresh here
+ 
+{
+    "action_type": "pagination",
+    "refresh": true,
+    "start_page": 1,
+    "page_size": 20
+}
+ 
+page 4,5,6 and so on:
+ 
+{
+    "action_type": "pagination",
+    "refresh": false,
+    "start_page": 4,
+    "page_size": 20
+}
+ 
+![Uploading image.png…]()
 
 
 import React, { useState, useEffect } from "react";
