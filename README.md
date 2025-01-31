@@ -1,16 +1,27 @@
-const fetchDocuments = async () => {
+const fetchDocuments = async (isRefresh = false) => {
   setLoading(true);
   setError(null);
 
   try {
-    const isRefresh = currentPage + 1 <= 3; // Refresh only for the first 3 pages
+    let payload;
 
-    const payload = {
-      action_type: "pagination",
-      refresh: isRefresh, 
-      start_page: currentPage + 1,
-      page_size: pageSize || 20 // Ensure pageSize is always set
-    };
+    if (isRefresh || currentPage < 3) {
+      // Refresh should be true for the first three pages
+      payload = {
+        action_type: "pagination",
+        refresh: true,
+        start_page: currentPage + 1,
+        page_size: 20,
+      };
+    } else {
+      // Refresh should be false for pages 4, 5, 6, and onwards
+      payload = {
+        action_type: "pagination",
+        refresh: false,
+        start_page: currentPage + 1,
+        page_size: 20,
+      };
+    }
 
     const response = await axios.post(API_ENDPOINT, payload, {
       headers: { "Content-Type": "application/json" },
@@ -50,13 +61,11 @@ const fetchDocuments = async () => {
 const handlePageChange = (direction) => {
   if (direction === "next" && documents.length > 0) {
     setCurrentPage((prev) => prev + 1);
-  } else if (direction === "prev" && currentPage > 1) {
-    setCurrentPage((prev) => Math.max(1, prev - 1));
+  } else if (direction === "prev" && currentPage > 0) {
+    setCurrentPage((prev) => Math.max(0, prev - 1));
   }
 };
 
-
 const handleRefresh = () => {
-  setCurrentPage(0); // Reset to first page
-  fetchDocuments();
+  fetchDocuments(true); // Pass true to ensure the refresh logic applies
 };
