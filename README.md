@@ -1,19 +1,69 @@
-Parse 
-{total_transactions: 410, start_page: 1, pages: {…}, last_updated: '2025-01-31T09:59:08.612537'}
-last_updated
-: 
-"2025-01-31T09:59:08.612537"
-pages
-: 
-page_1
-: 
-Array(2)
-0
-: 
-{TransactionID: '10381a11-3c63-42e7-8701-5d0d1923bb3d', Filename: 'OPD_UK_Invoice_Data_25_1.pdf', DateTime: '2025-01-30T20:16:00.307714', Status: 'Success', Metadata: {…}}
-1
-: 
-{TransactionID: 'd15e76e2-0422-4cbd-a8ec-2cc524f851db', Filename: 'OPD_UK_Invoice_Data_27_1.pdf', DateTime: '2025-01-30T20:15:57.266939', Status: 'Success', Metadata: {…}}
-length
-: 
-2
+const fetchDocuments = async () => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const payload = {
+      action_type: "pagination",
+      start_page: currentPage + 1,
+      page_size: pageSize
+    };
+
+    const response = await axios.post(API_ENDPOINT, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("All Data:", response.data);
+
+    const parsedBody = parseResponse(response.data);
+
+    if (!parsedBody || !parsedBody.pages) {
+      throw new Error("No pages found in response");
+    }
+
+    // Extract transactions from the correct page structure
+    const pageKey = `page_${currentPage + 1}`;
+    const transactions = parsedBody.pages[pageKey] || [];
+
+    const allTransactions = transactions.map((transaction) => ({
+      Filename: transaction.Filename || "Unknown",
+      DateTime: transaction.DateTime || new Date().toISOString(),
+      TransactionID: transaction.TransactionID || "Unknown",
+      Status: transaction.Status || "N/A",
+      Metadata: transaction.Metadata || {},
+    }));
+
+    setDocuments(allTransactions);
+  } catch (err) {
+    setError(err.message || "Failed to fetch documents");
+    setDocuments([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+useEffect(() => {
+  fetchDocuments();
+}, [currentPage]);
+
+useEffect(() => {
+  console.log("Updated Documents:", documents);
+}, [documents]);
+
+
+
+{documents.length > 0 ? (
+  documents.map((doc, index) => (
+    <tr key={index}>
+      <td>{doc.Filename}</td>
+      <td>{doc.DateTime}</td>
+      <td>{doc.Status}</td>
+    </tr>
+  ))
+) : (
+  <tr>
+    <td colSpan="3">No records found</td>
+  </tr>
+)}
