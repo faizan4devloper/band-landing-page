@@ -1,165 +1,253 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { HashLoader } from "react-spinners";
-import Modal from 'react-modal';
-import styles from "./AllDataTable.module.css";
 
-Modal.setAppElement('#root');
+i want table style and structure like that | doc name | classification | is Valid | :-
 
-const AllDataTable = () => {
-  const [rows, setRows] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+import React, { useState, useEffect } from 'react';
+import styles from './ClaimClassification.module.css';
 
-  // Pagination State
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5; // Display 5 items per page
-
-  const fetchData = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const payload = {
-        tasktype: "FETCH_ALL_ACT_CLAIMS",
-      };
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      const response = await axios.post("dummy", payload, { headers });
-      console.log("API Response:", response.data);
-
-      const allData = Object.values(response.data.allclaimactdata || {});
-      setRows(allData);
-    } catch (err) {
-      setError("Failed to fetch data. Please try again.");
-      console.error("API Error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+const ClaimClassification = ({ data }) => {
+  const [documentName, setDocumentName] = useState('');
+  const [classification, setClassification] = useState('');
+  const [isValid, setIsValid] = useState('');
+  const [cardiomyopathyStatus, setCardiomyopathyStatus] = useState('');
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (data && data.total_extracted_data) {
+      try {
+        const parsedData = JSON.parse(data.total_extracted_data);
+        
+        // Extract document name
+        setDocumentName(
+          parsedData.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
+          parsedData.UPLOADED_DOCUMENT_NAME || 
+          'Unnamed Document'
+        );
 
-  // Pagination Logic
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = rows.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(rows.length / itemsPerPage);
+        // Determine classification
+        const formType = parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 'Unknown';
+        setClassification(formType);
 
-  // Page Change Handlers
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+        // Determine Cardiomyopathy status
+        const cardiomyopathy = parsedData.DETAILS_OF_ILLNESS?.HEART_SURGERY_DETAILS?.PATIENT_SUFFERED_FROM_CARDIOMIOPATHY || 'N/A';
+        setCardiomyopathyStatus(cardiomyopathy);
+
+        // Determine validity based on Cardiomyopathy status
+        const validationStatus = cardiomyopathy.toLowerCase() === 'no' ? 'Yes' : 'No';
+        setIsValid(validationStatus);
+
+      } catch (error) {
+        console.error('Error parsing extracted data:', error);
+        setDocumentName('Unknown Document');
+        setClassification('Unknown');
+        setIsValid('Error');
+        setCardiomyopathyStatus('N/A');
+      }
+    }
+  }, [data]);
 
   return (
-    <div className={styles.tableContainer}>
-      {loading ? (
-        <div className={styles.spinnerContainer}>
-          <HashLoader color="#0f5fdc" size={40} />
+    <div className={styles.claimClassificationContainer}>
+      <div className={styles.classificationTable}>
+        <div className={styles.tableHeader}>
+          <h4>Claim Classification</h4>
         </div>
-      ) : error ? (
-        <p className={styles.error}>{error}</p>
-      ) : currentItems.length > 0 ? (
-        <>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Claim ID</th>
-                <th>Summary</th>
-                <th>Claim Type</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentItems.map((row, index) => (
-                <tr key={index} onClick={() => setSelectedRow(row) & setIsModalOpen(true)}>
-                  <td className={styles.clickable}>{row.claimid}</td>
-                  <td>{row.briefsummary}</td>
-                  <td>{row.claimtype}</td>
-                  <td>{row.status}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {/* Pagination Controls */}
-          <div className={styles.pagination}>
-            <button onClick={prevPage} disabled={currentPage === 1} className={styles.pageButton}>
-              ◀ Prev
-            </button>
-            {[...Array(totalPages)].map((_, i) => (
-              <button key={i} onClick={() => paginate(i + 1)}
-                className={`${styles.pageButton} ${currentPage === i + 1 ? styles.activePage : ""}`}>
-                {i + 1}
-              </button>
-            ))}
-            <button onClick={nextPage} disabled={currentPage === totalPages} className={styles.pageButton}>
-              Next ▶
-            </button>
+        <div className={styles.tableBody}>
+          <div className={styles.tableRow}>
+            <div className={styles.tableLabel}>Document Name:</div>
+            <div className={styles.tableValue}>{documentName}</div>
           </div>
-        </>
-      ) : (
-        <p className={styles.noData}>No data available</p>
-      )}
-
-      {/* Modal */}
-      <Modal isOpen={isModalOpen} onRequestClose={() => setIsModalOpen(false)}
-        className={styles.modal} overlayClassName={styles.modalOverlay}>
-        {selectedRow && (
-          <div className={styles.modalContent}>
-            <h2 className={styles.modalTitle}>{selectedRow.claimid} Details</h2>
-            <p><strong>Brief Summary:</strong> {selectedRow.briefsummary}</p>
-            <p><strong>Claim Type:</strong> {selectedRow.claimtype}</p>
-            <p><strong>Claim Status:</strong> {selectedRow.status}</p>
+          <div className={styles.tableRow}>
+            <div className={styles.tableLabel}>Classification:</div>
+            <div className={styles.tableValue}>
+              <span 
+                className={`${styles.classificationTag} ${
+                  classification.toLowerCase() === 'cancer' 
+                    ? styles.cancerTag 
+                    : classification.toLowerCase() === 'heart'
+                    ? styles.heartTag
+                    : styles.defaultTag
+                }`}
+              >
+                {classification}
+              </span>
+            </div>
           </div>
-        )}
-        <button onClick={() => setIsModalOpen(false)} className={styles.modalCloseButton}>Close</button>
-      </Modal>
+          <div className={styles.tableRow}>
+            <div className={styles.tableLabel}>Is Valid:</div>
+            <div className={styles.tableValue}>
+              <span 
+                className={`${styles.validTag} ${
+                  cardiomyopathyStatus.toLowerCase() === 'no' 
+                    ? styles.validNo 
+                    : cardiomyopathyStatus.toLowerCase() === 'yes'
+                    ? styles.validYes
+                    : styles.cardiomyopathyNA
+                }`}
+              >
+                {cardiomyopathyStatus}
+              </span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
     </div>
   );
 };
 
-export default AllDataTable;
+export default ClaimClassification;
 
 
-/* Pagination Container */
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 15px;
+.claimClassificationContainer {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-/* Pagination Buttons */
-.pageButton {
-  background-color: #4a90e2;
+.claimClassificationContainer:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+}
+
+.classificationTable {
+  width: 100%;
+}
+
+.tableHeader {
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
   color: white;
-  border: none;
-  padding: 8px 12px;
-  margin: 0 5px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: background 0.3s ease-in-out;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.pageButton:hover {
-  background-color: #357ae8;
+.tableHeader h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
-.pageButton:disabled {
-  background-color: #ddd;
-  cursor: not-allowed;
+.tableBody {
+  padding: 20px;
 }
 
-/* Active Page Styling */
-.activePage {
-  background-color: #0f5fdc;
-  font-weight: bold;
+.tableRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableRow:hover {
+  background-color: #f9f9f9;
+}
+
+.tableLabel {
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.tableValue {
+  color: #2d3748;
+  font-size: 0.95rem;
+  text-align: right;
+  flex: 1.5;
+}
+
+.classificationTag,
+.validTag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Classification Tags */
+.cancerTag {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.heartTag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.defaultTag {
+  background-color: #f0f4f8;
+  color: #4a5568;
+}
+
+/* Validation Tags */
+.validYes {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.validNo {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.validPending {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 600px) {
+  .claimClassificationContainer {
+    max-width: 100%;
+    margin: 0 10px;
+  }
+
+  .tableRow {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px 0;
+  }
+
+  .tableLabel,
+  .tableValue {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 5px;
+  }
+
+  .tableValue {
+    text-align: left;
+  }
+
+  .classificationTag,
+  .validTag {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Accessibility and Print Styles */
+@media print {
+  .claimClassificationContainer {
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+  }
 }
