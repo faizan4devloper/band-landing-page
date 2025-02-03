@@ -61,3 +61,70 @@ const ClaimClassification = ({ data }) => {
 };
 
 export default ClaimClassification;
+
+/* ClaimClassification.module.css */
+
+.claimClassificationContainer {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.classificationTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.classificationTable th, .classificationTable td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.classificationTable th {
+  background-color: #007bff;
+  color: white;
+}
+
+.classificationTable tr:hover {
+  background-color: #f1f1f1;
+}
+
+.cancerTag {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.heartTag {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.defaultTag {
+  background-color: #f0f4f8;
+  color: #4a5568;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.validYes {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.validNo {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
