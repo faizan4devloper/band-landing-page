@@ -1,175 +1,119 @@
-import React, { useState, useEffect } from 'react';
-import styles from './ClaimClassification.module.css';
+i want also display red ones percentage ex:- like red 3% green 97%
 
-const ClaimClassification = ({ data }) => {
-  const [documentName, setDocumentName] = useState('');
-  const [classification, setClassification] = useState('');
-  const [isValid, setIsValid] = useState('');
+import React from 'react';
+import styles from "./ClaimProcessingStatus.module.css";
 
-  useEffect(() => {
-    if (data && data.total_extracted_data) {
-      try {
-        const parsedData = JSON.parse(data.total_extracted_data);
+const ClaimProcessingStatus = ({ percentage, isLoading }) => {
+  const renderPercentageBar = () => {
+    const emptyKeyPercentage = percentage ? parseFloat(percentage) : 0;
+    const filledKeyPercentage = 100 - emptyKeyPercentage;
 
-        // Extract document name
-        setDocumentName(
-          parsedData.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
-          parsedData.UPLOADED_DOCUMENT_NAME || 
-          'Unnamed Document'
-        );
-
-        // Determine classification
-        const formType = parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 'Unknown';
-        setClassification(formType);
-
-        // Determine validity based on Cardiomyopathy status
-        const cardiomyopathy = parsedData.DETAILS_OF_ILLNESS?.HEART_SURGERY_DETAILS?.PATIENT_SUFFERED_FROM_CARDIOMIOPATHY || 'N/A';
-        const validationStatus = cardiomyopathy.toLowerCase() === 'no' ? 'Yes' : 'No';
-        setIsValid(validationStatus);
-
-      } catch (error) {
-        console.error('Error parsing extracted data:', error);
-        setDocumentName('Unknown Document');
-        setClassification('Unknown');
-        setIsValid('Error');
-      }
-    }
-  }, [data]);
+    return (
+      <div className={styles.percentageContainer}>
+        {isLoading ? (
+          <div className={styles.loadingSpinner}>Processing claim status...</div>
+        ) : (
+          <div className={styles.splitPercentageBar}>
+            {emptyKeyPercentage > 0 && (
+              <div
+                className={styles.emptyKeysSection}
+                style={{ width: `${emptyKeyPercentage}%` }}
+              >
+                {emptyKeyPercentage > 10 && `${emptyKeyPercentage}% Empty`}
+              </div>
+            )}
+            <div
+              className={styles.filledKeysSection}
+              style={{
+                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+              }}
+            >
+              {filledKeyPercentage > 10 && `${filledKeyPercentage}%`}
+            </div>
+          </div>
+        )}
+        <p className={styles.statusLabel}>
+          {emptyKeyPercentage > 50 ? "Needs Attention" : "Looking Good!"}
+        </p>
+      </div>
+    );
+  };
 
   return (
-    <div className={styles.claimClassificationContainer}>
-      <h4>Claim Classification</h4>
-      <table className={styles.classificationTable}>
-        <thead>
-          <tr>
-            <th>Document Name</th>
-            <th>Classification</th>
-            <th>Is Valid?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{documentName}</td>
-            <td>
-              <span className={`${styles.classificationTag} ${classification.toLowerCase() === 'cancer' ? styles.cancerTag 
-                : classification.toLowerCase() === 'heart' ? styles.heartTag 
-                : styles.defaultTag}`}>
-                {classification}
-              </span>
-            </td>
-            <td>
-              <span className={`${styles.validTag} ${isValid === 'Yes' ? styles.validYes : styles.validNo}`}>
-                {isValid}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
+      {renderPercentageBar()}
     </div>
   );
 };
 
-export default ClaimClassification;
+export default ClaimProcessingStatus;
 
 
 
-
-
-
-.claimClassificationContainer {
-  font-family: 'Inter', 'Arial', sans-serif;
-  max-width: 700px;
-  margin: 20px auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  background-color: #ffffff;
-  padding: 20px;
-  transition: all 0.3s ease;
+.percentHead{
+      color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex
+;
+    align-items: center;
 }
 
-h4 {
-  text-align: center;
-  color: #2d3748;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
 
-.classificationTable {
+.percentageContainer {
   width: 100%;
-  border-collapse: collapse;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-.classificationTable th, .classificationTable td {
-  border: 1px solid #e1e8f0;
-  padding: 12px;
+.splitPercentageBar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.emptyKeysSection,
+.filledKeysSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 12%; /* Prevents text from getting cut off */
+  transition: width 0.6s ease-in-out;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.emptyKeysSection {
+  background-color: #ff6b6b;
+}
+
+.filledKeysSection {
+  background-color: #4ecb71;
+}
+
+.statusLabel {
+  font-size: 14px;
+  margin-top: 8px;
   text-align: center;
+  color: #444;
+  font-weight: 500;
+}
+.loadingSpinner{
+  text-align: center;
+  font-size: 12px;
 }
 
-.classificationTable th {
-  background-color: #f0f4f8;
-  font-weight: 600;
-  color: #2d3748;
-}
-
-.classificationTable td {
-  color: #4a5568;
-}
-
-/* Classification Tag Styles */
-.classificationTag {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cancerTag {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-
-.heartTag {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.defaultTag {
-  background-color: #f5f5f5;
-  color: #616161;
-}
-
-/* Validity Tag Styles */
-.validTag {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.validYes {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.validNo {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-  .claimClassificationContainer {
-    max-width: 95%;
-  }
-
-  .classificationTable th, .classificationTable td {
-    padding: 8px;
-  }
-}
+<ClaimProcessingStatus 
+              percentage={percentage} 
+              isLoading={isLoading} 
+            />
