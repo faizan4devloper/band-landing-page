@@ -1,3 +1,77 @@
+import React from 'react';
+import styles from "./ClaimProcessingStatus.module.css";
+
+const ClaimProcessingStatus = ({ percentage, isLoading }) => {
+  const emptyKeyPercentage = percentage ? parseFloat(percentage) : 0;
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
+
+  return (
+    <div>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
+
+      {isLoading ? (
+        <div className={styles.loadingSpinner}>Processing claim status...</div>
+      ) : (
+        <div className={styles.percentageContainer}>
+          {/* Display red & green percentages above the bar */}
+          <div className={styles.percentageLabel}>
+            <span className={styles.redText}>Red: {emptyKeyPercentage}%</span>
+            <span className={styles.greenText}>Green: {filledKeyPercentage}%</span>
+          </div>
+
+          <div className={styles.splitPercentageBar}>
+            <div
+              className={styles.emptyKeysSection}
+              style={{ width: `${emptyKeyPercentage}%` }}
+            >
+              {emptyKeyPercentage > 5 && `${emptyKeyPercentage}%`}
+            </div>
+            <div
+              className={styles.filledKeysSection}
+              style={{
+                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+              }}
+            >
+              {filledKeyPercentage > 5 && `${filledKeyPercentage}%`}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <p className={styles.statusLabel}>
+        {emptyKeyPercentage > 50 ? "Needs Attention" : "Looking Good!"}
+      </p>
+    </div>
+  );
+};
+
+export default ClaimProcessingStatus;
+
+
+
+/* Label styles above the percentage bar */
+.percentageLabel {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.redText {
+  color: #ff6b6b;
+}
+
+.greenText {
+  color: #4ecb71;
+}
+
+
+
+
+
+
+
 i want also display red ones percentage ex:- like red 3% green 97%
 
 import React from 'react';
