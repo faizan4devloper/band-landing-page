@@ -1,175 +1,227 @@
-/* ClaimClassification.module.css */
+i want table structure :- Document Name | Classification | Is Valid?
+
+import React, { useState, useEffect } from 'react'; import styles from './ClaimClassification.module.css';
+
+const ClaimClassification = ({ data }) => { const [documentName, setDocumentName] = useState(''); const [classification, setClassification] = useState(''); const [isValid, setIsValid] = useState(''); const [cardiomyopathyStatus, setCardiomyopathyStatus] = useState('');
+
+useEffect(() => { if (data && data.total_extracted_data) { try { const parsedData = JSON.parse(data.total_extracted_data);
+
+    // Extract document name
+    setDocumentName(
+      parsedData.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
+      parsedData.UPLOADED_DOCUMENT_NAME || 
+      'Unnamed Document'
+    );
+
+    // Determine classification
+    const formType = parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 'Unknown';
+    setClassification(formType);
+
+    // Determine Cardiomyopathy status
+    const cardiomyopathy = parsedData.DETAILS_OF_ILLNESS?.HEART_SURGERY_DETAILS?.PATIENT_SUFFERED_FROM_CARDIOMIOPATHY || 'N/A';
+    setCardiomyopathyStatus(cardiomyopathy);
+
+    // Determine validity based on Cardiomyopathy status
+    const validationStatus = cardiomyopathy.toLowerCase() === 'no' ? 'Yes' : 'No';
+    setIsValid(validationStatus);
+
+  } catch (error) {
+    console.error('Error parsing extracted data:', error);
+    setDocumentName('Unknown Document');
+    setClassification('Unknown');
+    setIsValid('Error');
+    setCardiomyopathyStatus('N/A');
+  }
+}
+}, [data]);
+
+return ( <div className={styles.claimClassificationContainer}> <div className={styles.classificationTable}> <div className={styles.tableHeader}> <h4>Claim Classification</h4> </div> <div className={styles.tableBody}> <div className={styles.tableRow}> <div className={styles.tableLabel}>Document Name:</div> <div className={styles.tableValue}>{documentName}</div> </div> <div className={styles.tableRow}> <div className={styles.tableLabel}>Classification:</div> <div className={styles.tableValue}> <span className={\${styles.classificationTag} \${                   classification.toLowerCase() === 'cancer'                      ? styles.cancerTag                      : classification.toLowerCase() === 'heart'                     ? styles.heartTag                     : styles.defaultTag                 }} > {classification} </span> </div> </div> <div className={styles.tableRow}> <div className={styles.tableLabel}>Is Valid:</div> <div className={styles.tableValue}> <span className={\${styles.validTag} \${                   cardiomyopathyStatus.toLowerCase() === 'no'                      ? styles.validNo                      : cardiomyopathyStatus.toLowerCase() === 'yes'                     ? styles.validYes                     : styles.cardiomyopathyNA                 }} > {cardiomyopathyStatus} </span> </div> </div>
+
+    </div>
+  </div>
+</div>
+); };
+
+export default ClaimClassification;
+
+
 
 .claimClassificationContainer {
-  width: 100%;
-  max-width: 800px;
+  font-family: 'Inter', 'Arial', sans-serif;
+  max-width: 500px;
   margin: 20px auto;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  overflow: hidden;
   background-color: #ffffff;
   transition: all 0.3s ease;
-  animation: fadeIn 0.5s ease-out;
 }
 
 .classificationTable {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  font-family: 'Inter', 'Arial', sans-serif;
-  background: white;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-/* Enhanced Header Styles */
-.classificationTable thead {
-  background: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+.tableHeader {
+  background-color: #f0f4f8;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e1e8f0;
 }
 
-.classificationTable thead tr {
-  height: 50px;
-}
-
-.classificationTable thead th {
-  padding: 16px 24px;
-  color: white;
+.tableHeader h4 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 18px;
   font-weight: 600;
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 0.75px;
+}
+
+.tableBody {
+  padding: 20px;
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.tableRow:last-child {
   border-bottom: none;
 }
 
-/* Improved Body Styles */
-.classificationTable tbody tr {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.classificationTable tbody tr:not(:last-child) td {
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.classificationTable tbody td {
-  padding: 18px 24px;
-  color: #334155;
+.tableLabel {
+  flex: 0 0 40%;
   font-weight: 500;
-  font-size: 0.95rem;
+  color: #4a5568;
+  padding-right: 15px;
 }
 
-/* Hover Effects */
-.classificationTable tbody tr:hover {
-  background-color: #f8fafc;
-  transform: translateX(4px);
-  box-shadow: -4px 0 0 0 #3b82f6;
+.tableValue {
+  flex: 1;
+  color: #2d3748;
+  font-weight: 400;
 }
 
-/* Tag Base Styles */
+/* Classification Tag Styles */
 .classificationTag {
-  display: inline-flex;
-  align-items: center;
-  padding: 6px 14px;
-  border-radius: 20px;
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-size: 0.8rem;
-  border: 1.5px solid transparent;
-  transition: all 0.2s ease;
 }
 
-/* Classification Tags */
 .cancerTag {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border-color: #fecaca;
+  background-color: #ffebee;
+  color: #d32f2f;
 }
 
 .heartTag {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border-color: #bbf7d0;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.surgeryTag {
+  background-color: #e3f2fd;
+  color: #1976d2;
 }
 
 .defaultTag {
-  background-color: #f8fafc;
-  color: #64748b;
-  border-color: #e2e8f0;
+  background-color: #f5f5f5;
+  color: #616161;
 }
 
-/* Validity Status Styles */
-.validYes, .validNo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 20px;
+/* Validity Tag Styles */
+.validTag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
-  font-size: 0.8rem;
   letter-spacing: 0.5px;
 }
 
 .validYes {
-  background-color: #f0fdf4;
-  color: #16a34a;
-  border: 1.5px solid #bbf7d0;
-}
-
-.validYes::before {
-  content: '✓';
-  display: inline-block;
-  font-weight: 700;
+  background-color: #e8f5e9;
+  color: #2e7d32;
 }
 
 .validNo {
-  background-color: #fef2f2;
-  color: #dc2626;
-  border: 1.5px solid #fecaca;
+  background-color: #ffebee;
+  color: #d32f2f;
 }
 
-.validNo::before {
-  content: '✗';
-  display: inline-block;
-  font-weight: 700;
+.validNA {
+  background-color: #f5f5f5;
+  color: #616161;
+}
+
+/* Additional Details Section */
+.additionalDetailsSection {
+  background-color: #f9fafb;
+  border-top: 1px solid #e1e8f0;
+  padding: 15px 20px;
+  border-radius: 0 0 12px 12px;
+}
+
+.additionalDetailsSection .tableRow {
+  padding: 8px 0;
+  border-bottom: 1px solid #e1e8f0;
+}
+
+.additionalDetailsSection .tableRow:last-child {
+  border-bottom: none;
+}
+
+.additionalDetailsSection .tableLabel {
+  color: #718096;
+  font-size: 14px;
+}
+
+.additionalDetailsSection .tableValue {
+  color: #2d3748;
+  font-size: 14px;
+}
+
+/* Hover and Focus Effects */
+.claimClassificationContainer:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
   .claimClassificationContainer {
-    margin: 12px;
-    width: calc(100% - 24px);
-    border-radius: 8px;
+    max-width: 95%;
+    margin: 10px auto;
   }
 
-  .classificationTable thead th,
-  .classificationTable tbody td {
-    padding: 12px 16px;
-    font-size: 0.85rem;
+  .tableRow {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .classificationTag,
-  .validYes,
-  .validNo {
-    font-size: 0.75rem;
-    padding: 4px 10px;
+  .tableLabel {
+    margin-bottom: 5px;
+    width: 100%;
   }
 }
 
-/* Animations */
+/* Animation */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-
-
-
-<td className={`${styles.classificationTag} ${
-  classification.toLowerCase() === 'cancer' 
-    ? styles.cancerTag 
-    : classification.toLowerCase() === 'heart' 
-      ? styles.heartTag 
-      : styles.defaultTag
-}`}>
-  {classification}
-</td>
+.claimClassificationContainer {
+  animation: fadeIn 0.5s ease-out;
+}
