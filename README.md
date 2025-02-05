@@ -1,3 +1,78 @@
+import React, { useState, useEffect } from 'react';
+import styles from './ClaimClassification.module.css';
+
+const ClaimClassification = ({ data, uploadedFileName }) => {
+  const [documentName, setDocumentName] = useState('Unknown Document');
+  const [classification, setClassification] = useState('Unknown');
+  const [isValid, setIsValid] = useState('No');
+
+  useEffect(() => {
+    if (!data) return;
+
+    console.log("Received Extracted Data:", data);
+
+    // Extract document name
+    const extractedDocumentName = 
+      data.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
+      data.UPLOADED_DOCUMENT_NAME || 
+      uploadedFileName || 
+      'Unknown Document';
+
+    setDocumentName(extractedDocumentName);
+
+    // Extract Classification
+    const extractedClassification = 
+      data.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 
+      data.CLASSIFICATION || 
+      'Unknown';
+
+    setClassification(extractedClassification);
+
+    // Validate Claim (If `DETAILS_OF_ILLNESS` exists, return 'Yes', else 'No')
+    setIsValid(data.DETAILS_OF_ILLNESS ? 'Yes' : 'No');
+
+  }, [data, uploadedFileName]);
+
+  return (
+    <div className={styles.claimClassificationContainer}>
+      <h4>Claim Classification</h4>
+      <table className={styles.classificationTable}>
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Classification</th>
+            <th>Is Valid?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{documentName}</td>
+            <td>
+              <span className={`${styles.classificationTag} 
+                ${classification.toLowerCase() === 'cancer' ? styles.cancerTag :
+                  classification.toLowerCase() === 'heart' ? styles.heartTag :
+                  styles.defaultTag}`}>
+                {classification}
+              </span>
+            </td>
+            <td>
+              <span className={`${styles.validTag} 
+                ${isValid === 'Yes' ? styles.validYes : styles.validNo}`}>
+                {isValid}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default ClaimClassification;
+
+
+
+
 <ClaimClassification 
   data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null} 
   uploadedFileName={uploadedFileName} 
