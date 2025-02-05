@@ -1,3 +1,48 @@
+useEffect(() => {
+  const fetchPercentage = async () => {
+    if (!rows.length || !rows[0]?.recNum) return; // Ensure rows exist and have a valid recNum
+
+    const currentClaimId = rows[0].recNum; 
+    
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https://percentage",
+        { claimid: currentClaimId }, 
+        { headers: { "Content-Type": "application/json" } }
+      );
+      
+      console.log('Response Percentage:', response.data);
+
+      if (response.data && response.data.body) {
+        let percentageValue = response.data.body.empty_key_perc
+          ? parseFloat(response.data.body.empty_key_perc.replace('%', ''))
+          : 0;
+
+        setPercentage(percentageValue);
+      } else {
+        console.warn('No percentage data found in response');
+        setPercentage(0);
+      }
+    } catch (error) {
+      console.error("Error fetching percentage:", error);
+      if (error.response) {
+        console.error('Error response:', error.response);
+      }
+      setPercentage(0);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchPercentage();
+}, [rows]);
+
+
+
+
+
+
 my facing a problem with the percentage api after api hit then data will null and then i check the api gateway then its totaaly working fine and then i update the code and then it working and from starting its it null pls fixed
   
   import React, { useState, useEffect } from "react";
