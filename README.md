@@ -1,183 +1,129 @@
-import React, { useState, useEffect } from 'react';
-import styles from './ClaimClassification.module.css';
+import React from 'react';
+import styles from "./ClaimProcessingStatus.module.css";
 
-const ClaimClassification = ({ data, uploadedFileName }) => {
-  const [documentName, setDocumentName] = useState('Unknown Document');
-  const [classification, setClassification] = useState('Unknown');
-  const [isValid, setIsValid] = useState('No');
-
-  useEffect(() => {
-    if (!data) return;
-
-    console.log("Received Extracted Data:", data);
-
-    // Extract document name
-    const extractedDocumentName = 
-      data.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
-      data.UPLOADED_DOCUMENT_NAME || 
-      uploadedFileName || 
-      'Unknown Document';
-
-    setDocumentName(extractedDocumentName);
-
-    // Extract Classification
-    const extractedClassification = 
-      data.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 
-      data.CLASSIFICATION || 
-      'Unknown';
-
-    setClassification(extractedClassification);
-
-    // Validate Claim (If `DETAILS_OF_ILLNESS` exists, return 'Yes', else 'No')
-    setIsValid(data.DETAILS_OF_ILLNESS ? 'Yes' : 'No');
-
-  }, [data, uploadedFileName]);
+const ClaimProcessingStatus = ({ percentage, isLoading }) => {
+  // Ensure percentage is a number, default to 0 if not
+  const emptyKeyPercentage = percentage !== undefined 
+    ? Math.max(0, Math.min(100, parseFloat(percentage)))
+    : 0;
+  
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
-    <div className={styles.claimClassificationContainer}>
-      <h4>Claim Classification</h4>
-      <table className={styles.classificationTable}>
-        <thead>
-          <tr>
-            <th>Document Name</th>
-            <th>Classification</th>
-            <th>Is Valid?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{documentName}</td>
-            <td>
-              <span className={`${styles.classificationTag} 
-                ${classification.toLowerCase() === 'cancer' ? styles.cancerTag :
-                  classification.toLowerCase() === 'heart' ? styles.heartTag :
-                  styles.defaultTag}`}>
-                {classification}
-              </span>
-            </td>
-            <td>
-              <span className={`${styles.validTag} 
-                ${isValid === 'Yes' ? styles.validYes : styles.validNo}`}>
-                {isValid}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
+
+      {isLoading ? (
+        <div className={styles.loadingSpinner}>Processing claim status...</div>
+      ) : (
+        <div className={styles.percentageContainer}>
+          <div className={styles.splitPercentageBar}>
+            <div
+              className={styles.emptyKeysSection}
+              style={{ width: `${emptyKeyPercentage}%` }}
+            >
+              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
+            </div>
+
+            <div
+              className={styles.filledKeysSection}
+              style={{
+                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+              }}
+            >
+              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ClaimClassification;
+export default ClaimProcessingStatus;
 
 
+.percentHead{
+      color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex
+;
+    align-items: center;
+}
+
+.percentageLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.redText {
+  color: #ff6b6b;
+}
+
+.greenText {
+  color: #4ecb71;
+}
+
+/*.redText {*/
+/*  color: #ff6b6b;*/
+/*  font-size: 14px;*/
+/*  font-weight: 600;*/
+/*  text-align: left;*/
+/*  margin-bottom: 5px;*/
+/*}*/
+
+.percentageContainer {
+  width: 100%;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
 
 
-<ClaimClassification 
-  data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null} 
-  uploadedFileName={uploadedFileName} 
-/>
+.splitPercentageBar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
 
+.emptyKeysSection,
+.filledKeysSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff; /* White text for visibility */
+  font-weight: 600;
+  font-size: 14px;
+  transition: width 0.6s ease-in-out;
+  white-space: nowrap;
+}
 
+.emptyKeysSection {
+  background-color: #ff6b6b;
+}
 
+.filledKeysSection {
+  background-color: #4ecb71;
+}
 
-import React, { useState, useEffect } from 'react';
-import styles from './ClaimClassification.module.css';
+.statusLabel {
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+  color: #444;
+  font-weight: 500;
+}
+.loadingSpinner{
+  text-align: center;
+  font-size: 12px;
+}
 
-const ClaimClassification = ({ data, uploadedFileName }) => {
-  const [documentName, setDocumentName] = useState('Unknown Document');
-  const [classification, setClassification] = useState('Unknown');
-  const [isValid, setIsValid] = useState('No');
-
-  useEffect(() => {
-    console.log("Received Data:", data);
-
-    const processData = () => {
-      try {
-        if (uploadedFileName) {
-          setDocumentName(uploadedFileName);
-          return;
-        }
-
-        if (!data || !data.total_extracted_data) {
-          console.warn("No extracted data found");
-          return;
-        }
-
-        let parsedData;
-        try {
-          parsedData = JSON.parse(data.total_extracted_data);
-        } catch (parseError) {
-          console.error('Error parsing JSON:', parseError);
-          return;
-        }
-
-        console.log("Parsed Data:", parsedData);
-
-        // Extract Document Name
-        const extractedDocumentName = 
-          parsedData.CLAIM_FORM_DETAILS?.DOCUMENT_NAME ||
-          parsedData.UPLOADED_DOCUMENT_NAME ||
-          documentName;
-        setDocumentName(extractedDocumentName);
-
-        // Extract Classification from CLAIM_FORM_TYPE
-        const extractedClassification = 
-          parsedData.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 
-          parsedData.CLASSIFICATION ||
-          classification;
-        setClassification(extractedClassification);
-
-        // Check if DETAILS_OF_ILLNESS exists
-        const isValidClaim = parsedData.DETAILS_OF_ILLNESS ? 'Yes' : 'No';
-        setIsValid(isValidClaim);
-
-      } catch (error) {
-        console.error('Error processing data:', error);
-        setDocumentName('Unknown Document');
-        setClassification('Unknown');
-        setIsValid('No');
-      }
-    };
-
-    processData();
-  }, [data, uploadedFileName]);
-
-  return (
-    <div className={styles.claimClassificationContainer}>
-      <h4>Claim Classification</h4>
-      <table className={styles.classificationTable}>
-        <thead>
-          <tr>
-            <th>Document Name</th>
-            <th>Classification</th>
-            <th>Is Valid?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{documentName}</td>
-            <td>
-              <span className={`${styles.classificationTag} ${
-                classification.toLowerCase() === 'cancer' ? styles.cancerTag :
-                classification.toLowerCase() === 'heart' ? styles.heartTag :
-                styles.defaultTag
-              }`}>
-                {classification}
-              </span>
-            </td>
-            <td>
-              <span className={`${styles.validTag} ${
-                isValid === 'Yes' ? styles.validYes : styles.validNo
-              }`}>
-                {isValid}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default ClaimClassification;
