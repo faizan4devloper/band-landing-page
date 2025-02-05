@@ -1,3 +1,10 @@
+<ClaimClassification 
+  data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null} 
+  uploadedFileName={uploadedFileName} 
+/>
+
+
+
 
 import React, { useState, useEffect } from 'react';
 import styles from './ClaimClassification.module.css';
