@@ -3,35 +3,27 @@ import styles from "./ClaimProcessingStatus.module.css";
 
 const ClaimProcessingStatus = ({ percentage, isLoading }) => {
   // Ensure percentage is a number, default to 0 if not
-  const emptyKeyPercentage = percentage !== undefined 
+  const processedPercentage = percentage !== undefined 
     ? Math.max(0, Math.min(100, parseFloat(percentage)))
     : 0;
-  
-  const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
-    <div>
+    <div className={styles.container}>
       <h3 className={styles.percentHead}>Claim Processing Status</h3>
 
       {isLoading ? (
-        <div className={styles.loadingSpinner}>Processing claim status...</div>
+        <div className={styles.loadingContainer}>
+          <div className={styles.spinner}></div>
+          <p className={styles.loadingText}>Processing claim status...</p>
+        </div>
       ) : (
         <div className={styles.percentageContainer}>
-          <div className={styles.splitPercentageBar}>
+          <div className={styles.progressBar}>
             <div
-              className={styles.emptyKeysSection}
-              style={{ width: `${emptyKeyPercentage}%` }}
+              className={styles.filledSection}
+              style={{ width: `${processedPercentage}%` }}
             >
-              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
-            </div>
-
-            <div
-              className={styles.filledKeysSection}
-              style={{
-                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
-              }}
-            >
-              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
+              {processedPercentage > 0 && `${processedPercentage.toFixed()}%`}
             </div>
           </div>
         </div>
@@ -43,40 +35,19 @@ const ClaimProcessingStatus = ({ percentage, isLoading }) => {
 export default ClaimProcessingStatus;
 
 
-
-.percentHead{
-      color: #2c3e50;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex
-;
-    align-items: center;
+.container {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
 }
 
-.percentageLabels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+.percentHead {
+  color: #2c3e50;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: 5px;
+  margin-bottom: 12px;
+  text-align: center;
 }
-
-.redText {
-  color: #ff6b6b;
-}
-
-.greenText {
-  color: #4ecb71;
-}
-
-/*.redText {*/
-/*  color: #ff6b6b;*/
-/*  font-size: 14px;*/
-/*  font-weight: 600;*/
-/*  text-align: left;*/
-/*  margin-bottom: 5px;*/
-/*}*/
 
 .percentageContainer {
   width: 100%;
@@ -84,47 +55,50 @@ export default ClaimProcessingStatus;
   background-color: #f0f0f0;
   border-radius: 18px;
   overflow: hidden;
-  margin-top: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-
-.splitPercentageBar {
+.progressBar {
   display: flex;
   width: 100%;
   height: 100%;
 }
 
-.emptyKeysSection,
-.filledKeysSection {
+.filledSection {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff; /* White text for visibility */
+  color: #ffffff;
   font-weight: 600;
   font-size: 14px;
-  transition: width 0.6s ease-in-out;
+  transition: width 0.8s ease-in-out;
   white-space: nowrap;
+  background: linear-gradient(90deg, #4ecb71, #2ecc71);
 }
 
-.emptyKeysSection {
-  background-color: #ff6b6b;
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.filledKeysSection {
-  background-color: #4ecb71;
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #4ecb71;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.statusLabel {
-  font-size: 14px;
-  margin-top: 8px;
-  text-align: center;
-  color: #444;
-  font-weight: 500;
-}
-.loadingSpinner{
-  text-align: center;
+.loadingText {
   font-size: 12px;
+  color: #666;
+  margin-top: 8px;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
