@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+my facing a problem with the percentage api after api hit then data will null and then i check the api gateway then its totaaly working fine and then i update the code and then it working and from starting its it null pls fixed
+  
+  import React, { useState, useEffect } from "react";
   import axios from "axios";
   import Modal from "react-modal";
   import styles from "./MainContent.module.css";
@@ -49,7 +51,7 @@ import React, { useState, useEffect } from "react";
       };
 
       const response = await axios.post(
-        "dummy",
+        "https://docembedqueue",
         payload,
       
         { 
@@ -86,7 +88,7 @@ useEffect(() => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          "dummy",
+          "https://percentage",
           { claimid: currentClaimId }, // Use dynamic claim ID
           { 
             headers: { 
@@ -94,7 +96,6 @@ useEffect(() => {
             } 
           }
         );
-          console.log(currentClaimId)
         
         console.log('Response Percentage:', response);
 
@@ -150,7 +151,7 @@ useEffect(() => {
         };
   
         const response = await axios.post(
-          "dummy", 
+          "https:all", 
           payload, 
           { headers: { "Content-Type": "application/json" } }
         );
@@ -233,46 +234,5 @@ useEffect(() => {
   export default MainContent;
 
 
-import React from 'react';
-import styles from "./ClaimProcessingStatus.module.css";
-
-const ClaimProcessingStatus = ({ percentage, isLoading }) => {
-  // Ensure percentage is a number, default to 0 if not
-  const emptyKeyPercentage = percentage !== undefined 
-    ? Math.max(0, Math.min(100, parseFloat(percentage)))
-    : 0;
-  
-  const filledKeyPercentage = 100 - emptyKeyPercentage;
-
-  return (
-    <div>
-      <h3 className={styles.percentHead}>Claim Processing Status</h3>
-
-      {isLoading ? (
-        <div className={styles.loadingSpinner}>Processing claim status...</div>
-      ) : (
-        <div className={styles.percentageContainer}>
-          <div className={styles.splitPercentageBar}>
-            <div
-              className={styles.emptyKeysSection}
-              style={{ width: `${emptyKeyPercentage}%` }}
-            >
-              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed(2)}%`}
-            </div>
-
-            <div
-              className={styles.filledKeysSection}
-              style={{
-                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
-              }}
-            >
-              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed(2)}%`}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default ClaimProcessingStatus;
+Response body
+{"statusCode": 200, "headers": {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "*"}, "body": {"claimid": "CL741795", "empty_keys": [], "empty_keys_count": 0, "total_keys": 28, "empty_key_perc": "0%"}}
