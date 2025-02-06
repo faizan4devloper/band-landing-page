@@ -1,372 +1,452 @@
-Uncaught runtime errors:
-×
-ERROR
-(0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-TypeError: (0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-    at GenerateEmail (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1836:70)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38396:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42367:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43670:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28652:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28696:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28753:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48651:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47899:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47822:9)
-ERROR
-(0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-TypeError: (0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-    at GenerateEmail (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1836:70)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38396:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42367:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43670:20)
-    at HTMLUnknownElement.callCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28652:18)
-    at Object.invokeGuardedCallbackDev (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28696:20)
-    at invokeGuardedCallback (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:28753:35)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48651:11)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47899:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47822:9)
-ERROR
-(0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-TypeError: (0 , react__WEBPACK_IMPORTED_MODULE_0__.useNavigate) is not a function
-    at GenerateEmail (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:1836:70)
-    at renderWithHooks (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:38396:22)
-    at mountIndeterminateComponent (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:42367:17)
-    at beginWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:43670:20)
-    at beginWork$1 (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:48629:18)
-    at performUnitOfWork (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47899:16)
-    at workLoopSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47822:9)
-    at renderRootSync (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47795:11)
-    at recoverFromConcurrentError (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47287:24)
-    at performSyncWorkOnRoot (https://a6adf01bb0a740879b83bbee309c7227.vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:47496:24)
 
+  
+  import React, { useState, useEffect } from "react";
+  import axios from "axios";
+  import Modal from "react-modal";
+  import styles from "./MainContent.module.css";
+  import { useNavigate } from "react-router-dom";
+  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+  import { faSync, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+  
+  
+  import DocumentPreview from "./DocumentPreview";
+  import ExtractedContent from "./ExtractedContent";
+  import ClaimClassification from "./ClaimClassification";
+  import ClaimProcessingStatus from "./ClaimProcessingStatus";
+  
+  
+  const MainContent = ({ message, rows, clid, setRows, staticPreviewUrl, selectedPolicy, uploadedFileName }) => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
-    import React from "react";
-import { useNavigate } from "react-router-dom";
-import { HashLoader } from "react-spinners";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faAnglesRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./Verify.module.css";
-import Chatbot from "./Chatbot";
-import ClaimProcessingStatus from "../MainContent/ClaimProcessingStatus";
-import VerificationDB from "./VerificationDB";
-import Insights from "./Insights"; // Import the Insights component
+    const [data, setData] = useState(null);
+    const [percentage, setPercentage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+      const [embeddingStatus, setEmbeddingStatus] = useState(null);
+    
+  
+    // Existing useEffects (fetchPercentage and data loading)
+    useEffect(() => {
+      if (rows.length > 0) {
+        handleReload(rows[0].recNum);
+      }
+    }, [rows]);
+    
+    const handleDocumentEmbedQueue = async () => {
+    if (rows.length === 0) return;
 
-const VerifyContent = ({
-  recNum,
-  psid,
-  Dsummary,
-  summary,
-  recommendation,
-  loading,
-  error,
-  emptyKeysPercentage,
-}) => {
-  const navigate = useNavigate();
+    const currentClaimId = rows[0].recNum;
+    const claimFormPath = data?.total_extracted_data 
+      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_PATH 
+      : null;
 
-  const HandleEmail = () => {
-    navigate("/generate-email", {
-      state: {
-        Dsummary,
-        summary,
-        recommendation,
-        recNum,
-        psid,
-      },
-    });
+    if (!claimFormPath) {
+      console.warn('No claim form path found');
+      return;
+    }
+
+    try {
+      const payload = {
+        claimid: currentClaimId,
+        recnumber: currentClaimId,
+        claimformpath: claimFormPath
+      };
+
+      const response = await axios.post(
+        "https:docembedqueue",
+        payload,
+      
+        { 
+          headers: { 
+            "Content-Type": "application/json" 
+          } 
+        }
+      );
+
+      console.log('Document Embed Queue Response:', response);
+      
+      // Optional: Set embedding status
+      setEmbeddingStatus(response.data);
+    } catch (error) {
+      console.error("Failed to call document embed queue:", error);
+      setEmbeddingStatus(null);
+    }
   };
 
-  // Render loading state
-  if (loading) {
-    return (
-      <div className={styles.spinnerContainer}>
-        <HashLoader color="#0f5fdc" size={40} />
-      </div>
-    );
-  }
-
-  // Render error state
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
-
-  // Render no data state
-  if (!summary || !recommendation) {
-    return (
-      <div className={styles.noDataContainer}>
-        <p>No verification data available.</p>
-      </div>
-    );
-  }
-
-  return (
-  <div className={styles.verifyMainContainer}>
-    {/* Claim ID and Status Section */}
-    <div className={styles.headerSection}>
-      <div className={styles.claimIdDisplay}>
-        <div className={styles.claimIdBadge}>
-          <span>Claim ID</span>
-          <h3>{recNum || 'N/A'}</h3>
-        </div>
-        <div className={styles.claimIdBadge}>
-          <span>PS ID</span>
-          <h3>{psid || 'N/A'}</h3>
-        </div>
-      </div>
-      <div className={styles.statusSection}>
-        <ClaimProcessingStatus percentage={emptyKeysPercentage} isLoading={loading} />
-      </div>
-    </div>
-
-    {/* Main Content Layout */}
-    <div className={styles.verifyContainer}>
-      <div>
-        <Chatbot />
-      </div>
-
-      {/* Left and Right Panels */}
-      <div className={styles.rightLeft}>
-        {/* Claim Summary */}
-        <div className={styles.leftPanel}>
-          <div className={styles.panelHeader}>
-            <h3>Claim Summary</h3>
-          </div>
-          <div className={styles.panelContent}>
-            <p>{Dsummary || 'No summary available'}</p>
-          </div>
-        </div>
-
-        {/* Verification Summary */}
-        <div className={styles.rightPanel}>
-          <div className={styles.panelHeader}>
-            <h3>Verification Summary</h3>
-          </div>
-          <div className={styles.panelContent}>
-            <div className={styles.summarySection}>
-              <h4>Detailed Recommendation</h4>
-              <p>{recommendation || 'No detailed recommendation available'}</p>
-            </div>
-            <div className={styles.claimDetails}>
-              <div className={styles.claimDetailItem}>
-                <strong>Claim Type:</strong>
-                <span>{summary?.claimType || 'Not specified'}</span>
-              </div>
-              <div className={styles.claimDetailItem}>
-                <strong>Claim Status:</strong>
-                <span>{summary?.claimStatus || 'Pending'}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Insights & VerificationDB (Inline Layout) */}
-      <div className={styles.bottomPanel}>
-        <div className={styles.insightsPanel}>
-          <div className={styles.panelHeader}>
-            <h3>Insights From Historic Claims
-</h3>
-          </div>
-          <Insights claimType={summary?.claimType || 'GENERAL'} />
-        </div>
-        <div className={styles.verificationDBPanel}>
-          <div className={styles.panelHeader}>
-            <h3>Verification With Integrated System</h3>
-          </div>
-          <VerificationDB recNum={recNum} psid={psid} />
-        </div>
-      </div>
-    </div>
-
-    {/* Generate Email Button */}
-    <div className={styles.generateEmailContainer}>
-      <button 
-        className={styles.generateEmailButton} 
-        onClick={HandleEmail}
-        disabled={!summary || !recommendation}
-      >
-        <FontAwesomeIcon icon={faEnvelope} className={styles.emailIcon} />
-          Generate Email <FontAwesomeIcon icon={faAnglesRight} />
-      </button>
-    </div>
-  </div>
-);
-};
-
-export default VerifyContent;
-
-
-
-import React, { useState, useEffect, useNavigate } from "react";
-import { useLocation } from "react-router-dom";
-import axios from "axios";
-import styles from "./GenerateEmail.module.css";
-import ClaimSummary from "./ClaimSummary";
-import EmailGenerator from "./EmailGenerator";
-import ApproverComments from "./ApproverComments";
-import BreadCrumbs from "../../BreadCrumbs/BreadCrumbs";
-
-
-const GenerateEmail = () => {
-    const navigate = useNavigate();
-      const breadcrumbItems = [
-    { 
-      label: 'Claims', 
-      link: '/manage-claims' 
-    },
-    { 
-      label: 'New Claim', 
-      link: '/new-claim' 
-    },
-    { 
-      label: 'Verify', 
-      link: '/verify',
-      // Explicitly pass the state when clicking on Verify breadcrumb
-      onClick: () => {
-        navigate('/verify', {
-          state: {
-            clid: recNum,
-            selectedPolicy: psid,
-            summary: Dsummary
-          }
-        });
-      }
-    },
-    { label: 'Generate Email' }
-  ];
-
-
-  const location = useLocation();
-    const [Dsummary, setDsummary] = useState(() => 
-    location.state?.Dsummary || 
-    localStorage.getItem('currentDsummary') || 
-    null
-  );
-  
-  const [summary, setSummary] = useState(() => 
-    location.state?.summary || 
-    localStorage.getItem('currentSummary') || 
-    null
-  );
-
-  const [recommendation, setRecommendation] = useState(
-    location.state?.recommendation || null
-  );
-  // const recNum = location.state?.recNum;
-  // const psid = location.state?.psid;
-  
-    const recNum = location.state?.recNum || localStorage.getItem('currentClaimId');
-  const psid = location.state?.psid || localStorage.getItem('currentPolicyId');
-
-  
-  const [loadingLLM, setLoadingLLM] = useState(true);
-  const [errorLLM, setErrorLLM] = useState(null);
-  const [llmResponse, setLlmResponse] = useState("");
-  const [approverComments, setApproverComments] = useState("");
-
+  // Trigger document embedding when data is loaded
   useEffect(() => {
-    const generateInitialLLMResponse = async () => {
-      const payload = {
-        claimid: recNum,
-        recnumber: "PS12345",
-      };
-      
-      setLoadingLLM(true);
-      setErrorLLM(null);
-      
+    if (data && data.total_extracted_data) {
+      handleDocumentEmbedQueue();
+    }
+  }, [data]);
+
+  
+useEffect(() => {
+  const fetchPercentage = async () => {
+    if (rows.length === 0 || !rows[0]?.recNum) return;
+
+    const currentClaimId = rows[0].recNum;
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https://percentage",
+        { claimid: currentClaimId },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data && response.data.body) {
+        let percentageValue = response.data.body.empty_key_perc 
+          ? parseFloat(response.data.body.empty_key_perc.replace('%', ''))
+          : 0;
+          
+        setPercentage(percentageValue);
+      }
+    } catch (error) {
+      setPercentage(0);  // Set to 0 if error occurs
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchPercentage();
+}, [rows, data]);
+
+    const handleVerify = (clid, formtype, summary, selectedPolicy) => {
+      if (formtype === 'CANCER') {
+        selectedPolicy = 'PS391481';
+      } else if (formtype === 'HEART') {
+        selectedPolicy = 'PS672908';
+      } else {
+        selectedPolicy = 'PS672908';
+      }
+  
+      navigate('/verify', {
+        state: { clid, summary, selectedPolicy, percentage },
+      });
+    };
+  
+    const handleReload = async (recNum) => {
+      setLoading(true);
       try {
+        const payload = {
+          tasktype: "FETCH_SINGLE_ACT_CLAIM",
+          claimid: recNum,
+        };
+  
         const response = await axios.post(
-          "https://generateemail",
-          payload,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
+          "https:all", 
+          payload, 
+          { headers: { "Content-Type": "application/json" } }
         );
         
-        // Existing response parsing logic
-        const extractedResponse = response.data.body || response.data;
-        setLlmResponse(extractedResponse);
-      } catch (err) {
-        console.error("Error generating email:", err);
-        setErrorLLM(err.message || "Failed to generate email");
+        console.log('Extraction:', response)
+        
+        setData(response.data.allclaimactdata);
+      } catch (error) {
+        console.error("Failed to fetch data for RecNum:", recNum, error);
       } finally {
-        setLoadingLLM(false);
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <div className={styles.mainContentWrapper}>
+        {rows.length > 0 && (
+          <div className={styles.claimIdDisplay}>
+            <h3>Claim ID: {rows[0].recNum}</h3>
+          </div>
+        )}
+        
+        <div className={styles.mainContentGrid}>
+          <div className={styles.leftColumn}>
+            <div className={styles.claimClassificationContainer}>
+<ClaimClassification 
+  data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null} 
+  uploadedFileName={uploadedFileName} 
+/>
+            </div>
+            <div className={styles.documentPreviewContainer}>
+              <DocumentPreview staticPreviewUrl={staticPreviewUrl} />
+            </div>
+            
+            
+          </div>
+          
+          
+  
+          <div className={styles.rightColumn}>
+            <div className={styles.percentageSection}>
+  {isLoading ? (
+    <p>Loading percentage...</p>  // Show loading text or a spinner
+  ) : (
+    <ClaimProcessingStatus 
+      percentage={percentage} 
+      isLoading={isLoading} 
+    />
+  )}
+</div>
+          
+            <div className={styles.extractedContentContainer}>
+              <ExtractedContent 
+                data={data} 
+                loading={loading} 
+                rows={rows} 
+                handleReload={handleReload}
+              />
+            </div>
+            
+            <div className={styles.verifyButtonContainer}>
+              <button
+                className={styles.verifyButton}
+                onClick={() =>
+                  handleVerify(
+                    clid,
+                    data?.total_extracted_data
+                      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE
+                      : "No Claim Form Type",
+                    data?.total_extracted_data
+                      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY
+                      : "No Summary Available",
+                    selectedPolicy
+                  )
+                }
+                disabled={!rows.length}
+              >
+                Verify Claim <FontAwesomeIcon icon={faChevronRight}/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  export default MainContent;
+
+
+
+
+
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import styles from './Chatbot.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faPaperPlane, 
+  faRobot, 
+  faTimes, 
+  faMinimize 
+} from '@fortawesome/free-solid-svg-icons';
+
+const Chatbot = ({ claimId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef(null);
+
+  // Initial greeting message
+  useEffect(() => {
+    setMessages([
+      {
+        id: 0,
+        text: "Hello! I'm your AI Claims Assistant. How can I help you with your claim?",
+        sender: 'bot'
+      }
+    ]);
+  }, []);
+
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Handle sending message
+const handleSendMessage = async () => {
+  if (!inputMessage.trim()) return;
+
+  const userMessage = {
+    id: messages.length + 1,
+    text: inputMessage,
+    sender: 'user'
+  };
+
+  setMessages(prevMessages => [...prevMessages, userMessage]);
+  setInputMessage('');
+  setIsLoading(true);
+
+  try {
+    // Payload matching the structure you specified
+    const payload = {
+      body: {
+        claimid: "CL641743",
+        userid: "USER1",
+        sessionid: "4013061", 
+        userquery: inputMessage
       }
     };
 
-    generateInitialLLMResponse();
-  }, [recNum]);
-  
-    useEffect(() => {
-    if (Dsummary) localStorage.setItem('currentDsummary', Dsummary);
-    if (summary) localStorage.setItem('currentSummary', summary);
-    if (recommendation) localStorage.setItem('currentRecommendation', recommendation);
-    if (recNum) localStorage.setItem('currentClaimId', recNum);
-    if (psid) localStorage.setItem('currentPolicyId', psid);
-  }, [Dsummary, summary, recommendation, recNum, psid]);
+    console.log("Request Payload:", payload);
 
+    const response = await axios.post(
+      'https:chatbot', 
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        timeout: 10000
+      }
+    );
 
-  const handleApproverCommentsChange = (e) => {
-    setApproverComments(e.target.value);
+    console.log("Full API Response:", response);
+
+    // Function to extract bot message
+    const extractBotMessage = (responseData) => {
+      // Check different possible response structures
+      if (responseData.body) {
+        // If body is a string, try parsing
+        if (typeof responseData.body === 'string') {
+          try {
+            const parsedBody = JSON.parse(responseData.body);
+            return parsedBody.message || 
+                   parsedBody.response || 
+                   'No response from server';
+          } catch {
+            return responseData.body;
+          }
+        }
+
+        // If body is an object
+        return responseData.body.message || 
+               responseData.body.response || 
+               JSON.stringify(responseData.body);
+      }
+
+      // Fallback
+      return 'No response from server';
+    };
+
+    // Extract and set bot message
+    const botMessageText = extractBotMessage(response.data);
+
+    const botMessage = {
+      id: messages.length + 2,
+      text: botMessageText,
+      sender: 'bot'
+    };
+
+    setMessages(prevMessages => [...prevMessages, botMessage]);
+
+  } catch (error) {
+    console.error('Comprehensive Chatbot API Error:', {
+      errorMessage: error.message,
+      errorResponse: error.response,
+      errorRequest: error.request
+    });
+
+    // Detailed error handling
+    const errorMessage = {
+      id: messages.length + 2,
+      text: error.response?.data?.message || 
+            error.message || 
+            'Sorry, there was an error processing your request.',
+      sender: 'bot'
+    };
+
+    setMessages(prevMessages => [...prevMessages, errorMessage]);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // Handle input key press
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSendMessage();
+    }
   };
 
   return (
-    <div className={styles.generateEmailMain}>
-    <div className={styles.generateEmailMain}>
-      <BreadCrumbs 
-        items={breadcrumbItems} 
-        onItemClick={(item) => {
-          if (item.onClick) {
-            item.onClick();
-          } else if (item.link) {
-            navigate(item.link);
-          }
-        }}
-      />
+    <div className={styles.chatbotContainer}>
+      {/* Chatbot Trigger Button */}
+      {!isOpen && (
+        <div 
+          className={styles.chatbotTrigger} 
+          onClick={() => setIsOpen(true)}
+        >
+          <FontAwesomeIcon icon={faRobot} />
+          <span>AI Assistant</span>
+        </div>
+      )}
 
-       <div className={styles.claimIdDisplay}>
-          <div className={styles.claimIdBadge}>
-            <span>Claim ID</span>
-            <h3>{recNum || 'N/A'}</h3>
+      {/* Chatbot Window */}
+      {isOpen && (
+        <div className={styles.chatbotWindow}>
+          {/* Header */}
+          <div className={styles.chatbotHeader}>
+            <div className={styles.headerContent}>
+              <FontAwesomeIcon icon={faRobot} className={styles.robotIcon} />
+              <span>AI Claims Assistant</span>
+            </div>
+            <div className={styles.headerActions}>
+              <button 
+                className={styles.closeButton}
+                onClick={() => setIsOpen(false)}
+              >
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </div>
           </div>
-          <div className={styles.claimIdBadge}>
-            <span>PS ID</span>
-            <h3>{psid || 'N/A'}</h3>
+
+          {/* Messages Container */}
+          <div className={styles.messagesContainer}>
+            {messages.map((msg) => (
+              <div 
+                key={msg.id} 
+                className={`
+                  ${styles.message} 
+                  ${msg.sender === 'user' ? styles.userMessage : styles.botMessage}
+                `}
+              >
+                {msg.text}
+              </div>
+            ))}
+            {isLoading && (
+              <div className={`${styles.message} ${styles.botMessage}`}>
+                Typing...
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input Area */}
+          <div className={styles.inputContainer}>
+            <input 
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask about your claim..."
+              className={styles.chatInput}
+              disabled={isLoading}
+            />
+            <button 
+              onClick={handleSendMessage} 
+              className={styles.sendButton}
+              disabled={isLoading}
+            >
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </button>
           </div>
         </div>
-      
-      <div className={styles.container}>
-        <div className={styles.leftSection}>
-          <ClaimSummary 
-            Dsummary={Dsummary} 
-            recommendation={recommendation} 
-            summary={summary}
-          />
-        </div>
-        
-        <div className={styles.rightSection}>
-          <EmailGenerator 
-            loadingLLM={loadingLLM}
-            errorLLM={errorLLM}
-            llmResponse={llmResponse}
-          />
-          
-          <ApproverComments 
-            approverComments={approverComments}
-            handleApproverCommentsChange={handleApproverCommentsChange}
-          />
-        </div>
-      </div>
+      )}
     </div>
-    </div>
-  
   );
-
 };
 
-
-export default GenerateEmail;
+export default Chatbot;
