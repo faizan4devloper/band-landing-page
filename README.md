@@ -1,54 +1,189 @@
-const fetchDocuments = async (isRefresh = false, newPage = null) => {
-  setLoading(true);
-  setError(null);
+why category th is empty
 
-  try {
-    let startPage = newPage !== null ? newPage : currentPage + 1;
-    let refresh = startPage <= 3 ? true : false; // First 3 pages refresh, others don't
+Updated Documents: 
+(2) [{…}, {…}]
+0
+: 
+DateTime
+: 
+"2025-02-03T06:34:38.575856"
+Filename
+: 
+"UK-C-011668-018178-89161714.pdf"
+Metadata
+: 
+Category
+: 
+"Credit Note"
 
-    const payload = {
-      action_type: "pagination",
-      refresh: refresh,
-      start_page: startPage,
-      page_size: 20,
-    };
 
-    console.log("Sending Payload:", payload);
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSync,
+  faEye,
+  faDownload,
+  faChevronLeft,
+  faChevronRight,
+  faFileLines
+} from "@fortawesome/free-solid-svg-icons";
+import styles from "./TableData.module.css";
 
-    const response = await axios.post(API_ENDPOINT, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
 
-    console.log("API Response:", response.data);
 
-    const parsedBody = parseResponse(response.data);
-    if (!parsedBody || !parsedBody.pages) {
-      throw new Error("No pages found in response");
+const TableData = ({
+  documents,
+  loading,
+  currentPage,
+  nextStartKey,
+  handlePageChange,
+  handleRefresh,
+  handleViewDocument,
+  handleDownloadDocument,
+  handleMetadataClick
+}) => {
+  const renderDocumentRow = (doc) => (
+    <motion.tr
+      key={doc.TransactionID}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={styles.documentRow}
+    >
+      <td>{doc.Filename.split("/").pop()}</td>
+      <td>{doc.Category}</td>
+      <td>
+        <button
+          className={styles.seeMoreButton}
+          onClick={() => handleMetadataClick(doc.Metadata)}
+        >
+          See More
+        </button>
+      </td>
+      <td>{new Date(doc.DateTime).toLocaleString()}</td>
+      <td>
+        <div className={styles.actionButtons}>
+          <button
+            className={styles.viewButton}
+            title="View Document"
+            onClick={() =>
+              handleViewDocument(doc.Category, doc.Filename.split("/").pop())
+            }
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </button>
+          <button
+            className={styles.downloadButton}
+            title="Download Document"
+            onClick={() =>
+              handleDownloadDocument(doc.Category, doc.Filename.split("/").pop())
+            }
+          >
+            <FontAwesomeIcon icon={faDownload} />
+          </button>
+        </div>
+      </td>
+    </motion.tr>
+  );
+
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.loadingRow}>
+            <div className={styles.loadingContent}>
+              <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
+              <p>Loading documents...</p>
+            </div>
+          </td>
+        </tr>
+      );
     }
 
-    // Extract transactions from the correct page
-    const pageKey = `page_${startPage}`;
-    const transactions = parsedBody.pages[pageKey] || [];
+    if (documents.length === 0) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.emptyRow}>
+            <div className={styles.emptyContent}>
+              <p>No documents found</p>
+            </div>
+          </td>
+        </tr>
+      );
+    }
 
-    setDocuments(transactions);
-    setCurrentPage(startPage);
-  } catch (err) {
-    setError(err.message || "Failed to fetch documents");
-    setDocuments([]);
-  } finally {
-    setLoading(false);
-  }
+    return documents.map(renderDocumentRow);
+  };
+
+  const totalPages = Math.ceil(documents.length / 10); // Adjust for total pages based on document count
+
+  const renderPaginationButtons = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers.map((pageNumber) => (
+      <button
+        key={pageNumber}
+        className={`${styles.paginationButton} ${
+          currentPage === pageNumber - 1 ? styles.active : ""
+        }`}
+        onClick={() => handlePageChange(pageNumber - 1)}
+      >
+        {pageNumber}
+      </button>
+    ));
+  };
+
+  return (
+    <div className={styles.tableWrapper}>
+      <table className={styles.documentTable}>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Category</th>
+            <th>Metadata</th>
+            <th>Date</th>
+            <th>Processed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <AnimatePresence>{renderTableContent()}</AnimatePresence>
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className={styles.pagination}>
+        <button
+          className={`${styles.paginationButton} ${
+            currentPage === 0 ? styles.disabled : ""
+          }`}
+          onClick={() => handlePageChange("prev")}
+          disabled={currentPage === 0}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} className={styles.paginationIcon} />
+          Prev
+        </button>
+
+        <div className={styles.paginationNumbers}>
+          {renderPaginationButtons()}
+        </div>
+
+        <button
+          className={`${styles.paginationButton} ${
+            currentPage === totalPages - 1 ? styles.disabled : ""
+          }`}
+          onClick={() => handlePageChange("next")}
+          disabled={currentPage === totalPages - 1}
+        >
+          Next
+          <FontAwesomeIcon icon={faChevronRight} className={styles.paginationIcon} />
+        </button>
+      </div>
+    </div>
+  );
 };
 
-const handlePageChange = (direction) => {
-  setCurrentPage((prev) => {
-    let newPage = direction === "next" ? prev + 1 : Math.max(1, prev - 1);
-    fetchDocuments(false, newPage);
-    return newPage;
-  });
-};
-
-const handleRefresh = () => {
-  setCurrentPage(1);
-  fetchDocuments(true, 1); // Refresh with page 1
-};
+export default TableData;
