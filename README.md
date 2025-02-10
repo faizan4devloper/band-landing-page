@@ -1,3 +1,42 @@
+const handleDownloadDocument = async (category, filename) => {
+  try {
+    const presignedUrlResponse = await axios.post(
+      'https://umo-indexer-presignedurl-v1',
+      { filename }
+    );
+
+    const responseBody = typeof presignedUrlResponse.data.body === 'string'
+      ? JSON.parse(presignedUrlResponse.data.body)
+      : presignedUrlResponse.data.body;
+
+    // Prefer CSV for download, fallback to PDF
+    let presignedUrl = responseBody.csv_presigned_url || responseBody.pdf_presigned_url;
+    let downloadFilename = filename;
+
+    if (presignedUrl) {
+      if (presignedUrl === responseBody.csv_presigned_url) {
+        downloadFilename = filename.endsWith('.csv') ? filename : `${filename}.csv`;
+      } else {
+        downloadFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
+      }
+
+      const link = document.createElement('a');
+      link.href = presignedUrl;
+      link.download = downloadFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      throw new Error('No download URL available');
+    }
+  } catch (error) {
+    console.error('Download Error:', error);
+    alert(`Failed to download document: ${error.message}`);
+  }
+};
+
+
+
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
