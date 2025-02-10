@@ -1,3 +1,77 @@
+import React, { useState } from "react";
+import Sidebar from "./Sidebar/Sidebar";
+import MainContent from "./MainContent/MainContent";
+import BreadCrumbs from "./../BreadCrumbs/BreadCrumbs";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+import styles from "./NewClaimPage.module.css";
+
+const NewClaimPage = () => {
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
+
+  return (
+    <div>
+      {/* Show faBars button only when sidebar is hidden */}
+      {!isSidebarVisible && (
+        <button className={styles.toggleButton} onClick={toggleSidebar}>
+          <FontAwesomeIcon icon={faBars} />
+        </button>
+      )}
+
+      <BreadCrumbs 
+        items={[
+          { label: 'Claims', link: '/claims' },
+          { label: 'New Claim', link: '/new-claim' }
+        ]}
+      />
+
+      <div className={styles.container}>
+        {/* Sidebar */}
+        <div className={`${styles.sidebar} ${isSidebarVisible ? '' : styles.sidebarHidden}`}>
+          <Sidebar />
+          
+          {/* Close Button Inside Sidebar */}
+          <button className={styles.closeSidebarButton} onClick={toggleSidebar}>
+            <FontAwesomeIcon icon={faTimes} />
+          </button>
+        </div>
+
+        {/* Main Content */}
+        <div className={styles.mainContent}>
+          <p>Please upload a document to view the data.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default NewClaimPage;
+
+
+
+.closeSidebarButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    color: #333;
+    z-index: 10;
+}
+
+
+
+
+
+
+
+
 i want the after i click the faBars button in the NewClaimPage then open the sidebar and then hide the faBars and in the sidebar add close button after close then display the faBars button
 
 import React, { useState } from "react";
