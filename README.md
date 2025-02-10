@@ -1,653 +1,506 @@
-import React, { useState } from "react";
-import Sidebar from "./Sidebar/Sidebar";
-import MainContent from "./MainContent/MainContent";
-import BreadCrumbs from "./../BreadCrumbs/BreadCrumbs";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-import styles from "./NewClaimPage.module.css";
 
-const NewClaimPage = () => {
-  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotate } from "@fortawesome/free-solid-svg-icons";
+import { motion } from "framer-motion";
+import Modal from "react-modal";
+import TableData from "./TableData"; // Import the new TableData component
+import styles from "./DashboardTable.module.css";
 
-  const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
+// Set app element for accessibility
+Modal.setAppElement("#root");
+
+const DashboardTable = ({ userEmail }) => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(20);
+  const [nextStartKey, setNextStartKey] = useState(null);
+  const [selectedMetadata, setSelectedMetadata] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
+  const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+
+
+  const API_ENDPOINT = "doc-indexer"; // Replace with the actual API endpoint
+
+
+const fetchDocuments = async (isRefresh = false, newPage = null) => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    let startPage = newPage !== null ? newPage : currentPage + 1;
+    let refresh = startPage <= 3 ? true : false; // First 3 pages refresh, others don't
+
+    const payload = {
+      action_type: "pagination",
+      refresh: refresh,
+      start_page: startPage,
+      page_size: 20,
+    };
+
+    console.log("Sending Payload:", payload);
+
+    const response = await axios.post(API_ENDPOINT, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    console.log("API Response:", response.data);
+
+    const parsedBody = parseResponse(response.data);
+    if (!parsedBody || !parsedBody.pages) {
+      throw new Error("No pages found in response");
+    }
+
+    // Extract transactions from the correct page
+    const pageKey = `page_${startPage}`;
+    const transactions = parsedBody.pages[pageKey] || [];
+
+    setDocuments(transactions);
+    setCurrentPage(startPage);
+  } catch (err) {
+    setError(err.message || "Failed to fetch documents");
+    setDocuments([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+const handlePageChange = (direction) => {
+  setCurrentPage((prev) => {
+    let newPage = direction === "next" ? prev + 1 : Math.max(1, prev - 1);
+    fetchDocuments(false, newPage);
+    return newPage;
+  });
+};
+
+const handleMetadataClick = (metadata) => {
+  setSelectedMetadata(metadata);
+  setIsMetadataModalOpen(true);
+};
+
+
+const handleRefresh = () => {
+  setCurrentPage(1);
+  fetchDocuments(true, 1); // Refresh with page 1
+};
+
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
+  
+  useEffect(() => {
+  console.log("Updated Documents:", documents);
+}, [documents]);
+
+
+  const parseResponse = (response) => {
+    try {
+      const responseData =
+        typeof response === "string" ? JSON.parse(response) : response;
+      return typeof responseData.body === "string"
+        ? JSON.parse(responseData.body)
+        : responseData.body;
+    } catch {
+      setError("Failed to parse response");
+      return null;
+    }
   };
 
-  return (
-    <div>
-      {/* Show faBars button only when sidebar is hidden */}
-      {!isSidebarVisible && (
-        <button className={styles.toggleButton} onClick={toggleSidebar}>
-          <FontAwesomeIcon icon={faBars} />
-        </button>
-      )}
+const handleViewDocument = async (category, filename) => {
+  try {
+    const presignedUrlPayload = {
+      filename: filename // Just pass the filename
+    };
 
-      <BreadCrumbs 
-        items={[
-          { label: 'Claims', link: '/claims' },
-          { label: 'New Claim', link: '/new-claim' }
-        ]}
+    const presignedUrlResponse = await axios.post(
+      'https://umo-indexer-presignedurl-v1',
+      presignedUrlPayload
+    );
+
+    // Parse the response body
+    const responseBody = typeof presignedUrlResponse.data.body === 'string' 
+      ? JSON.parse(presignedUrlResponse.data.body) 
+      : presignedUrlResponse.data.body;
+
+    // Prioritize PDF URL, fallback to CSV if PDF not available
+    const presignedUrl = responseBody.pdf_presigned_url || responseBody.csv_presigned_url;
+    
+    if (presignedUrl) {
+      setSelectedDocument({
+        url: presignedUrl,
+        filename: filename,
+        metadata: documents.find(doc => doc.Filename.split('/').pop() === filename)?.Metadata
+      });
+      setIsDocumentPreviewOpen(true);
+    } else {
+      throw new Error('No presigned URL found');
+    }
+  } catch (error) {
+    console.error('Detailed View Error:', error);
+    alert(`Failed to view document: \${error.message}`);
+  }
+};
+
+const handleDownloadDocument = async (category, filename) => {
+  try {
+    const presignedUrlPayload = {
+      filename: filename // Just pass the filename
+    };
+
+    const presignedUrlResponse = await axios.post(
+      'https://umo-indexer-presignedurl-v1', 
+      presignedUrlPayload
+    );
+
+    // Parse the response body
+    const responseBody = typeof presignedUrlResponse.data.body === 'string' 
+      ? JSON.parse(presignedUrlResponse.data.body) 
+      : presignedUrlResponse.data.body;
+
+    // Determine download URL (prefer PDF, fallback to CSV)
+    let presignedUrl;
+    let downloadFilename = filename;
+
+    if (responseBody.pdf_presigned_url) {
+      presignedUrl = responseBody.pdf_presigned_url;
+      // Ensure .pdf extension if not already present
+      downloadFilename = filename.endsWith('.pdf') ? filename : `\${filename}.pdf`;
+    } else if (responseBody.csv_presigned_url) {
+      presignedUrl = responseBody.csv_presigned_url;
+      // Ensure .csv extension if not already present
+      downloadFilename = filename.endsWith('.csv') ? filename : `\${filename}.csv`;
+    } else {
+      throw new Error('No download URL available');
+    }
+
+    if (presignedUrl) {
+      // Create a temporary anchor element to trigger download
+      const link = document.createElement('a');
+      link.href = presignedUrl;
+      link.download = downloadFilename;
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      throw new Error('Invalid download URL');
+    }
+  } catch (error) {
+    console.error('Download Error:', error);
+    alert(`Failed to download document: \${error.message}`);
+  }
+
+const handleCopy = () => {
+    navigator.clipboard.writeText(JSON.stringify(selectedMetadata, null, 2));
+    setIsCopied(true);
+    
+    // Reset the copied state after 2 seconds
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 3000);
+  };
+
+
+ 
+  return (
+    <div className={styles.documentTableContainer}>
+      <div className={styles.tableHeader}>
+        <h3>Dashboard</h3>
+        <div className={styles.headerActions}>
+          <motion.button
+            onClick={handleRefresh}
+            className={styles.refreshButton}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FontAwesomeIcon icon={faRotate} />
+            Refresh
+          </motion.button>
+        </div>
+      </div>
+
+      {/* Table Component */}
+      <TableData
+        documents={documents}
+        loading={loading}
+        currentPage={currentPage}
+        nextStartKey={nextStartKey}
+        handlePageChange={handlePageChange}
+        handleRefresh={handleRefresh}
+        handleViewDocument={handleViewDocument}
+        handleDownloadDocument={handleDownloadDocument}
+        handleMetadataClick={handleMetadataClick}
       />
 
-      <div className={styles.container}>
-        {/* Sidebar */}
-        <div className={`${styles.sidebar} ${isSidebarVisible ? '' : styles.sidebarHidden}`}>
-          <Sidebar />
+      {/* Modal for Metadata */}
+      <Modal
+        isOpen={isDocumentPreviewOpen}
+        onRequestClose={() => setIsDocumentPreviewOpen(false)}
+        className={styles.modalContainer}
+        overlayClassName={styles.overlay}
+      >
+        {selectedDocument && (
+          <div className={styles.modalContent}>
+            {/* PDF Preview Section */}
+            <div className={styles.previewSection}>
+              <div className={styles.previewWrapper}>
+                <iframe
+                  src={selectedDocument.url}
+                  className={styles.previewIframe}
+                  title={selectedDocument.filename}
+                />
+              </div>
+            </div>
+
+            {/* Metadata Section */}
+            <div className={styles.metadataSection}>
+              <div className={styles.metadataHeader}>
+                <h2 className={styles.documentTitle}>
+                  {selectedDocument.filename}
+                </h2>
+              </div>
+
+              <div className={styles.metadataContent}>
+                <h3>Document Metadata</h3>
+                <pre className={styles.metadataJson}>
+                  {selectedDocument.metadata
+                    ? JSON.stringify(selectedDocument.metadata, null, 2)
+                    : "No metadata available"}
+                </pre>
+              </div>
+
+              <div className={styles.modalActions}>
+                <button
+                  onClick={() => setIsDocumentPreviewOpen(false)}
+                  className={styles.closeModalButton}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+      {/* Modal for Metadata */}
+<Modal
+      isOpen={isMetadataModalOpen}
+      onRequestClose={() => setIsMetadataModalOpen(false)}
+      className={styles.metadataModalContainer}
+      overlayClassName={styles.overlay}
+    >
+      {selectedMetadata && (
+        <div className={styles.metadataModalContent}>
+          <div className={styles.metadataModalHeader}>
+            <h2>Metadata Details</h2>
+            <button 
+              onClick={handleCopy}
+              className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
+            >
+              {isCopied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
           
-          {/* Close Button Inside Sidebar */}
-          <button className={styles.closeSidebarButton} onClick={toggleSidebar}>
-            <FontAwesomeIcon icon={faTimes} />
+          <div className={styles.metadataJsonContainer}>
+            <pre className={styles.metadataJsonPre}>
+              {JSON.stringify(selectedMetadata, null, 2)}
+            </pre>
+          </div>
+          
+          <div className={styles.metadataModalActions}>
+            <button 
+              onClick={() => setIsMetadataModalOpen(false)}
+              className={styles.closeMetadataButton}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+    </Modal>
+    </div>
+  );
+};
+
+export default DashboardTable;
+
+
+
+
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faSync,
+  faEye,
+  faDownload,
+  faChevronLeft,
+  faChevronRight,
+  faFileLines
+} from "@fortawesome/free-solid-svg-icons";
+import styles from "./TableData.module.css";
+
+
+
+const TableData = ({
+  documents,
+  loading,
+  currentPage,
+  nextStartKey,
+  handlePageChange,
+  handleRefresh,
+  handleViewDocument,
+  handleDownloadDocument,
+  handleMetadataClick
+}) => {
+  const renderDocumentRow = (doc) => (
+    <motion.tr
+      key={doc.TransactionID}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className={styles.documentRow}
+    >
+      <td>{doc.Filename.split("/").pop()}</td>
+      <td>{doc.Metadata?.Category}</td>
+      <td>
+        <button
+          className={styles.seeMoreButton}
+          onClick={() => handleMetadataClick(doc.Metadata)}
+        >
+          See More
+        </button>
+      </td>
+      <td>{new Date(doc.DateTime).toLocaleString()}</td>
+      <td>
+        <div className={styles.actionButtons}>
+          <button
+            className={styles.viewButton}
+            title="View Document"
+            onClick={() =>
+              handleViewDocument(doc.Category, doc.Filename.split("/").pop())
+            }
+          >
+            <FontAwesomeIcon icon={faEye} />
+          </button>
+          <button
+            className={styles.downloadButton}
+            title="Download Document"
+            onClick={() =>
+              handleDownloadDocument(doc.Category, doc.Filename.split("/").pop())
+            }
+          >
+            <FontAwesomeIcon icon={faDownload} />
           </button>
         </div>
-
-        {/* Main Content */}
-        <div className={styles.mainContent}>
-          <p>Please upload a document to view the data.</p>
-        </div>
-      </div>
-    </div>
+      </td>
+    </motion.tr>
   );
-};
 
-export default NewClaimPage;
-
-
-
-.closeSidebarButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #333;
-    z-index: 10;
-}
-
-
-
-
-
-
-
-
-i want the after i click the faBars button in the NewClaimPage then open the sidebar and then hide the faBars and in the sidebar add close button after close then display the faBars button
-
-import React, { useState } from "react";
-import axios from "axios";
-import Sidebar from "./Sidebar/Sidebar";
-import MainContent from "./MainContent/MainContent";
-import Verify from "./Verify/Verify";
-import styles from "./NewClaimPage.module.css";
-import BreadCrumbs from "./../BreadCrumbs/BreadCrumbs";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-
-
-  import { useClaimContext } from './../Context/ClaimContext';
-
-
-const NewClaimPage = () => {
-    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  
-  const breadcrumbItems = [
-    { label: 'Claims', link: '/claims' },
-    { label: 'New Claim', link: '/new-claim' }
-  ];
-
-  const {
-    file, setFile,
-    message, setMessage,
-    uploading, setUploading,
-    uploadedFileName, setUploadedFileName,
-    rows, setRows,
-    isUploaded, setIsUploaded,
-    previewUrl, setPreviewUrl,
-    selectedPolicy, setSelectedPolicy
-  } = useClaimContext();
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      const sanitizedFileName = selectedFile.name.replace(/\s+/g, "_");
-      setFile(selectedFile);
-      setUploadedFileName(sanitizedFileName);
-      setPreviewUrl(URL.createObjectURL(selectedFile));
-      setMessage("");
-    }
-  };
-
-  const handlePolicyChange = (policy) => {
-    setSelectedPolicy(policy);
-  };
-  
-    const toggleSidebar = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
-
-
-  const handleUpload = async () => {
-    if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
-    }
-    setUploading(true);
-    try {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-      const response = await axios.post(
-        "https:presignUrl",
-        {
-          payload: { filename: sanitizedFileName, filetype: "CL" },
-        }
+  const renderTableContent = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.loadingRow}>
+            <div className={styles.loadingContent}>
+              <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
+              <p>Loading documents...</p>
+            </div>
+          </td>
+        </tr>
       );
-      
-      console.log("Presign url", response.data)
+    }
 
-      const { presignedUrl, key, recNum } = response.data;
-      
-      console.log("**Response Api",response.data)
-
-      await axios.put(presignedUrl, file, {
-        headers: { "Content-Type": file.type },
-      });
-
-      const sqsPayload = {
-        claimid: recNum,
-        s3filename: key,
-        // tasktype: "SEND_TO_QUEUE", 
-  //       claimid : "CL004681",
-  // s3filename: "claimassistv2/claimforms/CL004681/Case_CI_Cancer_3.1.pdf"
-      };
-
-    const sqsResponse=  await axios.post(
-        "https:sqsqueue",
-        sqsPayload,
-        { headers: { "Content-Type": "application/json" } }
+    if (documents.length === 0) {
+      return (
+        <tr>
+          <td colSpan="6" className={styles.emptyRow}>
+            <div className={styles.emptyContent}>
+              <p>No documents found</p>
+            </div>
+          </td>
+        </tr>
       );
-      
-      console.log("SQS API Response:", sqsResponse.data);
-
-      setRows((prevRows) => [
-        ...prevRows,
-        {
-          recNum,
-          policyid: "",
-          type: "",
-          summary: "",
-          previewLink: presignedUrl,
-         policy: selectedPolicy, // Include the selected policy
-
-          status: "Pending",
-        },
-      ]);
-
-      setIsUploaded(true);
-    } catch (error) {
-      setMessage("Upload failed: " + error.message);
-    } finally {
-      setUploading(false);
     }
+
+    return documents.map(renderDocumentRow);
   };
-  return (
-    <div>
-            <button 
-        className={styles.toggleButton} 
-        onClick={toggleSidebar}
-      >
-        <FontAwesomeIcon icon={isSidebarVisible ? faTimes : faBars} />
-      </button>
 
+  const totalPages = Math.ceil(documents.length / 10); // Adjust for total pages based on document count
 
-<BreadCrumbs 
-        items={breadcrumbItems} 
-        // Optional: Add custom styling
-        className={styles.customBreadcrumbs}
-        style={{
-          // Override default styles if needed
-          backgroundColor: '#ffffff',
-          borderBottom: '1px solid #e1e4e8'
-        }}
-      />
-
-    <div className={styles.container}>
-             <div className={`${styles.sidebar} ${!isSidebarVisible ? styles.sidebarHidden : ''}`}>
-          <Sidebar
-            onFileChange={handleFileChange}
-            onUpload={handleUpload}
-            uploading={uploading}
-            onPolicyChange={handlePolicyChange}
-            
-          />
-        </div>
-
-      <div className={styles.mainContent}>
-        {isUploaded ? (
-          <MainContent 
-            message={message} 
-            selectedPolicy={selectedPolicy}
-            rows={rows} 
-            clid={rows[0].recNum}
-            setRows={setRows} 
-            staticPreviewUrl={previewUrl} 
-            uploadedFileName={uploadedFileName}
-          />
-        ) : (
-          <p className={styles.infoMessage}>
-            Please upload a document to view the data.
-          </p>
-        )}
-      </div>
-    </div>
-    </div>
-  );
-};
-
-export default NewClaimPage;
-
-
-
-.container {
-  display: flex;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
-}
-
-.sidebar {
-  flex: 0 0 300px;
-  height: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  transition: all 0.3s ease-in-out;
-  transform: translateX(0);
-}
-
-.sidebarHidden {
-  flex: 0 0 0;
-  transform: translateX(-100%);
-  opacity: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.mainContent {
-  flex: 1;
-  height: 100%;
-  background-color: #fff;
-  overflow-y: auto;
-  padding: 20px;
-  box-sizing: border-box;
-  /*transition: all 0.3s ease-in-out;*/
-}
-
-.toggleButton {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.3s ease;
-}
-
-.toggleButton:hover {
-  transform: scale(1.1);
-}
-
-
-import React, { useRef, useState } from "react";
-import styles from "./Sidebar.module.css";
-import { useNavigate } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faTimes  } from '@fortawesome/free-solid-svg-icons';
-
-
-const Sidebar = ({ onFileChange, onUpload, uploading, onPolicyChange , setFileNames }) => {
-  const fileInputRef = useRef(null);
-  const [fileName, setFileName] = useState("");
-    const navigate = useNavigate();
-    
-
-
-  // Trigger the file input when the container is clicked
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
+  const renderPaginationButtons = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
     }
-  };
-  
-  const handleBackClick = () => {
-    navigate("/claims");
-  };
 
-
-  // Handle file selection and store the file name
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      
-      const sanitizedFileName = file.name.replace(/\s+/g, '_');
-      
-      
-      setFileName(sanitizedFileName);
-      
-      const renamedFile = new File([file], sanitizedFileName, { type:file.type });
-      onFileChange({ target: { files: [renamedFile]}});
-    }
-    onFileChange(event); // Pass the file to the parent component
-  };
-  
-  
-   const handlePolicySelect = (e) => {
-    onPolicyChange(e.target.value);
-  };
-
-  
-  
-
-  return (
-    <div className={styles.sidebar}>
-      
-      <h2 className={styles.heading}>Manage Claim</h2>
-      
-
-
-      {/* File Input Container */}
-      <div
-        className={styles.fileInputContainer}
-        onClick={handleContainerClick}
-      >
-        <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          className={styles.fileInput}
-          style={{ display: "none" }}
-        />
-      </div>
-
-      {/* File Name Display */}
-      {fileName && (
-        <div className={styles.fileNameContainer}>
-          <p className={styles.fileName}>{fileName}</p>
-        </div>
-      )}
-
-      {/* Upload Button */}
+    return pageNumbers.map((pageNumber) => (
       <button
-        className={styles.uploadButton}
-        onClick={onUpload}
-        disabled={uploading}
+        key={pageNumber}
+        className={`${styles.paginationButton} ${
+          currentPage === pageNumber - 1 ? styles.active : ""
+        }`}
+        onClick={() => handlePageChange(pageNumber - 1)}
       >
-        {uploading ? (
-          <div className={styles.loader}></div>
-        ) : (
-          "Upload"
-        )}
+        {pageNumber}
       </button>
+    ));
+  };
+
+  return (
+    <div className={styles.tableWrapper}>
+      <table className={styles.documentTable}>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Category</th>
+            <th>Metadata</th>
+            <th>Date</th>
+            <th>Processed At</th>
+          </tr>
+        </thead>
+        <tbody>
+          <AnimatePresence>{renderTableContent()}</AnimatePresence>
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className={styles.pagination}>
+        <button
+          className={`${styles.paginationButton} ${
+            currentPage === 0 ? styles.disabled : ""
+          }`}
+          onClick={() => handlePageChange("prev")}
+          disabled={currentPage === 0}
+        >
+          <FontAwesomeIcon icon={faChevronLeft} className={styles.paginationIcon} />
+          Prev
+        </button>
+
+        <div className={styles.paginationNumbers}>
+          {renderPaginationButtons()}
+        </div>
+
+        <button
+          className={`${styles.paginationButton} ${
+            currentPage === totalPages - 1 ? styles.disabled : ""
+          }`}
+          onClick={() => handlePageChange("next")}
+          disabled={currentPage === totalPages - 1}
+        >
+          Next
+          <FontAwesomeIcon icon={faChevronRight} className={styles.paginationIcon} />
+        </button>
+      </div>
     </div>
   );
 };
 
-export default Sidebar;
-
-
-/* Sidebar Container */
-.sidebar {
-  width: 250px;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  color: #333;
-  padding: 20px;
-  height: 100vh;
-  overflow-y: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* Heading */
-.heading {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0f5fdc;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
-}
-
-/* Dropzone Container */
-.dropzoneContainer {
-  /*width: 100%;*/
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /*padding: 20px;*/
-  border-radius: 10px;
-  border: 2px dashed #ccc;
-  background-color: #f9f9f9;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-/* Dropzone Styling */
-.dropzone {
-  padding: 20px;
-  text-align: center;
-  color: #555;
-  font-size: 14px;
-  border-radius: 8px;
-  width: 100%;
-}
-
-.dropzone:hover {
-  background-color: #e8f5e9;
-  border-color: #4caf50;
-  color: #4caf50;
-}
-
-.dropzone p {
-  margin: 0;
-}
-
-.backButton{
-         position: absolute;
-    top: 118px;
-    left: 44px;
-    padding: 8px 10px;
-    background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-    color: white;
-    font-size: 14px;
-    border: none;
-    border-radius: 4px;
-    display: flex
-;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* File Name Text */
-.fileName {
-  font-size: 14px;
-  color: #333;
-  font-weight: 600;
-  margin: 0;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* File Input Container */
-
-
-/* Upload Button */
-.uploadButton {
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.uploadButton:disabled {
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  cursor: not-allowed;
-}
-
-.uploadButton:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-/* Loader */
-.loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* Loader Animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Upload Button Icon */
-.icon {
-  margin-right: 8px;
-}
-
-/* Message below file input */
-.message {
-  font-size: 12px;
-  color: #555;
-  margin-top: 10px;
-}
-
-/* Add visual feedback for drag events */
-.dropzoneContainer.active {
-  background-color: #e3f7e4;
-  border-color: #4caf50;
-}
-
-.dropzoneContainer.reject {
-  background-color: #fdecea;
-  border-color: #e57373;
-}
-
-.errorMessage {
-  color: #e57373;
-  font-size: 12px;
-  margin-top: 10px;
-}
-
-/* Styles for the file input container */
-.fileInputContainer {
-  border: 2px dashed #ccc;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 1rem;
-  text-align: center;
-  position: relative;
-  cursor: pointer;
-}
-
-.dragging {
-  border-color: #00bcd4; /* Highlight when dragging over */
-}
-
-.browseContainer {
-  margin-top: 10px;
-}
-
-.browseButton {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.browseButton:hover {
-  background-color: #0056b3;
-}
-
-/* File Name Container */
-.fileNameContainer {
-  margin-top: 15px;
-  /*background-color: #f3f3f3;*/
-  border-radius: 8px;
-  padding: 10px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* File Name Text */
-.fileName {
-  font-size: 14px;
-  color: #333;
-  font-weight: 600;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-/* Dropdown select styling */
-.policySelect {
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: 1px solid #444;
-  /*background-color: #333;*/
-  /*color: white;*/
-  margin-bottom: 20px;
-  transition: background-color 0.3s ease;
-}
-
-.policySelect:hover,
-.policySelect:focus {
-  /*background-color: #444;*/
-}
-.closeSidebarButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 24px;
-    color: #333;
-    z-index: 10;
-}
+export default TableData;
 
