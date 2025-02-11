@@ -1,545 +1,390 @@
-const handleDownloadDocument = async (category, filename) => {
-  try {
-    const presignedUrlResponse = await axios.post(
-      'https://umo-indexer-presignedurl-v1',
-      { filename }
-    );
-
-    const responseBody = typeof presignedUrlResponse.data.body === 'string'
-      ? JSON.parse(presignedUrlResponse.data.body)
-      : presignedUrlResponse.data.body;
-
-    // Prefer CSV for download, fallback to PDF
-    let presignedUrl = responseBody.csv_presigned_url || responseBody.pdf_presigned_url;
-    let downloadFilename = filename;
-
-    if (presignedUrl) {
-      if (presignedUrl === responseBody.csv_presigned_url) {
-        downloadFilename = filename.endsWith('.csv') ? filename : `${filename}.csv`;
-      } else {
-        downloadFilename = filename.endsWith('.pdf') ? filename : `${filename}.pdf`;
-      }
-
-      const link = document.createElement('a');
-      link.href = presignedUrl;
-      link.download = downloadFilename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      throw new Error('No download URL available');
-    }
-  } catch (error) {
-    console.error('Download Error:', error);
-    alert(`Failed to download document: ${error.message}`);
-  }
-};
-
-
-
-
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotate } from "@fortawesome/free-solid-svg-icons";
-import { motion } from "framer-motion";
-import Modal from "react-modal";
-import TableData from "./TableData"; // Import the new TableData component
-import styles from "./DashboardTable.module.css";
-
-// Set app element for accessibility
-Modal.setAppElement("#root");
-
-const DashboardTable = ({ userEmail }) => {
-  const [documents, setDocuments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(20);
-  const [nextStartKey, setNextStartKey] = useState(null);
-  const [selectedMetadata, setSelectedMetadata] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDocument, setSelectedDocument] = useState(null);
-  const [isDocumentPreviewOpen, setIsDocumentPreviewOpen] = useState(false);
-  const [isMetadataModalOpen, setIsMetadataModalOpen] = useState(false);
-    const [isCopied, setIsCopied] = useState(false);
-
-
-  const API_ENDPOINT = "doc-indexer"; // Replace with the actual API endpoint
-
-
-const fetchDocuments = async (isRefresh = false, newPage = null) => {
-  setLoading(true);
-  setError(null);
-
-  try {
-    let startPage = newPage !== null ? newPage : currentPage + 1;
-    let refresh = startPage <= 3 ? true : false; // First 3 pages refresh, others don't
-
-    const payload = {
-      action_type: "pagination",
-      refresh: refresh,
-      start_page: startPage,
-      page_size: 20,
-    };
-
-    console.log("Sending Payload:", payload);
-
-    const response = await axios.post(API_ENDPOINT, payload, {
-      headers: { "Content-Type": "application/json" },
-    });
-
-    console.log("API Response:", response.data);
-
-    const parsedBody = parseResponse(response.data);
-    if (!parsedBody || !parsedBody.pages) {
-      throw new Error("No pages found in response");
-    }
-
-    // Extract transactions from the correct page
-    const pageKey = `page_${startPage}`;
-    const transactions = parsedBody.pages[pageKey] || [];
-
-    setDocuments(transactions);
-    setCurrentPage(startPage);
-  } catch (err) {
-    setError(err.message || "Failed to fetch documents");
-    setDocuments([]);
-  } finally {
-    setLoading(false);
-  }
-};
-
-const handlePageChange = (direction) => {
-  setCurrentPage((prev) => {
-    let newPage = direction === "next" ? prev + 1 : Math.max(1, prev - 1);
-    fetchDocuments(false, newPage);
-    return newPage;
-  });
-};
-
-const handleMetadataClick = (metadata) => {
-  setSelectedMetadata(metadata);
-  setIsMetadataModalOpen(true);
-};
-
-
-const handleRefresh = () => {
-  setCurrentPage(1);
-  fetchDocuments(true, 1); // Refresh with page 1
-};
-
-  useEffect(() => {
-    fetchDocuments();
-  }, []);
-  
-  useEffect(() => {
-  console.log("Updated Documents:", documents);
-}, [documents]);
-
-
-  const parseResponse = (response) => {
-    try {
-      const responseData =
-        typeof response === "string" ? JSON.parse(response) : response;
-      return typeof responseData.body === "string"
-        ? JSON.parse(responseData.body)
-        : responseData.body;
-    } catch {
-      setError("Failed to parse response");
-      return null;
-    }
-  };
-
-const handleViewDocument = async (category, filename) => {
-  try {
-    const presignedUrlPayload = {
-      filename: filename // Just pass the filename
-    };
-
-    const presignedUrlResponse = await axios.post(
-      'https://umo-indexer-presignedurl-v1',
-      presignedUrlPayload
-    );
-
-    // Parse the response body
-    const responseBody = typeof presignedUrlResponse.data.body === 'string' 
-      ? JSON.parse(presignedUrlResponse.data.body) 
-      : presignedUrlResponse.data.body;
-
-    // Prioritize PDF URL, fallback to CSV if PDF not available
-    const presignedUrl = responseBody.pdf_presigned_url || responseBody.csv_presigned_url;
-    
-    if (presignedUrl) {
-      setSelectedDocument({
-        url: presignedUrl,
-        filename: filename,
-        metadata: documents.find(doc => doc.Filename.split('/').pop() === filename)?.Metadata
-      });
-      setIsDocumentPreviewOpen(true);
-    } else {
-      throw new Error('No presigned URL found');
-    }
-  } catch (error) {
-    console.error('Detailed View Error:', error);
-    alert(`Failed to view document: \${error.message}`);
-  }
-};
-
-const handleDownloadDocument = async (category, filename) => {
-  try {
-    const presignedUrlPayload = {
-      filename: filename // Just pass the filename
-    };
-
-    const presignedUrlResponse = await axios.post(
-      'https://umo-indexer-presignedurl-v1', 
-      presignedUrlPayload
-    );
-
-    // Parse the response body
-    const responseBody = typeof presignedUrlResponse.data.body === 'string' 
-      ? JSON.parse(presignedUrlResponse.data.body) 
-      : presignedUrlResponse.data.body;
-
-    // Determine download URL (prefer PDF, fallback to CSV)
-    let presignedUrl;
-    let downloadFilename = filename;
-
-    if (responseBody.pdf_presigned_url) {
-      presignedUrl = responseBody.pdf_presigned_url;
-      // Ensure .pdf extension if not already present
-      downloadFilename = filename.endsWith('.pdf') ? filename : `\${filename}.pdf`;
-    } else if (responseBody.csv_presigned_url) {
-      presignedUrl = responseBody.csv_presigned_url;
-      // Ensure .csv extension if not already present
-      downloadFilename = filename.endsWith('.csv') ? filename : `\${filename}.csv`;
-    } else {
-      throw new Error('No download URL available');
-    }
-
-    if (presignedUrl) {
-      // Create a temporary anchor element to trigger download
-      const link = document.createElement('a');
-      link.href = presignedUrl;
-      link.download = downloadFilename;
-      
-      // Append to body, click, and remove
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      throw new Error('Invalid download URL');
-    }
-  } catch (error) {
-    console.error('Download Error:', error);
-    alert(`Failed to download document: \${error.message}`);
-  }
-
-const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(selectedMetadata, null, 2));
-    setIsCopied(true);
-    
-    // Reset the copied state after 2 seconds
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 3000);
-  };
-
-
- 
-  return (
-    <div className={styles.documentTableContainer}>
-      <div className={styles.tableHeader}>
-        <h3>Dashboard</h3>
-        <div className={styles.headerActions}>
-          <motion.button
-            onClick={handleRefresh}
-            className={styles.refreshButton}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <FontAwesomeIcon icon={faRotate} />
-            Refresh
-          </motion.button>
-        </div>
-      </div>
-
-      {/* Table Component */}
-      <TableData
-        documents={documents}
-        loading={loading}
-        currentPage={currentPage}
-        nextStartKey={nextStartKey}
-        handlePageChange={handlePageChange}
-        handleRefresh={handleRefresh}
-        handleViewDocument={handleViewDocument}
-        handleDownloadDocument={handleDownloadDocument}
-        handleMetadataClick={handleMetadataClick}
-      />
-
-      {/* Modal for Metadata */}
-      <Modal
-        isOpen={isDocumentPreviewOpen}
-        onRequestClose={() => setIsDocumentPreviewOpen(false)}
-        className={styles.modalContainer}
-        overlayClassName={styles.overlay}
-      >
-        {selectedDocument && (
-          <div className={styles.modalContent}>
-            {/* PDF Preview Section */}
-            <div className={styles.previewSection}>
-              <div className={styles.previewWrapper}>
-                <iframe
-                  src={selectedDocument.url}
-                  className={styles.previewIframe}
-                  title={selectedDocument.filename}
-                />
-              </div>
-            </div>
-
-            {/* Metadata Section */}
-            <div className={styles.metadataSection}>
-              <div className={styles.metadataHeader}>
-                <h2 className={styles.documentTitle}>
-                  {selectedDocument.filename}
-                </h2>
-              </div>
-
-              <div className={styles.metadataContent}>
-                <h3>Document Metadata</h3>
-                <pre className={styles.metadataJson}>
-                  {selectedDocument.metadata
-                    ? JSON.stringify(selectedDocument.metadata, null, 2)
-                    : "No metadata available"}
-                </pre>
-              </div>
-
-              <div className={styles.modalActions}>
-                <button
-                  onClick={() => setIsDocumentPreviewOpen(false)}
-                  className={styles.closeModalButton}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </Modal>
-      {/* Modal for Metadata */}
-<Modal
-      isOpen={isMetadataModalOpen}
-      onRequestClose={() => setIsMetadataModalOpen(false)}
-      className={styles.metadataModalContainer}
-      overlayClassName={styles.overlay}
-    >
-      {selectedMetadata && (
-        <div className={styles.metadataModalContent}>
-          <div className={styles.metadataModalHeader}>
-            <h2>Metadata Details</h2>
-            <button 
-              onClick={handleCopy}
-              className={`${styles.copyButton} ${isCopied ? styles.copied : ''}`}
-            >
-              {isCopied ? 'Copied!' : 'Copy'}
-            </button>
-          </div>
-          
-          <div className={styles.metadataJsonContainer}>
-            <pre className={styles.metadataJsonPre}>
-              {JSON.stringify(selectedMetadata, null, 2)}
-            </pre>
-          </div>
-          
-          <div className={styles.metadataModalActions}>
-            <button 
-              onClick={() => setIsMetadataModalOpen(false)}
-              className={styles.closeMetadataButton}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </Modal>
-    </div>
-  );
-};
-
-export default DashboardTable;
-
+i want the Verification Summary and Verification With Integrated System in one parent component top Verification Summary bottom Verification With Integrated System and the Verification Summary and Verification With Integrated System section will expand and collapse in beutiful way icon and enhacned the style.
 
 
 
 import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSync,
-  faEye,
-  faDownload,
-  faChevronLeft,
-  faChevronRight,
-  faFileLines
-} from "@fortawesome/free-solid-svg-icons";
-import styles from "./TableData.module.css";
+import { faEnvelope, faAnglesRight } from "@fortawesome/free-solid-svg-icons";
+import styles from "./Verify.module.css";
+import Chatbot from "./Chatbot";
+import ClaimProcessingStatus from "../MainContent/ClaimProcessingStatus";
+import VerificationDB from "./VerificationDB";
+import Insights from "./Insights"; // Import the Insights component
 
-
-
-const TableData = ({
-  documents,
+const VerifyContent = ({
+  recNum,
+  psid,
+  Dsummary,
+  summary,
+  recommendation,
   loading,
-  currentPage,
-  nextStartKey,
-  handlePageChange,
-  handleRefresh,
-  handleViewDocument,
-  handleDownloadDocument,
-  handleMetadataClick
+  error,
+  emptyKeysPercentage,
 }) => {
-  const renderDocumentRow = (doc) => (
-    <motion.tr
-      key={doc.TransactionID}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className={styles.documentRow}
-    >
-      <td>{doc.Filename.split("/").pop()}</td>
-      <td>{doc.Metadata?.Category}</td>
-      <td>
-        <button
-          className={styles.seeMoreButton}
-          onClick={() => handleMetadataClick(doc.Metadata)}
-        >
-          See More
-        </button>
-      </td>
-      <td>{new Date(doc.DateTime).toLocaleString()}</td>
-      <td>
-        <div className={styles.actionButtons}>
-          <button
-            className={styles.viewButton}
-            title="View Document"
-            onClick={() =>
-              handleViewDocument(doc.Category, doc.Filename.split("/").pop())
-            }
-          >
-            <FontAwesomeIcon icon={faEye} />
-          </button>
-          <button
-            className={styles.downloadButton}
-            title="Download Document"
-            onClick={() =>
-              handleDownloadDocument(doc.Category, doc.Filename.split("/").pop())
-            }
-          >
-            <FontAwesomeIcon icon={faDownload} />
-          </button>
-        </div>
-      </td>
-    </motion.tr>
-  );
+  const navigate = useNavigate();
 
-  const renderTableContent = () => {
-    if (loading) {
-      return (
-        <tr>
-          <td colSpan="6" className={styles.loadingRow}>
-            <div className={styles.loadingContent}>
-              <FontAwesomeIcon icon={faSync} spin className={styles.loadingIcon} />
-              <p>Loading documents...</p>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    if (documents.length === 0) {
-      return (
-        <tr>
-          <td colSpan="6" className={styles.emptyRow}>
-            <div className={styles.emptyContent}>
-              <p>No documents found</p>
-            </div>
-          </td>
-        </tr>
-      );
-    }
-
-    return documents.map(renderDocumentRow);
+  const HandleEmail = () => {
+    navigate("/generate-email", {
+      state: {
+        Dsummary,
+        summary,
+        recommendation,
+        recNum,
+        psid,
+      },
+    });
   };
 
-  const totalPages = Math.ceil(documents.length / 10); // Adjust for total pages based on document count
+  // Render loading state
+  if (loading) {
+    return (
+      <div className={styles.spinnerContainer}>
+        <HashLoader color="#0f5fdc" size={40} />
+      </div>
+    );
+  }
 
-  const renderPaginationButtons = () => {
-    const pageNumbers = [];
-    for (let i = 1; i <= totalPages; i++) {
-      pageNumbers.push(i);
-    }
+  // Render error state
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
 
-    return pageNumbers.map((pageNumber) => (
-      <button
-        key={pageNumber}
-        className={`${styles.paginationButton} ${
-          currentPage === pageNumber - 1 ? styles.active : ""
-        }`}
-        onClick={() => handlePageChange(pageNumber - 1)}
-      >
-        {pageNumber}
-      </button>
-    ));
-  };
+  // Render no data state
+  if (!summary || !recommendation) {
+    return (
+      <div className={styles.noDataContainer}>
+        <p>No verification data available.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className={styles.tableWrapper}>
-      <table className={styles.documentTable}>
-        <thead>
-          <tr>
-            <th>Filename</th>
-            <th>Category</th>
-            <th>Metadata</th>
-            <th>Date</th>
-            <th>Processed At</th>
-          </tr>
-        </thead>
-        <tbody>
-          <AnimatePresence>{renderTableContent()}</AnimatePresence>
-        </tbody>
-      </table>
-
-      {/* Pagination */}
-      <div className={styles.pagination}>
-        <button
-          className={`${styles.paginationButton} ${
-            currentPage === 0 ? styles.disabled : ""
-          }`}
-          onClick={() => handlePageChange("prev")}
-          disabled={currentPage === 0}
-        >
-          <FontAwesomeIcon icon={faChevronLeft} className={styles.paginationIcon} />
-          Prev
-        </button>
-
-        <div className={styles.paginationNumbers}>
-          {renderPaginationButtons()}
+  <div className={styles.verifyMainContainer}>
+    {/* Claim ID and Status Section */}
+    <div className={styles.headerSection}>
+      <div className={styles.claimIdDisplay}>
+        <div className={styles.claimIdBadge}>
+          <span>Claim ID</span>
+          <h3>{recNum || 'N/A'}</h3>
         </div>
-
-        <button
-          className={`${styles.paginationButton} ${
-            currentPage === totalPages - 1 ? styles.disabled : ""
-          }`}
-          onClick={() => handlePageChange("next")}
-          disabled={currentPage === totalPages - 1}
-        >
-          Next
-          <FontAwesomeIcon icon={faChevronRight} className={styles.paginationIcon} />
-        </button>
+        <div className={styles.claimIdBadge}>
+          <span>PS ID</span>
+          <h3>{psid || 'N/A'}</h3>
+        </div>
+      </div>
+      <div className={styles.statusSection}>
+        <ClaimProcessingStatus percentage={emptyKeysPercentage} isLoading={loading} />
       </div>
     </div>
-  );
+
+    {/* Main Content Layout */}
+    <div className={styles.verifyContainer}>
+      <div>
+        <Chatbot />
+      </div>
+
+      {/* Left and Right Panels */}
+      <div className={styles.rightLeft}>
+        {/* Claim Summary */}
+        <div className={styles.leftPanel}>
+          <div className={styles.panelHeader}>
+            <h3>Claim Summary</h3>
+          </div>
+          <div className={styles.panelContent}>
+            <p>{Dsummary || 'No summary available'}</p>
+          </div>
+        </div>
+
+        {/* Verification Summary */}
+        <div className={styles.rightPanel}>
+          <div className={styles.panelHeader}>
+            <h3>Verification Summary</h3>
+          </div>
+          <div className={styles.panelContent}>
+            <div className={styles.summarySection}>
+              <h4>Detailed Recommendation</h4>
+              <p>{recommendation || 'No detailed recommendation available'}</p>
+            </div>
+            <div className={styles.claimDetails}>
+  
+  
+</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Insights & VerificationDB (Inline Layout) */}
+      <div className={styles.bottomPanel}>
+        <div className={styles.insightsPanel}>
+          <div className={styles.panelHeader}>
+            <h3>Insights From Historic Claims
+</h3>
+          </div>
+          <Insights claimType={summary?.claimType || 'GENERAL'} />
+        </div>
+        <div className={styles.verificationDBPanel}>
+          <div className={styles.panelHeader}>
+            <h3>Verification With Integrated System</h3>
+          </div>
+          <VerificationDB recNum={recNum} psid={psid} />
+        </div>
+      </div>
+    </div>
+
+    {/* Generate Email Button */}
+    <div className={styles.generateEmailContainer}>
+      <button 
+        className={styles.generateEmailButton} 
+        onClick={HandleEmail}
+        disabled={!summary || !recommendation}
+      >
+        <FontAwesomeIcon icon={faEnvelope} className={styles.emailIcon} />
+          Generate Email <FontAwesomeIcon icon={faAnglesRight} />
+      </button>
+    </div>
+  </div>
+);
 };
 
-export default TableData;
+export default VerifyContent;
+
+.verifyMainContainer {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f4f6f9;
+  border-radius: 12px;
+}
+
+/* Header Section */
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.claimIdDisplay {
+  display: flex;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.claimIdBadge {
+  flex: 1;
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+}
+
+.claimIdBadge:hover {
+  transform: translateY(-5px);
+}
+
+.claimIdBadge span {
+  display: block;
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.claimIdBadge h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.rightLeft {
+  display: flex;
+  gap: 10px;
+}
+
+.leftPanel, .rightPanel, .insightsPanel, .verificationDBPanel {
+  flex: 1;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+.panelHeader {
+  background-color: #f1f5f9;
+  padding: 15px 20px;
+}
+
+.panelHeader h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.panelContent {
+  padding: 20px;
+}
+
+.summarySection h4 {
+  color: #0f5fdc;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
+}
+
+.claimDetails {
+  margin-top: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.claimDetailItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.claimDetailItem:last-child {
+  border-bottom: none;
+}
+
+.claimDetailItem strong {
+  color: #2c3e50;
+}
+
+/*.claimDetailItem span {*/
+/*  color: #4a5568;*/
+/*}*/
+
+/* Bottom Panel (Insights & VerificationDB) */
+.bottomPanel {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.insightsPanel, .verificationDBPanel {
+  flex: 1;
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #e1e4e8;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  /*padding: 20px;*/
+}
+
+
+
+.generateEmailContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.generateEmailButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background:linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.generateEmailButton:hover {
+  background-color: #1e40af;
+  transform: translateY(-2px);
+}
+
+.generateEmailButton:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.emailIcon {
+  font-size: 1.2rem;
+}
+
+
+/* Spinner */
+.spinnerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/*.claimProcessingStatusContainer {*/
+/*  margin-bottom: 20px;*/
+/*  width: 100%;*/
+/*  display: flex;*/
+/*  justify-content: center;*/
+/*}*/
+.claimProcessingStatusContainer {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: all 0.3s ease;
+  max-width: 350px;
+  /*margin: 0 auto;*/
+}
+.statusSection{
+          /* flex: 1 1; */
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+.statusSection:hover {
+  transform: translateY(-5px);
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8em;
+}
+
+.badgeSuccess {
+     background-color: #e6f7ff;
+    color: #28a745;
+    border-radius: 20px;
+    background-color: #d4edda;
+    color: #28a745;
+    /* border: 1px solid #52c41a; */
+}
+
+.badgeDanger {
+  background-color: #fff1f0;
+  color: #f5222d;
+  border: 1px solid #f5222d;
+}
+
+.badgeWarning {
+  background-color: #fffbe6;
+  color: #faad14;
+  border: 1px solid #faad14;
+}
 
