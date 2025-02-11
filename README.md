@@ -1,4 +1,66 @@
-i'm going to display the Insights and VerificationDB in the VerificationContent.js i want cosisitency cause after all content display the insights still loading its not makes any sence i want conisistency across all content and section with perfect :- 
+const [isInsightsLoading, setInsightsLoading] = useState(true);
+const [isVerificationDBLoading, setVerificationDBLoading] = useState(true);
+
+// Check if any content is still loading
+const isAnyLoading = loading || isInsightsLoading || isVerificationDBLoading;
+
+if (isAnyLoading) {
+  return (
+    <div className={styles.spinnerContainer}>
+      <HashLoader color="#0f5fdc" size={40} />
+    </div>
+  );
+}
+
+
+
+
+useEffect(() => {
+  setLoading(true);
+  setInsightsLoading(true); // Notify parent component
+
+  axios.post("API_URL", { claimtype: claimType })
+    .then((response) => {
+      setHistoricData(response.data);
+      setLoading(false);
+      setInsightsLoading(false);
+    })
+    .catch((error) => {
+      setError(error.message);
+      setLoading(false);
+      setInsightsLoading(false);
+    });
+}, [claimType]);
+
+
+
+
+useEffect(() => {
+  setLoading(true);
+  setVerificationDBLoading(true); // Notify parent component
+
+  axios.get(`API_URL?recNum=${recNum}&psid=${psid}`)
+    .then((response) => {
+      setVerificationData(response.data);
+      setLoading(false);
+      setVerificationDBLoading(false);
+    })
+    .catch((error) => {
+      setError(error.message);
+      setLoading(false);
+      setVerificationDBLoading(false);
+    });
+}, [recNum, psid]);
+
+
+
+
+
+
+
+i'm going to display the Insights and 
+
+VerificationDB in the VerificationContent.js i want cosisitency cause after all content display the insights still loading its not makes any sence i want conisistency across all content and section with perfect :- 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
