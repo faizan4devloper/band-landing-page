@@ -1,3 +1,4 @@
+i'm going to display the Insights and VerificationDB in the VerificationContent.js i want cosisitency cause after all content display the insights still loading its not makes any sence i want conisistency across all content and section with perfect :- 
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HashLoader } from "react-spinners";
