@@ -1,273 +1,338 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { HashLoader } from "react-spinners";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faAnglesRight, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import styles from "./Verify.module.css";
-import Chatbot from "./Chatbot";
-import ClaimProcessingStatus from "../MainContent/ClaimProcessingStatus";
-import VerificationDB from "./VerificationDB";
-import Insights from "./Insights";
+import React from 'react';
+import { BeatLoader } from 'react-spinners';
+import styles from "./EmailGenerator.module.css";
 
-const VerifyContent = ({
-  recNum,
-  psid,
-  Dsummary,
-  summary,
-  recommendation,
-  loading,
-  error,
-  emptyKeysPercentage,
+const EmailGenerator = ({
+  loadingLLM,
+  errorLLM,
+  llmResponse
 }) => {
-  const navigate = useNavigate();
-
-  // Collapsible states for panels
-  const [isVerificationSummaryOpen, setVerificationSummaryOpen] = useState(true);
-  const [isVerificationDBOpen, setVerificationDBOpen] = useState(true);
-
-  const handleEmail = () => {
-    navigate("/generate-email", {
-      state: { Dsummary, summary, recommendation, recNum, psid },
-    });
+  // Helper function to format the email content
+  const formatEmailContent = (rawResponse) => {
+    // If the response is a simple string, try to parse it
+    if (typeof rawResponse === 'string') {
+      // Split the response into paragraphs
+      const paragraphs = rawResponse.split('\n\n').filter(p => p.trim() !== '');
+      
+      return (
+        <div className={styles.emailContent}>
+          {paragraphs.map((paragraph, index) => {
+            // Check if the paragraph looks like a header/section
+            if (paragraph.match(/^[A-Z][a-z\s:]+\$/)) {
+              return <h3 key={index}>{paragraph}</h3>;
+            }
+            
+            // Check if the paragraph looks like a list item
+            if (paragraph.startsWith('•') || paragraph.startsWith('-')) {
+              return (
+                <ul key={index}>
+                  <li>{paragraph.replace(/^[•\-]\s*/, '')}</li>
+                </ul>
+              );
+            }
+            
+            // Check for salutation
+            if (paragraph.toLowerCase().includes('dear')) {
+              return <p key={index} className={styles.salutation}>{paragraph}</p>;
+            }
+            
+            // Check for closing/signature
+            if (paragraph.toLowerCase().includes('sincerely') || paragraph.includes('Regards')) {
+              return <p key={index} className={styles.closing}>{paragraph}</p>;
+            }
+            
+            // Default paragraph
+            return <p key={index}>{paragraph}</p>;
+          })}
+        </div>
+      );
+    }
+    
+    // If response is an object or more complex
+    if (typeof rawResponse === 'object') {
+      return (
+        <div className={styles.emailContent}>
+          {Object.entries(rawResponse).map(([key, value]) => (
+            <div key={key}>
+              <h3>{key}</h3>
+              <p>{value}</p>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    
+    // Fallback
+    return <p>{JSON.stringify(rawResponse)}</p>;
   };
 
-  if (loading) {
+  if (loadingLLM) {
     return (
-      <div className={styles.spinnerContainer}>
-        <HashLoader color="#0f5fdc" size={40} />
+      <div className={styles.sectionWindow}>
+        <div className={styles.genEmail}>
+          <h2>Generating Email...</h2>
+          <div className={styles.loaderContainer}>
+            <BeatLoader
+              color="#0f5fdc"
+              loading={loadingLLM}
+              size={15}
+            />
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (errorLLM) {
     return (
-      <div className={styles.errorContainer}>
-        <p>Error: {error}</p>
+      <div className={styles.sectionWindow}>
+        <div className={styles.genEmail}>
+          <h2>Email Generation Error</h2>
+          <p className={styles.errorText}>{errorLLM}</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className={styles.verifyMainContainer}>
-      {/* Header Section */}
-      <div className={styles.headerSection}>
-        <div className={styles.claimIdDisplay}>
-          <div className={styles.claimIdBadge}>
-            <span>Claim ID</span>
-            <h3>{recNum || "N/A"}</h3>
-          </div>
-          <div className={styles.claimIdBadge}>
-            <span>PS ID</span>
-            <h3>{psid || "N/A"}</h3>
-          </div>
-        </div>
-        <div className={styles.statusSection}>
-          <ClaimProcessingStatus percentage={emptyKeysPercentage} isLoading={loading} />
-        </div>
+    <div className={styles.sectionWindow}>
+      <div className={styles.header}>
+        <h2>Generated Email</h2>
+        <div className={styles.headerUnderline}></div>
       </div>
-
-      <div className={styles.verifyContainer}>
-        {/* Chatbot */}
-        <div className={styles.chatbotPanel}>
-          <Chatbot />
+      <div className={styles.genEmail}>
+        <div className={styles.emailPreview}>
+          {formatEmailContent(llmResponse)}
         </div>
-
-        {/* Main Content Panels */}
-        <div className={styles.mainPanels}>
-          <div className={styles.leftPanel}>
-            {/* Claim Summary */}
-            <div className={styles.claimSummary}>
-              <div className={styles.panelHeader}>
-                <h3>Claim Summary</h3>
-              </div>
-              <div className={styles.panelContent}>
-                <p>{Dsummary || "No summary available"}</p>
-              </div>
-            </div>
-
-            {/* Insights Panel */}
-            <div className={styles.insightsPanel}>
-              <div className={styles.panelHeader}>
-                <h3>Insights From Historic Claims</h3>
-              </div>
-              <div className={styles.panelContent}>
-                <Insights claimType={summary?.claimType || "GENERAL"} />
-              </div>
-            </div>
-          </div>
-
-          <div className={styles.rightPanel}>
-            {/* Verification Summary Panel */}
-            <div className={styles.verificationPanel}>
-              <div
-                className={styles.panelHeader}
-                onClick={() => setVerificationSummaryOpen(!isVerificationSummaryOpen)}
-              >
-                <h3>Verification Summary</h3>
-                <FontAwesomeIcon
-                  icon={isVerificationSummaryOpen ? faChevronUp : faChevronDown}
-                  className={styles.toggleIcon}
-                />
-              </div>
-              <div
-                className={`${styles.collapsibleContent} ${isVerificationSummaryOpen ? styles.open : styles.closed}`}
-              >
-                <div className={styles.summarySection}>
-                  <h4>Detailed Recommendation</h4>
-                  <p>{recommendation || "No detailed recommendation available"}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Verification With Integrated System Panel */}
-            <div className={styles.verificationPanel}>
-              <div
-                className={styles.panelHeader}
-                onClick={() => setVerificationDBOpen(!isVerificationDBOpen)}
-              >
-                <h3>Verification With Integrated System</h3>
-                <FontAwesomeIcon
-                  icon={isVerificationDBOpen ? faChevronUp : faChevronDown}
-                  className={styles.toggleIcon}
-                />
-              </div>
-              <div
-                className={`${styles.collapsibleContent} ${isVerificationDBOpen ? styles.open : styles.closed}`}
-              >
-                <VerificationDB recNum={recNum} psid={psid} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Generate Email Button */}
-      <div className={styles.generateEmailContainer}>
-        <button
-          className={styles.generateEmailButton}
-          onClick={handleEmail}
-          disabled={!summary || !recommendation}
-        >
-          <FontAwesomeIcon icon={faEnvelope} className={styles.emailIcon} />
-          Generate Email <FontAwesomeIcon icon={faAnglesRight} />
-        </button>
       </div>
     </div>
   );
 };
 
-export default VerifyContent;
+export default EmailGenerator;
 
 
+/* Individual Window Styling */
+.sectionWindow {
+  background: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, height 0.3s ease;
+}
 
+.sectionWindow {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+}
 
-/* General Styles for the Panels */
-.verifyContainer {
+.header {
+  margin-bottom: 15px;
+}
+
+.headerUnderline {
+  height: 2px;
+  background-color: #0f5fdc;
+  width: 50px;
+}
+
+.genEmail {
+  position: relative;
+}
+
+.emailTextarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.emailControls {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 30px;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 
-.leftPanel, .rightPanel {
-  flex: 1;
+.copyButton {
+  background-color: #0f5fdc;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.copyButton:hover {
+  background-color: #0d4fa0;
+}
+
+.loaderContainer {
   display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 100%;  /* Ensure both panels take equal height */
-  max-height: 100vh;  /* Prevents the layout from growing too tall */
+  justify-content: center;
+  padding: 20px;
 }
 
-.verificationPanel, .claimSummary, .insightsPanel, .chatbotPanel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  height: 100%;
-  max-height: 100%; /* Ensure it fits within the panel's height */
+.sectionWindow:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Specific scroll behavior for collapsible sections */
-.collapsibleContent {
-  overflow-y: auto;  /* Enables scrolling when content overflows */
-  max-height: calc(100% - 50px);  /* Adjust based on your header height */
+.sectionWindow h2 {
+  margin-bottom: 10px;
+  font-size: 20px;
+  color: #333;
 }
 
-/* Scrollbar styling */
-.collapsibleContent::-webkit-scrollbar {
-  width: 6px;
+.sectionWindow p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Buttons */
+.generateButton {
+      padding: 10px 22px;
+    background:linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+    color: white;
+    border: none;
+    /*margin: auto 164px;*/
+    /*margin-left:460px;*/
+    /*align-content: right;*/
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
 }
 
-.collapsibleContent::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-.collapsibleContent::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Equal section height and scrollable area */
-.mainPanels {
-  display: flex;
-  flex-direction: row;
-  gap: 30px;
-  justify-content: space-between;
-  height: 100%;
-  max-height: 100vh;
-}
-
-.headerSection {
+.genEmail{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 30px;
+  /*gap:15px;*/
+  
+}
+
+.generateButton:hover {
+  background-color: #0056b3;
+}
+
+.generateButton:disabled {
+  background-color: #b0c4de;
+  cursor: not-allowed;
+}
+
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Optional: Error text styling */
+.errorText {
+  color: #dc3545;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 10px;
+}
+.headerUnderline {
+  height: 3px;
+  width: 50px;
+  background: linear-gradient(to right, #4a90e2, #50c878);
+  margin-top: 8px;
+  border-radius: 2px;
+}
+.header {
   margin-bottom: 20px;
 }
 
-.panelHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.panelHeader h3 {
-  margin: 0;
-}
-
-/* Optional: Add a little padding and box-shadow to give the sections a clean look */
-.verificationPanel, .claimSummary, .insightsPanel {
-  padding: 15px;
-  background-color: #f4f4f4;
+.sectionWindow {
+  background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
-.generateEmailContainer {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+.header {
+  margin-bottom: 20px;
 }
 
-.generateEmailButton {
+.header h2 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.headerUnderline {
+  height: 2px;
   background-color: #0f5fdc;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
+  width: 50px;
+}
+
+.genEmail {
+  line-height: 1.6;
+}
+
+.emailContent {
+  color: #333;
+  font-size: 16px;
+}
+
+.salutation {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #0f5fdc;
+}
+
+.emailContent h3 {
+  color: #0f5fdc;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 5px;
+}
+
+.emailContent ul {
+  padding-left: 20px;
+  margin-bottom: 15px;
+  list-style-type: disc;
+}
+
+.emailContent li {
+  margin-bottom: 5px;
+}
+
+.closing {
+  margin-top: 20px;
+  font-style: italic;
+  color: #666;
+}
+
+.errorText {
+  color: #ff4d4f;
+  text-align: center;
+}
+
+.loaderContainer {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 20px;
 }
 
-.generateEmailButton:hover {
-  background-color: #08479d;
-}
-
-.generateEmailButton:disabled {
-  background-color: #dcdcdc;
-  cursor: not-allowed;
+.emailPreview {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
 }
