@@ -21,6 +21,142 @@ const VerifyContent = ({
 }) => {
   const navigate = useNavigate();
 
+  // State for collapsible sections
+  const [isVerificationSummaryOpen, setVerificationSummaryOpen] = useState(true);
+  const [isVerificationDBOpen, setVerificationDBOpen] = useState(true);
+
+  const handleEmail = () => {
+    navigate("/generate-email", {
+      state: { Dsummary, summary, recommendation, recNum, psid },
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.spinnerContainer}>
+        <HashLoader color="#0f5fdc" size={40} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div className={styles.errorContainer}><p>Error: {error}</p></div>;
+  }
+
+  return (
+    <div className={styles.verifyMainContainer}>
+      {/* Claim ID and Status */}
+      <div className={styles.headerSection}>
+        <div className={styles.claimIdDisplay}>
+          <div className={styles.claimIdBadge}>
+            <span>Claim ID</span>
+            <h3>{recNum || "N/A"}</h3>
+          </div>
+          <div className={styles.claimIdBadge}>
+            <span>PS ID</span>
+            <h3>{psid || "N/A"}</h3>
+          </div>
+        </div>
+        <div className={styles.statusSection}>
+          <ClaimProcessingStatus percentage={emptyKeysPercentage} isLoading={loading} />
+        </div>
+      </div>
+
+      <div className={styles.verifyContainer}>
+        {/* Chatbot */}
+        <div>
+          <Chatbot />
+        </div>
+
+        {/* Left and Right Panels */}
+        <div className={styles.rightLeft}>
+          {/* Claim Summary */}
+          <div className={styles.leftPanel}>
+            <div className={styles.panelHeader}>
+              <h3>Claim Summary</h3>
+            </div>
+            <div className={styles.panelContent}>
+              <p>{Dsummary || "No summary available"}</p>
+            </div>
+          </div>
+
+          {/* Verification Summary (Collapsible) */}
+          <div className={styles.rightPanel}>
+            <div className={styles.panelHeader} onClick={() => setVerificationSummaryOpen(!isVerificationSummaryOpen)}>
+              <h3>Verification Summary</h3>
+              <FontAwesomeIcon icon={isVerificationSummaryOpen ? faChevronUp : faChevronDown} className={styles.toggleIcon} />
+            </div>
+            <div className={`${styles.collapsibleContent} ${isVerificationSummaryOpen ? styles.open : styles.closed}`}>
+              <div className={styles.summarySection}>
+                <h4>Detailed Recommendation</h4>
+                <p>{recommendation || "No detailed recommendation available"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Insights (Always Visible) */}
+        <div className={styles.insightsPanel}>
+          <div className={styles.panelHeader}>
+            <h3>Insights From Historic Claims</h3>
+          </div>
+          <div className={styles.panelContent}>
+            <Insights claimType={summary?.claimType || "GENERAL"} />
+          </div>
+        </div>
+
+        {/* VerificationDB (Collapsible) */}
+        <div className={styles.verificationDBPanel}>
+          <div className={styles.panelHeader} onClick={() => setVerificationDBOpen(!isVerificationDBOpen)}>
+            <h3>Verification With Integrated System</h3>
+            <FontAwesomeIcon icon={isVerificationDBOpen ? faChevronUp : faChevronDown} className={styles.toggleIcon} />
+          </div>
+          <div className={`${styles.collapsibleContent} ${isVerificationDBOpen ? styles.open : styles.closed}`}>
+            <VerificationDB recNum={recNum} psid={psid} />
+          </div>
+        </div>
+      </div>
+
+      {/* Generate Email Button */}
+      <div className={styles.generateEmailContainer}>
+        <button className={styles.generateEmailButton} onClick={handleEmail} disabled={!summary || !recommendation}>
+          <FontAwesomeIcon icon={faEnvelope} className={styles.emailIcon} />
+          Generate Email <FontAwesomeIcon icon={faAnglesRight} />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default VerifyContent;
+
+
+
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { HashLoader } from "react-spinners";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faAnglesRight, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import styles from "./Verify.module.css";
+import Chatbot from "./Chatbot";
+import ClaimProcessingStatus from "../MainContent/ClaimProcessingStatus";
+import VerificationDB from "./VerificationDB";
+import Insights from "./Insights";
+
+const VerifyContent = ({
+  recNum,
+  psid,
+  Dsummary,
+  summary,
+  recommendation,
+  loading,
+  error,
+  emptyKeysPercentage,
+}) => {
+  const navigate = useNavigate();
+
   // State to control visibility of sections
   const [isVerificationSummaryOpen, setVerificationSummaryOpen] = useState(true);
   const [isVerificationDBOpen, setVerificationDBOpen] = useState(true);
