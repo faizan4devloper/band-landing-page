@@ -1,3 +1,89 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
+
+const useVerifyData = (recNum) => {
+  const [summary, setSummary] = useState(null);
+  const [recommendation, setRecommendation] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const payload = {
+          claimid: recNum,
+          recnumber: "PS12345", 
+        };
+
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        const response = await axios.post(
+          "https://verify", 
+          payload,
+          { headers }
+        );
+        
+        console.log('Full API Response:', response);
+
+        let responseBody;
+        try {
+          if (response.data.verifyclaimactdata && response.data.verifyclaimactdata.body) {
+            responseBody = JSON.parse(response.data.verifyclaimactdata.body);
+          } else if (response.data.body) {
+            responseBody = JSON.parse(response.data.body);
+          } else if (typeof response.data === 'string') {
+            responseBody = JSON.parse(response.data);
+          } else {
+            responseBody = response.data;
+          }
+
+          console.log('Parsed Response Body:', responseBody);
+
+          const summaryDetails = responseBody.SUMMARY_DETAILS || {};
+          const {
+            CLAIM_FORM_BRIEF_SUMMARY = 'No Brief Summary',
+            CLAIM_FORM_TYPE = 'Unknown Type',
+            CLAIM_STATUS = 'Pending',
+            DETAILED_SUMMARY = 'No Detailed Summary'
+          } = summaryDetails;
+
+          setSummary({
+            briefSummary: CLAIM_FORM_BRIEF_SUMMARY,
+            claimType: CLAIM_FORM_TYPE,
+            claimStatus: CLAIM_STATUS,
+          });
+          setRecommendation(DETAILED_SUMMARY);
+
+        } catch (parseError) {
+          console.error('Error parsing response:', parseError);
+          setError('Failed to parse response data');
+        }
+      } catch (error) {
+        console.error('API Error:', error);
+        setError(error.response?.data?.message || 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (recNum) {
+      fetchData();
+    } else {
+      setError('No claim ID provided');
+      setLoading(false);
+    }
+  }, [recNum]);
+
+  return { summary, recommendation, loading, error };
+};
+
+export default useVerifyData;
+
+
+
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './BreadCrumbs.module.css';
