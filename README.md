@@ -1,3 +1,45 @@
+useEffect(() => {
+  return () => {
+    // Only clear storage when navigating away from the claim flow
+    if (!location.pathname.includes("/verify")) {
+      localStorage.removeItem("currentClaimId");
+      localStorage.removeItem("currentPolicyId");
+      localStorage.removeItem("currentSummary");
+    }
+  };
+}, [location.pathname]);
+
+
+
+
+const { summary, recommendation, loading, error } = useVerifyData(
+  recNum || localStorage.getItem("currentClaimId")
+);
+
+
+
+{
+  label: "Verify",
+  link: "/verify",
+  onClick: () => {
+    navigate("/verify", {
+      state: {
+        clid: recNum,
+        selectedPolicy: psid,
+        summary: Dsummary,
+        recommendation: recommendation,
+        percentage: emptyKeysPercentage, 
+      },
+    });
+  },
+}
+
+
+
+
+
+
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 
