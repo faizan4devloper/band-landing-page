@@ -1,3 +1,84 @@
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from './BreadCrumbs.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faHome, 
+  faChevronRight 
+} from '@fortawesome/free-solid-svg-icons';
+
+const BreadCrumbs = ({ 
+  items, 
+  onItemClick,
+  className, 
+  style 
+}) => {
+  const navigate = useNavigate();
+
+  const handleItemClick = (item) => {
+    if (onItemClick) {
+      onItemClick(item);
+    } else if (item.link) {
+      navigate(item.link, {
+        state: item.state || {}
+      });
+    }
+  };
+
+  return (
+    <div className={styles.breadcrumbsWrapper}>
+      <nav 
+        className={`${styles.breadcrumbsContainer} ${className || ''}`} 
+        style={{
+          ...style,
+          // Default styles
+          padding: '12px 24px',
+          backgroundColor: '#f8f9fa',
+          borderBottom: '1px solid #e9ecef',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}
+      >
+        <div className={styles.breadcrumbContent}>
+          {/* Home Icon */}
+          <div 
+            onClick={() => navigate('/')}
+            className={styles.breadcrumbHome}
+          >
+            <FontAwesomeIcon 
+              icon={faHome} 
+              className={styles.homeIcon} 
+            />
+          </div>
+
+          {items.map((item, index) => (
+            <React.Fragment key={index}>
+              {index > 0 && (
+                <FontAwesomeIcon 
+                  icon={faChevronRight} 
+                  className={styles.separatorIcon} 
+                />
+              )}
+              
+              <div
+                onClick={() => handleItemClick(item)}
+                className={`${styles.breadcrumbItem} ${
+                  index === items.length - 1 ? styles.active : ''
+                }`}
+              >
+                {item.label}
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      </nav>
+    </div>
+  );
+};
+
+export default BreadCrumbs;
+
+
+
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import VerifyContent from "./VerifyContent";
