@@ -1,111 +1,159 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-import styles from "./MainContent.module.css";
-import DocumentPreview from "./DocumentPreview";
-import ExtractedContent from "./ExtractedContent";
-import ClaimClassification from "./ClaimClassification";
-import ClaimProcessingStatus from "./ClaimProcessingStatus";
+/* MainContent.module.css */
+/* Design System Variables */
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #3498db;
+  --background-light: #f8f9fa;
+  --border-color: #ecf0f1;
+  --text-dark: #2c3e50;
+  --text-light: #ffffff;
+  --spacing-unit: 1rem;
+  --border-radius: 8px;
+  --box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
 
-const MainContent = ({ message, rows, clid, setRows, staticPreviewUrl, selectedPolicy, uploadedFileName }) => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
-  const [percentage, setPercentage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [embeddingStatus, setEmbeddingStatus] = useState(null);
+.mainContentWrapper {
+  padding: calc(var(--spacing-unit) * 2);
+  height: 100vh;
+  overflow-y: auto;
+}
 
-  useEffect(() => {
-    if (rows.length > 0) {
-      handleReload(rows[0].recNum);
-    }
-  }, [rows]);
+.claimIdDisplay {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+  padding: var(--spacing-unit);
+  border-radius: var(--border-radius);
+  margin-bottom: var(--spacing-unit);
+  box-shadow: var(--box-shadow);
+}
 
-  useEffect(() => {
-    if (data && data.total_extracted_data) {
-      handleDocumentEmbedQueue();
-    }
-  }, [data]);
+.mainContentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: calc(var(--spacing-unit) * 2);
+  height: calc(100% - 60px);
+}
 
-  const handleDocumentEmbedQueue = async () => {
-    if (rows.length === 0) return;
+.leftColumn, .rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-unit);
+}
 
-    const currentClaimId = rows[0].recNum;
-    const claimFormPath = data?.total_extracted_data 
-      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_PATH 
-      : null;
+/* Card Layout Template */
+.cardContainer {
+  background: var(--text-light);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+  padding: var(--spacing-unit);
+  transition: transform 0.2s ease;
+}
 
-    if (!claimFormPath) {
-      console.warn("No claim form path found");
-      return;
-    }
+.cardContainer:hover {
+  transform: translateY(-2px);
+}
 
-    try {
-      const payload = { claimid: currentClaimId, recnumber: currentClaimId, claimformpath: claimFormPath };
-      const response = await axios.post("https:docembedqueue", payload, { headers: { "Content-Type": "application/json" } });
-      setEmbeddingStatus(response.data);
-    } catch (error) {
-      console.error("Failed to call document embed queue:", error);
-      setEmbeddingStatus(null);
-    }
-  };
+/* Specific Component Containers */
+.claimClassificationContainer {
+  flex: 0 1 auto;
+}
 
-  useEffect(() => {
-    const fetchPercentage = async () => {
-      if (rows.length === 0 || !rows[0]?.recNum) return;
-      const currentClaimId = rows[0].recNum;
-      setIsLoading(true);
-      try {
-        const response = await axios.post("https://percentage", { claimid: currentClaimId }, { headers: { "Content-Type": "application/json" } });
-        let percentageValue = response.data?.body?.empty_key_perc ? parseFloat(response.data.body.empty_key_perc.replace("%", "")) : 0;
-        setPercentage(percentageValue);
-      } catch (error) {
-        setPercentage(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPercentage();
-  }, [rows, data]);
+.documentPreviewContainer {
+  flex: 1 1 50%;
+  min-height: 400px;
+}
 
-  const handleVerify = () => {
-    const formType = data?.total_extracted_data?.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || "No Claim Form Type";
-    const summary = data?.total_extracted_data?.CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY || "No Summary Available";
-    navigate("/verify", { state: { clid, summary, selectedPolicy, percentage } });
-  };
+.percentageSection {
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const response = await axios.post("https:all", { tasktype: "FETCH_SINGLE_ACT_CLAIM", claimid: recNum }, { headers: { "Content-Type": "application/json" } });
-      setData(response.data.allclaimactdata);
-    } catch (error) {
-      console.error("Failed to fetch data for RecNum:", recNum, error);
-    } finally {
-      setLoading(false);
-    }
-  };
+.extractedContentContainer {
+  flex: 1;
+  min-height: 400px;
+}
 
-  return (
-    <div className={styles.mainContentWrapper}>
-      {rows.length > 0 && <h3 className={styles.claimId}>Claim ID: {rows[0].recNum}</h3>}
-      <div className={styles.mainGrid}>
-        <div className={styles.leftColumn}>
-          <ClaimClassification data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null} uploadedFileName={uploadedFileName} />
-          <DocumentPreview staticPreviewUrl={staticPreviewUrl} />
-        </div>
-        <div className={styles.rightColumn}>
-          <ClaimProcessingStatus percentage={percentage} isLoading={isLoading} />
-          <ExtractedContent data={data} loading={loading} rows={rows} handleReload={handleReload} />
-          <button className={styles.verifyButton} onClick={handleVerify} disabled={!rows.length}>
-            Verify Claim <FontAwesomeIcon icon={faChevronRight} />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+/* Verify Button Styling */
+.verifyButtonContainer {
+  margin-top: auto;
+  padding-top: var(--spacing-unit);
+}
 
-export default MainContent;
+.verifyButton {
+  background-color: var(--secondary-color);
+  color: var(--text-light);
+  border: none;
+  padding: calc(var(--spacing-unit) * 0.75) calc(var(--spacing-unit) * 2);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  width: 100%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-unit);
+  transition: all 0.3s ease;
+}
+
+.verifyButton:hover {
+  background-color: #2980b9;
+  transform: scale(1.02);
+}
+
+.verifyButton:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Loading States */
+.loadingText {
+  color: var(--secondary-color);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-unit);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mainContentGrid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .leftColumn, .rightColumn {
+    min-height: auto;
+  }
+
+  .documentPreviewContainer {
+    min-height: 300px;
+  }
+}
+
+
+
+
+// In your JSX
+<div className={`${styles.claimClassificationContainer} ${styles.cardContainer}`}>
+  <ClaimClassification ... />
+</div>
+
+<div className={`${styles.documentPreviewContainer} ${styles.cardContainer}`}>
+  <DocumentPreview ... />
+</div>
+
+<div className={`${styles.percentageSection} ${styles.cardContainer}`}>
+  {/* percentage content */}
+</div>
+
+
+
+{isLoading && (
+  <div className={styles.loadingText}>
+    <FontAwesomeIcon icon={faSync} spin />
+    Loading...
+  </div>
+)}
