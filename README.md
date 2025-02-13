@@ -1,84 +1,147 @@
-import React, { useRef, useState } from "react";
-import styles from "./Sidebar.module.css";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faAnglesLeft, faAnglesRight } from "@fortawesome/free-solid-svg-icons";
+/* Sidebar Container */
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  transition: width 0.3s ease-in-out;
+}
 
-const Sidebar = ({ onFileChange, onUpload, uploading, onPolicyChange }) => {
-  const fileInputRef = useRef(null);
-  const [fileName, setFileName] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const navigate = useNavigate();
+/* Hidden Sidebar */
+.sidebarHidden {
+  width: 0;
+  overflow: hidden;
+  padding: 0;
+  transition: width 0.3s ease-in-out;
+}
 
-  const handleContainerClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+/* Toggle Button */
+.toggleButton {
+  position: absolute;
+  top: 50%;
+  right: -15px;
+  transform: translateY(-50%);
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1);
+  border: none;
+  width: 35px;
+  height: 35px;
+  cursor: pointer;
+  font-size: 15px;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: all 0.3s ease;
+}
 
-  const handleBackClick = () => {
-    navigate("/claims");
-  };
+.toggleButton:hover {
+  background: #0f5fdc;
+}
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const sanitizedFileName = file.name.replace(/\s+/g, "_");
-      setFileName(sanitizedFileName);
-      const renamedFile = new File([file], sanitizedFileName, { type: file.type });
-      onFileChange({ target: { files: [renamedFile] } });
-    }
-  };
+/* Heading */
+.heading {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0f5fdc;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 20px;
+}
 
-  const handleUpload = async () => {
-    await onUpload();
-    setUploadSuccess(true);
-    setTimeout(() => {
-      setIsSidebarOpen(false);
-      setUploadSuccess(false);
-    }, 2000);
-  };
+/* Dropzone */
+.fileInputContainer {
+  border: 2px dashed #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
 
-  return (
-    <div className={`${styles.sidebar} ${!isSidebarOpen ? styles.sidebarHidden : ""}`}>
-      <button
-        className={styles.toggleButton}
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-      >
-        <FontAwesomeIcon icon={isSidebarOpen ? faAnglesLeft : faAnglesRight} />
-      </button>
+.fileInputContainer:hover {
+  background-color: #e8f5e9;
+  border-color: #4caf50;
+}
 
-      {isSidebarOpen && (
-        <>
-          <h2 className={styles.heading}>Manage Claim</h2>
+/* File Name */
+.fileNameContainer {
+  margin-top: 10px;
+  padding: 10px;
+  width: 100%;
+  text-align: center;
+  border-radius: 8px;
+  background: #f3f3f3;
+}
 
-          <div className={styles.fileInputContainer} onClick={handleContainerClick}>
-            <p className={styles.dropzoneText}>Click to choose a file or drag & drop</p>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              className={styles.fileInput}
-              style={{ display: "none" }}
-            />
-          </div>
+.fileName {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  word-wrap: break-word;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
 
-          {fileName && (
-            <div className={styles.fileNameContainer}>
-              <p className={styles.fileName}>{fileName}</p>
-            </div>
-          )}
+/* Upload Button */
+.uploadButton {
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
 
-          <button className={styles.uploadButton} onClick={handleUpload} disabled={uploading}>
-            {uploading ? <div className={styles.loader}></div> : "Upload"}
-          </button>
+.uploadButton:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
 
-          {uploadSuccess && <p className={styles.successMessage}>Upload Successful!</p>}
-        </>
-      )}
-    </div>
-  );
-};
+.uploadButton:hover:not(:disabled) {
+  background-color: #4caf50;
+}
 
-export default Sidebar;
+/* Loader */
+.loader {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #4CAF50;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+/* Loader Animation */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success Message */
+.successMessage {
+  font-size: 14px;
+  color: #28a745;
+  margin-top: 10px;
+  font-weight: bold;
+}
