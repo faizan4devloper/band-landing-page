@@ -1,147 +1,132 @@
-/* Sidebar Container */
-.sidebar {
-  width: 250px;
-  height: 100vh;
-  background: #ffffff;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 20px;
+
+import React from 'react';
+import styles from "./ClaimProcessingStatus.module.css";
+
+const ClaimProcessingStatus = ({ percentage, isLoading }) => {
+  // Ensure percentage is a number, default to 0 if not
+  const emptyKeyPercentage = percentage !== undefined 
+    ? Math.max(0, Math.min(100, parseFloat(percentage)))
+    : 0;
+  
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
+
+  return (
+    <div>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
+
+      {isLoading ? (
+        <div className={styles.loadingSpinner}>Processing claim status...</div>
+      ) : (
+        <div className={styles.percentageContainer}>
+          <div className={styles.splitPercentageBar}>
+            <div
+              className={styles.emptyKeysSection}
+              style={{ width: `${emptyKeyPercentage}%` }}
+            >
+              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
+            </div>
+
+            <div
+              className={styles.filledKeysSection}
+              style={{
+                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+              }}
+            >
+              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ClaimProcessingStatus;
+
+
+.percentHead{
+      color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex
+;
+    align-items: center;
+}
+
+.percentageLabels {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  transition: width 0.3s ease-in-out;
-}
-
-/* Hidden Sidebar */
-.sidebarHidden {
-  width: 0;
-  overflow: hidden;
-  padding: 0;
-  transition: width 0.3s ease-in-out;
-}
-
-/* Toggle Button */
-.toggleButton {
-  position: absolute;
-  top: 50%;
-  right: -15px;
-  transform: translateY(-50%);
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1);
-  border: none;
-  width: 35px;
-  height: 35px;
-  cursor: pointer;
-  font-size: 15px;
-  color: #fff;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: all 0.3s ease;
-}
-
-.toggleButton:hover {
-  background: #0f5fdc;
-}
-
-/* Heading */
-.heading {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0f5fdc;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 20px;
-}
-
-/* Dropzone */
-.fileInputContainer {
-  border: 2px dashed #ccc;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 1rem;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-}
-
-.fileInputContainer:hover {
-  background-color: #e8f5e9;
-  border-color: #4caf50;
-}
-
-/* File Name */
-.fileNameContainer {
-  margin-top: 10px;
-  padding: 10px;
-  width: 100%;
-  text-align: center;
-  border-radius: 8px;
-  background: #f3f3f3;
-}
-
-.fileName {
+  justify-content: space-between;
   font-size: 14px;
-  color: #333;
   font-weight: 600;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  margin-bottom: 5px;
 }
 
-/* Upload Button */
-.uploadButton {
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0f5fdc, #7ca2e1, #0f5fdc);
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
+.redText {
+  color: #ff6b6b;
+}
+
+.greenText {
+  color: #4ecb71;
+}
+
+/*.redText {*/
+/*  color: #ff6b6b;*/
+/*  font-size: 14px;*/
+/*  font-weight: 600;*/
+/*  text-align: left;*/
+/*  margin-bottom: 5px;*/
+/*}*/
+
+.percentageContainer {
+  width: 100%;
+  height: 30px;
+  background-color: #f0f0f0;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+
+.splitPercentageBar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+
+.emptyKeysSection,
+.filledKeysSection {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
-  transition: all 0.3s ease;
-}
-
-.uploadButton:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-.uploadButton:hover:not(:disabled) {
-  background-color: #4caf50;
-}
-
-/* Loader */
-.loader {
-  border: 3px solid #f3f3f3;
-  border-top: 3px solid #4CAF50;
-  border-radius: 50%;
-  width: 16px;
-  height: 16px;
-  animation: spin 1s linear infinite;
-}
-
-/* Loader Animation */
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Success Message */
-.successMessage {
+  color: #ffffff; /* White text for visibility */
+  font-weight: 600;
   font-size: 14px;
-  color: #28a745;
-  margin-top: 10px;
-  font-weight: bold;
+  transition: width 0.6s ease-in-out;
+  white-space: nowrap;
+  min-width: 0; /* Allow shrinking */
 }
+
+.emptyKeysSection {
+  background-color: #ff6b6b;
+}
+
+.filledKeysSection {
+  background-color: #4ecb71;
+}
+
+.statusLabel {
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+  color: #444;
+  font-weight: 500;
+}
+.loadingSpinner{
+  text-align: center;
+  font-size: 12px;
+}
+
