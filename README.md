@@ -1,343 +1,343 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import Modal from "react-modal";
-import styles from "./MainContent.module.css";
-import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSync, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import DocumentPreview from "./DocumentPreview";
-import ExtractedContent from "./ExtractedContent";
-import ClaimClassification from "./ClaimClassification";
-import ClaimProcessingStatus from "./ClaimProcessingStatus";
+import React from "react";
+import styles from "./ClaimProcessingStatus.module.css";
 
-const MainContent = ({ message, rows, clid, setRows, staticPreviewUrl, selectedPolicy, uploadedFileName }) => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(null);
-  const [percentage, setPercentage] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [embeddingStatus, setEmbeddingStatus] = useState(null);
+const ClaimProcessingStatus = ({ percentage, isLoading, dataExtracted }) => {
+  const emptyKeyPercentage =
+    percentage !== undefined ? Math.max(0, Math.min(100, parseFloat(percentage))) : 0;
 
-  useEffect(() => {
-    if (rows.length > 0) {
-      handleReload(rows[0].recNum);
-    }
-  }, [rows]);
-
-  const handleDocumentEmbedQueue = async () => {
-    if (rows.length === 0) return;
-    const currentClaimId = rows[0].recNum;
-    const claimFormPath = data?.total_extracted_data 
-      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_PATH 
-      : null;
-
-    if (!claimFormPath) return;
-
-    try {
-      const payload = { claimid: currentClaimId, recnumber: currentClaimId, claimformpath: claimFormPath };
-      const response = await axios.post("https:docembedqueue", payload, { 
-        headers: { "Content-Type": "application/json" } 
-      });
-      setEmbeddingStatus(response.data);
-    } catch (error) {
-      console.error("Failed to call document embed queue:", error);
-      setEmbeddingStatus(null);
-    }
-  };
-
-  useEffect(() => {
-    if (data && data.total_extracted_data) {
-      handleDocumentEmbedQueue();
-    }
-  }, [data]);
-
-  useEffect(() => {
-    const fetchPercentage = async () => {
-      if (rows.length === 0 || !rows[0]?.recNum) return;
-      const currentClaimId = rows[0].recNum;
-      setIsLoading(true);
-      try {
-        const response = await axios.post(
-          "https:///percentage",
-          { claimid: currentClaimId },
-          { headers: { "Content-Type": "application/json" } }
-        );
-        if (response.data?.body) {
-          let percentageValue = response.data.body.empty_key_perc 
-            ? parseFloat(response.data.body.empty_key_perc.replace('%', ''))
-            : 0;
-          setPercentage(percentageValue);
-        }
-      } catch (error) {
-        setPercentage(0);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchPercentage();
-  }, [rows, data]);
-
-  const handleVerify = (clid, formtype, summary, selectedPolicy) => {
-    const policyMap = {
-      'CANCER': 'PS391481',
-      'HEART': 'PS672908',
-      'default': 'PS672908'
-    };
-    navigate('/verify', {
-      state: { 
-        clid, 
-        summary: summary || "No Summary Available", 
-        selectedPolicy: policyMap[formtype] || policyMap.default, 
-        percentage 
-      },
-    });
-  };
-
-  const handleReload = async (recNum) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(
-        "https://all", 
-        { tasktype: "FETCH_SINGLE_ACT_CLAIM", claimid: recNum }, 
-        { headers: { "Content-Type": "application/json" } }
-      );
-      setData(response.data.allclaimactdata);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
-    <div className={styles.mainContentWrapper}>
-      {rows.length > 0 && (
-        <div className={styles.claimIdDisplay}>
-          <h3>Claim ID: {rows[0].recNum}</h3>
-        </div>
-      )}
-      
-      <div className={styles.mainContentGrid}>
-        <div className={styles.leftColumn}>
-          <div className={`${styles.cardContainer} ${styles.claimClassificationContainer}`}>
-            <ClaimClassification
-              data={data?.total_extracted_data ? JSON.parse(data.total_extracted_data) : null}
-              uploadedFileName={uploadedFileName}
-            />
-          </div>
-          
-          <div className={`${styles.cardContainer} ${styles.documentPreviewContainer}`}>
-            <DocumentPreview staticPreviewUrl={staticPreviewUrl} />
-          </div>
-        </div>
+    <div>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
 
-        <div className={styles.rightColumn}>
-          <div className={`${styles.cardContainer} ${styles.percentageSection}`}>
-            <ClaimProcessingStatus 
-              percentage={percentage} 
-              isLoading={isLoading} 
-              dataExtracted={!!data}
-            />
-          </div>
+      <div className={styles.percentageContainer}>
+        <div className={styles.splitPercentageBar}>
+          {!dataExtracted ? (
+            /** Show animated loading effect while extraction is in progress */
+            <div className={styles.loadingEffect}></div>
+          ) : (
+            /** Show the actual progress bar when extraction is done */
+            <>
+              <div
+                className={styles.emptyKeysSection}
+                style={{ width: `${emptyKeyPercentage}%` }}
+              >
+                {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
+              </div>
 
-          <div className={`${styles.cardContainer} ${styles.extractedContentContainer}`}>
-            <ExtractedContent 
-              data={data} 
-              loading={loading} 
-              rows={rows} 
-              handleReload={handleReload}
-            />
-          </div>
-
-          <div className={styles.verifyButtonContainer}>
-            <button
-              className={styles.verifyButton}
-              onClick={() =>
-                handleVerify(
-                  clid,
-                  data?.total_extracted_data
-                    ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE
-                    : "No Claim Form Type",
-                  data?.total_extracted_data
-                    ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY
-                    : "No Summary Available",
-                  selectedPolicy
-                )
-              }
-              disabled={!rows.length}
-            >
-              Verify Claim <FontAwesomeIcon icon={faChevronRight} />
-            </button>
-          </div>
+              <div
+                className={styles.filledKeysSection}
+                style={{
+                  width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+                }}
+              >
+                {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default MainContent;
+export default ClaimProcessingStatus;
 
 
 
-/* MainContent.module.css */
-:root {
-  --primary-color: #2c3e50;
-  --secondary-color: #3498db;
-  --background-light: #f8f9fa;
-  --border-color: #ecf0f1;
-  --text-dark: #2c3e50;
-  --text-light: #ffffff;
-  --spacing-unit: 1rem;
-  --border-radius: 12px;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --transition-timing: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.mainContentWrapper {
-  padding: 1.5rem;
-  height: 100vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  background-color: var(--background-light);
-}
-
-.claimIdDisplay {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  margin-bottom: 1rem;
-}
-
-.mainContentGrid {
-  display: flex;
-  gap: 1.5rem;
-  height: calc(100vh - 160px);
-}
-
-.leftColumn {
-  flex: 0 0 380px;
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 1.5rem;
-}
-
-.rightColumn {
-  flex: 1;
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 1.5rem;
-}
-
-.cardContainer {
-  background: white;
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  box-shadow: var(--box-shadow);
-  border: 1px solid var(--border-color);
-  transition: transform 0.2s var(--transition-timing);
-}
-
-.cardContainer:hover {
-  transform: translateY(-2px);
-}
-
-.documentPreviewContainer {
-  overflow-y: auto;
-  min-height: 300px;
-}
-
-.extractedContentContainer {
-  overflow-y: auto;
-  max-height: 60vh;
-}
-
-.percentageSection {
-  padding: 1rem;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-}
-
-.verifyButtonContainer {
-  margin-top: auto;
-  padding-top: 1rem;
-}
-
-.verifyButton {
-  background-color: var(--secondary-color);
-  color: var(--text-light);
-  border: none;
-  padding: 0.75rem 2rem;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  width: 100%;
-  font-size: 1.1rem;
+/* Container */
+.percentHead {
+  color: #2c3e50;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  transition: all 0.3s var(--transition-timing);
-  position: relative;
-  overflow: hidden;
+  text-transform: uppercase;
 }
 
-.verifyButton:after {
-  content: "";
-  position: absolute;
-  left: -100%;
-  top: 0;
+/* Progress Bar Container */
+.percentageContainer {
+  width: 100%;
+  height: 35px;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Progress Bar */
+.splitPercentageBar {
+  display: flex;
   width: 100%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  transition: all 0.8s;
+  position: relative;
+  border-radius: 20px;
 }
 
-.verifyButton:hover {
-  background-color: #2980b9;
-  transform: scale(1.02);
+/* Sections */
+.emptyKeysSection,
+.filledKeysSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  transition: width 0.6s ease-in-out;
+  white-space: nowrap;
+  min-width: 0; /* Prevent text overflow */
+  color: white;
 }
 
-.verifyButton:hover:after {
-  left: 100%;
+.emptyKeysSection {
+  background: linear-gradient(90deg, #ff6b6b, #ff3b3b);
 }
 
-@media (max-width: 1200px) {
-  .mainContentGrid {
-    flex-direction: column;
-    height: auto;
-  }
-  
-  .leftColumn {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto;
-    flex: none;
-    gap: 1rem;
-  }
-  
-  .documentPreviewContainer {
-    min-height: 400px;
-  }
+.filledKeysSection {
+  background: linear-gradient(90deg, #4ecb71, #2fa558);
 }
 
-@media (max-width: 768px) {
-  .leftColumn {
-    grid-template-columns: 1fr;
-  }
-  
-  .mainContentWrapper {
-    padding: 1rem;
-  }
-  
-  .cardContainer {
-    padding: 1rem;
-  }
+/* Percentage Text */
+.emptyKeysSection span,
+.filledKeysSection span {
+  padding: 5px 10px;
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.2);
 }
 
+/* Loading Spinner */
+.loadingSpinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-top: 12px;
+}
+
+.loadingSpinner::after {
+  content: "";
+  width: 15px;
+  height: 15px;
+  margin-left: 8px;
+  border: 2px solid #0f5fdc;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Spinner Animation */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
+
+.loadingEffect {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: loadingAnimation 1.5s infinite linear;
+}
+
+@keyframes loadingAnimation {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import styles from './ClaimClassification.module.css';
+
+const ClaimClassification = ({ data }) => {
+  const [documentName, setDocumentName] = useState('');
+  const [classification, setClassification] = useState('');
+  const [isValid, setIsValid] = useState('');
+
+  useEffect(() => {
+    if (data) {
+      try {
+        // Data is already parsed from parent component - use directly
+        setDocumentName(
+          data.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
+          data.UPLOADED_DOCUMENT_NAME || 
+          'Unnamed Document'
+        );
+
+        const formType = data.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 'Unknown';
+        setClassification(formType);
+
+        // Corrected cardiomyopathy key spelling (added 'y' in CARDIOMYOPATHY)
+        const cardiomyopathy = 
+          data.DETAILS_OF_ILLNESS?.HEART_SURGERY_DETAILS?.PATIENT_SUFFERED_FROM_CARDIOMYOPATHY || 
+          'N/A';
+          
+        const validationStatus = cardiomyopathy.toLowerCase() === 'no' ? 'Yes' : 'No';
+        setIsValid(validationStatus);
+
+      } catch (error) {
+        console.error('Error processing classification data:', error);
+        setDocumentName('Error Loading Document');
+        setClassification('Error');
+        setIsValid('Error');
+      }
+    } else {
+      // Reset values if no data
+      setDocumentName('');
+      setClassification('');
+      setIsValid('');
+    }
+  }, [data]);
+
+  return (
+    <div className={styles.claimClassificationContainer}>
+      <h4>Claim Classification</h4>
+      <table className={styles.classificationTable}>
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Classification</th>
+            <th>Is Valid?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{documentName}</td>
+            <td>
+              <span className={`${styles.classificationTag} ${
+                classification.toLowerCase() === 'cancer' ? styles.cancerTag 
+                : classification.toLowerCase() === 'heart' ? styles.heartTag 
+                : styles.defaultTag
+              }`}>
+                {classification}
+              </span>
+            </td>
+            <td>
+              <span className={`${styles.validTag} ${
+                isValid === 'Yes' ? styles.validYes : styles.validNo
+              }`}>
+                {isValid || 'N/A'}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default ClaimClassification;
+
+
+
+.claimClassificationContainer {
+  font-family: 'Inter', 'Arial', sans-serif;
+  max-width: 700px;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background-color: #ffffff;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+h4 {
+  text-align: center;
+  color: #2d3748;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.classificationTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.classificationTable th, .classificationTable td {
+  border: 1px solid #e1e8f0;
+  padding: 12px;
+  text-align: center;
+}
+
+.classificationTable th {
+  background-color: #f0f4f8;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.classificationTable td {
+  color: #4a5568;
+}
+
+/* Classification Tag Styles */
+.classificationTag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cancerTag {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.heartTag {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.defaultTag {
+  background-color: #f5f5f5;
+  color: #616161;
+}
+
+/* Validity Tag Styles */
+.validTag {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.validYes {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.validNo {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .claimClassificationContainer {
+    max-width: 95%;
+  }
+
+  .classificationTable th, .classificationTable td {
+    padding: 8px;
+  }
+}
+
