@@ -1,40 +1,33 @@
-
 import React from 'react';
 import styles from "./ClaimProcessingStatus.module.css";
 
 const ClaimProcessingStatus = ({ percentage, isLoading }) => {
-  // Ensure percentage is a number, default to 0 if not
-  const emptyKeyPercentage = percentage !== undefined 
-    ? Math.max(0, Math.min(100, parseFloat(percentage)))
+  const progress = percentage !== undefined 
+    ? Math.max(0, Math.min(100, parseFloat(percentage))) 
     : 0;
-  
-  const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
-    <div>
+    <div className={styles.container}>
       <h3 className={styles.percentHead}>Claim Processing Status</h3>
 
       {isLoading ? (
-        <div className={styles.loadingSpinner}>Processing claim status...</div>
+        <div className={styles.loadingContainer}>
+          <div className={styles.loadingSpinner}></div>
+          <p className={styles.loadingText}>Processing claim status...</p>
+        </div>
       ) : (
         <div className={styles.percentageContainer}>
-          <div className={styles.splitPercentageBar}>
+          <div className={styles.progressBar}>
             <div
-              className={styles.emptyKeysSection}
-              style={{ width: `${emptyKeyPercentage}%` }}
+              className={styles.progressFill}
+              style={{ width: `${progress}%` }}
             >
-              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
-            </div>
-
-            <div
-              className={styles.filledKeysSection}
-              style={{
-                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
-              }}
-            >
-              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
+              {progress > 10 && <span className={styles.progressText}>{progress.toFixed()}%</span>}
             </div>
           </div>
+          <p className={styles.statusLabel}>
+            {progress < 100 ? "In Progress..." : "Completed"}
+          </p>
         </div>
       )}
     </div>
@@ -44,89 +37,87 @@ const ClaimProcessingStatus = ({ percentage, isLoading }) => {
 export default ClaimProcessingStatus;
 
 
-.percentHead{
-      color: #2c3e50;
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex
-;
-    align-items: center;
+/* Container */
+.container {
+  text-align: center;
+  padding: 15px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: auto;
 }
 
-.percentageLabels {
+/* Heading */
+.percentHead {
+  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Loading State */
+.loadingContainer {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.loadingText {
   font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 5px;
+  color: #555;
 }
 
-.redText {
-  color: #ff6b6b;
+.loadingSpinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0, 0, 0, 0.1);
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-.greenText {
-  color: #4ecb71;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/*.redText {*/
-/*  color: #ff6b6b;*/
-/*  font-size: 14px;*/
-/*  font-weight: 600;*/
-/*  text-align: left;*/
-/*  margin-bottom: 5px;*/
-/*}*/
-
+/* Progress Bar */
 .percentageContainer {
+  margin-top: 15px;
+}
+
+.progressBar {
   width: 100%;
   height: 30px;
-  background-color: #f0f0f0;
+  background-color: #ecf0f1;
   border-radius: 18px;
   overflow: hidden;
-  margin-top: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-
-.splitPercentageBar {
-  display: flex;
-  width: 100%;
+.progressFill {
   height: 100%;
-}
-
-
-.emptyKeysSection,
-.filledKeysSection {
+  background: linear-gradient(90deg, #4ecb71, #2ecc71);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff; /* White text for visibility */
-  font-weight: 600;
+  font-weight: bold;
   font-size: 14px;
+  color: white;
   transition: width 0.6s ease-in-out;
-  white-space: nowrap;
-  min-width: 0; /* Allow shrinking */
 }
 
-.emptyKeysSection {
-  background-color: #ff6b6b;
-}
-
-.filledKeysSection {
-  background-color: #4ecb71;
+.progressText {
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .statusLabel {
+  margin-top: 10px;
   font-size: 14px;
-  margin-top: 8px;
-  text-align: center;
+  font-weight: 600;
   color: #444;
-  font-weight: 500;
 }
-.loadingSpinner{
-  text-align: center;
-  font-size: 12px;
-}
-
