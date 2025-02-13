@@ -1,33 +1,40 @@
+
 import React from 'react';
 import styles from "./ClaimProcessingStatus.module.css";
 
 const ClaimProcessingStatus = ({ percentage, isLoading }) => {
-  const progress = percentage !== undefined 
-    ? Math.max(0, Math.min(100, parseFloat(percentage))) 
+  // Ensure percentage is a number, default to 0 if not
+  const emptyKeyPercentage = percentage !== undefined 
+    ? Math.max(0, Math.min(100, parseFloat(percentage)))
     : 0;
+  
+  const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
-    <div className={styles.container}>
+    <div>
       <h3 className={styles.percentHead}>Claim Processing Status</h3>
 
       {isLoading ? (
-        <div className={styles.loadingContainer}>
-          <div className={styles.loadingSpinner}></div>
-          <p className={styles.loadingText}>Processing claim status...</p>
-        </div>
+        <div className={styles.loadingSpinner}>Processing claim status...</div>
       ) : (
         <div className={styles.percentageContainer}>
-          <div className={styles.progressBar}>
+          <div className={styles.splitPercentageBar}>
             <div
-              className={styles.progressFill}
-              style={{ width: `${progress}%` }}
+              className={styles.emptyKeysSection}
+              style={{ width: `${emptyKeyPercentage}%` }}
             >
-              {progress > 10 && <span className={styles.progressText}>{progress.toFixed()}%</span>}
+              {emptyKeyPercentage > 0 && `${emptyKeyPercentage.toFixed()}%`}
+            </div>
+
+            <div
+              className={styles.filledKeysSection}
+              style={{
+                width: emptyKeyPercentage === 0 ? "100%" : `${filledKeyPercentage}%`,
+              }}
+            >
+              {filledKeyPercentage > 0 && `${filledKeyPercentage.toFixed()}%`}
             </div>
           </div>
-          <p className={styles.statusLabel}>
-            {progress < 100 ? "In Progress..." : "Completed"}
-          </p>
         </div>
       )}
     </div>
@@ -37,87 +44,319 @@ const ClaimProcessingStatus = ({ percentage, isLoading }) => {
 export default ClaimProcessingStatus;
 
 
-/* Container */
-.container {
-  text-align: center;
-  padding: 15px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  margin: auto;
+
+.percentHead{
+      color: #2c3e50;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+    display: flex
+;
+    align-items: center;
 }
 
-/* Heading */
-.percentHead {
-  color: #2c3e50;
-  font-size: 1.4rem;
-  font-weight: bold;
-  margin-bottom: 15px;
-}
-
-/* Loading State */
-.loadingContainer {
+.percentageLabels {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.loadingText {
+  justify-content: space-between;
   font-size: 14px;
-  color: #555;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
-.loadingSpinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(0, 0, 0, 0.1);
-  border-top: 3px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
+.redText {
+  color: #ff6b6b;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.greenText {
+  color: #4ecb71;
 }
 
-/* Progress Bar */
+/*.redText {*/
+/*  color: #ff6b6b;*/
+/*  font-size: 14px;*/
+/*  font-weight: 600;*/
+/*  text-align: left;*/
+/*  margin-bottom: 5px;*/
+/*}*/
+
 .percentageContainer {
-  margin-top: 15px;
-}
-
-.progressBar {
   width: 100%;
   height: 30px;
-  background-color: #ecf0f1;
+  background-color: #f0f0f0;
   border-radius: 18px;
   overflow: hidden;
+  margin-top: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   position: relative;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-.progressFill {
+
+.splitPercentageBar {
+  display: flex;
+  width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, #4ecb71, #2ecc71);
+}
+
+
+.emptyKeysSection,
+.filledKeysSection {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  color: #ffffff; /* White text for visibility */
+  font-weight: 600;
   font-size: 14px;
-  color: white;
   transition: width 0.6s ease-in-out;
+  white-space: nowrap;
+  min-width: 0; /* Allow shrinking */
 }
 
-.progressText {
-  font-size: 14px;
-  font-weight: bold;
+.emptyKeysSection {
+  background-color: #ff6b6b;
+}
+
+.filledKeysSection {
+  background-color: #4ecb71;
 }
 
 .statusLabel {
-  margin-top: 10px;
   font-size: 14px;
-  font-weight: 600;
+  margin-top: 8px;
+  text-align: center;
   color: #444;
+  font-weight: 500;
 }
+.loadingSpinner{
+  text-align: center;
+  font-size: 12px;
+}
+
+
+
+
+ import React, { useState, useEffect } from "react";
+  import axios from "axios";
+  import Modal from "react-modal";
+  import styles from "./MainContent.module.css";
+  import { useNavigate } from "react-router-dom";
+  import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+  import { faSync, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+  
+  
+  import DocumentPreview from "./DocumentPreview";
+  import ExtractedContent from "./ExtractedContent";
+  import ClaimClassification from "./ClaimClassification";
+  import ClaimProcessingStatus from "./ClaimProcessingStatus";
+  
+  
+  const MainContent = ({ message, rows, clid, setRows, staticPreviewUrl, selectedPolicy, uploadedFileName }) => {
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+
+    const [data, setData] = useState(null);
+    const [percentage, setPercentage] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+      const [embeddingStatus, setEmbeddingStatus] = useState(null);
+    
+  
+    // Existing useEffects (fetchPercentage and data loading)
+    useEffect(() => {
+      if (rows.length > 0) {
+        handleReload(rows[0].recNum);
+      }
+    }, [rows]);
+    
+    const handleDocumentEmbedQueue = async () => {
+    if (rows.length === 0) return;
+
+    const currentClaimId = rows[0].recNum;
+    const claimFormPath = data?.total_extracted_data 
+      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_PATH 
+      : null;
+
+    if (!claimFormPath) {
+      console.warn('No claim form path found');
+      return;
+    }
+
+    try {
+      const payload = {
+        claimid: currentClaimId,
+        recnumber: currentClaimId,
+        claimformpath: claimFormPath
+      };
+
+      const response = await axios.post(
+        "https:docembedqueue",
+        payload,
+      
+        { 
+          headers: { 
+            "Content-Type": "application/json" 
+          } 
+        }
+      );
+
+      console.log('Document Embed Queue Response:', response);
+      
+      // Optional: Set embedding status
+      setEmbeddingStatus(response.data);
+    } catch (error) {
+      console.error("Failed to call document embed queue:", error);
+      setEmbeddingStatus(null);
+    }
+  };
+
+  // Trigger document embedding when data is loaded
+  useEffect(() => {
+    if (data && data.total_extracted_data) {
+      handleDocumentEmbedQueue();
+    }
+  }, [data]);
+
+  
+useEffect(() => {
+  const fetchPercentage = async () => {
+    if (rows.length === 0 || !rows[0]?.recNum) return;
+
+    const currentClaimId = rows[0].recNum;
+    setIsLoading(true);
+    try {
+      const response = await axios.post(
+        "https:///percentage",
+        { claimid: currentClaimId },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      if (response.data && response.data.body) {
+        let percentageValue = response.data.body.empty_key_perc 
+          ? parseFloat(response.data.body.empty_key_perc.replace('%', ''))
+          : 0;
+          
+        setPercentage(percentageValue);
+      }
+    } catch (error) {
+      setPercentage(0);  // Set to 0 if error occurs
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchPercentage();
+}, [rows, data]);
+
+    const handleVerify = (clid, formtype, summary, selectedPolicy) => {
+      if (formtype === 'CANCER') {
+        selectedPolicy = 'PS391481';
+      } else if (formtype === 'HEART') {
+        selectedPolicy = 'PS672908';
+      } else {
+        selectedPolicy = 'PS672908';
+      }
+  
+      navigate('/verify', {
+        state: { clid, summary, selectedPolicy, percentage },
+      });
+    };
+  
+    const handleReload = async (recNum) => {
+      setLoading(true);
+      try {
+        const payload = {
+          tasktype: "FETCH_SINGLE_ACT_CLAIM",
+          claimid: recNum,
+        };
+  
+        const response = await axios.post(
+          "https:all", 
+          payload, 
+          { headers: { "Content-Type": "application/json" } }
+        );
+        
+        console.log('Extraction:', response)
+        
+        setData(response.data.allclaimactdata);
+      } catch (error) {
+        console.error("Failed to fetch data for RecNum:", recNum, error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <div className={styles.mainContentWrapper}>
+        {rows.length > 0 && (
+          <div className={styles.claimIdDisplay}>
+            <h3>Claim ID: {rows[0].recNum}</h3>
+          </div>
+        )}
+        
+        <div className={styles.mainContentGrid}>
+          <div className={styles.leftColumn}>
+            <div className={styles.claimClassificationContainer}>
+<ClaimClassification
+  data={
+    data?.total_extracted_data
+      ? JSON.parse(data.total_extracted_data)
+      : null
+  }
+  uploadedFileName={uploadedFileName}
+/>
+            </div>
+            <div className={styles.documentPreviewContainer}>
+              <DocumentPreview staticPreviewUrl={staticPreviewUrl} />
+            </div>
+            
+            
+          </div>
+          
+          
+  
+          <div className={styles.rightColumn}>
+            <div className={styles.percentageSection}>
+  {isLoading ? (
+    <p>Loading percentage...</p>  // Show loading text or a spinner
+  ) : (
+    <ClaimProcessingStatus 
+      percentage={percentage} 
+      isLoading={isLoading} 
+    />
+  )}
+</div>
+          
+            <div className={styles.extractedContentContainer}>
+              <ExtractedContent 
+                data={data} 
+                loading={loading} 
+                rows={rows} 
+                handleReload={handleReload}
+              />
+            </div>
+            
+            <div className={styles.verifyButtonContainer}>
+              <button
+                className={styles.verifyButton}
+                onClick={() =>
+                  handleVerify(
+                    clid,
+                    data?.total_extracted_data
+                      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE
+                      : "No Claim Form Type",
+                    data?.total_extracted_data
+                      ? JSON.parse(data?.total_extracted_data).CLAIM_FORM_DETAILS?.CLAIM_FORM_DETAILED_SUMMARY
+                      : "No Summary Available",
+                    selectedPolicy
+                  )
+                }
+                disabled={!rows.length}
+              >
+                Verify Claim <FontAwesomeIcon icon={faChevronRight}/>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  export default MainContent;
