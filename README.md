@@ -1,3 +1,45 @@
+import React from 'react';
+import styles from "./ClaimProcessingStatus.module.css";
+
+const ClaimProcessingStatus = ({ percentage, isLoading }) => {
+  // Ensure percentage is a number, default to 0 if not
+  const processedPercentage = percentage !== undefined 
+    ? Math.max(0, Math.min(100, parseFloat(percentage)))
+    : 0;
+
+  return (
+    <div className={styles.container}>
+      <h3 className={styles.percentHead}>Claim Processing Status</h3>
+
+      {isLoading ? (
+        <div className={styles.loadingContainer}>
+          <div className={styles.spinner}></div>
+          <p className={styles.loadingText}>Processing claim status...</p>
+        </div>
+      ) : (
+        <div className={styles.percentageContainer}>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.filledSection}
+              style={{ width: `${processedPercentage}%` }}
+            >
+              {processedPercentage > 0 && `${processedPercentage.toFixed()}%`}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ClaimProcessingStatus;
+
+
+
+
+
+
+
 
 why the percentage only display 100% on the verifyContent screen i mean statically not dynamically engaging with ClaimProcessingStatus
 
