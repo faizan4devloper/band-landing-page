@@ -1,61 +1,176 @@
-react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {Missing_Information, Explanation}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
-    at reconcileChildFibers (react-dom.development.js:14064:1)
-    at reconcileChildren (react-dom.development.js:19193:1)
-    at updateHostComponent (react-dom.development.js:19953:1)
-    at beginWork (react-dom.development.js:21657:1)
-    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
-    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
-    at invokeGuardedCallback (react-dom.development.js:4277:1)
-    at beginWork$1 (react-dom.development.js:27490:1)
-    at performUnitOfWork (react-dom.development.js:26596:1)
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import styles from './VerificationDB.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faCheckCircle, 
+  faTimesCircle, 
+  faExclamationTriangle 
+} from '@fortawesome/free-solid-svg-icons';
 
-3
-react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {Missing_Information, Explanation}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
-    at reconcileChildFibers (react-dom.development.js:14064:1)
-    at reconcileChildren (react-dom.development.js:19193:1)
-    at updateHostComponent (react-dom.development.js:19953:1)
-    at beginWork (react-dom.development.js:21657:1)
-    at HTMLUnknownElement.callCallback (react-dom.development.js:4164:1)
-    at Object.invokeGuardedCallbackDev (react-dom.development.js:4213:1)
-    at invokeGuardedCallback (react-dom.development.js:4277:1)
-    at beginWork$1 (react-dom.development.js:27490:1)
-    at performUnitOfWork (react-dom.development.js:26596:1)
-3
-react-dom.development.js:18704 The above error occurred in the <li> component:
+const VerificationDB = ({ 
+  recNum,  // Add recNum as a prop
+  psid  // Add policyNumber as a prop
+}) => {
+  const [verificationData, setVerificationData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    at li
-    at ul
-    at div
-    at div
-    at Insights (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:5018:3)
-    at div
-    at div
-    at div
-    at div
-    at div
-    at div
-    at VerifyContent (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:5736:3)
-    at div
-    at Verify (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/main.dcefb40….hot-update.js:34:81)
-    at RenderedRoute (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:55445:5)
-    at Routes (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:56179:5)
-    at Router (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:56113:15)
-    at BrowserRouter (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:54014:5)
-    at ClaimProvider (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:461:3)
-    at App (https://a6adf01….vfs.cloud9.us-east-1.amazonaws.com/static/js/bundle.js:121:80)
+  // API Endpoint
+  const API_ENDPOINT = 'claimdbverify';
 
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-react-dom.development.js:13123 Uncaught Error: Objects are not valid as a React child (found: object with keys {Missing_Information, Explanation}). If you meant to render a collection of children, use an array instead.
-    at throwOnInvalidObjectType (react-dom.development.js:13123:1)
-    at reconcileChildFibers (react-dom.development.js:14064:1)
-    at reconcileChildren (react-dom.development.js:19193:1)
-    at updateHostComponent (react-dom.development.js:19953:1)
-    at beginWork (react-dom.development.js:21657:1)
-    at beginWork$1 (react-dom.development.js:27465:1)
-    at performUnitOfWork (react-dom.development.js:26596:1)
-    at workLoopSync (react-dom.development.js:26505:1)
-    at renderRootSync (react-dom.development.js:26473:1)
-    at recoverFromConcurrentError (react-dom.development.js:25889:1)
+  // Fetch Verification Data
+  const fetchVerificationData = async () => {
+    try {
+      setLoading(true);
+      const payload = {
+        claimid: recNum,
+        recnumber: psid,  // You might want to pass this as a prop or use a default
+        policynumber: "L2065777"
+      };
+      
+      console.log('Payloads:', payload)
+
+      const response = await axios.post(API_ENDPOINT, payload);
+      console.log('VerificationDB:', response)
+      setVerificationData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Verification DB Error:', error);
+      setError(error.message || 'Failed to fetch verification data');
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Only fetch if recNum and policyNumber are provided
+    if (recNum && psid) {
+      fetchVerificationData();
+    }
+  }, [recNum, psid]);
+
+  // Parse and categorize messages
+  const parseMessages = (body) => {
+    // Safely check if body exists and is a string
+    if (!body || typeof body !== 'string') {
+      return {
+        successMessages: [],
+        unsuccessMessages: []
+      };
+    }
+
+    try {
+      // More robust parsing method
+      const successMatch = body.includes('Successful Messages:') 
+        ? body.split('Successful Messages:')[1].split('Unsuccessful Messages:')[0]
+        : '';
+      
+      const unsuccessMatch = body.includes('Unsuccessful Messages:')
+        ? body.split('Unsuccessful Messages:')[1]
+        : '';
+
+      return {
+        successMessages: successMatch
+          .trim()
+          .split('\n')
+          .filter(msg => msg.trim() !== ''),
+        unsuccessMessages: unsuccessMatch
+          .trim()
+          .split('\n')
+          .filter(msg => msg.trim() !== '')
+      };
+    } catch (error) {
+      console.error('Message parsing error:', error);
+      return {
+        successMessages: [],
+        unsuccessMessages: []
+      };
+    }
+  };
+
+  // Render Message Section
+const renderMessageSection = (messages, type) => {
+  const icons = {
+    success: faCheckCircle,
+    error: faTimesCircle,
+    warning: faExclamationTriangle
+  };
+
+  const messageStyles = {
+    success: styles.successMessage,
+    error: styles.errorMessage,
+    warning: styles.warningMessage
+  };
+
+  return (
+    <div className={messageStyles[`${type}Container`]}>
+      <h4>
+        <FontAwesomeIcon 
+          icon={icons[type]} 
+          className={styles[`${type}Icon`]} 
+        />
+        {type === 'success' ? 'Successful Verifications' : 'Issues Identified'}
+      </h4>
+      <ol className={styles.numberedMessageList}>
+        {messages.map((message, index) => (
+          <li 
+            key={index} 
+            className={`${styles.messageItem} ${messageStyles[type]}`}
+          >
+            <span className={styles.messageText}>{message}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+};
+  // Detailed Rendering
+  const renderVerificationContent = () => {
+    // Loading State
+    if (loading) return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+        <p>Loading verification data...</p>
+      </div>
+    );
+
+    // Error State
+    if (error) return (
+      <div className={styles.errorContainer}>
+        <FontAwesomeIcon icon={faTimesCircle} className={styles.errorIcon} />
+        <p>Error: {error}</p>
+        <button onClick={fetchVerificationData}>Retry</button>
+      </div>
+    );
+
+    // No Data State
+    if (!verificationData || !verificationData.body) return (
+      <div className={styles.noDataContainer}>
+        <FontAwesomeIcon icon={faExclamationTriangle} className={styles.warningIcon} />
+        <p>No verification data available</p>
+      </div>
+    );
+
+    // Parse Messages
+    const { successMessages, unsuccessMessages } = parseMessages(verificationData.body);
+
+    return (
+      <div className={styles.verificationContainer}>
+       
+
+        <div className={styles.messageContainer}>
+          {successMessages.length > 0 && renderMessageSection(successMessages, 'success')}
+          {unsuccessMessages.length > 0 && renderMessageSection(unsuccessMessages, 'error')}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className={styles.verificationDBContainer}>
+      {renderVerificationContent()}
+    </div>
+  );
+};
+
+export default VerificationDB;
