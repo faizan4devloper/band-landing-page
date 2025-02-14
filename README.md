@@ -1,76 +1,74 @@
-/* Redesigned MainContent.module.css */
-
-.mainContentContainer {
+/* MainContent.module.css */
+.mainContentGrid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
-  gap: 20px;
-  padding: 20px;
-  background: #f9f9f9;
-  border-radius: 12px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* More responsive */
+  gap: 1rem;
+  padding: 1rem;
+  height: auto; /* Remove fixed height */
 }
 
-.leftSection {
+
+.cardContainer {
   background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.rightSection {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.sectionCard {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease-in-out;
-}
-
-.sectionCard:hover {
-  transform: translateY(-3px);
-}
-
-.headerTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.button {
-  padding: 12px 18px;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 1rem;
+}
+
+
+.claimClassificationContainer {
+  max-height: 400px;
+  overflow: auto;
+}
+
+/* Add to your table CSS */
+.compact-table {
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+.compact-table td, .compact-table th {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+
+.percentageSection {
+  height: auto; /* Remove fixed height */
+  padding: 1rem;
+}
+
+
+.documentPreviewContainer {
+  max-height: 500px;
+  min-height: 300px;
+  position: relative;
+}
+
+/* Update these styles */
+.claimIdDisplay {
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
 }
 
 .verifyButton {
-  background: #007bff;
-  color: white;
-}
-
-.verifyButton:hover {
-  background: #0056b3;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .mainContentContainer {
-    grid-template-columns: 1fr;
-  }
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
 }
 
 @media (max-width: 768px) {
-  .button {
-    width: 100%;
-    text-align: center;
+  .mainContentGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .leftColumn, .rightColumn {
+    gap: 0.5rem;
+  }
+  
+  .cardContainer {
+    padding: 1rem;
   }
 }
