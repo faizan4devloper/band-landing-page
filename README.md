@@ -1,104 +1,100 @@
-.claimClassificationContainer {
-  max-width: 700px;
-  margin: 0 auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
-  background-color: #ffffff;
-  padding: 20px;
-  transition: all 0.3s ease;
-}
+import React, { useState, useEffect } from "react";
+import { ClipLoader } from "react-spinners"; // Import spinner
+import styles from "./ClaimClassification.module.css";
 
-h4 {
-  text-align: center;
-  color: #2d3748;
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
+const ClaimClassification = ({ data, uploadedFileName }) => {
+  const [documentName, setDocumentName] = useState(null);
+  const [classification, setClassification] = useState(null);
+  const [isValid, setIsValid] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-.classificationTable {
-  width: 100%;
-  border-collapse: collapse;
-  border-radius: 8px;
-  overflow: hidden;
-}
+  useEffect(() => {
+    if (data) {
+      try {
+        setDocumentName(
+          data.CLAIM_FORM_DETAILS?.DOCUMENT_NAME ||
+            data.UPLOADED_DOCUMENT_NAME ||
+            uploadedFileName ||
+            "Unnamed Document"
+        );
 
-.classificationTable th, .classificationTable td {
-  border: 1px solid #e1e8f0;
-  padding: 12px;
-  text-align: center;
-  font-size: 14px;
-}
+        setClassification(data.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || "Unknown");
 
-.classificationTable th {
-  background-color: #f7fafc;
-  font-weight: 700;
-  color: #2d3748;
-}
+        // Check if DETAILS_OF_ILLNESS exists and has content
+        const hasIllnessDetails =
+          data.DETAILS_OF_ILLNESS && Object.keys(data.DETAILS_OF_ILLNESS).length > 0;
+        setIsValid(hasIllnessDetails ? "Yes" : "No");
+
+        setLoading(false); // Stop loading once data is available
+      } catch (error) {
+        console.error("Error processing classification data:", error);
+        setDocumentName("Error Loading Document");
+        setClassification("Error");
+        setIsValid("Error");
+        setLoading(false);
+      }
+    }
+  }, [data, uploadedFileName]);
+
+  return (
+    <div className={styles.claimClassificationContainer}>
+      <h4>Claim Classification</h4>
+      <table className={styles.classificationTable}>
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Classification</th>
+            <th>Is Valid?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              {loading ? <ClipLoader size={20} color="#2d3748" /> : documentName}
+            </td>
+            <td>
+              {loading ? (
+                <ClipLoader size={20} color="#2d3748" />
+              ) : (
+                <span
+                  className={`${styles.classificationTag} ${
+                    classification?.toLowerCase() === "cancer"
+                      ? styles.cancerTag
+                      : classification?.toLowerCase() === "heart"
+                      ? styles.heartTag
+                      : styles.defaultTag
+                  }`}
+                >
+                  {classification}
+                </span>
+              )}
+            </td>
+            <td>
+              {loading ? (
+                <ClipLoader size={20} color="#2d3748" />
+              ) : (
+                <span
+                  className={`${styles.validTag} ${
+                    isValid === "Yes" ? styles.validYes : styles.validNo
+                  }`}
+                >
+                  {isValid || "N/A"}
+                </span>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+export default ClaimClassification;
+
 
 .classificationTable td {
-  color: #4a5568;
-}
-
-/* Classification Tag Styles */
-.classificationTag {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.cancerTag {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-
-.heartTag {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.defaultTag {
-  background-color: #f5f5f5;
-  color: #616161;
-}
-
-/* Validity Tag Styles */
-.validTag {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.validYes {
-  background-color: #e8f5e9;
-  color: #2e7d32;
-}
-
-.validNo {
-  background-color: #ffebee;
-  color: #d32f2f;
-}
-
-/* Hover Effect */
-.classificationTable tr:hover {
-  background-color: #f1f5f9;
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-  .claimClassificationContainer {
-    max-width: 95%;
-  }
-
-  .classificationTable th, .classificationTable td {
-    padding: 8px;
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
 }
