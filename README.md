@@ -1,87 +1,6 @@
-
-import React, { useState, useEffect } from 'react';
-import styles from './ClaimClassification.module.css';
-
-const ClaimClassification = ({ data, uploadedFileName }) => {
-  const [documentName, setDocumentName] = useState('');
-  const [classification, setClassification] = useState('');
-  const [isValid, setIsValid] = useState('');
-
-
-useEffect(() => {
-  if (data) {
-    try {
-      setDocumentName(
-        data.CLAIM_FORM_DETAILS?.DOCUMENT_NAME || 
-        data.UPLOADED_DOCUMENT_NAME || 
-        uploadedFileName || 
-        'Unnamed Document'
-      );
-
-      setClassification(data.CLAIM_FORM_DETAILS?.CLAIM_FORM_TYPE || 'Unknown');
-
-      // Check if DETAILS_OF_ILLNESS exists and has content
-      const hasIllnessDetails = data.DETAILS_OF_ILLNESS && Object.keys(data.DETAILS_OF_ILLNESS).length > 0;
-      setIsValid(hasIllnessDetails ? 'Yes' : 'No');
-
-    } catch (error) {
-      console.error('Error processing classification data:', error);
-      setDocumentName('Error Loading Document');
-      setClassification('Error');
-      setIsValid('Error');
-    }
-  } else {
-    setDocumentName('');
-    setClassification('');
-    setIsValid('');
-  }
-}, [data, uploadedFileName]);
-
-  return (
-    <div className={styles.claimClassificationContainer}>
-      <h4>Claim Classification</h4>
-      <table className={styles.classificationTable}>
-        <thead>
-          <tr>
-            <th>Document Name</th>
-            <th>Classification</th>
-            <th>Is Valid?</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>{documentName}</td>
-            <td>
-              <span className={`${styles.classificationTag} ${
-                classification.toLowerCase() === 'cancer' ? styles.cancerTag 
-                : classification.toLowerCase() === 'heart' ? styles.heartTag 
-                : styles.defaultTag
-              }`}>
-                {classification}
-              </span>
-            </td>
-            <td>
-              <span className={`${styles.validTag} ${
-                isValid === 'Yes' ? styles.validYes : styles.validNo
-              }`}>
-                {isValid || 'N/A'}
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-export default ClaimClassification;
-
-
 .claimClassificationContainer {
-  /*font-family: 'Inter', 'Arial', sans-serif;*/
   max-width: 700px;
-  /*margin: 20px auto;*/
-  margin:0;
+  margin: 0 auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   background-color: #ffffff;
@@ -100,17 +19,20 @@ h4 {
 .classificationTable {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .classificationTable th, .classificationTable td {
   border: 1px solid #e1e8f0;
   padding: 12px;
   text-align: center;
+  font-size: 14px;
 }
 
 .classificationTable th {
-  background-color: #f0f4f8;
-  font-weight: 600;
+  background-color: #f7fafc;
+  font-weight: 700;
   color: #2d3748;
 }
 
@@ -165,6 +87,11 @@ h4 {
   color: #d32f2f;
 }
 
+/* Hover Effect */
+.classificationTable tr:hover {
+  background-color: #f1f5f9;
+}
+
 /* Responsive Design */
 @media (max-width: 600px) {
   .claimClassificationContainer {
@@ -175,4 +102,3 @@ h4 {
     padding: 8px;
   }
 }
-
