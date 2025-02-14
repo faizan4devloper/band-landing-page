@@ -1,12 +1,15 @@
 import React from "react";
 import styles from "./ClaimProcessingStatus.module.css";
 
-const ClaimProcessingStatus = ({ percentage, isLoading }) => {
-  // Ensure percentage is a valid number, default to 0 if undefined
-  const emptyKeyPercentage = percentage !== undefined
+const ClaimProcessingStatus = ({ percentage }) => {
+  // Check if percentage is available
+  const isLoading = percentage === undefined;
+
+  // Ensure percentage is valid, default to 0
+  const emptyKeyPercentage = !isLoading
     ? Math.max(0, Math.min(100, parseFloat(percentage)))
     : 0;
-  
+
   const filledKeyPercentage = 100 - emptyKeyPercentage;
 
   return (
@@ -94,11 +97,11 @@ export default ClaimProcessingStatus;
   background-color: #4ecb71;
 }
 
-/* LOADING EFFECT */
+/* Loader effect inside progress bar */
 .loadingBar {
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, #f0f0f0, #d6d6d6);
+  background: linear-gradient(45deg, #e0e0e0, #c0c0c0);
   position: relative;
   overflow: hidden;
 }
